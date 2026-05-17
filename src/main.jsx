@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 
 function App() {
+  const [activeTab, setActiveTab] = useState('Dashboard')
+
   const bestBets = [
     {
       horse: 'Midnight Runner',
@@ -27,6 +29,79 @@ function App() {
     }
   ]
 
+  const renderContent = () => {
+    if (activeTab === 'Dashboard') {
+      return (
+        <>
+          <section className='hero'>
+            <div>
+              <h2>Daily Betting Board</h2>
+              <p>AI-powered horse racing intelligence dashboard</p>
+            </div>
+
+            <button>Upload Racecards</button>
+          </section>
+
+          <section className='stats'>
+            <div className='card'>
+              <span>Today's Races</span>
+              <h3>42</h3>
+            </div>
+
+            <div className='card'>
+              <span>Best Bets</span>
+              <h3>8</h3>
+            </div>
+
+            <div className='card'>
+              <span>ROI</span>
+              <h3>+18%</h3>
+            </div>
+
+            <div className='card'>
+              <span>Avoid Races</span>
+              <h3>5</h3>
+            </div>
+          </section>
+
+          <section className='bet-board'>
+            <div className='board-header'>
+              <h2>Best Of The Day</h2>
+            </div>
+
+            {bestBets.map((bet, index) => (
+              <div className='bet-card' key={index}>
+                <div>
+                  <div className='bet-top'>
+                    <span className='tag'>{bet.confidence}</span>
+                    <span className='odds'>{bet.odds}</span>
+                  </div>
+
+                  <h3>{bet.horse}</h3>
+
+                  <p>
+                    {bet.course} · {bet.time}
+                  </p>
+                </div>
+
+                <button>View Race</button>
+              </div>
+            ))}
+          </section>
+        </>
+      )
+    }
+
+    return (
+      <div className='card'>
+        <h2 style={{ marginBottom: '16px' }}>{activeTab}</h2>
+        <p style={{ color: '#888', fontSize: '18px' }}>
+          {activeTab} section is now connected and ready for the next build phase.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className='layout'>
       <aside className='sidebar'>
@@ -36,71 +111,19 @@ function App() {
         </div>
 
         <nav>
-          <a className='active'>Dashboard</a>
-          <a>Racecards</a>
-          <a>Horses</a>
-          <a>Upload</a>
-          <a>Analytics</a>
+          {['Dashboard', 'Racecards', 'Horses', 'Upload', 'Analytics'].map(tab => (
+            <a
+              key={tab}
+              className={activeTab === tab ? 'active' : ''}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </a>
+          ))}
         </nav>
       </aside>
 
-      <main className='main'>
-        <section className='hero'>
-          <div>
-            <h2>Daily Betting Board</h2>
-            <p>AI-powered horse racing intelligence dashboard</p>
-          </div>
-
-          <button>Upload Racecards</button>
-        </section>
-
-        <section className='stats'>
-          <div className='card'>
-            <span>Today's Races</span>
-            <h3>42</h3>
-          </div>
-
-          <div className='card'>
-            <span>Best Bets</span>
-            <h3>8</h3>
-          </div>
-
-          <div className='card'>
-            <span>ROI</span>
-            <h3>+18%</h3>
-          </div>
-
-          <div className='card'>
-            <span>Avoid Races</span>
-            <h3>5</h3>
-          </div>
-        </section>
-
-        <section className='bet-board'>
-          <div className='board-header'>
-            <h2>Best Of The Day</h2>
-          </div>
-
-          {bestBets.map((bet, index) => (
-            <div className='bet-card' key={index}>
-              <div>
-                <div className='bet-top'>
-                  <span className='tag'>{bet.confidence}</span>
-                  <span className='odds'>{bet.odds}</span>
-                </div>
-
-                <h3>{bet.horse}</h3>
-
-                <p>
-                  {bet.course} · {bet.time}
-                </p>
-              </div>
-
-              <button>View Race</button>
-            </div>
-          ))}
-        </section>
-      </main>
+      <main className='main'>{renderContent()}</main>
     </div>
   )
 }
