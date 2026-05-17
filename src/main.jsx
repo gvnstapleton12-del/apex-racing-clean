@@ -5,6 +5,7 @@ import './styles.css'
 function App() {
   const [activeTab, setActiveTab] = useState('Dashboard')
   const [racecards, setRacecards] = useState([])
+  const [resultsArchive, setResultsArchive] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedRace, setSelectedRace] = useState(null)
 
@@ -14,7 +15,22 @@ function App() {
         const response = await fetch('/api/live-meetings')
         const data = await response.json()
 
-        setRacecards(data.racecards || [])
+        const liveRaces = data.racecards || []
+
+        const today = new Date().toDateString()
+        const savedDate = localStorage.getItem('apex-race-date')
+        const savedRaces = JSON.parse(localStorage.getItem('apex-old-races') || '[]')
+
+        if (savedDate && savedDate !== today && racecards.length > 0) {
+          localStorage.setItem('apex-old-races', JSON.stringify(racecards))
+          setResultsArchive(racecards)
+        } else {
+          setResultsArchive(savedRaces)
+        }
+
+        localStorage.setItem('apex-race-date', today)
+
+        setRacecards(liveRaces)
       } catch (error) {
         console.error('Failed to fetch live meetings:', error)
       } finally {
@@ -68,6 +84,43 @@ function App() {
     )
   }
 
+  const renderResults = () => {
+    return (
+      <section className='bet-board'>
+        <div className='board-header'>
+          <h2>Previous Meetings</h2>
+        </div>
+
+        {resultsArchive.length === 0 ? (
+          <div className='card'>
+            <h2>No archived meetings yet</h2>
+          </div>
+        ) : (
+          resultsArchive.map((race) => (
+            <div className='bet-card' key={race.race_id}>
+              <div>
+                <div className='bet-top'>
+                  <span className='tag'>{race.type}</span>
+                  <span className='odds'>{race.field_size} Runners</span>
+                </div>
+
+                <h3>{race.race_name}</h3>
+
+                <p>
+                  {race.course} · {race.off_time}
+                </p>
+              </div>
+
+              <button onClick={() => setSelectedRace(race)}>
+                View Race
+              </button>
+            </div>
+          ))
+        )}
+      </section>
+    )
+  }
+
   const renderContent = () => {
     if (activeTab === 'Dashboard') {
       return (
@@ -98,8 +151,8 @@ function App() {
             </div>
 
             <div className='card'>
-              <span>Backend</span>
-              <h3>Online</h3>
+              <span>Results Archive</span>
+              <h3>{resultsArchive.length}</h3>
             </div>
           </section>
         </>
@@ -108,6 +161,10 @@ function App() {
 
     if (activeTab === 'Racecards') {
       return renderRacecards()
+    }
+
+    if (activeTab === 'Results') {
+      return renderResults()
     }
 
     return (
@@ -127,7 +184,7 @@ function App() {
           </div>
 
           <nav>
-            {['Dashboard', 'Racecards', 'Horses', 'Upload', 'Analytics'].map(tab => (
+            {['Dashboard', 'Racecards', 'Results', 'Horses', 'Upload', 'Analytics'].map(tab => (
               <a
                 key={tab}
                 className={activeTab === tab ? 'active' : ''}
@@ -201,7 +258,6 @@ function App() {
                 >
                   <div>
                     <h4 style={{ marginBottom: '8px' }}>{runner.horse}</h4>
-
                     <p style={{ color: '#999' }}>
                       {runner.jockey} · {runner.trainer}
                     </p>
