@@ -6,6 +6,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('Dashboard')
   const [racecards, setRacecards] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedRace, setSelectedRace] = useState(null)
 
   useEffect(() => {
     async function fetchMeetings() {
@@ -88,7 +89,9 @@ function App() {
                     </p>
                   </div>
 
-                  <button>View Race</button>
+                  <button onClick={() => setSelectedRace(race)}>
+                    View Race
+                  </button>
                 </div>
               ))}
             </section>
@@ -100,36 +103,111 @@ function App() {
     return (
       <div className='card'>
         <h2 style={{ marginBottom: '16px' }}>{activeTab}</h2>
-        <p style={{ color: '#888', fontSize: '18px' }}>
-          {activeTab} section is now connected and ready for the next build phase.
-        </p>
       </div>
     )
   }
 
   return (
-    <div className='layout'>
-      <aside className='sidebar'>
-        <div>
-          <h1>APEX</h1>
-          <p>Racing Intelligence</p>
+    <>
+      <div className='layout'>
+        <aside className='sidebar'>
+          <div>
+            <h1>APEX</h1>
+            <p>Racing Intelligence</p>
+          </div>
+
+          <nav>
+            {['Dashboard', 'Racecards', 'Horses', 'Upload', 'Analytics'].map(tab => (
+              <a
+                key={tab}
+                className={activeTab === tab ? 'active' : ''}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </a>
+            ))}
+          </nav>
+        </aside>
+
+        <main className='main'>{renderContent()}</main>
+      </div>
+
+      {selectedRace && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.85)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '40px',
+            zIndex: 999
+          }}
+          onClick={() => setSelectedRace(null)}
+        >
+          <div
+            style={{
+              background: '#111',
+              border: '1px solid #222',
+              borderRadius: '24px',
+              padding: '32px',
+              width: '100%',
+              maxWidth: '900px',
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h2 style={{ fontSize: '36px', marginBottom: '12px' }}>
+                  {selectedRace.race_name}
+                </h2>
+
+                <p style={{ color: '#999', fontSize: '18px' }}>
+                  {selectedRace.course} · {selectedRace.off_time}
+                </p>
+              </div>
+
+              <button onClick={() => setSelectedRace(null)}>
+                Close
+              </button>
+            </div>
+
+            <div style={{ marginTop: '32px' }}>
+              <h3 style={{ marginBottom: '20px' }}>Runners</h3>
+
+              {(selectedRace.runners || []).map((runner, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '16px',
+                    borderBottom: '1px solid #222',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <div>
+                    <h4 style={{ marginBottom: '8px' }}>{runner.horse}</h4>
+
+                    <p style={{ color: '#999' }}>
+                      {runner.jockey} · {runner.trainer}
+                    </p>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <p>{runner.number}</p>
+                    <p style={{ color: '#ff8800' }}>{runner.form}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        <nav>
-          {['Dashboard', 'Racecards', 'Horses', 'Upload', 'Analytics'].map(tab => (
-            <a
-              key={tab}
-              className={activeTab === tab ? 'active' : ''}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </a>
-          ))}
-        </nav>
-      </aside>
-
-      <main className='main'>{renderContent()}</main>
-    </div>
+      )}
+    </>
   )
 }
 
