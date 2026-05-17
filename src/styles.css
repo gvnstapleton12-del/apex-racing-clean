@@ -1,71 +1,166 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: Inter, Arial, sans-serif;
   background: #050505;
   color: white;
 }
 
-.app {
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: #0d0d0d;
+  border-right: 1px solid #1f1f1f;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar h1 {
+  color: #ff7a00;
+  margin: 0;
+  font-size: 36px;
+}
+
+.sidebar p {
+  color: #888;
+  margin-top: 5px;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 50px;
+}
+
+.sidebar a {
+  color: #888;
+  text-decoration: none;
+  padding: 14px;
+  border-radius: 12px;
+  transition: 0.2s;
+}
+
+.sidebar a:hover,
+.sidebar .active {
+  background: #1a1a1a;
+  color: white;
+}
+
+.main {
+  flex: 1;
   padding: 40px;
 }
 
-.hero h1 {
-  font-size: 52px;
-  margin-bottom: 10px;
-  color: #ff7a00;
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, #141414, #0a0a0a);
+  border: 1px solid #1f1f1f;
+  padding: 35px;
+  border-radius: 24px;
+}
+
+.hero h2 {
+  font-size: 42px;
+  margin: 0;
 }
 
 .hero p {
-  color: #999;
-  font-size: 20px;
+  color: #888;
+}
+
+.hero button,
+.bet-card button {
+  background: #ff7a00;
+  border: none;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 .card {
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 18px;
-  padding: 30px;
-}
-
-.card h2 {
-  color: #ff7a00;
-  margin: 0;
-  font-size: 40px;
-}
-
-.board {
-  margin-top: 40px;
-  display: grid;
-  gap: 20px;
-}
-
-.race-card {
   background: #101010;
-  border: 1px solid #222;
-  border-radius: 18px;
-  padding: 25px;
+  border: 1px solid #1f1f1f;
+  border-radius: 20px;
+  padding: 24px;
 }
 
-.race-top {
+.card span {
+  color: #888;
+}
+
+.card h3 {
+  margin: 10px 0 0;
+  color: #ff7a00;
+  font-size: 34px;
+}
+
+.bet-board {
+  margin-top: 35px;
+}
+
+.board-header h2 {
+  margin-bottom: 20px;
+}
+
+.bet-card {
+  background: #101010;
+  border: 1px solid #1f1f1f;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 18px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.race-top span {
-  color: #ff7a00;
-  font-weight: bold;
+.bet-top {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
-.pick {
-  margin-top: 15px;
-  font-size: 18px;
-  color: #ddd;
+.tag {
+  background: rgba(255,122,0,0.15);
+  color: #ff7a00;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.odds {
+  background: #1a1a1a;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: white;
+  font-size: 12px;
+}
+
+.bet-card h3 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.bet-card p {
+  color: #888;
 }
