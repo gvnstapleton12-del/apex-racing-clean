@@ -10,7 +10,7 @@ function App() {
   useEffect(() => {
     async function fetchMeetings() {
       try {
-        const response = await fetch('http://localhost:3000/api/live-meetings')
+        const response = await fetch('/api/live-meetings')
         const data = await response.json()
 
         setRacecards(data.racecards || [])
