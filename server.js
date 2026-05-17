@@ -80,6 +80,29 @@ app.get('/api/tips', async (_req, res) => {
   }
 });
 
+app.get('/api/live-meetings', async (_req, res) => {
+  try {
+    const response = await fetch('https://api.theracingapi.com/v1/racecards/free', {
+      headers: {
+        Authorization:
+          'Basic ' +
+          Buffer.from(
+            `${process.env.RACING_API_USERNAME}:${process.env.RACING_API_PASSWORD}`
+          ).toString('base64')
+      }
+    });
+
+    const data = await response.json();
+
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to load Racing API meetings',
+      details: error.message
+    });
+  }
+});
+
 app.get('/api/racecards', (_req, res) => {
   res.json([
     {
