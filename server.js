@@ -80,6 +80,43 @@ app.get('/api/tips', async (_req, res) => {
   }
 });
 
+app.get('/api/racecards', (_req, res) => {
+  res.json([
+    {
+      id: 1,
+      course: 'Ascot',
+      offTime: '15:30',
+      raceName: 'Royal Sprint Handicap',
+      runners: 12
+    },
+    {
+      id: 2,
+      course: 'Cheltenham',
+      offTime: '14:10',
+      raceName: 'Festival Chase',
+      runners: 9
+    }
+  ]);
+});
+
+app.get('/api/dashboard/summary', (_req, res) => {
+  res.json({
+    totalTips: 3,
+    highConfidence: 2,
+    meetingsToday: 5,
+    roi: '+18%'
+  });
+});
+
+app.get('/api/racecards/:id/analysis', (req, res) => {
+  res.json({
+    raceId: req.params.id,
+    topPick: 'Midnight Runner',
+    confidence: 'High',
+    reasoning: 'Strong recent form and ideal ground conditions.'
+  });
+});
+
 initializeDatabase()
   .then(() => {
     app.listen(PORT, () => {
