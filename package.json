@@ -1,13 +1,22 @@
 {
   "name": "apex-racing-clean",
+  "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "dev": "vite",
+    "start": "node server.js",
+    "build": "vite build"
   },
   "dependencies": {
-    "express": "^4.19.2",
     "cors": "^2.8.5",
-    "pg": "^8.13.1"
+    "express": "^4.19.2",
+    "pg": "^8.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.10"
   }
 }
