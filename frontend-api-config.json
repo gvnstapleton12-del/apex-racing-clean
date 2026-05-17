@@ -1,0 +1,9 @@
+{
+  "apiBaseUrl": "https://apex-racing-clean-production.up.railway.app/api",
+  "endpoints": {
+    "health": "/health",
+    "tips": "/tips",
+    "drivers": "/drivers"
+  },
+  "appType": "horse-racing-tipster"
+}
