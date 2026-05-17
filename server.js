@@ -18,22 +18,25 @@ const pool = new Pool({
 
 async function initializeDatabase() {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS drivers (
+    CREATE TABLE IF NOT EXISTS tips (
       id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      team TEXT NOT NULL
+      horse TEXT NOT NULL,
+      track TEXT NOT NULL,
+      race_time TEXT NOT NULL,
+      odds TEXT NOT NULL,
+      confidence TEXT NOT NULL
     )
   `);
 
-  const existingDrivers = await pool.query('SELECT COUNT(*) FROM drivers');
+  const existingTips = await pool.query('SELECT COUNT(*) FROM tips');
 
-  if (Number(existingDrivers.rows[0].count) === 0) {
+  if (Number(existingTips.rows[0].count) === 0) {
     await pool.query(`
-      INSERT INTO drivers (name, team)
+      INSERT INTO tips (horse, track, race_time, odds, confidence)
       VALUES
-      ('Max Verstappen', 'Red Bull'),
-      ('Lando Norris', 'McLaren'),
-      ('Lewis Hamilton', 'Ferrari')
+      ('Midnight Runner', 'Ascot', '15:30', '5/1', 'High'),
+      ('Golden Hooves', 'Cheltenham', '14:10', '7/2', 'Medium'),
+      ('Storm Charger', 'Aintree', '16:45', '10/1', 'High')
     `);
   }
 }
@@ -44,7 +47,7 @@ app.use(express.json());
 app.get('/', (_req, res) => {
   res.json({
     status: 'ok',
-    app: 'Apex Racing Clean API'
+    app: 'Horse Racing Tipster API'
   });
 });
 
@@ -65,9 +68,9 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
-app.get('/api/drivers', async (_req, res) => {
+app.get('/api/tips', async (_req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM drivers ORDER BY id ASC');
+    const result = await pool.query('SELECT * FROM tips ORDER BY id ASC');
 
     res.json(result.rows);
   } catch (error) {
