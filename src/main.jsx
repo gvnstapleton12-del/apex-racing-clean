@@ -25,14 +25,57 @@ function App() {
     fetchMeetings()
   }, [])
 
+  const renderRacecards = () => {
+    if (loading) {
+      return (
+        <div className='card'>
+          <h2>Loading live race meetings...</h2>
+        </div>
+      )
+    }
+
+    return (
+      <section className='bet-board'>
+        <div className='board-header'>
+          <h2>UK & Ireland Racecards</h2>
+        </div>
+
+        {racecards.slice(0, 20).map((race) => (
+          <div className='bet-card' key={race.race_id}>
+            <div>
+              <div className='bet-top'>
+                <span className='tag'>{race.type}</span>
+                <span className='odds'>{race.field_size} Runners</span>
+              </div>
+
+              <h3>{race.race_name}</h3>
+
+              <p>
+                {race.course} · {race.off_time}
+              </p>
+
+              <p>
+                {race.going} · {race.distance_f}
+              </p>
+            </div>
+
+            <button onClick={() => setSelectedRace(race)}>
+              View Race
+            </button>
+          </div>
+        ))}
+      </section>
+    )
+  }
+
   const renderContent = () => {
     if (activeTab === 'Dashboard') {
       return (
         <>
           <section className='hero'>
             <div>
-              <h2>Daily Betting Board</h2>
-              <p>Live Racing API horse racing intelligence dashboard</p>
+              <h2>APEX Racing Intelligence</h2>
+              <p>Live Racing API horse racing dashboard</p>
             </div>
 
             <button>Live Racing</button>
@@ -59,45 +102,12 @@ function App() {
               <h3>Online</h3>
             </div>
           </section>
-
-          {loading ? (
-            <div className='card'>
-              <h2>Loading live race meetings...</h2>
-            </div>
-          ) : (
-            <section className='bet-board'>
-              <div className='board-header'>
-                <h2>Live Meetings</h2>
-              </div>
-
-              {racecards.slice(0, 10).map((race) => (
-                <div className='bet-card' key={race.race_id}>
-                  <div>
-                    <div className='bet-top'>
-                      <span className='tag'>{race.type}</span>
-                      <span className='odds'>{race.field_size} Runners</span>
-                    </div>
-
-                    <h3>{race.race_name}</h3>
-
-                    <p>
-                      {race.course} · {race.off_time}
-                    </p>
-
-                    <p>
-                      {race.going} · {race.distance_f}
-                    </p>
-                  </div>
-
-                  <button onClick={() => setSelectedRace(race)}>
-                    View Race
-                  </button>
-                </div>
-              ))}
-            </section>
-          )}
         </>
       )
+    }
+
+    if (activeTab === 'Racecards') {
+      return renderRacecards()
     }
 
     return (
