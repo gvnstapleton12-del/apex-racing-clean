@@ -1,33 +1,28 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 
 function App() {
   const [activeTab, setActiveTab] = useState('Dashboard')
+  const [racecards, setRacecards] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const bestBets = [
-    {
-      horse: 'Midnight Runner',
-      course: 'Ascot',
-      time: '15:20',
-      confidence: 'Best Of Day',
-      odds: '5/1'
-    },
-    {
-      horse: 'Golden Hooves',
-      course: 'Cheltenham',
-      time: '14:10',
-      confidence: 'Top Rated',
-      odds: '8/1'
-    },
-    {
-      horse: 'Rapid Thunder',
-      course: 'York',
-      time: '16:40',
-      confidence: 'EW Value',
-      odds: '14/1'
+  useEffect(() => {
+    async function fetchMeetings() {
+      try {
+        const response = await fetch('http://localhost:3000/api/live-meetings')
+        const data = await response.json()
+
+        setRacecards(data.racecards || [])
+      } catch (error) {
+        console.error('Failed to fetch live meetings:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchMeetings()
+  }, [])
 
   const renderContent = () => {
     if (activeTab === 'Dashboard') {
@@ -36,58 +31,68 @@ function App() {
           <section className='hero'>
             <div>
               <h2>Daily Betting Board</h2>
-              <p>AI-powered horse racing intelligence dashboard</p>
+              <p>Live Racing API horse racing intelligence dashboard</p>
             </div>
 
-            <button>Upload Racecards</button>
+            <button>Live Racing</button>
           </section>
 
           <section className='stats'>
             <div className='card'>
               <span>Today's Races</span>
-              <h3>42</h3>
+              <h3>{racecards.length}</h3>
             </div>
 
             <div className='card'>
-              <span>Best Bets</span>
-              <h3>8</h3>
+              <span>API Status</span>
+              <h3>LIVE</h3>
             </div>
 
             <div className='card'>
-              <span>ROI</span>
-              <h3>+18%</h3>
+              <span>Database</span>
+              <h3>Connected</h3>
             </div>
 
             <div className='card'>
-              <span>Avoid Races</span>
-              <h3>5</h3>
+              <span>Backend</span>
+              <h3>Online</h3>
             </div>
           </section>
 
-          <section className='bet-board'>
-            <div className='board-header'>
-              <h2>Best Of The Day</h2>
+          {loading ? (
+            <div className='card'>
+              <h2>Loading live race meetings...</h2>
             </div>
+          ) : (
+            <section className='bet-board'>
+              <div className='board-header'>
+                <h2>Live Meetings</h2>
+              </div>
 
-            {bestBets.map((bet, index) => (
-              <div className='bet-card' key={index}>
-                <div>
-                  <div className='bet-top'>
-                    <span className='tag'>{bet.confidence}</span>
-                    <span className='odds'>{bet.odds}</span>
+              {racecards.slice(0, 10).map((race) => (
+                <div className='bet-card' key={race.race_id}>
+                  <div>
+                    <div className='bet-top'>
+                      <span className='tag'>{race.type}</span>
+                      <span className='odds'>{race.field_size} Runners</span>
+                    </div>
+
+                    <h3>{race.race_name}</h3>
+
+                    <p>
+                      {race.course} · {race.off_time}
+                    </p>
+
+                    <p>
+                      {race.going} · {race.distance_f}
+                    </p>
                   </div>
 
-                  <h3>{bet.horse}</h3>
-
-                  <p>
-                    {bet.course} · {bet.time}
-                  </p>
+                  <button>View Race</button>
                 </div>
-
-                <button>View Race</button>
-              </div>
-            ))}
-          </section>
+              ))}
+            </section>
+          )}
         </>
       )
     }
