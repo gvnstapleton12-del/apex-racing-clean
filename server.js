@@ -95,7 +95,13 @@ app.get('/api/live-meetings', async (_req, res) => {
 
     const data = await response.json();
 
-    res.json(data);
+    const ukIreMeetings = data.racecards.filter(
+      (race) => race.region === 'GB' || race.region === 'IRE'
+    );
+
+    res.json({
+      racecards: ukIreMeetings
+    });
   } catch (error) {
     res.status(500).json({
       error: 'Failed to load Racing API meetings',
