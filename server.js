@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import { generateConfidence } from './src/lib/confidenceEngine.js'
+import { generateSignals } from './src/lib/signalEngine.js'
 
 dotenv.config()
 
@@ -197,13 +198,19 @@ async function fetchLiveMeetings() {
         }
 
         const market = MARKET_DATABASE[horseId]
-
         const profile = HORSE_DATABASE[horseId]
 
         const aiProfile = generateConfidence({
           ...runner,
           replayTriggers: replayFlags,
           horseProfile: profile,
+          market,
+        })
+
+        const bettingSignals = generateSignals({
+          ...runner,
+          aiProfile,
+          replayTriggers: replayFlags,
           market,
         })
 
@@ -308,6 +315,7 @@ async function fetchLiveMeetings() {
           horseProfile: profile,
           market,
           aiProfile,
+          bettingSignals,
         }
       })
 
