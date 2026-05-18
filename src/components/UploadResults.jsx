@@ -14,6 +14,8 @@ export default function UploadResults() {
     try {
       const text = await file.text()
 
+      const parsed = JSON.parse(text)
+
       const response = await fetch(
         '/api/upload-results',
         {
@@ -21,7 +23,9 @@ export default function UploadResults() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: text,
+          body: JSON.stringify(
+            parsed.results || parsed
+          ),
         }
       )
 
@@ -42,16 +46,22 @@ export default function UploadResults() {
 
   function onDrop(event) {
     event.preventDefault()
+    event.stopPropagation()
 
     const file = event.dataTransfer.files[0]
 
     handleFile(file)
   }
 
+  function onDragOver(event) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   return (
     <div className='p-6'>
       <div
-        onDragOver={(e) => e.preventDefault()}
+        onDragOver={onDragOver}
         onDrop={onDrop}
         className='border-2 border-dashed rounded-2xl p-12 text-center bg-zinc-900 border-zinc-700'
       >
