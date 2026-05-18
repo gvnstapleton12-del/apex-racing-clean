@@ -16,11 +16,31 @@ export default function UploadResults() {
     window.addEventListener('dragover', preventDefaults)
     window.addEventListener('drop', preventDefaults)
 
+    loadSavedAnalytics()
+
     return () => {
       window.removeEventListener('dragover', preventDefaults)
       window.removeEventListener('drop', preventDefaults)
     }
   }, [])
+
+  async function loadSavedAnalytics() {
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/learning-stats'
+      )
+
+      const analytics = await response.json()
+
+      setStats({
+        processedRaces: analytics.totalBets || 0,
+        updatedRecords: analytics.winners || 0,
+        analytics,
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   async function handleFile(file) {
     if (!file) {
@@ -127,30 +147,82 @@ export default function UploadResults() {
       {stats && (
         <div className='mt-8 grid grid-cols-2 md:grid-cols-4 gap-4'>
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>Races</p>
+            <p className='text-zinc-400 text-sm'>
+              Total Bets
+            </p>
+
             <h3 className='text-2xl font-bold'>
-              {stats.processedRaces}
+              {stats.analytics?.totalBets || 0}
             </h3>
           </div>
 
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>Results</p>
+            <p className='text-zinc-400 text-sm'>
+              Winners
+            </p>
+
             <h3 className='text-2xl font-bold'>
-              {stats.updatedRecords}
+              {stats.analytics?.winners || 0}
             </h3>
           </div>
 
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>ROI</p>
+            <p className='text-zinc-400 text-sm'>
+              ROI
+            </p>
+
             <h3 className='text-2xl font-bold'>
               {stats.analytics?.roi || 0}%
             </h3>
           </div>
 
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>Strike Rate</p>
+            <p className='text-zinc-400 text-sm'>
+              Strike Rate
+            </p>
+
             <h3 className='text-2xl font-bold'>
               {stats.analytics?.strikeRate || 0}%
+            </h3>
+          </div>
+
+          <div className='bg-zinc-900 p-4 rounded-xl'>
+            <p className='text-zinc-400 text-sm'>
+              Bankroll
+            </p>
+
+            <h3 className='text-2xl font-bold'>
+              £{stats.analytics?.bankroll || 0}
+            </h3>
+          </div>
+
+          <div className='bg-zinc-900 p-4 rounded-xl'>
+            <p className='text-zinc-400 text-sm'>
+              Avg Confidence
+            </p>
+
+            <h3 className='text-2xl font-bold'>
+              {stats.analytics?.averageConfidence || 0}
+            </h3>
+          </div>
+
+          <div className='bg-zinc-900 p-4 rounded-xl'>
+            <p className='text-zinc-400 text-sm'>
+              Best Win Streak
+            </p>
+
+            <h3 className='text-2xl font-bold'>
+              {stats.analytics?.longestWinStreak || 0}
+            </h3>
+          </div>
+
+          <div className='bg-zinc-900 p-4 rounded-xl'>
+            <p className='text-zinc-400 text-sm'>
+              Worst Losing Streak
+            </p>
+
+            <h3 className='text-2xl font-bold'>
+              {stats.analytics?.longestLoseStreak || 0}
             </h3>
           </div>
         </div>
