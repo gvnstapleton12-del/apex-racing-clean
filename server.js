@@ -9,6 +9,7 @@ import { Server } from 'socket.io'
 
 import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
+import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 
 dotenv.config()
 
@@ -31,12 +32,6 @@ const HORSE_DB_PATH = path.join(
   process.cwd(),
   'data',
   'horses.json'
-)
-
-const REPLAY_DB_PATH = path.join(
-  process.cwd(),
-  'data',
-  'replays.json'
 )
 
 const MARKET_DB_PATH = path.join(
@@ -85,10 +80,6 @@ const HORSE_DATABASE = loadDatabase(
   HORSE_DB_PATH
 )
 
-const REPLAY_DATABASE = loadDatabase(
-  REPLAY_DB_PATH
-)
-
 const MARKET_DATABASE = loadDatabase(
   MARKET_DB_PATH
 )
@@ -125,33 +116,9 @@ function createAlert(
   ALERT_DATABASE[horseId].unshift(alert)
 
   ALERT_DATABASE[horseId] =
-    ALERT_DATABASE[horseId].slice(0, 25)
+    ALERT_DATABASE[horseId].slice(0, 50)
 
   io.emit('new-alert', alert)
-}
-
-function generateReplayFlags(
-  runner,
-  score
-) {
-  const flags = []
-
-  if (score >= 80) {
-    flags.push('Strong Finish')
-  }
-
-  if (runner.form?.includes('0')) {
-    flags.push('Potential Bounce Back')
-  }
-
-  if (
-    runner.odds &&
-    parseFloat(runner.odds) > 10
-  ) {
-    flags.push('Hidden Value Runner')
-  }
-
-  return flags
 }
 
 async function fetchLiveMeetings() {
@@ -183,24 +150,6 @@ async function fetchLiveMeetings() {
 
         const scoredRunners = runners.map(
           (runner) => {
-            let score = 50
-
-            if (
-              runner.form?.includes('1')
-            )
-              score += 15
-
-            if (
-              runner.form?.includes('2')
-            )
-              score += 10
-
-            const replayFlags =
-              generateReplayFlags(
-                runner,
-                score
-              )
-
             const horseId =
               runner.horse_id ||
               runner.horse
@@ -215,49 +164,57 @@ async function fetchLiveMeetings() {
               }
             }
 
-            const profile =
-              HORSE_DATABASE[horseId]
-
-            const market =
-              MARKET_DATABASE[horseId] || {}
+            const previousOdds =
+              MARKET_DATABASE[horseId]
+                ?.lastOdds || runner.odds
 
             const aiProfile =
               generateConfidence({
                 ...runner,
-                replayTriggers:
-                  replayFlags,
-                horseProfile: profile,
-                market,
+                horseProfile:
+                  HORSE_DATABASE[horseId],
               })
+
+            const marketMovement =
+              analyzeMarketMovement({
+                horse: runner.horse,
+                currentOdds: runner.odds,
+                previousOdds,
+                aiConfidence:
+                  aiProfile.confidence,
+              })
+
+            MARKET_DATABASE[horseId] = {
+              horse: runner.horse,
+              lastOdds: runner.odds,
+              movement:
+                marketMovement.movement,
+              updatedAt:
+                new Date().toISOString(),
+            }
+
+            if (marketMovement.alert) {
+              createAlert(
+                horseId,
+                runner.horse,
+                marketMovement.alert.type,
+                marketMovement.alert.message,
+                marketMovement.alert.severity
+              )
+            }
 
             const bettingSignals =
               generateSignals({
                 ...runner,
                 aiProfile,
-                replayTriggers:
-                  replayFlags,
-                market,
+                marketMovement,
               })
-
-            if (
-              aiProfile.confidence >= 90
-            ) {
-              createAlert(
-                horseId,
-                runner.horse,
-                'ELITE_BET',
-                `Elite confidence detected (${aiProfile.confidence}%)`,
-                'HIGH'
-              )
-            }
 
             return {
               ...runner,
-              score,
-              replayTriggers:
-                replayFlags,
               aiProfile,
               bettingSignals,
+              marketMovement,
             }
           }
         )
@@ -284,6 +241,11 @@ async function fetchLiveMeetings() {
     LIVE_STATE.loading = false
 
     saveDatabase(
+      MARKET_DB_PATH,
+      MARKET_DATABASE
+    )
+
+    saveDatabase(
       ALERT_DB_PATH,
       ALERT_DATABASE
     )
@@ -300,7 +262,7 @@ async function fetchLiveMeetings() {
 
 fetchLiveMeetings()
 
-setInterval(fetchLiveMeetings, 30000)
+setInterval(fetchLiveMeetings, 60000)
 
 io.on('connection', (socket) => {
   console.log('Client connected')
@@ -320,6 +282,14 @@ app.get('/api/alerts', (_req, res) => {
     .slice(0, 100)
 
   res.json(alerts)
+})
+
+app.get('/api/market-movers', (_req, res) => {
+  const movers = Object.values(
+    MARKET_DATABASE
+  )
+
+  res.json(movers)
 })
 
 server.listen(PORT, () => {
