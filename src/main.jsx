@@ -3,29 +3,65 @@ import ReactDOM from 'react-dom/client'
 import './styles.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState('Dashboard')
-  const [racecards, setRacecards] = useState([])
-  const [resultsArchive, setResultsArchive] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [selectedRace, setSelectedRace] = useState(null)
+  const [activeTab, setActiveTab] =
+    useState('Dashboard')
+
+  const [racecards, setRacecards] =
+    useState([])
+
+  const [alerts, setAlerts] =
+    useState([])
+
+  const [resultsArchive, setResultsArchive] =
+    useState([])
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [selectedRace, setSelectedRace] =
+    useState(null)
 
   useEffect(() => {
     async function fetchMeetings() {
       try {
-      const response = await fetch(
-  'http://localhost:3000/api/live-state'
-)
-        const data = await response.json()
-
-        const liveRaces = data.racecards || []
-
-        const today = new Date().toDateString()
-        const savedDate = localStorage.getItem('apex-race-date')
-        const savedRaces = JSON.parse(
-          localStorage.getItem('apex-old-races') || '[]'
+        const response = await fetch(
+          'http://localhost:3000/api/live-state'
         )
 
-        if (savedDate && savedDate !== today && racecards.length > 0) {
+        const alertsResponse =
+          await fetch(
+            'http://localhost:3000/api/alerts'
+          )
+
+        const data = await response.json()
+
+        const alertsData =
+          await alertsResponse.json()
+
+        setAlerts(alertsData || [])
+
+        const liveRaces =
+          data.racecards || []
+
+        const today =
+          new Date().toDateString()
+
+        const savedDate =
+          localStorage.getItem(
+            'apex-race-date'
+          )
+
+        const savedRaces = JSON.parse(
+          localStorage.getItem(
+            'apex-old-races'
+          ) || '[]'
+        )
+
+        if (
+          savedDate &&
+          savedDate !== today &&
+          racecards.length > 0
+        ) {
           localStorage.setItem(
             'apex-old-races',
             JSON.stringify(racecards)
@@ -36,28 +72,38 @@ function App() {
           setResultsArchive(savedRaces)
         }
 
-        localStorage.setItem('apex-race-date', today)
+        localStorage.setItem(
+          'apex-race-date',
+          today
+        )
 
         setRacecards(liveRaces)
       } catch (error) {
-        console.error('Failed to fetch live meetings:', error)
+        console.error(
+          'Failed to fetch live meetings:',
+          error
+        )
       } finally {
         setLoading(false)
       }
     }
 
-    const interval = setInterval(() => {
-  fetchMeetings()
-}, 30000)
+    fetchMeetings()
 
-return () => clearInterval(interval)
+    const interval = setInterval(() => {
+      fetchMeetings()
+    }, 30000)
+
+    return () => clearInterval(interval)
   }, [])
 
   const renderRacecards = () => {
     if (loading) {
       return (
         <div className='card'>
-          <h2>Loading live race meetings...</h2>
+          <h2>
+            Loading live race meetings...
+          </h2>
         </div>
       )
     }
@@ -65,35 +111,51 @@ return () => clearInterval(interval)
     return (
       <section className='bet-board'>
         <div className='board-header'>
-          <h2>UK & Ireland Racecards</h2>
+          <h2>
+            UK & Ireland Racecards
+          </h2>
         </div>
 
-        {racecards.slice(0, 20).map((race) => (
-          <div className='bet-card' key={race.race_id}>
-            <div>
-              <div className='bet-top'>
-                <span className='tag'>{race.type}</span>
-                <span className='odds'>
-                  {race.field_size} Runners
-                </span>
+        {racecards
+          .slice(0, 20)
+          .map((race) => (
+            <div
+              className='bet-card'
+              key={race.race_id}
+            >
+              <div>
+                <div className='bet-top'>
+                  <span className='tag'>
+                    {race.type}
+                  </span>
+
+                  <span className='odds'>
+                    {race.field_size} Runners
+                  </span>
+                </div>
+
+                <h3>{race.race_name}</h3>
+
+                <p>
+                  {race.course} ·{' '}
+                  {race.off_time}
+                </p>
+
+                <p>
+                  {race.going} ·{' '}
+                  {race.distance_f}
+                </p>
               </div>
 
-              <h3>{race.race_name}</h3>
-
-              <p>
-                {race.course} · {race.off_time}
-              </p>
-
-              <p>
-                {race.going} · {race.distance_f}
-              </p>
+              <button
+                onClick={() =>
+                  setSelectedRace(race)
+                }
+              >
+                View Race
+              </button>
             </div>
-
-            <button onClick={() => setSelectedRace(race)}>
-              View Race
-            </button>
-          </div>
-        ))}
+          ))}
       </section>
     )
   }
@@ -107,14 +169,22 @@ return () => clearInterval(interval)
 
         {resultsArchive.length === 0 ? (
           <div className='card'>
-            <h2>No archived meetings yet</h2>
+            <h2>
+              No archived meetings yet
+            </h2>
           </div>
         ) : (
           resultsArchive.map((race) => (
-            <div className='bet-card' key={race.race_id}>
+            <div
+              className='bet-card'
+              key={race.race_id}
+            >
               <div>
                 <div className='bet-top'>
-                  <span className='tag'>{race.type}</span>
+                  <span className='tag'>
+                    {race.type}
+                  </span>
+
                   <span className='odds'>
                     {race.field_size} Runners
                   </span>
@@ -123,11 +193,16 @@ return () => clearInterval(interval)
                 <h3>{race.race_name}</h3>
 
                 <p>
-                  {race.course} · {race.off_time}
+                  {race.course} ·{' '}
+                  {race.off_time}
                 </p>
               </div>
 
-              <button onClick={() => setSelectedRace(race)}>
+              <button
+                onClick={() =>
+                  setSelectedRace(race)
+                }
+              >
                 View Race
               </button>
             </div>
@@ -137,26 +212,87 @@ return () => clearInterval(interval)
     )
   }
 
+  const renderAlerts = () => {
+    return (
+      <section className='bet-board'>
+        <div className='board-header'>
+          <h2>Live Alerts</h2>
+        </div>
+
+        {alerts.length === 0 ? (
+          <div className='card'>
+            <h2>No live alerts yet</h2>
+          </div>
+        ) : (
+          alerts
+            .slice(0, 25)
+            .map((alert, index) => (
+              <div
+                className='bet-card'
+                key={index}
+              >
+                <div>
+                  <div className='bet-top'>
+                    <span className='tag'>
+                      {alert.type}
+                    </span>
+
+                    <span className='odds'>
+                      {alert.severity}
+                    </span>
+                  </div>
+
+                  <h3>{alert.horse}</h3>
+
+                  <p>{alert.message}</p>
+
+                  <p>
+                    {new Date(
+                      alert.timestamp
+                    ).toLocaleTimeString()}
+                  </p>
+                </div>
+
+                <button>ACTIVE</button>
+              </div>
+            ))
+        )}
+      </section>
+    )
+  }
+
   const renderIntelligence = () => {
     const topRunners = racecards
       .flatMap((race) =>
-        (race.runners || []).map((runner) => ({
-          ...runner,
-          race_name: race.race_name,
-          course: race.course,
-          off_time: race.off_time
-        }))
+        (race.runners || []).map(
+          (runner) => ({
+            ...runner,
+            race_name: race.race_name,
+            course: race.course,
+            off_time: race.off_time,
+          })
+        )
       )
-      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .sort(
+        (a, b) =>
+          (b.aiProfile?.confidence ||
+            0) -
+          (a.aiProfile?.confidence ||
+            0)
+      )
       .slice(0, 12)
 
     return (
       <>
         <section className='hero'>
           <div>
-            <h2>APEX Intelligence Terminal</h2>
+            <h2>
+              APEX Intelligence Terminal
+            </h2>
+
             <p>
-              Advanced race intelligence and AI analytics
+              Advanced AI betting
+              intelligence
             </p>
           </div>
 
@@ -166,6 +302,7 @@ return () => clearInterval(interval)
         <section className='stats'>
           <div className='card'>
             <span>Live Meetings</span>
+
             <h3>{racecards.length}</h3>
           </div>
 
@@ -175,51 +312,75 @@ return () => clearInterval(interval)
             <h3>
               {racecards.reduce(
                 (acc, race) =>
-                  acc + (race.runners?.length || 0),
+                  acc +
+                  (race.runners?.length ||
+                    0),
                 0
               )}
             </h3>
           </div>
 
           <div className='card'>
-            <span>Replay Flags</span>
-            <h3>ACTIVE</h3>
+            <span>Alerts</span>
+
+            <h3>{alerts.length}</h3>
           </div>
 
           <div className='card'>
             <span>AI Engine</span>
+
             <h3>ONLINE</h3>
           </div>
         </section>
 
         <section className='bet-board'>
           <div className='board-header'>
-            <h2>Top Intelligence Runners</h2>
+            <h2>
+              Top Intelligence Runners
+            </h2>
           </div>
 
-          {topRunners.map((runner, index) => (
-            <div className='bet-card' key={index}>
-              <div>
-                <div className='bet-top'>
-                  <span className='tag'>APEX</span>
+          {topRunners.map(
+            (runner, index) => (
+              <div
+                className='bet-card'
+                key={index}
+              >
+                <div>
+                  <div className='bet-top'>
+                    <span className='tag'>
+                      AI
+                    </span>
 
-                  <span className='odds'>
-                    Score {runner.score || 'N/A'}
-                  </span>
+                    <span className='odds'>
+                      Confidence{' '}
+                      {runner.aiProfile
+                        ?.confidence ||
+                        'N/A'}
+                    </span>
+                  </div>
+
+                  <h3>{runner.horse}</h3>
+
+                  <p>
+                    {runner.course} ·{' '}
+                    {runner.off_time}
+                  </p>
+
+                  <p>
+                    {
+                      runner.bettingSignals?.[0]
+                        ?.type
+                    }
+                  </p>
                 </div>
 
-                <h3>{runner.horse}</h3>
-
-                <p>
-                  {runner.course} · {runner.off_time}
-                </p>
-
-                <p>{runner.race_name}</p>
+                <button>
+                  Track Runner
+                </button>
               </div>
-
-              <button>Track Runner</button>
-            </div>
-          ))}
+            )
+          )}
         </section>
       </>
     )
@@ -231,32 +392,43 @@ return () => clearInterval(interval)
         <>
           <section className='hero'>
             <div>
-              <h2>APEX Racing Intelligence</h2>
-              <p>Live Racing API horse racing dashboard</p>
+              <h2>
+                APEX Racing Intelligence
+              </h2>
+
+              <p>
+                Live AI betting terminal
+              </p>
             </div>
 
-            <button>Live Racing</button>
+            <button>LIVE</button>
           </section>
 
           <section className='stats'>
             <div className='card'>
               <span>Today's Races</span>
+
               <h3>{racecards.length}</h3>
             </div>
 
             <div className='card'>
-              <span>API Status</span>
-              <h3>LIVE</h3>
+              <span>Alerts</span>
+
+              <h3>{alerts.length}</h3>
             </div>
 
             <div className='card'>
-              <span>Database</span>
-              <h3>Connected</h3>
+              <span>AI Status</span>
+
+              <h3>ONLINE</h3>
             </div>
 
             <div className='card'>
-              <span>Results Archive</span>
-              <h3>{resultsArchive.length}</h3>
+              <span>Archive</span>
+
+              <h3>
+                {resultsArchive.length}
+              </h3>
             </div>
           </section>
         </>
@@ -275,11 +447,13 @@ return () => clearInterval(interval)
       return renderIntelligence()
     }
 
+    if (activeTab === 'Alerts') {
+      return renderAlerts()
+    }
+
     return (
       <div className='card'>
-        <h2 style={{ marginBottom: '16px' }}>
-          {activeTab}
-        </h2>
+        <h2>{activeTab}</h2>
       </div>
     )
   }
@@ -290,7 +464,10 @@ return () => clearInterval(interval)
         <aside className='sidebar'>
           <div>
             <h1>APEX</h1>
-            <p>Racing Intelligence</p>
+
+            <p>
+              Racing Intelligence
+            </p>
           </div>
 
           <nav>
@@ -299,14 +476,21 @@ return () => clearInterval(interval)
               'Racecards',
               'Results',
               'Intelligence',
+              'Alerts',
               'Horses',
               'Upload',
-              'Analytics'
+              'Analytics',
             ].map((tab) => (
               <a
                 key={tab}
-                className={activeTab === tab ? 'active' : ''}
-                onClick={() => setActiveTab(tab)}
+                className={
+                  activeTab === tab
+                    ? 'active'
+                    : ''
+                }
+                onClick={() =>
+                  setActiveTab(tab)
+                }
               >
                 {tab}
               </a>
@@ -314,7 +498,9 @@ return () => clearInterval(interval)
           </nav>
         </aside>
 
-        <main className='main'>{renderContent()}</main>
+        <main className='main'>
+          {renderContent()}
+        </main>
       </div>
 
       {selectedRace && (
@@ -322,14 +508,17 @@ return () => clearInterval(interval)
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,0.85)',
+            background:
+              'rgba(0,0,0,0.85)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             padding: '40px',
-            zIndex: 999
+            zIndex: 999,
           }}
-          onClick={() => setSelectedRace(null)}
+          onClick={() =>
+            setSelectedRace(null)
+          }
         >
           <div
             style={{
@@ -340,22 +529,25 @@ return () => clearInterval(interval)
               width: '100%',
               maxWidth: '900px',
               maxHeight: '90vh',
-              overflowY: 'auto'
+              overflowY: 'auto',
             }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
             <div
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                justifyContent:
+                  'space-between',
+                alignItems: 'center',
               }}
             >
               <div>
                 <h2
                   style={{
                     fontSize: '36px',
-                    marginBottom: '12px'
+                    marginBottom: '12px',
                   }}
                 >
                   {selectedRace.race_name}
@@ -364,7 +556,7 @@ return () => clearInterval(interval)
                 <p
                   style={{
                     color: '#999',
-                    fontSize: '18px'
+                    fontSize: '18px',
                   }}
                 >
                   {selectedRace.course} ·{' '}
@@ -373,50 +565,102 @@ return () => clearInterval(interval)
               </div>
 
               <button
-                onClick={() => setSelectedRace(null)}
+                onClick={() =>
+                  setSelectedRace(null)
+                }
               >
                 Close
               </button>
             </div>
 
-            <div style={{ marginTop: '32px' }}>
-              <h3 style={{ marginBottom: '20px' }}>
+            <div
+              style={{
+                marginTop: '32px',
+              }}
+            >
+              <h3
+                style={{
+                  marginBottom: '20px',
+                }}
+              >
                 Runners
               </h3>
 
-              {(selectedRace.runners || []).map(
-                (runner, index) => (
+              {(
+                selectedRace.runners || []
+              ).map((runner, index) => (
+                <div
+                  key={index}
+                  style={{
+                    padding: '16px',
+                    borderBottom:
+                      '1px solid #222',
+                    display: 'flex',
+                    justifyContent:
+                      'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div>
+                    <h4
+                      style={{
+                        marginBottom: '8px',
+                      }}
+                    >
+                      {runner.horse}
+                    </h4>
+
+                    <p
+                      style={{
+                        color: '#999',
+                      }}
+                    >
+                      {runner.jockey} ·{' '}
+                      {runner.trainer}
+                    </p>
+
+                    <p
+                      style={{
+                        color: '#00ff99',
+                      }}
+                    >
+                      Confidence:{' '}
+                      {
+                        runner.aiProfile
+                          ?.confidence
+                      }
+                    </p>
+                  </div>
+
                   <div
-                    key={index}
                     style={{
-                      padding: '16px',
-                      borderBottom: '1px solid #222',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
+                      textAlign: 'right',
                     }}
                   >
-                    <div>
-                      <h4 style={{ marginBottom: '8px' }}>
-                        {runner.horse}
-                      </h4>
+                    <p>{runner.number}</p>
 
-                      <p style={{ color: '#999' }}>
-                        {runner.jockey} ·{' '}
-                        {runner.trainer}
-                      </p>
-                    </div>
+                    <p
+                      style={{
+                        color: '#ff8800',
+                      }}
+                    >
+                      {runner.form}
+                    </p>
 
-                    <div style={{ textAlign: 'right' }}>
-                      <p>{runner.number}</p>
-
-                      <p style={{ color: '#ff8800' }}>
-                        {runner.form}
-                      </p>
-                    </div>
+                    <p
+                      style={{
+                        color: '#00ccff',
+                      }}
+                    >
+                      {
+                        runner
+                          .bettingSignals?.[0]
+                          ?.type
+                      }
+                    </p>
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
           </div>
         </div>

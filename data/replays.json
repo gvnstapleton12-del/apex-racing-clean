@@ -647,6 +647,34 @@
         "course": "Carlisle",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -971,6 +999,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -1287,6 +1329,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.147Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
         "race": "Racing TV Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -1611,6 +1667,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -1931,6 +2001,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -2247,6 +2331,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.147Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.103Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.338Z",
         "race": "Racing TV Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -2583,6 +2681,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.104Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.339Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -2899,6 +3011,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.149Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.104Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.339Z",
         "race": "Watch Racing TV Live Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -3227,6 +3353,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.104Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.339Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -3543,6 +3683,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.149Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.104Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.340Z",
         "race": "Watch Racing TV Live Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -4186,6 +4340,34 @@
         "course": "Carlisle",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.340Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.340Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -4510,6 +4692,20 @@
         "course": "Carlisle",
         "note": "Wide Draw Challenge",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
       }
     ]
   },
@@ -4826,6 +5022,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.149Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
         "race": "Watch Racing TV Live Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -5150,6 +5360,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -5466,6 +5690,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.149Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
         "race": "Watch Racing TV Live Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -5790,6 +6028,20 @@
         "course": "Carlisle",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -6110,6 +6362,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -6426,6 +6692,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.149Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.105Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
         "race": "Follow Racing TV On X Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -6778,6 +7058,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.106Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.341Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -7098,6 +7392,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.151Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.106Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.342Z",
         "race": "racingtv.com Novice Stakes (GBB Race)",
         "course": "Carlisle",
         "note": "Wide Draw Challenge",
@@ -7438,6 +7746,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.106Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.342Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -7770,6 +8092,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.342Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -8098,6 +8434,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.342Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -8422,6 +8772,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.342Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -8738,6 +9102,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.154Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.342Z",
         "race": "Join Racing TV Now Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -9066,6 +9444,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.343Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -9390,6 +9782,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.344Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -9706,6 +10112,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.155Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.107Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.344Z",
         "race": "Every Race Live On Racing TV Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -10038,6 +10458,20 @@
         "course": "Carlisle",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.108Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.344Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -10358,6 +10792,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.108Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.344Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -10674,6 +11122,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.155Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.108Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.344Z",
         "race": "Every Race Live On Racing TV Handicap",
         "course": "Carlisle",
         "note": "Potential Bounce Back",
@@ -11006,6 +11468,20 @@
         "course": "Carlisle",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.108Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.344Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -11334,6 +11810,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.156Z",
+        "race": "Sporting Times Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.108Z",
+        "race": "Sporting Times Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.345Z",
         "race": "Sporting Times Handicap",
         "course": "Lingfield",
         "note": "Potential Bounce Back",
@@ -11694,6 +12184,20 @@
         "course": "Lingfield",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.109Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.345Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -12026,6 +12530,20 @@
         "course": "Lingfield",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.109Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.345Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -12350,6 +12868,20 @@
         "course": "Lingfield",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.109Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.346Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -12666,6 +13198,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.156Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.109Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.346Z",
         "race": "Visit Sri Lanka Handicap",
         "course": "Lingfield",
         "note": "Potential Bounce Back",
@@ -13046,6 +13592,20 @@
         "course": "Lingfield",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.110Z",
+        "race": "Sri Lanka Wonder Of Asia Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.347Z",
+        "race": "Sri Lanka Wonder Of Asia Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -13414,6 +13974,20 @@
         "course": "Lingfield",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.348Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -13734,6 +14308,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.159Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.348Z",
         "race": "Sporting Times Sprint Handicap",
         "course": "Lingfield",
         "note": "Potential Bounce Back",
@@ -14070,6 +14658,20 @@
         "course": "Redcar",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.348Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -14398,6 +15000,20 @@
         "course": "Redcar",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.349Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -14714,6 +15330,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.159Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.349Z",
         "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
         "course": "Redcar",
         "note": "Wide Draw Challenge",
@@ -15042,6 +15672,20 @@
         "course": "Redcar",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.349Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -15358,6 +16002,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.159Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.111Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.349Z",
         "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
         "course": "Redcar",
         "note": "Wide Draw Challenge",
@@ -15682,6 +16340,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.159Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.112Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.349Z",
         "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
         "course": "Redcar",
         "note": "Wide Draw Challenge",
@@ -16014,6 +16686,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.159Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.112Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.349Z",
         "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
         "course": "Redcar",
         "note": "Wide Draw Challenge",
@@ -16386,6 +17072,20 @@
         "course": "Redcar",
         "note": "Wide Draw Challenge",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
       }
     ]
   },
@@ -16710,6 +17410,20 @@
         "course": "Redcar",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -17026,6 +17740,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.161Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
         "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
         "course": "Redcar",
         "note": "Wide Draw Challenge",
@@ -17354,6 +18082,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -17670,6 +18412,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.161Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
         "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -17994,6 +18750,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -18314,6 +19084,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.161Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.113Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
         "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -18662,6 +19446,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "100% Racing TV Profits Returned To Racing Fillies' Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
+        "race": "100% Racing TV Profits Returned To Racing Fillies' Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -18990,6 +19788,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.351Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -19306,6 +20118,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.162Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
         "race": "Watch Racing TV In Stunning HD Handicap",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -19630,6 +20456,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -19950,6 +20790,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.162Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
         "race": "Watch Racing TV In Stunning HD Handicap",
         "course": "Redcar",
         "note": "Wide Draw Challenge",
@@ -20589,6 +21443,34 @@
         "course": "Redcar",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -20905,6 +21787,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.162Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
         "race": "Watch Racing TV In Stunning HD Handicap",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -21241,6 +22137,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -21557,6 +22467,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.162Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
         "race": "Watch Racing TV In Stunning HD Handicap",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -21885,6 +22809,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.114Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -22205,6 +23143,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.162Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
         "race": "racingtv.com Handicap (Div I)",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -22549,6 +23501,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -22865,6 +23831,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.164Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.352Z",
         "race": "racingtv.com Handicap (Div II)",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -23193,6 +24173,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.353Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -23513,6 +24507,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.164Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.353Z",
         "race": "racingtv.com Handicap (Div II)",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -23841,6 +24849,20 @@
         "course": "Redcar",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.353Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -24157,6 +25179,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.164Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.115Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.353Z",
         "race": "racingtv.com Handicap (Div II)",
         "course": "Redcar",
         "note": "Potential Bounce Back",
@@ -24481,6 +25517,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.164Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.116Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
         "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
         "course": "Windsor",
         "note": "Wide Draw Challenge",
@@ -24817,6 +25867,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.164Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.116Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
         "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
         "course": "Windsor",
         "note": "Wide Draw Challenge",
@@ -25165,6 +26229,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.117Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -25493,6 +26571,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -25809,6 +26901,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.165Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
         "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -26448,6 +27554,34 @@
         "course": "Windsor",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.354Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -26764,6 +27898,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.165Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.355Z",
         "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -27096,6 +28244,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.355Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -27420,6 +28582,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.165Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.355Z",
         "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -27752,6 +28928,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.355Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -28068,6 +29258,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.166Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.118Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
         "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -28404,6 +29608,20 @@
         "course": "Windsor",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -28728,6 +29946,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -29044,6 +30276,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.166Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
         "race": "Track Radio On Digital & DAB Handicap",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -29683,6 +30929,34 @@
         "course": "Windsor",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -30007,6 +31281,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.166Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
         "race": "Track Radio On Digital & DAB Handicap",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -30347,6 +31635,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.119Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -30671,6 +31973,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.120Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -30987,6 +32303,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.167Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.120Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
         "race": "Fitzdares Telephone & Text Betting Handicap",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -31315,6 +32645,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.167Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.120Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
         "race": "Fitzdares Telephone & Text Betting Handicap",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -31655,6 +32999,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.120Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.356Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -31971,6 +33329,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.168Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.120Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
         "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -32295,6 +33667,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.121Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -32615,6 +34001,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.121Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -32931,6 +34331,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.168Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.121Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
         "race": "Free Race Replays On attheraces.com Handicap",
         "course": "Windsor",
         "note": "Wide Draw Challenge",
@@ -33259,6 +34673,20 @@
         "course": "Windsor",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.121Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -33579,6 +35007,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.168Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.121Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
         "race": "Free Race Replays On attheraces.com Handicap",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -33923,6 +35365,20 @@
         "course": "Windsor",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.122Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -34239,6 +35695,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.169Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.122Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
         "race": "Free Race Replays On attheraces.com Handicap",
         "course": "Windsor",
         "note": "Potential Bounce Back",
@@ -34567,6 +36037,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.170Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.123Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.357Z",
         "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
@@ -34907,6 +36391,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.171Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.123Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.358Z",
         "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
@@ -35255,6 +36753,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.171Z",
+        "race": "attheraces.com/marketmovers Restricted Novice Stakes (Bands B-D) (GBB Race)",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.124Z",
+        "race": "attheraces.com/marketmovers Restricted Novice Stakes (Bands B-D) (GBB Race)",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.358Z",
         "race": "attheraces.com/marketmovers Restricted Novice Stakes (Bands B-D) (GBB Race)",
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
@@ -35635,6 +37147,20 @@
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.125Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.359Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -35963,6 +37489,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.173Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.125Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.359Z",
         "race": "Country & Western Raceday 28th June Handicap",
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
@@ -36299,6 +37839,20 @@
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.125Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.359Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -36615,6 +38169,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.174Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.126Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.359Z",
         "race": "Cavani Tailored Champion Handicap",
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
@@ -36943,6 +38511,20 @@
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.126Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.359Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -37263,6 +38845,20 @@
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.126Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -37579,6 +39175,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.175Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.126Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
         "race": "Cavani Tailored Champion Handicap",
         "course": "Wolverhampton (AW)",
         "note": "Potential Bounce Back",
@@ -37947,6 +39557,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.127Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -38263,6 +39887,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.175Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.127Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
         "race": "Roscommon Claiming Maiden",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -38587,6 +40225,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.127Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -38903,6 +40555,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.176Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.127Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
         "race": "Roscommon Claiming Maiden",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -39227,6 +40893,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.128Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.360Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -39543,6 +41223,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.176Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.128Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Roscommon Claiming Maiden",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -39867,6 +41561,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.176Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.128Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Roscommon Claiming Maiden",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -40219,6 +41927,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.176Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.128Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Knockcroghery Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -40858,6 +42580,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.128Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.128Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -41493,6 +43243,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -41817,6 +43595,20 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -42137,6 +43929,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -42453,6 +44259,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.177Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Knockcroghery Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -43092,6 +44912,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -43408,6 +45256,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.177Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Knockcroghery Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -43732,6 +45594,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -44052,6 +45928,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.178Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Knockcroghery Handicap",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -44691,6 +46581,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -45326,6 +47244,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.129Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -45650,6 +47596,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -45966,6 +47926,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.180Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.361Z",
         "race": "Knockcroghery Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -46605,6 +48579,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.362Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.362Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -46925,6 +48927,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.180Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.362Z",
         "race": "Michael Tiger Lyons Memorial Maiden",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -47568,6 +49584,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -47888,6 +49932,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -48204,6 +50262,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.180Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.130Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
         "race": "Michael Tiger Lyons Memorial Maiden",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -48532,6 +50604,20 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -48848,6 +50934,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
         "race": "Michael Tiger Lyons Memorial Maiden",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -49176,6 +51276,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
         "race": "Michael Tiger Lyons Memorial Maiden",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -49823,6 +51937,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -50458,6 +52600,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -50778,6 +52948,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.131Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
         "race": "Connolly's RED MILLS Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -51114,6 +53298,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
       }
     ]
   },
@@ -51430,6 +53628,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
         "race": "Connolly's RED MILLS Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -51754,6 +53966,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -52070,6 +54296,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
         "race": "Connolly's RED MILLS Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -52394,6 +54634,20 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.363Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -52714,6 +54968,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
       }
     ]
   },
@@ -53030,6 +55298,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.132Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
         "race": "Connolly's RED MILLS Handicap",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -53358,6 +55640,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.181Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
         "race": "Abbey Hotel Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -54009,6 +56305,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -54325,6 +56649,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.182Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
         "race": "Abbey Hotel Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -54964,6 +57302,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.364Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -55288,6 +57654,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -55608,6 +57988,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.133Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -55924,6 +58318,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.182Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
         "race": "Abbey Hotel Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -56563,6 +58971,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
       }
     ]
   },
@@ -57198,6 +59634,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -57514,6 +59978,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.183Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
         "race": "Racing Again Here On June 8th Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -58165,6 +60643,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -58481,6 +60987,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.183Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
         "race": "Racing Again Here On June 8th Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -58805,6 +61325,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.134Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -59125,6 +61659,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.183Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
         "race": "Racing Again Here On June 8th Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -59764,6 +62312,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -60080,6 +62656,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.183Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
         "race": "Racing Again Here On June 8th Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -60404,6 +62994,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -60720,6 +63324,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.183Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -61044,6 +63662,20 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.365Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -61360,6 +63992,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.184Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -61684,6 +64330,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -62000,6 +64660,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.184Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.135Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -62639,6 +65313,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -63274,6 +65976,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
       }
     ]
   },
@@ -63590,6 +66320,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.184Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -63914,6 +66658,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
       }
     ]
   },
@@ -64230,6 +66988,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.184Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -64869,6 +67641,34 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T16:00:36.366Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
       }
     ]
   },
@@ -65185,6 +67985,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.184Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -65509,6 +68323,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.136Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -65825,6 +68653,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.185Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.137Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Potential Bounce Back",
@@ -66149,6 +68991,20 @@
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
         "confidence": 60
+      },
+      {
+        "date": "2026-05-18T15:59:36.137Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
       }
     ]
   },
@@ -66469,6 +69325,20 @@
         "course": "Roscommon",
         "note": "Potential Bounce Back",
         "confidence": 65
+      },
+      {
+        "date": "2026-05-18T15:59:36.137Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
       }
     ]
   },
@@ -66785,6 +69655,20 @@
       },
       {
         "date": "2026-05-18T15:57:18.185Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.137Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
@@ -67420,6 +70304,34 @@
       },
       {
         "date": "2026-05-18T15:57:18.185Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.137Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T15:59:36.137Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T16:00:36.367Z",
         "race": "Roscommon Handicap",
         "course": "Roscommon",
         "note": "Wide Draw Challenge",
