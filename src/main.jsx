@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
+import { socket } from './socket'
 
 function App() {
   const [activeTab, setActiveTab] =
@@ -90,11 +91,21 @@ function App() {
 
     fetchMeetings()
 
-    const interval = setInterval(() => {
-      fetchMeetings()
-    }, 30000)
+    socket.on('live-update', (data) => {
+      setRacecards(data.racecards || [])
+    })
 
-    return () => clearInterval(interval)
+    socket.on('new-alert', (alert) => {
+      setAlerts((prev) => [
+        alert,
+        ...prev,
+      ])
+    })
+
+    return () => {
+      socket.off('live-update')
+      socket.off('new-alert')
+    }
   }, [])
 
   const renderRacecards = () => {
@@ -502,169 +513,6 @@ function App() {
           {renderContent()}
         </main>
       </div>
-
-      {selectedRace && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background:
-              'rgba(0,0,0,0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '40px',
-            zIndex: 999,
-          }}
-          onClick={() =>
-            setSelectedRace(null)
-          }
-        >
-          <div
-            style={{
-              background: '#111',
-              border: '1px solid #222',
-              borderRadius: '24px',
-              padding: '32px',
-              width: '100%',
-              maxWidth: '900px',
-              maxHeight: '90vh',
-              overflowY: 'auto',
-            }}
-            onClick={(e) =>
-              e.stopPropagation()
-            }
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent:
-                  'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <div>
-                <h2
-                  style={{
-                    fontSize: '36px',
-                    marginBottom: '12px',
-                  }}
-                >
-                  {selectedRace.race_name}
-                </h2>
-
-                <p
-                  style={{
-                    color: '#999',
-                    fontSize: '18px',
-                  }}
-                >
-                  {selectedRace.course} ·{' '}
-                  {selectedRace.off_time}
-                </p>
-              </div>
-
-              <button
-                onClick={() =>
-                  setSelectedRace(null)
-                }
-              >
-                Close
-              </button>
-            </div>
-
-            <div
-              style={{
-                marginTop: '32px',
-              }}
-            >
-              <h3
-                style={{
-                  marginBottom: '20px',
-                }}
-              >
-                Runners
-              </h3>
-
-              {(
-                selectedRace.runners || []
-              ).map((runner, index) => (
-                <div
-                  key={index}
-                  style={{
-                    padding: '16px',
-                    borderBottom:
-                      '1px solid #222',
-                    display: 'flex',
-                    justifyContent:
-                      'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div>
-                    <h4
-                      style={{
-                        marginBottom: '8px',
-                      }}
-                    >
-                      {runner.horse}
-                    </h4>
-
-                    <p
-                      style={{
-                        color: '#999',
-                      }}
-                    >
-                      {runner.jockey} ·{' '}
-                      {runner.trainer}
-                    </p>
-
-                    <p
-                      style={{
-                        color: '#00ff99',
-                      }}
-                    >
-                      Confidence:{' '}
-                      {
-                        runner.aiProfile
-                          ?.confidence
-                      }
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      textAlign: 'right',
-                    }}
-                  >
-                    <p>{runner.number}</p>
-
-                    <p
-                      style={{
-                        color: '#ff8800',
-                      }}
-                    >
-                      {runner.form}
-                    </p>
-
-                    <p
-                      style={{
-                        color: '#00ccff',
-                      }}
-                    >
-                      {
-                        runner
-                          .bettingSignals?.[0]
-                          ?.type
-                      }
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </>
   )
 }
