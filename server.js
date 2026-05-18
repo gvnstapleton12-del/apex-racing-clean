@@ -40,6 +40,14 @@ const MARKET_DB_PATH = path.join(process.cwd(), 'data', 'market.json')
 const ALERT_DB_PATH = path.join(process.cwd(), 'data', 'alerts.json')
 const LEARNING_DB_PATH = path.join(process.cwd(), 'data', 'learning.json')
 
+function normalizeHorseName(name = '') {
+  return String(name)
+    .toLowerCase()
+    .replace(/\(.*?\)/g, '')
+    .replace(/[^a-z0-9]/g, '')
+    .trim()
+}
+
 function loadDatabase(filePath) {
   try {
     if (!fs.existsSync(filePath)) {
@@ -311,9 +319,20 @@ app.post('/api/upload-results', (req, res) => {
       const runners = race.runners || []
 
       runners.forEach((runner) => {
+        const normalizedRunner = normalizeHorseName(
+          runner.horse
+        )
+
         const existing = LEARNING_DATABASE.records?.find(
-          (record) =>
-            record.horse === runner.horse
+          (record) => {
+            const normalizedRecord = normalizeHorseName(
+              record.horse
+            )
+
+            return (
+              normalizedRecord === normalizedRunner
+            )
+          }
         )
 
         if (existing) {
@@ -322,6 +341,9 @@ app.post('/api/upload-results', (req, res) => {
           )
 
           existing.resultProcessed = true
+
+          existing.processedAt =
+            new Date().toISOString()
 
           updatedRecords += 1
         }
