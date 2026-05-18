@@ -26,12 +26,12 @@ function App() {
     async function fetchMeetings() {
       try {
         const response = await fetch(
-          'http://localhost:3000/api/live-state'
+          '/api/live-state'
         )
 
         const alertsResponse =
           await fetch(
-            'http://localhost:3000/api/alerts'
+            '/api/alerts'
           )
 
         const data = await response.json()
