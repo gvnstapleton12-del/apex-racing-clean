@@ -21,7 +21,6 @@ import { ingestRaceResults } from './src/lib/resultEngine.js'
 dotenv.config()
 
 const app = express()
-
 const server = http.createServer(app)
 
 const io = new Server(server, {
@@ -34,6 +33,9 @@ app.use(cors())
 app.use(express.json({ limit: '50mb' }))
 
 const PORT = process.env.PORT || 3000
+
+const MIN_CONFIDENCE = 75
+const VALID_MOVEMENTS = ['STEAMER', 'STRONG_STEAMER']
 
 const HORSE_DB_PATH = path.join(process.cwd(), 'data', 'horses.json')
 const MARKET_DB_PATH = path.join(process.cwd(), 'data', 'market.json')
@@ -48,15 +50,33 @@ function normalizeHorseName(name = '') {
     .trim()
 }
 
+function shouldTrackBet(aiProfile, marketMovement) {
+  const confidence = Number(aiProfile?.confidence || 0)
+
+  if (confidence < MIN_CONFIDENCE) {
+    return false
+  }
+
+  if (
+    !VALID_MOVEMENTS.includes(
+      marketMovement?.movement
+    )
+  ) {
+    return false
+  }
+
+  return true
+}
+
 function loadDatabase(filePath) {
   try {
     if (!fs.existsSync(filePath)) {
       return {}
     }
 
-    const raw = fs.readFileSync(filePath)
-
-    return JSON.parse(raw)
+    return JSON.parse(
+      fs.readFileSync(filePath)
+    )
   } catch (error) {
     console.error('Failed to load DB:', error)
     return {}
@@ -118,6 +138,16 @@ function createAlert(
 function storeLearningRecord(record) {
   if (!LEARNING_DATABASE.records) {
     LEARNING_DATABASE.records = []
+  }
+
+  const duplicate = LEARNING_DATABASE.records.find(
+    (existing) =>
+      existing.horse === record.horse &&
+      existing.timestamp === record.timestamp
+  )
+
+  if (duplicate) {
+    return
   }
 
   LEARNING_DATABASE.records.unshift(record)
@@ -186,6 +216,33 @@ async function fetchLiveMeetings() {
           updatedAt: new Date().toISOString(),
         }
 
+        const bettingSignals = generateSignals({
+          ...runner,
+          aiProfile,
+          marketMovement,
+        })
+
+        if (
+          shouldTrackBet(
+            aiProfile,
+            marketMovement
+          )
+        ) {
+          const learningRecord = buildLearningRecord({
+            horse: runner.horse,
+            aiConfidence: aiProfile.confidence,
+            signal:
+              bettingSignals?.[0]?.type ||
+              'NONE',
+            spOdds: runner.odds || 0,
+            position: 0,
+            marketMovement:
+              marketMovement.movement,
+          })
+
+          storeLearningRecord(learningRecord)
+        }
+
         if (marketMovement.alert) {
           createAlert(
             horseId,
@@ -195,23 +252,6 @@ async function fetchLiveMeetings() {
             marketMovement.alert.severity
           )
         }
-
-        const bettingSignals = generateSignals({
-          ...runner,
-          aiProfile,
-          marketMovement,
-        })
-
-        const learningRecord = buildLearningRecord({
-          horse: runner.horse,
-          aiConfidence: aiProfile.confidence,
-          signal: bettingSignals?.[0]?.type || 'NONE',
-          spOdds: runner.odds || 0,
-          position: 0,
-          marketMovement: marketMovement.movement,
-        })
-
-        storeLearningRecord(learningRecord)
 
         return {
           ...runner,
@@ -253,7 +293,7 @@ async function fetchLiveMeetings() {
 
     console.log(`Broadcasted ${processed.length} races`)
     console.log(
-      `Learning records: ${LEARNING_DATABASE.records.length}`
+      `Tracked bets: ${LEARNING_DATABASE.records.length}`
     )
   } catch (error) {
     console.error(error)
@@ -261,12 +301,10 @@ async function fetchLiveMeetings() {
 }
 
 fetchLiveMeetings()
-
 setInterval(fetchLiveMeetings, 60000)
 
 io.on('connection', (socket) => {
   console.log('Client connected')
-
   socket.emit('live-update', LIVE_STATE)
 })
 
@@ -341,7 +379,6 @@ app.post('/api/upload-results', (req, res) => {
           )
 
           existing.resultProcessed = true
-
           existing.processedAt =
             new Date().toISOString()
 
