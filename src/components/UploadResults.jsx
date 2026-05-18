@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function UploadResults() {
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const [stats, setStats] = useState(null)
+
+  const inputRef = useRef(null)
 
   useEffect(() => {
     function preventDefaults(e) {
@@ -34,8 +36,6 @@ export default function UploadResults() {
 
       const parsed = JSON.parse(text)
 
-      console.log('Parsed upload:', parsed)
-
       const response = await fetch(
         'http://localhost:3000/api/upload-results',
         {
@@ -50,8 +50,6 @@ export default function UploadResults() {
       )
 
       const data = await response.json()
-
-      console.log('Upload response:', data)
 
       setStats(data)
 
@@ -75,8 +73,6 @@ export default function UploadResults() {
 
     const file = event.dataTransfer.files[0]
 
-    console.log('Dropped file:', file)
-
     handleFile(file)
   }
 
@@ -85,19 +81,34 @@ export default function UploadResults() {
     event.stopPropagation()
   }
 
+  function onFileChange(event) {
+    const file = event.target.files?.[0]
+
+    handleFile(file)
+  }
+
   return (
     <div className='p-6'>
       <div
         onDragOver={onDragOver}
         onDrop={onDrop}
-        className='border-2 border-dashed rounded-2xl p-12 text-center bg-zinc-900 border-zinc-700'
+        onClick={() => inputRef.current?.click()}
+        className='border-2 border-dashed rounded-2xl p-12 text-center bg-zinc-900 border-zinc-700 cursor-pointer hover:border-orange-500 transition'
       >
+        <input
+          ref={inputRef}
+          type='file'
+          accept='.json'
+          onChange={onFileChange}
+          className='hidden'
+        />
+
         <h2 className='text-2xl font-bold mb-4'>
           Upload Official Results
         </h2>
 
         <p className='text-zinc-400 mb-6'>
-          Drag & drop results JSON files here
+          Drag & drop OR click to upload results JSON
         </p>
 
         {uploading && (
@@ -116,40 +127,28 @@ export default function UploadResults() {
       {stats && (
         <div className='mt-8 grid grid-cols-2 md:grid-cols-4 gap-4'>
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>
-              Races
-            </p>
-
+            <p className='text-zinc-400 text-sm'>Races</p>
             <h3 className='text-2xl font-bold'>
               {stats.processedRaces}
             </h3>
           </div>
 
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>
-              Results
-            </p>
-
+            <p className='text-zinc-400 text-sm'>Results</p>
             <h3 className='text-2xl font-bold'>
               {stats.updatedRecords}
             </h3>
           </div>
 
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>
-              ROI
-            </p>
-
+            <p className='text-zinc-400 text-sm'>ROI</p>
             <h3 className='text-2xl font-bold'>
               {stats.analytics?.roi || 0}%
             </h3>
           </div>
 
           <div className='bg-zinc-900 p-4 rounded-xl'>
-            <p className='text-zinc-400 text-sm'>
-              Strike Rate
-            </p>
-
+            <p className='text-zinc-400 text-sm'>Strike Rate</p>
             <h3 className='text-2xl font-bold'>
               {stats.analytics?.strikeRate || 0}%
             </h3>
