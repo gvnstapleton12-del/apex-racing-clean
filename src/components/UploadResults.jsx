@@ -1,9 +1,38 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function UploadResults() {
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    function preventDefaults(e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    window.addEventListener(
+      'dragover',
+      preventDefaults
+    )
+
+    window.addEventListener(
+      'drop',
+      preventDefaults
+    )
+
+    return () => {
+      window.removeEventListener(
+        'dragover',
+        preventDefaults
+      )
+
+      window.removeEventListener(
+        'drop',
+        preventDefaults
+      )
+    }
+  }, [])
 
   async function handleFile(file) {
     if (!file) return
