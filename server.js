@@ -101,7 +101,11 @@ function saveDatabase(filePath, database) {
 const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
 const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
 const ALERT_DATABASE = loadDatabase(ALERT_DB_PATH)
-const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)
+
+const LEARNING_DATABASE = {
+  records: [],
+  analytics: {},
+}
 
 const LIVE_STATE = {
   racecards: [],
@@ -240,7 +244,8 @@ async function fetchLiveMeetings() {
               marketMovement.movement,
           })
 
-          storeLearningRecord(learningRecord)
+          // TEMP DISABLED TO STOP DUPLICATE AUTO-INGESTION
+          // storeLearningRecord(learningRecord)
         }
 
         if (marketMovement.alert) {
@@ -270,24 +275,12 @@ async function fetchLiveMeetings() {
       }
     })
 
-    const ingestion = ingestRaceResults(
-      processed,
-      LEARNING_DATABASE
-    )
-
-    LEARNING_DATABASE.records = ingestion.learningDatabase.records
-
-    LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
-      LEARNING_DATABASE.records
-    )
-
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
 
     saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
     saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
-    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
 
     io.emit('live-update', LIVE_STATE)
 
