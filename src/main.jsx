@@ -12,7 +12,9 @@ function App() {
   useEffect(() => {
     async function fetchMeetings() {
       try {
-        const response = await fetch('/api/live-meetings')
+      const response = await fetch(
+  'http://localhost:3000/api/live-state'
+)
         const data = await response.json()
 
         const liveRaces = data.racecards || []
@@ -44,7 +46,11 @@ function App() {
       }
     }
 
-    fetchMeetings()
+    const interval = setInterval(() => {
+  fetchMeetings()
+}, 30000)
+
+return () => clearInterval(interval)
   }, [])
 
   const renderRacecards = () => {
