@@ -1,158 +1,97 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import pg from 'pg';
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
 
-const { Pool } = pg;
+dotenv.config()
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const app = express()
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL
-    ? {
-        rejectUnauthorized: false
+app.use(cors())
+app.use(express.json())
+
+const PORT = process.env.PORT || 3000
+
+const LIVE_STATE = {
+  racecards: [],
+  updatedAt: null,
+  loading: true,
+}
+
+async function fetchLiveMeetings() {
+  try {
+    console.log('Refreshing live meetings...')
+
+    const response = await fetch(
+      `https://api.theracingapi.com/v1/racecards/free`,
+      {
+        headers: {
+          Authorization:
+            'Basic ' +
+            Buffer.from(
+              `${process.env.RACING_API_USERNAME}:${process.env.RACING_API_PASSWORD}`
+            ).toString('base64'),
+        },
       }
-    : false
-});
-
-async function initializeDatabase() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS tips (
-      id SERIAL PRIMARY KEY,
-      horse TEXT NOT NULL,
-      track TEXT NOT NULL,
-      race_time TEXT NOT NULL,
-      odds TEXT NOT NULL,
-      confidence TEXT NOT NULL
     )
-  `);
 
-  const existingTips = await pool.query('SELECT COUNT(*) FROM tips');
+    const data = await response.json()
 
-  if (Number(existingTips.rows[0].count) === 0) {
-    await pool.query(`
-      INSERT INTO tips (horse, track, race_time, odds, confidence)
-      VALUES
-      ('Midnight Runner', 'Ascot', '15:30', '5/1', 'High'),
-      ('Golden Hooves', 'Cheltenham', '14:10', '7/2', 'Medium'),
-      ('Storm Charger', 'Aintree', '16:45', '10/1', 'High')
-    `);
+    const racecards = data.racecards || []
+
+    const processed = racecards.map((race) => {
+      const runners = race.runners || []
+
+      const scoredRunners = runners.map((runner) => {
+        let score = 50
+
+        if (runner.form?.includes('1')) score += 15
+        if (runner.form?.includes('2')) score += 10
+        if (runner.odds && parseFloat(runner.odds) < 6)
+          score += 15
+
+        return {
+          ...runner,
+          score,
+          replayTriggers:
+            score >= 80
+              ? ['Strong Form Profile']
+              : [],
+        }
+      })
+
+      return {
+        ...race,
+        runners: scoredRunners.sort(
+          (a, b) => b.score - a.score
+        ),
+      }
+    })
+
+    LIVE_STATE.racecards = processed
+    LIVE_STATE.updatedAt =
+      new Date().toISOString()
+    LIVE_STATE.loading = false
+
+    console.log(
+      `Loaded ${processed.length} races`
+    )
+  } catch (error) {
+    console.error('Live engine failed:', error)
   }
 }
 
-app.use(cors());
-app.use(express.json());
+await fetchLiveMeetings()
 
-app.get('/', (_req, res) => {
-  res.json({
-    status: 'ok',
-    app: 'Horse Racing Tipster API'
-  });
-});
+setInterval(async () => {
+  await fetchLiveMeetings()
+}, 60000)
 
-app.get('/api/health', async (_req, res) => {
-  try {
-    const result = await pool.query('SELECT NOW()');
+app.get('/api/live-state', (_req, res) => {
+  res.json(LIVE_STATE)
+})
 
-    res.json({
-      healthy: true,
-      database: 'connected',
-      time: result.rows[0]
-    });
-  } catch (error) {
-    res.status(500).json({
-      healthy: false,
-      error: error.message
-    });
-  }
-});
-
-app.get('/api/tips', async (_req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM tips ORDER BY id ASC');
-
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({
-      error: error.message
-    });
-  }
-});
-
-app.get('/api/live-meetings', async (_req, res) => {
-  try {
-    const response = await fetch('https://api.theracingapi.com/v1/racecards/free', {
-      headers: {
-        Authorization:
-          'Basic ' +
-          Buffer.from(
-            `${process.env.RACING_API_USERNAME}:${process.env.RACING_API_PASSWORD}`
-          ).toString('base64')
-      }
-    });
-
-    const data = await response.json();
-
-    const ukIreMeetings = data.racecards.filter(
-      (race) => race.region === 'GB' || race.region === 'IRE'
-    );
-
-    res.json({
-      racecards: ukIreMeetings
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'Failed to load Racing API meetings',
-      details: error.message
-    });
-  }
-});
-
-app.get('/api/racecards', (_req, res) => {
-  res.json([
-    {
-      id: 1,
-      course: 'Ascot',
-      offTime: '15:30',
-      raceName: 'Royal Sprint Handicap',
-      runners: 12
-    },
-    {
-      id: 2,
-      course: 'Cheltenham',
-      offTime: '14:10',
-      raceName: 'Festival Chase',
-      runners: 9
-    }
-  ]);
-});
-
-app.get('/api/dashboard/summary', (_req, res) => {
-  res.json({
-    totalTips: 3,
-    highConfidence: 2,
-    meetingsToday: 5,
-    roi: '+18%'
-  });
-});
-
-app.get('/api/racecards/:id/analysis', (req, res) => {
-  res.json({
-    raceId: req.params.id,
-    topPick: 'Midnight Runner',
-    confidence: 'High',
-    reasoning: 'Strong recent form and ideal ground conditions.'
-  });
-});
-
-initializeDatabase()
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Database initialization failed:', error);
-  });
+app.listen(PORT, () => {
+  console.log(
+    `APEX live engine running on port ${PORT}`
+  )
+})
