@@ -19,42 +19,71 @@ const HORSE_DB_PATH = path.join(
   'horses.json'
 )
 
-function loadHorseDatabase() {
+const REPLAY_DB_PATH = path.join(
+  process.cwd(),
+  'data',
+  'replays.json'
+)
+
+function loadDatabase(filePath) {
   try {
-    if (!fs.existsSync(HORSE_DB_PATH)) {
+    if (!fs.existsSync(filePath)) {
       return {}
     }
 
-    const raw = fs.readFileSync(HORSE_DB_PATH)
+    const raw = fs.readFileSync(filePath)
 
     return JSON.parse(raw)
   } catch (error) {
-    console.error('Failed to load horse DB:', error)
+    console.error('Failed to load DB:', error)
     return {}
   }
 }
 
-function saveHorseDatabase(database) {
+function saveDatabase(filePath, database) {
   try {
-    fs.mkdirSync(path.dirname(HORSE_DB_PATH), {
+    fs.mkdirSync(path.dirname(filePath), {
       recursive: true,
     })
 
     fs.writeFileSync(
-      HORSE_DB_PATH,
+      filePath,
       JSON.stringify(database, null, 2)
     )
   } catch (error) {
-    console.error('Failed to save horse DB:', error)
+    console.error('Failed to save DB:', error)
   }
 }
 
-const HORSE_DATABASE = loadHorseDatabase()
+const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
+const REPLAY_DATABASE = loadDatabase(REPLAY_DB_PATH)
 
 const LIVE_STATE = {
   racecards: [],
   updatedAt: null,
   loading: true,
+}
+
+function generateReplayFlags(runner, score) {
+  const flags = []
+
+  if (score >= 80) {
+    flags.push('Strong Finish')
+  }
+
+  if (runner.form?.includes('0')) {
+    flags.push('Potential Bounce Back')
+  }
+
+  if (runner.odds && parseFloat(runner.odds) > 10) {
+    flags.push('Hidden Value Runner')
+  }
+
+  if (runner.draw && Number(runner.draw) > 10) {
+    flags.push('Wide Draw Challenge')
+  }
+
+  return flags
 }
 
 async function fetchLiveMeetings() {
@@ -86,11 +115,18 @@ async function fetchLiveMeetings() {
 
         if (runner.form?.includes('1')) score += 15
         if (runner.form?.includes('2')) score += 10
+
         if (runner.odds && parseFloat(runner.odds) < 6) {
           score += 15
         }
 
-        const horseId = runner.horse_id || runner.horse
+        const replayFlags = generateReplayFlags(
+          runner,
+          score
+        )
+
+        const horseId =
+          runner.horse_id || runner.horse
 
         if (!HORSE_DATABASE[horseId]) {
           HORSE_DATABASE[horseId] = {
@@ -105,6 +141,13 @@ async function fetchLiveMeetings() {
             trainer: runner.trainer,
             jockey: runner.jockey,
             marketSupport: 0,
+          }
+        }
+
+        if (!REPLAY_DATABASE[horseId]) {
+          REPLAY_DATABASE[horseId] = {
+            horse: runner.horse,
+            replayNotes: [],
           }
         }
 
@@ -126,29 +169,34 @@ async function fetchLiveMeetings() {
           ) / profile.runs
         )
 
-        if (!profile.courses.includes(race.course)) {
+        if (
+          !profile.courses.includes(race.course)
+        ) {
           profile.courses.push(race.course)
         }
 
-        if (score >= 80) {
+        replayFlags.forEach((flag) => {
           if (
-            !profile.replayFlags.includes(
-              'High Confidence Profile'
-            )
+            !profile.replayFlags.includes(flag)
           ) {
-            profile.replayFlags.push(
-              'High Confidence Profile'
-            )
+            profile.replayFlags.push(flag)
           }
-        }
+
+          REPLAY_DATABASE[
+            horseId
+          ].replayNotes.push({
+            date: new Date().toISOString(),
+            race: race.race_name,
+            course: race.course,
+            note: flag,
+            confidence: score,
+          })
+        })
 
         return {
           ...runner,
           score,
-          replayTriggers:
-            score >= 80
-              ? ['Strong Form Profile']
-              : [],
+          replayTriggers: replayFlags,
           horseProfile: profile,
         }
       })
@@ -166,14 +214,30 @@ async function fetchLiveMeetings() {
       new Date().toISOString()
     LIVE_STATE.loading = false
 
-    saveHorseDatabase(HORSE_DATABASE)
+    saveDatabase(
+      HORSE_DB_PATH,
+      HORSE_DATABASE
+    )
+
+    saveDatabase(
+      REPLAY_DB_PATH,
+      REPLAY_DATABASE
+    )
 
     console.log(
       `Loaded ${processed.length} races`
     )
 
     console.log(
-      `Tracked ${Object.keys(HORSE_DATABASE).length} horses`
+      `Tracked ${
+        Object.keys(HORSE_DATABASE).length
+      } horses`
+    )
+
+    console.log(
+      `Replay intelligence active for ${
+        Object.keys(REPLAY_DATABASE).length
+      } horses`
     )
   } catch (error) {
     console.error('Live engine failed:', error)
@@ -192,6 +256,10 @@ app.get('/api/live-state', (_req, res) => {
 
 app.get('/api/horses', (_req, res) => {
   res.json(HORSE_DATABASE)
+})
+
+app.get('/api/replay-flags', (_req, res) => {
+  res.json(REPLAY_DATABASE)
 })
 
 app.listen(PORT, () => {
