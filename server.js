@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
+import { generateConfidence } from './src/lib/confidenceEngine.js'
 
 dotenv.config()
 
@@ -62,9 +63,7 @@ function saveDatabase(filePath, database) {
 }
 
 const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
-
 const REPLAY_DATABASE = loadDatabase(REPLAY_DB_PATH)
-
 const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
 
 const LIVE_STATE = {
@@ -135,202 +134,196 @@ async function fetchLiveMeetings() {
     const processed = racecards.map((race) => {
       const runners = race.runners || []
 
-      const scoredRunners = runners.map(
-        (runner) => {
-          let score = 50
+      const scoredRunners = runners.map((runner) => {
+        let score = 50
 
-          if (runner.form?.includes('1'))
-            score += 15
+        if (runner.form?.includes('1')) score += 15
+        if (runner.form?.includes('2')) score += 10
 
-          if (runner.form?.includes('2'))
-            score += 10
+        if (
+          runner.odds &&
+          parseFloat(runner.odds) < 6
+        ) {
+          score += 15
+        }
 
-          if (
-            runner.odds &&
-            parseFloat(runner.odds) < 6
-          ) {
-            score += 15
+        const replayFlags = generateReplayFlags(
+          runner,
+          score
+        )
+
+        const horseId =
+          runner.horse_id || runner.horse
+
+        const currentOdds = parseOdds(
+          runner.odds
+        )
+
+        if (!HORSE_DATABASE[horseId]) {
+          HORSE_DATABASE[horseId] = {
+            horse: runner.horse,
+            runs: 0,
+            wins: 0,
+            averageScore: 0,
+            bestScore: 0,
+            replayFlags: [],
+            courses: [],
+            notes: [],
+            trainer: runner.trainer,
+            jockey: runner.jockey,
+            marketSupport: 0,
           }
+        }
 
-          const replayFlags =
-            generateReplayFlags(
-              runner,
-              score
-            )
-
-          const horseId =
-            runner.horse_id || runner.horse
-
-          const currentOdds = parseOdds(
-            runner.odds
-          )
-
-          if (!HORSE_DATABASE[horseId]) {
-            HORSE_DATABASE[horseId] = {
-              horse: runner.horse,
-              runs: 0,
-              wins: 0,
-              averageScore: 0,
-              bestScore: 0,
-              replayFlags: [],
-              courses: [],
-              notes: [],
-              trainer: runner.trainer,
-              jockey: runner.jockey,
-              marketSupport: 0,
-            }
+        if (!REPLAY_DATABASE[horseId]) {
+          REPLAY_DATABASE[horseId] = {
+            horse: runner.horse,
+            replayNotes: [],
           }
+        }
 
-          if (!REPLAY_DATABASE[horseId]) {
-            REPLAY_DATABASE[horseId] = {
-              horse: runner.horse,
-              replayNotes: [],
-            }
+        if (!MARKET_DATABASE[horseId]) {
+          MARKET_DATABASE[horseId] = {
+            horse: runner.horse,
+            openingOdds: currentOdds,
+            currentOdds,
+            lowestOdds: currentOdds,
+            highestOdds: currentOdds,
+            movements: [],
+            steamCount: 0,
+            driftCount: 0,
+            marketSignals: [],
           }
+        }
 
-          if (!MARKET_DATABASE[horseId]) {
-            MARKET_DATABASE[horseId] = {
-              horse: runner.horse,
-              openingOdds: currentOdds,
-              currentOdds,
-              lowestOdds: currentOdds,
-              highestOdds: currentOdds,
-              movements: [],
-              steamCount: 0,
-              driftCount: 0,
-              marketSignals: [],
-            }
-          }
+        const market = MARKET_DATABASE[horseId]
 
-          const market =
-            MARKET_DATABASE[horseId]
+        const profile = HORSE_DATABASE[horseId]
 
-          if (
-            currentOdds &&
-            market.currentOdds
-          ) {
-            const previousOdds =
-              market.currentOdds
+        const aiProfile = generateConfidence({
+          ...runner,
+          replayTriggers: replayFlags,
+          horseProfile: profile,
+          market,
+        })
 
-            const movement =
-              previousOdds - currentOdds
+        if (
+          currentOdds &&
+          market.currentOdds
+        ) {
+          const previousOdds = market.currentOdds
 
-            if (movement > 1) {
-              market.steamCount += 1
+          const movement =
+            previousOdds - currentOdds
 
-              market.marketSignals.push({
-                type: 'STEAMER',
-                movement,
-                timestamp:
-                  new Date().toISOString(),
-              })
-            }
+          if (movement > 1) {
+            market.steamCount += 1
 
-            if (movement < -1) {
-              market.driftCount += 1
-
-              market.marketSignals.push({
-                type: 'DRIFTER',
-                movement,
-                timestamp:
-                  new Date().toISOString(),
-              })
-            }
-
-            market.movements.push({
-              previousOdds,
-              currentOdds,
+            market.marketSignals.push({
+              type: 'STEAMER',
               movement,
               timestamp:
                 new Date().toISOString(),
             })
-
-            market.currentOdds = currentOdds
-
-            market.lowestOdds = Math.min(
-              market.lowestOdds || currentOdds,
-              currentOdds
-            )
-
-            market.highestOdds = Math.max(
-              market.highestOdds || currentOdds,
-              currentOdds
-            )
           }
 
-          const profile =
-            HORSE_DATABASE[horseId]
+          if (movement < -1) {
+            market.driftCount += 1
 
-          profile.runs += 1
-
-          profile.lastSeen =
-            new Date().toISOString()
-
-          profile.bestScore = Math.max(
-            profile.bestScore,
-            score
-          )
-
-          profile.averageScore =
-            Math.round(
-              (
-                profile.averageScore *
-                  (profile.runs - 1) +
-                score
-              ) / profile.runs
-            )
-
-          if (
-            !profile.courses.includes(
-              race.course
-            )
-          ) {
-            profile.courses.push(race.course)
-          }
-
-          replayFlags.forEach((flag) => {
-            if (
-              !profile.replayFlags.includes(
-                flag
-              )
-            ) {
-              profile.replayFlags.push(flag)
-            }
-
-            REPLAY_DATABASE[
-              horseId
-            ].replayNotes.push({
-              date: new Date().toISOString(),
-              race: race.race_name,
-              course: race.course,
-              note: flag,
-              confidence: score,
+            market.marketSignals.push({
+              type: 'DRIFTER',
+              movement,
+              timestamp:
+                new Date().toISOString(),
             })
+          }
+
+          market.movements.push({
+            previousOdds,
+            currentOdds,
+            movement,
+            timestamp:
+              new Date().toISOString(),
           })
 
-          return {
-            ...runner,
-            score,
-            replayTriggers: replayFlags,
-            horseProfile: profile,
-            market,
-          }
+          market.currentOdds = currentOdds
+
+          market.lowestOdds = Math.min(
+            market.lowestOdds || currentOdds,
+            currentOdds
+          )
+
+          market.highestOdds = Math.max(
+            market.highestOdds || currentOdds,
+            currentOdds
+          )
         }
-      )
+
+        profile.runs += 1
+        profile.lastSeen = new Date().toISOString()
+
+        profile.bestScore = Math.max(
+          profile.bestScore,
+          score
+        )
+
+        profile.averageScore = Math.round(
+          (
+            profile.averageScore *
+              (profile.runs - 1) +
+            score
+          ) / profile.runs
+        )
+
+        if (
+          !profile.courses.includes(
+            race.course
+          )
+        ) {
+          profile.courses.push(race.course)
+        }
+
+        replayFlags.forEach((flag) => {
+          if (
+            !profile.replayFlags.includes(flag)
+          ) {
+            profile.replayFlags.push(flag)
+          }
+
+          REPLAY_DATABASE[
+            horseId
+          ].replayNotes.push({
+            date: new Date().toISOString(),
+            race: race.race_name,
+            course: race.course,
+            note: flag,
+            confidence: score,
+          })
+        })
+
+        return {
+          ...runner,
+          score,
+          replayTriggers: replayFlags,
+          horseProfile: profile,
+          market,
+          aiProfile,
+        }
+      })
 
       return {
         ...race,
         runners: scoredRunners.sort(
-          (a, b) => b.score - a.score
+          (a, b) =>
+            b.aiProfile.confidence -
+            a.aiProfile.confidence
         ),
       }
     })
 
     LIVE_STATE.racecards = processed
-
     LIVE_STATE.updatedAt =
       new Date().toISOString()
-
     LIVE_STATE.loading = false
 
     saveDatabase(
@@ -353,15 +346,11 @@ async function fetchLiveMeetings() {
     )
 
     console.log(
-      `Tracked ${
-        Object.keys(HORSE_DATABASE).length
-      } horses`
+      `Tracked ${Object.keys(HORSE_DATABASE).length} horses`
     )
 
     console.log(
-      `Market intelligence tracking ${
-        Object.keys(MARKET_DATABASE).length
-      } horses`
+      `Market intelligence tracking ${Object.keys(MARKET_DATABASE).length} horses`
     )
   } catch (error) {
     console.error(
@@ -389,21 +378,18 @@ app.get('/api/replay-flags', (_req, res) => {
   res.json(REPLAY_DATABASE)
 })
 
-app.get(
-  '/api/market-movers',
-  (_req, res) => {
-    const movers = Object.values(
-      MARKET_DATABASE
+app.get('/api/market-movers', (_req, res) => {
+  const movers = Object.values(
+    MARKET_DATABASE
+  )
+    .sort(
+      (a, b) =>
+        b.steamCount - a.steamCount
     )
-      .sort(
-        (a, b) =>
-          b.steamCount - a.steamCount
-      )
-      .slice(0, 50)
+    .slice(0, 50)
 
-    res.json(movers)
-  }
-)
+  res.json(movers)
+})
 
 app.listen(PORT, () => {
   console.log(
