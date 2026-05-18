@@ -1,0 +1,4822 @@
+{
+  "hrs_64780492": {
+    "horse": "Calef",
+    "replayNotes": []
+  },
+  "hrs_63811160": {
+    "horse": "Crownbreaker",
+    "replayNotes": []
+  },
+  "hrs_64780513": {
+    "horse": "Miss Havisham",
+    "replayNotes": []
+  },
+  "hrs_64780499": {
+    "horse": "Wild Blossom",
+    "replayNotes": []
+  },
+  "hrs_42554267": {
+    "horse": "Acrisius",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.007Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:13:14.007Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_36221591": {
+    "horse": "Keldeo",
+    "replayNotes": []
+  },
+  "hrs_30765098": {
+    "horse": "Wen Moon",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.007Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_35149646": {
+    "horse": "Speeding Bullet",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.007Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_24907680": {
+    "horse": "Hurt You Never",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_31055570": {
+    "horse": "Fierce",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_36428168": {
+    "horse": "Imperial Guard",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_46913300": {
+    "horse": "Dc Cogent",
+    "replayNotes": []
+  },
+  "hrs_39190459": {
+    "horse": "Blue Lakota",
+    "replayNotes": []
+  },
+  "hrs_24541503": {
+    "horse": "Harb",
+    "replayNotes": []
+  },
+  "hrs_53181527": {
+    "horse": "Harry Mole",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_39961040": {
+    "horse": "Call Me Betty",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_44417597": {
+    "horse": "Magic Boy",
+    "replayNotes": []
+  },
+  "hrs_41223098": {
+    "horse": "Ran Amok",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_56746452": {
+    "horse": "Mr Dreamseller",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_43351994": {
+    "horse": "Counting Cards",
+    "replayNotes": []
+  },
+  "hrs_44417667": {
+    "horse": "Surprised",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_35714469": {
+    "horse": "Raft Up",
+    "replayNotes": []
+  },
+  "hrs_30628304": {
+    "horse": "Mount Ruapehu",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_19138882": {
+    "horse": "Impressor",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52087504": {
+    "horse": "Invincible Ruby",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_43860187": {
+    "horse": "Lightning Galaxy",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_43287860": {
+    "horse": "Fan Mail",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_21648795": {
+    "horse": "Iris Dancer",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Watch Racing TV Live Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_53420353": {
+    "horse": "Loki",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_54644814": {
+    "horse": "Lord",
+    "replayNotes": []
+  },
+  "hrs_23690562": {
+    "horse": "Swinging London",
+    "replayNotes": []
+  },
+  "hrs_25908771": {
+    "horse": "Haarar",
+    "replayNotes": []
+  },
+  "hrs_45661735": {
+    "horse": "Ashdown Forest",
+    "replayNotes": []
+  },
+  "hrs_31344250": {
+    "horse": "As Fast As Wind",
+    "replayNotes": []
+  },
+  "hrs_32277224": {
+    "horse": "Charlie Darling",
+    "replayNotes": []
+  },
+  "hrs_14660457": {
+    "horse": "Billy No Mates",
+    "replayNotes": []
+  },
+  "hrs_43417885": {
+    "horse": "Cascade Hall",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.021Z",
+        "race": "Follow Racing TV On X Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_50809647": {
+    "horse": "Freddie Steady Go",
+    "replayNotes": []
+  },
+  "hrs_57008385": {
+    "horse": "Wezzeer",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_64712991": {
+    "horse": "Albemagic",
+    "replayNotes": []
+  },
+  "hrs_55211135": {
+    "horse": "Bee Farmer",
+    "replayNotes": []
+  },
+  "hrs_63809662": {
+    "horse": "Blue Boy Junior",
+    "replayNotes": []
+  },
+  "hrs_55764471": {
+    "horse": "Dark Sovereign",
+    "replayNotes": []
+  },
+  "hrs_63586264": {
+    "horse": "Golden Harvest",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_53390330": {
+    "horse": "Great Profit",
+    "replayNotes": []
+  },
+  "hrs_63586362": {
+    "horse": "Tzarmaggedon",
+    "replayNotes": []
+  },
+  "hrs_54811379": {
+    "horse": "Lunar Melody",
+    "replayNotes": []
+  },
+  "hrs_58132606": {
+    "horse": "Royal Sizzler",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "racingtv.com Novice Stakes (GBB Race)",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_62235810": {
+    "horse": "Too Darn Spicy",
+    "replayNotes": []
+  },
+  "hrs_52452106": {
+    "horse": "Thankfully Simmy",
+    "replayNotes": []
+  },
+  "hrs_61455688": {
+    "horse": "Cobalt Comet",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_49144081": {
+    "horse": "Hatamoto",
+    "replayNotes": []
+  },
+  "hrs_52329256": {
+    "horse": "Smoker Bellamy",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_57223075": {
+    "horse": "Helios Path",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_56746382": {
+    "horse": "Mereside Princess",
+    "replayNotes": []
+  },
+  "hrs_55634110": {
+    "horse": "The Floors Munky",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52742074": {
+    "horse": "Dandy Orton",
+    "replayNotes": []
+  },
+  "hrs_56873775": {
+    "horse": "Royal Baroness",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Join Racing TV Now Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_43508472": {
+    "horse": "Native Instinct",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_32568487": {
+    "horse": "William Dewhirst",
+    "replayNotes": []
+  },
+  "hrs_43667204": {
+    "horse": "They All Know Me",
+    "replayNotes": []
+  },
+  "hrs_43508444": {
+    "horse": "This Farh",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_41877542": {
+    "horse": "Green Pursuit",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.008Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_42715386": {
+    "horse": "Black Storm",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_30123793": {
+    "horse": "Vince Le Prince",
+    "replayNotes": []
+  },
+  "hrs_55665960": {
+    "horse": "Judicature",
+    "replayNotes": []
+  },
+  "hrs_24846409": {
+    "horse": "Bay Breeze",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.022Z",
+        "race": "Every Race Live On Racing TV Handicap",
+        "course": "Carlisle",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_41191255": {
+    "horse": "Wish This",
+    "replayNotes": []
+  },
+  "hrs_19877760": {
+    "horse": "Detective",
+    "replayNotes": []
+  },
+  "hrs_37208038": {
+    "horse": "Primo Lara",
+    "replayNotes": []
+  },
+  "hrs_45855299": {
+    "horse": "Celestias Comet",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Sporting Times Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.023Z",
+        "race": "Sporting Times Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_50401645": {
+    "horse": "Dancing Tiger",
+    "replayNotes": []
+  },
+  "hrs_21995274": {
+    "horse": "Oman",
+    "replayNotes": []
+  },
+  "hrs_44076025": {
+    "horse": "King's Hand",
+    "replayNotes": []
+  },
+  "hrs_44873752": {
+    "horse": "Premier",
+    "replayNotes": []
+  },
+  "hrs_37686880": {
+    "horse": "Bobacious",
+    "replayNotes": []
+  },
+  "hrs_45314927": {
+    "horse": "Panama Black",
+    "replayNotes": []
+  },
+  "hrs_22523613": {
+    "horse": "Lunar Power",
+    "replayNotes": []
+  },
+  "hrs_46077346": {
+    "horse": "Rogue Empire",
+    "replayNotes": []
+  },
+  "hrs_21713489": {
+    "horse": "Smokey Malone",
+    "replayNotes": []
+  },
+  "hrs_30469887": {
+    "horse": "Regally Blonde",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_27206690": {
+    "horse": "Balgowan",
+    "replayNotes": []
+  },
+  "hrs_14404243": {
+    "horse": "Cherry Cola",
+    "replayNotes": []
+  },
+  "hrs_37673370": {
+    "horse": "Charles Morin",
+    "replayNotes": []
+  },
+  "hrs_14616238": {
+    "horse": "Capone",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_13020959": {
+    "horse": "Smith",
+    "replayNotes": []
+  },
+  "hrs_42715295": {
+    "horse": "High Favour",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52236331": {
+    "horse": "Golden Samba",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Visit Sri Lanka Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64135064": {
+    "horse": "Bin Waary",
+    "replayNotes": []
+  },
+  "hrs_64780548": {
+    "horse": "Dashing Digger",
+    "replayNotes": []
+  },
+  "hrs_64780562": {
+    "horse": "Encounter",
+    "replayNotes": []
+  },
+  "hrs_64257949": {
+    "horse": "Notable Dream",
+    "replayNotes": []
+  },
+  "hrs_62168211": {
+    "horse": "Rafe's Da Man",
+    "replayNotes": []
+  },
+  "hrs_64780534": {
+    "horse": "Theheatison",
+    "replayNotes": []
+  },
+  "hrs_56219464": {
+    "horse": "Behike",
+    "replayNotes": []
+  },
+  "hrs_63586292": {
+    "horse": "Railwayman",
+    "replayNotes": []
+  },
+  "hrs_52054548": {
+    "horse": "Ray Mon Dough",
+    "replayNotes": []
+  },
+  "hrs_52055066": {
+    "horse": "Elite Approach",
+    "replayNotes": []
+  },
+  "hrs_52054408": {
+    "horse": "Jean's Boy",
+    "replayNotes": []
+  },
+  "hrs_64072414": {
+    "horse": "Rianka",
+    "replayNotes": []
+  },
+  "hrs_63809557": {
+    "horse": "Wayward Queen",
+    "replayNotes": []
+  },
+  "hrs_22250963": {
+    "horse": "Whenthedealinsdone",
+    "replayNotes": []
+  },
+  "hrs_36302567": {
+    "horse": "Hedge Fund",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Sri Lanka Wonder Of Asia Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Sri Lanka Wonder Of Asia Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_24921869": {
+    "horse": "Twilight Jet",
+    "replayNotes": []
+  },
+  "hrs_44785958": {
+    "horse": "Spendmore Lane",
+    "replayNotes": []
+  },
+  "hrs_41661319": {
+    "horse": "No Return",
+    "replayNotes": []
+  },
+  "hrs_45534853": {
+    "horse": "Travel Agent",
+    "replayNotes": []
+  },
+  "hrs_35149212": {
+    "horse": "Invincible Speed",
+    "replayNotes": []
+  },
+  "hrs_36738660": {
+    "horse": "Profit Street",
+    "replayNotes": []
+  },
+  "hrs_13850760": {
+    "horse": "Recon Mission",
+    "replayNotes": []
+  },
+  "hrs_49141708": {
+    "horse": "Enter Sandman",
+    "replayNotes": []
+  },
+  "hrs_54712280": {
+    "horse": "Tie Fighter",
+    "replayNotes": []
+  },
+  "hrs_59116827": {
+    "horse": "Life After Love",
+    "replayNotes": []
+  },
+  "hrs_55061930": {
+    "horse": "Bessie Wallis",
+    "replayNotes": []
+  },
+  "hrs_55882330": {
+    "horse": "Solar Invincible",
+    "replayNotes": []
+  },
+  "hrs_55763918": {
+    "horse": "Viking Glory",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_53081441": {
+    "horse": "Red Snapper",
+    "replayNotes": []
+  },
+  "hrs_54842725": {
+    "horse": "Yes Waliim",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "Sporting Times Sprint Handicap",
+        "course": "Lingfield",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_49141645": {
+    "horse": "Beach Partee",
+    "replayNotes": []
+  },
+  "hrs_53052300": {
+    "horse": "Adalida",
+    "replayNotes": []
+  },
+  "hrs_64135001": {
+    "horse": "C'Est Lui",
+    "replayNotes": []
+  },
+  "hrs_64780569": {
+    "horse": "Carry On Chaos",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_63840021": {
+    "horse": "Dave's Matey",
+    "replayNotes": []
+  },
+  "hrs_64102409": {
+    "horse": "Eighteenth Smiles",
+    "replayNotes": []
+  },
+  "hrs_64072211": {
+    "horse": "Formby George",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64168076": {
+    "horse": "Kach Above",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64257998": {
+    "horse": "Kodiak Breeze",
+    "replayNotes": []
+  },
+  "hrs_64555631": {
+    "horse": "Peggy's Lad",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64780576": {
+    "horse": "Arenite",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_63650370": {
+    "horse": "Baila Morena",
+    "replayNotes": []
+  },
+  "hrs_62170402": {
+    "horse": "Bluestone Lady",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_64135015": {
+    "horse": "Crystal Kraken",
+    "replayNotes": []
+  },
+  "hrs_64294916": {
+    "horse": "Givendale",
+    "replayNotes": []
+  },
+  "hrs_64780632": {
+    "horse": "Needin' U",
+    "replayNotes": []
+  },
+  "hrs_64780597": {
+    "horse": "Sloequelle",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.009Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.024Z",
+        "race": "racingtv.com EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_63809627": {
+    "horse": "Tiger In The Tree",
+    "replayNotes": []
+  },
+  "hrs_64072372": {
+    "horse": "Wells Fargo Stage",
+    "replayNotes": []
+  },
+  "hrs_64780611": {
+    "horse": "Don't Stop Movin",
+    "replayNotes": []
+  },
+  "hrs_63323435": {
+    "horse": "Hicko's Lad",
+    "replayNotes": []
+  },
+  "hrs_64780618": {
+    "horse": "Mottaret",
+    "replayNotes": []
+  },
+  "hrs_63810880": {
+    "horse": "Revels",
+    "replayNotes": []
+  },
+  "hrs_62169506": {
+    "horse": "Sou'wester",
+    "replayNotes": []
+  },
+  "hrs_64780527": {
+    "horse": "Sword Salute",
+    "replayNotes": []
+  },
+  "hrs_64780639": {
+    "horse": "Farndale",
+    "replayNotes": []
+  },
+  "hrs_35553336": {
+    "horse": "Straight A",
+    "replayNotes": []
+  },
+  "hrs_40646781": {
+    "horse": "Thequietman",
+    "replayNotes": []
+  },
+  "hrs_35499492": {
+    "horse": "Mariner",
+    "replayNotes": []
+  },
+  "hrs_40919739": {
+    "horse": "We've Got This",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_35243145": {
+    "horse": "Up The Jazz",
+    "replayNotes": []
+  },
+  "hrs_39848648": {
+    "horse": "Travis",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_43352169": {
+    "horse": "Thats My Boy Luke",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_50875146": {
+    "horse": "The Sweet Escape",
+    "replayNotes": []
+  },
+  "hrs_36484959": {
+    "horse": "Whiskey Pete",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_41090882": {
+    "horse": "Kiss Me My Love",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_30750349": {
+    "horse": "Chuzzlewit",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_48414149": {
+    "horse": "Hachiman",
+    "replayNotes": []
+  },
+  "hrs_41939184": {
+    "horse": "Electric Lightning",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Marske Fabrication & Engineering Straight Mile Handicap (Straight Mile Series Qualifier)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_33096553": {
+    "horse": "Princess Niyla",
+    "replayNotes": []
+  },
+  "hrs_24833459": {
+    "horse": "Fire Eyes",
+    "replayNotes": []
+  },
+  "hrs_35796691": {
+    "horse": "Letmeseethecolts",
+    "replayNotes": []
+  },
+  "hrs_56094885": {
+    "horse": "Myrrh",
+    "replayNotes": []
+  },
+  "hrs_56591045": {
+    "horse": "Ammoony",
+    "replayNotes": []
+  },
+  "hrs_58412200": {
+    "horse": "Fanciulla Del West",
+    "replayNotes": []
+  },
+  "hrs_59367273": {
+    "horse": "Eze Sur Mer",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "100% Racing TV Profits Returned To Racing Fillies' Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "100% Racing TV Profits Returned To Racing Fillies' Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_57718626": {
+    "horse": "Clocker",
+    "replayNotes": []
+  },
+  "hrs_55795040": {
+    "horse": "Bergamo Gold",
+    "replayNotes": []
+  },
+  "hrs_36763678": {
+    "horse": "Glory Hyde",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_35025571": {
+    "horse": "Jenni",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_27166524": {
+    "horse": "Lord Abama",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_53841123": {
+    "horse": "Lindoro",
+    "replayNotes": []
+  },
+  "hrs_41014057": {
+    "horse": "Startling",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_34473586": {
+    "horse": "Taygar",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_37807098": {
+    "horse": "Lumenbourg",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_35068887": {
+    "horse": "Ishe Worth Agamble",
+    "replayNotes": []
+  },
+  "hrs_46169648": {
+    "horse": "Get Up Everybody",
+    "replayNotes": []
+  },
+  "hrs_30357663": {
+    "horse": "One Of Our Own",
+    "replayNotes": []
+  },
+  "hrs_35123732": {
+    "horse": "Sergeant Mayer",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_35445431": {
+    "horse": "Profiteer",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Watch Racing TV In Stunning HD Handicap",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_54337311": {
+    "horse": "Perfect Ruler",
+    "replayNotes": []
+  },
+  "hrs_54206278": {
+    "horse": "Hey Havana",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_50435896": {
+    "horse": "Full Gas",
+    "replayNotes": []
+  },
+  "hrs_54998020": {
+    "horse": "Maximum Velocity",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_61521663": {
+    "horse": "Forever Twenty",
+    "replayNotes": []
+  },
+  "hrs_49142870": {
+    "horse": "Only Dream Big",
+    "replayNotes": []
+  },
+  "hrs_51766778": {
+    "horse": "Harswell River",
+    "replayNotes": []
+  },
+  "hrs_55148667": {
+    "horse": "Queenies Pal",
+    "replayNotes": []
+  },
+  "hrs_53960270": {
+    "horse": "Twilight Serenade",
+    "replayNotes": []
+  },
+  "hrs_52054933": {
+    "horse": "Go Teejay",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div I)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_53808881": {
+    "horse": "Secret Testimony",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_54842683": {
+    "horse": "Black Rock Beauty",
+    "replayNotes": []
+  },
+  "hrs_56961513": {
+    "horse": "Realistic Dream",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_60594821": {
+    "horse": "Maybe Soon",
+    "replayNotes": []
+  },
+  "hrs_53148704": {
+    "horse": "Walk On Walk On",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_55030129": {
+    "horse": "Truly Special",
+    "replayNotes": []
+  },
+  "hrs_56094864": {
+    "horse": "Long Shot",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_53871321": {
+    "horse": "Twilight Dawn",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "racingtv.com Handicap (Div II)",
+        "course": "Redcar",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_61911654": {
+    "horse": "Enduring Story",
+    "replayNotes": []
+  },
+  "hrs_64780646": {
+    "horse": "Better Nature",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_62169394": {
+    "horse": "Celtic Charioteer",
+    "replayNotes": []
+  },
+  "hrs_63908663": {
+    "horse": "Concert Pitch",
+    "replayNotes": []
+  },
+  "hrs_64135043": {
+    "horse": "Graceful George",
+    "replayNotes": []
+  },
+  "hrs_63809487": {
+    "horse": "Terry O",
+    "replayNotes": []
+  },
+  "hrs_62170255": {
+    "horse": "Top Cote",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Juddmonte EBF Restricted Maiden Stakes (Band D) (EBF Restricted Race Qualifier) (GBB Race)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_64460256": {
+    "horse": "Fire Thunder",
+    "replayNotes": []
+  },
+  "hrs_63650349": {
+    "horse": "May Bee In Profit",
+    "replayNotes": []
+  },
+  "hrs_64488060": {
+    "horse": "Serenity Bay",
+    "replayNotes": []
+  },
+  "hrs_64135036": {
+    "horse": "Tina Fromtransport",
+    "replayNotes": []
+  },
+  "hrs_64780674": {
+    "horse": "Velma Dinkley",
+    "replayNotes": []
+  },
+  "hrs_57845151": {
+    "horse": "Gaeli",
+    "replayNotes": []
+  },
+  "hrs_29608887": {
+    "horse": "Democracy Dilemma",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_41304634": {
+    "horse": "Redorange",
+    "replayNotes": []
+  },
+  "hrs_42041363": {
+    "horse": "Adrestia",
+    "replayNotes": []
+  },
+  "hrs_36763622": {
+    "horse": "Rogue Enforcer",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_33644464": {
+    "horse": "Desert Cop",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_22897546": {
+    "horse": "Baldomero",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_24686235": {
+    "horse": "Regal Envoy",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.025Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_43572935": {
+    "horse": "All Ways Glamorous",
+    "replayNotes": []
+  },
+  "hrs_29918651": {
+    "horse": "Rhythm N Hooves",
+    "replayNotes": []
+  },
+  "hrs_40919116": {
+    "horse": "Marty Hopkirk",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Fitzdares Sprint Series Handicap (Fitzdares Windsor Sprint Series Qualifier)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_63742070": {
+    "horse": "Cap Santa Lucia",
+    "replayNotes": []
+  },
+  "hrs_57223103": {
+    "horse": "Chimes Of Thunder",
+    "replayNotes": []
+  },
+  "hrs_63171458": {
+    "horse": "Madame Passant",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_57718661": {
+    "horse": "Moonlit Surf",
+    "replayNotes": []
+  },
+  "hrs_64712998": {
+    "horse": "Quisana",
+    "replayNotes": []
+  },
+  "hrs_63171451": {
+    "horse": "Rajwaah",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52418121": {
+    "horse": "Tahalel",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.010Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Tattersalls £40,000 EBF Maiden Fillies' Stakes (GBB Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_64167985": {
+    "horse": "Trelissick",
+    "replayNotes": []
+  },
+  "hrs_63742147": {
+    "horse": "Withtearsinmyeyes",
+    "replayNotes": []
+  },
+  "hrs_63203476": {
+    "horse": "Zeriya",
+    "replayNotes": []
+  },
+  "hrs_39960431": {
+    "horse": "Shavkat",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_46913321": {
+    "horse": "Sandscreendeliverd",
+    "replayNotes": []
+  },
+  "hrs_30850463": {
+    "horse": "Jax Edge",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_39960480": {
+    "horse": "The Flying Seagull",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_39059811": {
+    "horse": "Rogue Bullet",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_20976340": {
+    "horse": "Isle Of Lismore",
+    "replayNotes": []
+  },
+  "hrs_26473181": {
+    "horse": "Al Barez",
+    "replayNotes": []
+  },
+  "hrs_35513632": {
+    "horse": "Kiss And Run",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Track Radio On Digital & DAB Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_33788440": {
+    "horse": "General Assembly",
+    "replayNotes": []
+  },
+  "hrs_18046084": {
+    "horse": "Lequinto",
+    "replayNotes": []
+  },
+  "hrs_29228773": {
+    "horse": "Maharajas Express",
+    "replayNotes": []
+  },
+  "hrs_39962979": {
+    "horse": "Sarafina Mshairi",
+    "replayNotes": []
+  },
+  "hrs_49142310": {
+    "horse": "Any Which Way",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_56437843": {
+    "horse": "King Of Berkshire",
+    "replayNotes": []
+  },
+  "hrs_54398449": {
+    "horse": "Morbeh",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_56873740": {
+    "horse": "Wardlaw",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_56094836": {
+    "horse": "Oh Yes You Do",
+    "replayNotes": []
+  },
+  "hrs_63551236": {
+    "horse": "Sir Griflet",
+    "replayNotes": []
+  },
+  "hrs_52054184": {
+    "horse": "Grey Sands",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Fitzdares Telephone & Text Betting Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_22006663": {
+    "horse": "Wisper",
+    "replayNotes": []
+  },
+  "hrs_45192602": {
+    "horse": "Naval Command",
+    "replayNotes": []
+  },
+  "hrs_37193359": {
+    "horse": "Son Of Man",
+    "replayNotes": []
+  },
+  "hrs_43796606": {
+    "horse": "Siouxfonic",
+    "replayNotes": []
+  },
+  "hrs_37758273": {
+    "horse": "Due To Henry",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_34775195": {
+    "horse": "Charlie's Choice",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_43287734": {
+    "horse": "Sir William",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_37889880": {
+    "horse": "Don Simon",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Find Us At fitzdares.com Handicap (GBBplus Race)",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_53633027": {
+    "horse": "Yachtsman",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_57941905": {
+    "horse": "Chelio",
+    "replayNotes": []
+  },
+  "hrs_53633062": {
+    "horse": "Marra Donna",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_51736097": {
+    "horse": "Corniche Girl",
+    "replayNotes": []
+  },
+  "hrs_49143696": {
+    "horse": "Nzuri",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_53328492": {
+    "horse": "Madman",
+    "replayNotes": []
+  },
+  "hrs_55241746": {
+    "horse": "My Dad Tom",
+    "replayNotes": []
+  },
+  "hrs_55273162": {
+    "horse": "Stolen",
+    "replayNotes": []
+  },
+  "hrs_57316574": {
+    "horse": "Rosieisme Darling",
+    "replayNotes": []
+  },
+  "hrs_61910618": {
+    "horse": "Zoulette",
+    "replayNotes": []
+  },
+  "hrs_52451903": {
+    "horse": "Arvana Belle",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_53993954": {
+    "horse": "Cape Toronada",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Free Race Replays On attheraces.com Handicap",
+        "course": "Windsor",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_35431431": {
+    "horse": "Smooth Silesie",
+    "replayNotes": []
+  },
+  "hrs_43385363": {
+    "horse": "Magna",
+    "replayNotes": []
+  },
+  "hrs_48112323": {
+    "horse": "Fantasy Obsessor",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.027Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_51832228": {
+    "horse": "Guernsey Lady",
+    "replayNotes": []
+  },
+  "hrs_36527981": {
+    "horse": "Midnight Call",
+    "replayNotes": []
+  },
+  "hrs_51557751": {
+    "horse": "Rotokura Belle",
+    "replayNotes": []
+  },
+  "hrs_52055031": {
+    "horse": "Little Jaybee",
+    "replayNotes": []
+  },
+  "hrs_52451714": {
+    "horse": "Star Marian",
+    "replayNotes": []
+  },
+  "hrs_53960263": {
+    "horse": "Powernap",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Dine In The Wolverhampton Horizons Restaurant Fillies' Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64225518": {
+    "horse": "Agamemnon",
+    "replayNotes": []
+  },
+  "hrs_64621494": {
+    "horse": "American Psycho",
+    "replayNotes": []
+  },
+  "hrs_63034020": {
+    "horse": "Bill The Bull",
+    "replayNotes": []
+  },
+  "hrs_63742028": {
+    "horse": "Drum Major",
+    "replayNotes": []
+  },
+  "hrs_64713012": {
+    "horse": "Katie's Cavalier",
+    "replayNotes": []
+  },
+  "hrs_64073086": {
+    "horse": "Undercover Affair",
+    "replayNotes": []
+  },
+  "hrs_64135071": {
+    "horse": "Najmet Minzaal",
+    "replayNotes": []
+  },
+  "hrs_56843682": {
+    "horse": "Rua Mor",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "attheraces.com/marketmovers Restricted Novice Stakes (Bands B-D) (GBB Race)",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "attheraces.com/marketmovers Restricted Novice Stakes (Bands B-D) (GBB Race)",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64102304": {
+    "horse": "Mountain Cat",
+    "replayNotes": []
+  },
+  "hrs_64073121": {
+    "horse": "Rogue Defence",
+    "replayNotes": []
+  },
+  "hrs_64780702": {
+    "horse": "Leopards Rock",
+    "replayNotes": []
+  },
+  "hrs_64102276": {
+    "horse": "Roi De Coeur",
+    "replayNotes": []
+  },
+  "hrs_56278341": {
+    "horse": "Zabeel Small",
+    "replayNotes": []
+  },
+  "hrs_63514899": {
+    "horse": "Arc At Her",
+    "replayNotes": []
+  },
+  "hrs_59059315": {
+    "horse": "Symbol Of Majesty",
+    "replayNotes": []
+  },
+  "hrs_59460940": {
+    "horse": "Estissa",
+    "replayNotes": []
+  },
+  "hrs_56713314": {
+    "horse": "Morven",
+    "replayNotes": []
+  },
+  "hrs_56066003": {
+    "horse": "City Queen",
+    "replayNotes": []
+  },
+  "hrs_61911675": {
+    "horse": "Silken Bay",
+    "replayNotes": []
+  },
+  "hrs_52451987": {
+    "horse": "Lyra Lea",
+    "replayNotes": []
+  },
+  "hrs_62813037": {
+    "horse": "Golden Mabel",
+    "replayNotes": []
+  },
+  "hrs_37208045": {
+    "horse": "Age Of Baroque",
+    "replayNotes": []
+  },
+  "hrs_44105355": {
+    "horse": "Bizou",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_35137319": {
+    "horse": "Between Me And U",
+    "replayNotes": []
+  },
+  "hrs_45598518": {
+    "horse": "Stipulation",
+    "replayNotes": []
+  },
+  "hrs_34471815": {
+    "horse": "Dingwall",
+    "replayNotes": []
+  },
+  "hrs_61078689": {
+    "horse": "The Ubermensch",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Country & Western Raceday 28th June Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_50755446": {
+    "horse": "Karakula",
+    "replayNotes": []
+  },
+  "hrs_35123522": {
+    "horse": "Silkies Sib",
+    "replayNotes": []
+  },
+  "hrs_59367294": {
+    "horse": "Seeing Stars",
+    "replayNotes": []
+  },
+  "hrs_52709671": {
+    "horse": "Perfect Location",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_53148788": {
+    "horse": "Court Of Stars",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_54494475": {
+    "horse": "Okiru",
+    "replayNotes": []
+  },
+  "hrs_59246859": {
+    "horse": "Horwich",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_55061937": {
+    "horse": "Sprinting Speed",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_62615126": {
+    "horse": "The Anthony Gover",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.011Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Cavani Tailored Champion Handicap",
+        "course": "Wolverhampton (AW)",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52297427": {
+    "horse": "Espona Bay",
+    "replayNotes": []
+  },
+  "hrs_54027204": {
+    "horse": "Jowalla",
+    "replayNotes": []
+  },
+  "hrs_55392841": {
+    "horse": "Dontwaste A Moment",
+    "replayNotes": []
+  },
+  "hrs_36837017": {
+    "horse": "Free Speech",
+    "replayNotes": []
+  },
+  "hrs_39960837": {
+    "horse": "Romantic Spirit",
+    "replayNotes": []
+  },
+  "hrs_56406763": {
+    "horse": "Pyleates",
+    "replayNotes": []
+  },
+  "hrs_60626853": {
+    "horse": "You Got To My Soul",
+    "replayNotes": []
+  },
+  "hrs_62743569": {
+    "horse": "Desert Belle",
+    "replayNotes": []
+  },
+  "hrs_58283043": {
+    "horse": "Kelly Burn",
+    "replayNotes": []
+  },
+  "hrs_62360865": {
+    "horse": "Prince Andorra",
+    "replayNotes": []
+  },
+  "hrs_58380182": {
+    "horse": "Due In June",
+    "replayNotes": []
+  },
+  "hrs_55700778": {
+    "horse": "Star Of Beauty",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_63875322": {
+    "horse": "Cosmic Funk",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_56843850": {
+    "horse": "Mo Anam Chara",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_63104643": {
+    "horse": "Fay Og",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_56559230": {
+    "horse": "Schoolyard Days",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_53602227": {
+    "horse": "Six Wings",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64523228": {
+    "horse": "Monamie",
+    "replayNotes": []
+  },
+  "hrs_52267887": {
+    "horse": "Queen Of Newark",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.028Z",
+        "race": "Roscommon Claiming Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64812797": {
+    "horse": "Glenade",
+    "replayNotes": []
+  },
+  "hrs_64556079": {
+    "horse": "Cochise County",
+    "replayNotes": []
+  },
+  "hrs_64812783": {
+    "horse": "Dominic Street",
+    "replayNotes": []
+  },
+  "hrs_62169632": {
+    "horse": "Seaxburh",
+    "replayNotes": []
+  },
+  "hrs_63810201": {
+    "horse": "Arizona Raider",
+    "replayNotes": []
+  },
+  "hrs_64812804": {
+    "horse": "Magma Law",
+    "replayNotes": []
+  },
+  "hrs_64812818": {
+    "horse": "Penny Benjamin",
+    "replayNotes": []
+  },
+  "hrs_64812825": {
+    "horse": "Sea Of Rain",
+    "replayNotes": []
+  },
+  "hrs_24517843": {
+    "horse": "Mercurial",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_18504633": {
+    "horse": "Free Solo",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_37476565": {
+    "horse": "Thrifty Of Digby",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_56188811": {
+    "horse": "Royal Impact",
+    "replayNotes": []
+  },
+  "hrs_50282106": {
+    "horse": "Go Out",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_42451920": {
+    "horse": "Famed Again",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_37987796": {
+    "horse": "Bucaneer's Spirit",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_36515612": {
+    "horse": "Lohengrin",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_43951131": {
+    "horse": "Blue Anthem",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_53539563": {
+    "horse": "Queen Aethelflaed",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_36738478": {
+    "horse": "Bella Colombia",
+    "replayNotes": []
+  },
+  "hrs_35828177": {
+    "horse": "Irish Rumour",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_43417969": {
+    "horse": "Suerte",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_46295648": {
+    "horse": "Tara Na Ri",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_35625681": {
+    "horse": "Zabriskie Point",
+    "replayNotes": []
+  },
+  "hrs_20196092": {
+    "horse": "Loingseoir",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_36035881": {
+    "horse": "Buttermere Ridge",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_21714637": {
+    "horse": "Lust",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Knockcroghery Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52741927": {
+    "horse": "Believe Again",
+    "replayNotes": []
+  },
+  "hrs_61684532": {
+    "horse": "It's Good To Talk",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_412712069": {
+    "horse": "Galileo Springs",
+    "replayNotes": []
+  },
+  "hrs_56843626": {
+    "horse": "African Affair",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_58347583": {
+    "horse": "Avec Grand Plaisir",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_63875364": {
+    "horse": "Changing Lanes",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_64556128": {
+    "horse": "Elzaam Express",
+    "replayNotes": []
+  },
+  "hrs_63650076": {
+    "horse": "Gaelic Drills",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_59862446": {
+    "horse": "Garryowen Green",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_56843899": {
+    "horse": "Huff'n'puff",
+    "replayNotes": []
+  },
+  "hrs_57878093": {
+    "horse": "Karrygrant",
+    "replayNotes": []
+  },
+  "hrs_64812839": {
+    "horse": "Solar Jet",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_54242720": {
+    "horse": "Zelani",
+    "replayNotes": []
+  },
+  "hrs_57008504": {
+    "horse": "Noble Honour",
+    "replayNotes": []
+  },
+  "hrs_57008273": {
+    "horse": "Grennanstown Lady",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_63104657": {
+    "horse": "Matada",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Michael Tiger Lyons Memorial Maiden",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_50065582": {
+    "horse": "Ryans Hope",
+    "replayNotes": []
+  },
+  "hrs_36258775": {
+    "horse": "Follow Me",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_46045979": {
+    "horse": "Syzygy",
+    "replayNotes": []
+  },
+  "hrs_35781347": {
+    "horse": "Queen Lioness",
+    "replayNotes": []
+  },
+  "hrs_44721943": {
+    "horse": "Kilcrea Rock",
+    "replayNotes": []
+  },
+  "hrs_47282326": {
+    "horse": "Electric Beauty",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.029Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_53181415": {
+    "horse": "Lahore Da King",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_52862614": {
+    "horse": "Little Miss P",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_43796522": {
+    "horse": "Sir Jeremy",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_43385566": {
+    "horse": "Gotta Catch'em All",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.012Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_53269181": {
+    "horse": "Robot Rock",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_42326592": {
+    "horse": "Rising Sky",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Connolly's RED MILLS Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_58811382": {
+    "horse": "Oust",
+    "replayNotes": []
+  },
+  "hrs_55061979": {
+    "horse": "Adel",
+    "replayNotes": []
+  },
+  "hrs_57718038": {
+    "horse": "Musashi",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_56338513": {
+    "horse": "Admiral Will Brown",
+    "replayNotes": []
+  },
+  "hrs_53081231": {
+    "horse": "Femme Beauty",
+    "replayNotes": []
+  },
+  "hrs_57008511": {
+    "horse": "Retro Gal",
+    "replayNotes": []
+  },
+  "hrs_57878016": {
+    "horse": "Sea Of Dubka",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_52496206": {
+    "horse": "Tenacious",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_54998048": {
+    "horse": "Captain Con",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_53211620": {
+    "horse": "Onyeisi",
+    "replayNotes": []
+  },
+  "hrs_57255170": {
+    "horse": "Arizona Star",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_58165219": {
+    "horse": "Connecteo",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_55211191": {
+    "horse": "Wipeawayyourtears",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_56525392": {
+    "horse": "Survivor's Code",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_55764590": {
+    "horse": "Lilo Pelekai",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Abbey Hotel Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_43796445": {
+    "horse": "Amplitude",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_55764618": {
+    "horse": "Obscenity",
+    "replayNotes": []
+  },
+  "hrs_38884804": {
+    "horse": "Pavilion End",
+    "replayNotes": []
+  },
+  "hrs_45887499": {
+    "horse": "Superficial",
+    "replayNotes": []
+  },
+  "hrs_44939958": {
+    "horse": "Silent Guardian",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_37207828": {
+    "horse": "Radar Ahead",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_29919085": {
+    "horse": "La Dame Blanche",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_46265415": {
+    "horse": "Lily Parr",
+    "replayNotes": []
+  },
+  "hrs_26260857": {
+    "horse": "Mr Rango",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_16449230": {
+    "horse": "Out On Friday",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_50965019": {
+    "horse": "Cooley's Mist",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_23566767": {
+    "horse": "God Of Thunder",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Racing Again Here On June 8th Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_37052323": {
+    "horse": "Burlington House",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_30017484": {
+    "horse": "Grey Fable",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_51832298": {
+    "horse": "Sayidah New Bay",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_46013625": {
+    "horse": "Miss Australie",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_36894242": {
+    "horse": "Mapa",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_46077906": {
+    "horse": "Whosethebestboy",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_50875286": {
+    "horse": "Al What",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_45662141": {
+    "horse": "Cuckaloo Hill",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_45226293": {
+    "horse": "If Dora Could",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_40493782": {
+    "horse": "Jack Major",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_38434179": {
+    "horse": "Prom Queen",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 75
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 75
+      }
+    ]
+  },
+  "hrs_31451350": {
+    "horse": "Edge Of Darkness",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.030Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_43418123": {
+    "horse": "Idomything",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_46484228": {
+    "horse": "Piatra Neamt",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_28532308": {
+    "horse": "Deluca Chop",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 60
+      }
+    ]
+  },
+  "hrs_21678685": {
+    "horse": "Kartayaz",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 65
+      }
+    ]
+  },
+  "hrs_46077367": {
+    "horse": "Tassarolo",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  },
+  "hrs_22250781": {
+    "horse": "Church Mountain",
+    "replayNotes": [
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:13:14.013Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Potential Bounce Back",
+        "confidence": 50
+      },
+      {
+        "date": "2026-05-18T13:14:14.031Z",
+        "race": "Roscommon Handicap",
+        "course": "Roscommon",
+        "note": "Wide Draw Challenge",
+        "confidence": 50
+      }
+    ]
+  }
+}
