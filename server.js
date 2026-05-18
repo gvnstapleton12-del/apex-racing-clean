@@ -50,6 +50,19 @@ function normalizeHorseName(name = '') {
     .trim()
 }
 
+function resolveOdds(runner = {}) {
+  return (
+    runner.spOdds ||
+    runner.sp ||
+    runner.price ||
+    runner.odds ||
+    runner.industry_sp ||
+    runner.starting_price ||
+    runner.returned ||
+    0
+  )
+}
+
 function shouldTrackBet(aiProfile, marketMovement) {
   const confidence = Number(aiProfile?.confidence || 0)
 
@@ -139,30 +152,6 @@ function createAlert(
   io.emit('new-alert', alert)
 }
 
-function storeLearningRecord(record) {
-  if (!LEARNING_DATABASE.records) {
-    LEARNING_DATABASE.records = []
-  }
-
-  const duplicate = LEARNING_DATABASE.records.find(
-    (existing) =>
-      existing.horse === record.horse &&
-      existing.timestamp === record.timestamp
-  )
-
-  if (duplicate) {
-    return
-  }
-
-  LEARNING_DATABASE.records.unshift(record)
-
-  LEARNING_DATABASE.records = LEARNING_DATABASE.records.slice(0, 5000)
-
-  LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
-    LEARNING_DATABASE.records
-  )
-}
-
 async function fetchLiveMeetings() {
   try {
     console.log('Refreshing live meetings...')
@@ -225,28 +214,6 @@ async function fetchLiveMeetings() {
           aiProfile,
           marketMovement,
         })
-
-        if (
-          shouldTrackBet(
-            aiProfile,
-            marketMovement
-          )
-        ) {
-          const learningRecord = buildLearningRecord({
-            horse: runner.horse,
-            aiConfidence: aiProfile.confidence,
-            signal:
-              bettingSignals?.[0]?.type ||
-              'NONE',
-            spOdds: runner.odds || 0,
-            position: 0,
-            marketMovement:
-              marketMovement.movement,
-          })
-
-          // TEMP DISABLED TO STOP DUPLICATE AUTO-INGESTION
-          // storeLearningRecord(learningRecord)
-        }
 
         if (marketMovement.alert) {
           createAlert(
@@ -344,39 +311,22 @@ app.post('/api/upload-results', (req, res) => {
       })
     }
 
-    let updatedRecords = 0
+    LEARNING_DATABASE.records = []
 
     races.forEach((race) => {
       const runners = race.runners || []
 
       runners.forEach((runner) => {
-        const normalizedRunner = normalizeHorseName(
-          runner.horse
-        )
-
-        const existing = LEARNING_DATABASE.records?.find(
-          (record) => {
-            const normalizedRecord = normalizeHorseName(
-              record.horse
-            )
-
-            return (
-              normalizedRecord === normalizedRunner
-            )
-          }
-        )
-
-        if (existing) {
-          existing.position = Number(
-            runner.position || 0
-          )
-
-          existing.resultProcessed = true
-          existing.processedAt =
-            new Date().toISOString()
-
-          updatedRecords += 1
-        }
+        LEARNING_DATABASE.records.push({
+          horse: runner.horse,
+          position: Number(runner.position || 0),
+          spOdds: resolveOdds(runner),
+          aiConfidence: Number(runner.aiConfidence || 75),
+          signal: runner.signal || 'UPLOAD',
+          marketMovement: runner.marketMovement || 'UNKNOWN',
+          timestamp: new Date().toISOString(),
+          resultProcessed: true,
+        })
       })
     })
 
@@ -392,7 +342,7 @@ app.post('/api/upload-results', (req, res) => {
     res.json({
       success: true,
       processedRaces: races.length,
-      updatedRecords,
+      totalRecords: LEARNING_DATABASE.records.length,
       analytics: LEARNING_DATABASE.analytics,
     })
   } catch (error) {
