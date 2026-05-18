@@ -19,10 +19,16 @@ function App() {
 
         const today = new Date().toDateString()
         const savedDate = localStorage.getItem('apex-race-date')
-        const savedRaces = JSON.parse(localStorage.getItem('apex-old-races') || '[]')
+        const savedRaces = JSON.parse(
+          localStorage.getItem('apex-old-races') || '[]'
+        )
 
         if (savedDate && savedDate !== today && racecards.length > 0) {
-          localStorage.setItem('apex-old-races', JSON.stringify(racecards))
+          localStorage.setItem(
+            'apex-old-races',
+            JSON.stringify(racecards)
+          )
+
           setResultsArchive(racecards)
         } else {
           setResultsArchive(savedRaces)
@@ -61,7 +67,9 @@ function App() {
             <div>
               <div className='bet-top'>
                 <span className='tag'>{race.type}</span>
-                <span className='odds'>{race.field_size} Runners</span>
+                <span className='odds'>
+                  {race.field_size} Runners
+                </span>
               </div>
 
               <h3>{race.race_name}</h3>
@@ -101,7 +109,9 @@ function App() {
               <div>
                 <div className='bet-top'>
                   <span className='tag'>{race.type}</span>
-                  <span className='odds'>{race.field_size} Runners</span>
+                  <span className='odds'>
+                    {race.field_size} Runners
+                  </span>
                 </div>
 
                 <h3>{race.race_name}</h3>
@@ -118,6 +128,94 @@ function App() {
           ))
         )}
       </section>
+    )
+  }
+
+  const renderIntelligence = () => {
+    const topRunners = racecards
+      .flatMap((race) =>
+        (race.runners || []).map((runner) => ({
+          ...runner,
+          race_name: race.race_name,
+          course: race.course,
+          off_time: race.off_time
+        }))
+      )
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 12)
+
+    return (
+      <>
+        <section className='hero'>
+          <div>
+            <h2>APEX Intelligence Terminal</h2>
+            <p>
+              Advanced race intelligence and AI analytics
+            </p>
+          </div>
+
+          <button>LIVE ENGINE</button>
+        </section>
+
+        <section className='stats'>
+          <div className='card'>
+            <span>Live Meetings</span>
+            <h3>{racecards.length}</h3>
+          </div>
+
+          <div className='card'>
+            <span>Tracked Runners</span>
+
+            <h3>
+              {racecards.reduce(
+                (acc, race) =>
+                  acc + (race.runners?.length || 0),
+                0
+              )}
+            </h3>
+          </div>
+
+          <div className='card'>
+            <span>Replay Flags</span>
+            <h3>ACTIVE</h3>
+          </div>
+
+          <div className='card'>
+            <span>AI Engine</span>
+            <h3>ONLINE</h3>
+          </div>
+        </section>
+
+        <section className='bet-board'>
+          <div className='board-header'>
+            <h2>Top Intelligence Runners</h2>
+          </div>
+
+          {topRunners.map((runner, index) => (
+            <div className='bet-card' key={index}>
+              <div>
+                <div className='bet-top'>
+                  <span className='tag'>APEX</span>
+
+                  <span className='odds'>
+                    Score {runner.score || 'N/A'}
+                  </span>
+                </div>
+
+                <h3>{runner.horse}</h3>
+
+                <p>
+                  {runner.course} · {runner.off_time}
+                </p>
+
+                <p>{runner.race_name}</p>
+              </div>
+
+              <button>Track Runner</button>
+            </div>
+          ))}
+        </section>
+      </>
     )
   }
 
@@ -167,9 +265,15 @@ function App() {
       return renderResults()
     }
 
+    if (activeTab === 'Intelligence') {
+      return renderIntelligence()
+    }
+
     return (
       <div className='card'>
-        <h2 style={{ marginBottom: '16px' }}>{activeTab}</h2>
+        <h2 style={{ marginBottom: '16px' }}>
+          {activeTab}
+        </h2>
       </div>
     )
   }
@@ -184,7 +288,15 @@ function App() {
           </div>
 
           <nav>
-            {['Dashboard', 'Racecards', 'Results', 'Horses', 'Upload', 'Analytics'].map(tab => (
+            {[
+              'Dashboard',
+              'Racecards',
+              'Results',
+              'Intelligence',
+              'Horses',
+              'Upload',
+              'Analytics'
+            ].map((tab) => (
               <a
                 key={tab}
                 className={activeTab === tab ? 'active' : ''}
@@ -226,49 +338,79 @@ function App() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
               <div>
-                <h2 style={{ fontSize: '36px', marginBottom: '12px' }}>
+                <h2
+                  style={{
+                    fontSize: '36px',
+                    marginBottom: '12px'
+                  }}
+                >
                   {selectedRace.race_name}
                 </h2>
 
-                <p style={{ color: '#999', fontSize: '18px' }}>
-                  {selectedRace.course} · {selectedRace.off_time}
+                <p
+                  style={{
+                    color: '#999',
+                    fontSize: '18px'
+                  }}
+                >
+                  {selectedRace.course} ·{' '}
+                  {selectedRace.off_time}
                 </p>
               </div>
 
-              <button onClick={() => setSelectedRace(null)}>
+              <button
+                onClick={() => setSelectedRace(null)}
+              >
                 Close
               </button>
             </div>
 
             <div style={{ marginTop: '32px' }}>
-              <h3 style={{ marginBottom: '20px' }}>Runners</h3>
+              <h3 style={{ marginBottom: '20px' }}>
+                Runners
+              </h3>
 
-              {(selectedRace.runners || []).map((runner, index) => (
-                <div
-                  key={index}
-                  style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #222',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>
-                    <h4 style={{ marginBottom: '8px' }}>{runner.horse}</h4>
-                    <p style={{ color: '#999' }}>
-                      {runner.jockey} · {runner.trainer}
-                    </p>
-                  </div>
+              {(selectedRace.runners || []).map(
+                (runner, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      padding: '16px',
+                      borderBottom: '1px solid #222',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <div>
+                      <h4 style={{ marginBottom: '8px' }}>
+                        {runner.horse}
+                      </h4>
 
-                  <div style={{ textAlign: 'right' }}>
-                    <p>{runner.number}</p>
-                    <p style={{ color: '#ff8800' }}>{runner.form}</p>
+                      <p style={{ color: '#999' }}>
+                        {runner.jockey} ·{' '}
+                        {runner.trainer}
+                      </p>
+                    </div>
+
+                    <div style={{ textAlign: 'right' }}>
+                      <p>{runner.number}</p>
+
+                      <p style={{ color: '#ff8800' }}>
+                        {runner.form}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>
@@ -277,7 +419,9 @@ function App() {
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(
+  document.getElementById('root')
+).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
