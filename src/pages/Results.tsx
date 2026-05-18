@@ -24,9 +24,11 @@ export default function Results() {
 
       const parsed = json.racecards || json.results || json
 
-      setResults(parsed)
+      setResults([...parsed])
 
       await saveResults(parsed)
+
+      event.target.value = ''
 
       alert('Results uploaded successfully')
     } catch (err) {
