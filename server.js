@@ -3,6 +3,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
+import http from 'http'
+
+import { Server } from 'socket.io'
 
 import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
@@ -10,6 +13,14 @@ import { generateSignals } from './src/lib/signalEngine.js'
 dotenv.config()
 
 const app = express()
+
+const server = http.createServer(app)
+
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+  },
+})
 
 app.use(cors())
 app.use(express.json())
@@ -103,16 +114,20 @@ function createAlert(
     ALERT_DATABASE[horseId] = []
   }
 
-  ALERT_DATABASE[horseId].unshift({
+  const alert = {
     horse,
     type,
     message,
     severity,
     timestamp: new Date().toISOString(),
-  })
+  }
+
+  ALERT_DATABASE[horseId].unshift(alert)
 
   ALERT_DATABASE[horseId] =
     ALERT_DATABASE[horseId].slice(0, 25)
+
+  io.emit('new-alert', alert)
 }
 
 function generateReplayFlags(
@@ -136,24 +151,7 @@ function generateReplayFlags(
     flags.push('Hidden Value Runner')
   }
 
-  if (
-    runner.draw &&
-    Number(runner.draw) > 10
-  ) {
-    flags.push('Wide Draw Challenge')
-  }
-
   return flags
-}
-
-function parseOdds(odds) {
-  if (!odds) return null
-
-  const parsed = parseFloat(odds)
-
-  if (isNaN(parsed)) return null
-
-  return parsed
 }
 
 async function fetchLiveMeetings() {
@@ -197,13 +195,6 @@ async function fetchLiveMeetings() {
             )
               score += 10
 
-            if (
-              runner.odds &&
-              parseFloat(runner.odds) < 6
-            ) {
-              score += 15
-            }
-
             const replayFlags =
               generateReplayFlags(
                 runner,
@@ -214,58 +205,21 @@ async function fetchLiveMeetings() {
               runner.horse_id ||
               runner.horse
 
-            const currentOdds =
-              parseOdds(runner.odds)
-
             if (
               !HORSE_DATABASE[horseId]
             ) {
               HORSE_DATABASE[horseId] = {
                 horse: runner.horse,
                 runs: 0,
-                wins: 0,
-                averageScore: 0,
                 bestScore: 0,
-                replayFlags: [],
-                courses: [],
-                notes: [],
-                trainer:
-                  runner.trainer,
-                jockey: runner.jockey,
-                marketSupport: 0,
               }
             }
-
-            if (
-              !REPLAY_DATABASE[horseId]
-            ) {
-              REPLAY_DATABASE[horseId] = {
-                horse: runner.horse,
-                replayNotes: [],
-              }
-            }
-
-            if (
-              !MARKET_DATABASE[horseId]
-            ) {
-              MARKET_DATABASE[horseId] = {
-                horse: runner.horse,
-                openingOdds: currentOdds,
-                currentOdds,
-                lowestOdds: currentOdds,
-                highestOdds: currentOdds,
-                movements: [],
-                steamCount: 0,
-                driftCount: 0,
-                marketSignals: [],
-              }
-            }
-
-            const market =
-              MARKET_DATABASE[horseId]
 
             const profile =
               HORSE_DATABASE[horseId]
+
+            const market =
+              MARKET_DATABASE[horseId] || {}
 
             const aiProfile =
               generateConfidence({
@@ -297,158 +251,11 @@ async function fetchLiveMeetings() {
               )
             }
 
-            if (
-              market.steamCount > 2
-            ) {
-              createAlert(
-                horseId,
-                runner.horse,
-                'MARKET_STEAM',
-                'Heavy market support detected',
-                'HIGH'
-              )
-            }
-
-            if (
-              replayFlags.includes(
-                'Hidden Value Runner'
-              )
-            ) {
-              createAlert(
-                horseId,
-                runner.horse,
-                'HIDDEN_VALUE',
-                'Hidden value replay profile detected',
-                'MEDIUM'
-              )
-            }
-
-            if (
-              currentOdds &&
-              market.currentOdds
-            ) {
-              const previousOdds =
-                market.currentOdds
-
-              const movement =
-                previousOdds -
-                currentOdds
-
-              if (movement > 1) {
-                market.steamCount += 1
-
-                market.marketSignals.push(
-                  {
-                    type: 'STEAMER',
-                    movement,
-                    timestamp:
-                      new Date().toISOString(),
-                  }
-                )
-              }
-
-              if (movement < -1) {
-                market.driftCount += 1
-
-                market.marketSignals.push(
-                  {
-                    type: 'DRIFTER',
-                    movement,
-                    timestamp:
-                      new Date().toISOString(),
-                  }
-                )
-              }
-
-              market.movements.push({
-                previousOdds,
-                currentOdds,
-                movement,
-                timestamp:
-                  new Date().toISOString(),
-              })
-
-              market.currentOdds =
-                currentOdds
-
-              market.lowestOdds =
-                Math.min(
-                  market.lowestOdds ||
-                    currentOdds,
-                  currentOdds
-                )
-
-              market.highestOdds =
-                Math.max(
-                  market.highestOdds ||
-                    currentOdds,
-                  currentOdds
-                )
-            }
-
-            profile.runs += 1
-
-            profile.lastSeen =
-              new Date().toISOString()
-
-            profile.bestScore =
-              Math.max(
-                profile.bestScore,
-                score
-              )
-
-            profile.averageScore =
-              Math.round(
-                (
-                  profile.averageScore *
-                    (profile.runs -
-                      1) +
-                  score
-                ) / profile.runs
-              )
-
-            if (
-              !profile.courses.includes(
-                race.course
-              )
-            ) {
-              profile.courses.push(
-                race.course
-              )
-            }
-
-            replayFlags.forEach(
-              (flag) => {
-                if (
-                  !profile.replayFlags.includes(
-                    flag
-                  )
-                ) {
-                  profile.replayFlags.push(
-                    flag
-                  )
-                }
-
-                REPLAY_DATABASE[
-                  horseId
-                ].replayNotes.push({
-                  date:
-                    new Date().toISOString(),
-                  race: race.race_name,
-                  course: race.course,
-                  note: flag,
-                  confidence: score,
-                })
-              }
-            )
-
             return {
               ...runner,
               score,
               replayTriggers:
                 replayFlags,
-              horseProfile: profile,
-              market,
               aiProfile,
               bettingSignals,
             }
@@ -477,97 +284,46 @@ async function fetchLiveMeetings() {
     LIVE_STATE.loading = false
 
     saveDatabase(
-      HORSE_DB_PATH,
-      HORSE_DATABASE
-    )
-
-    saveDatabase(
-      REPLAY_DB_PATH,
-      REPLAY_DATABASE
-    )
-
-    saveDatabase(
-      MARKET_DB_PATH,
-      MARKET_DATABASE
-    )
-
-    saveDatabase(
       ALERT_DB_PATH,
       ALERT_DATABASE
     )
 
-    console.log(
-      `Loaded ${processed.length} races`
-    )
+    io.emit('live-update', LIVE_STATE)
 
     console.log(
-      'Live alert engine active'
+      `Broadcasted ${processed.length} races`
     )
   } catch (error) {
-    console.error(
-      'Live engine failed:',
-      error
-    )
+    console.error(error)
   }
 }
 
-fetchLiveMeetings().catch(console.error)
+fetchLiveMeetings()
 
-setInterval(() => {
-  fetchLiveMeetings().catch(
-    console.error
-  )
-}, 60000)
+setInterval(fetchLiveMeetings, 30000)
+
+io.on('connection', (socket) => {
+  console.log('Client connected')
+
+  socket.emit('live-update', LIVE_STATE)
+})
 
 app.get('/api/live-state', (_req, res) => {
   res.json(LIVE_STATE)
 })
-
-app.get('/api/horses', (_req, res) => {
-  res.json(HORSE_DATABASE)
-})
-
-app.get(
-  '/api/replay-flags',
-  (_req, res) => {
-    res.json(REPLAY_DATABASE)
-  }
-)
-
-app.get(
-  '/api/market-movers',
-  (_req, res) => {
-    const movers = Object.values(
-      MARKET_DATABASE
-    )
-      .sort(
-        (a, b) =>
-          b.steamCount -
-          a.steamCount
-      )
-      .slice(0, 50)
-
-    res.json(movers)
-  }
-)
 
 app.get('/api/alerts', (_req, res) => {
   const alerts = Object.values(
     ALERT_DATABASE
   )
     .flat()
-    .sort(
-      (a, b) =>
-        new Date(b.timestamp) -
-        new Date(a.timestamp)
-    )
     .slice(0, 100)
 
   res.json(alerts)
 })
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(
-    `APEX live engine running on port ${PORT}`
+    `APEX websocket engine running on ${PORT}`
   )
 })
