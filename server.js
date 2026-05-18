@@ -10,6 +10,10 @@ import { Server } from 'socket.io'
 import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
 import { analyzeMarketMovement } from './src/lib/marketEngine.js'
+import {
+  analyzeHistoricalPerformance,
+  buildLearningRecord,
+} from './src/lib/learningEngine.js'
 
 dotenv.config()
 
@@ -28,23 +32,10 @@ app.use(express.json())
 
 const PORT = process.env.PORT || 3000
 
-const HORSE_DB_PATH = path.join(
-  process.cwd(),
-  'data',
-  'horses.json'
-)
-
-const MARKET_DB_PATH = path.join(
-  process.cwd(),
-  'data',
-  'market.json'
-)
-
-const ALERT_DB_PATH = path.join(
-  process.cwd(),
-  'data',
-  'alerts.json'
-)
+const HORSE_DB_PATH = path.join(process.cwd(), 'data', 'horses.json')
+const MARKET_DB_PATH = path.join(process.cwd(), 'data', 'market.json')
+const ALERT_DB_PATH = path.join(process.cwd(), 'data', 'alerts.json')
+const LEARNING_DB_PATH = path.join(process.cwd(), 'data', 'learning.json')
 
 function loadDatabase(filePath) {
   try {
@@ -53,7 +44,6 @@ function loadDatabase(filePath) {
     }
 
     const raw = fs.readFileSync(filePath)
-
     return JSON.parse(raw)
   } catch (error) {
     console.error('Failed to load DB:', error)
@@ -76,17 +66,10 @@ function saveDatabase(filePath, database) {
   }
 }
 
-const HORSE_DATABASE = loadDatabase(
-  HORSE_DB_PATH
-)
-
-const MARKET_DATABASE = loadDatabase(
-  MARKET_DB_PATH
-)
-
-const ALERT_DATABASE = loadDatabase(
-  ALERT_DB_PATH
-)
+const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
+const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
+const ALERT_DATABASE = loadDatabase(ALERT_DB_PATH)
+const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)
 
 const LIVE_STATE = {
   racecards: [],
@@ -94,13 +77,7 @@ const LIVE_STATE = {
   loading: true,
 }
 
-function createAlert(
-  horseId,
-  horse,
-  type,
-  message,
-  severity = 'MEDIUM'
-) {
+function createAlert(horseId, horse, type, message, severity = 'MEDIUM') {
   if (!ALERT_DATABASE[horseId]) {
     ALERT_DATABASE[horseId] = []
   }
@@ -114,21 +91,30 @@ function createAlert(
   }
 
   ALERT_DATABASE[horseId].unshift(alert)
-
-  ALERT_DATABASE[horseId] =
-    ALERT_DATABASE[horseId].slice(0, 50)
+  ALERT_DATABASE[horseId] = ALERT_DATABASE[horseId].slice(0, 50)
 
   io.emit('new-alert', alert)
 }
 
+function storeLearningRecord(record) {
+  if (!LEARNING_DATABASE.records) {
+    LEARNING_DATABASE.records = []
+  }
+
+  LEARNING_DATABASE.records.unshift(record)
+  LEARNING_DATABASE.records = LEARNING_DATABASE.records.slice(0, 5000)
+
+  LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
+    LEARNING_DATABASE.records
+  )
+}
+
 async function fetchLiveMeetings() {
   try {
-    console.log(
-      'Refreshing live meetings...'
-    )
+    console.log('Refreshing live meetings...')
 
     const response = await fetch(
-      `https://api.theracingapi.com/v1/racecards/free`,
+      'https://api.theracingapi.com/v1/racecards/free',
       {
         headers: {
           Authorization:
@@ -141,132 +127,109 @@ async function fetchLiveMeetings() {
     )
 
     const data = await response.json()
-
     const racecards = data.racecards || []
 
-    const processed = racecards.map(
-      (race) => {
-        const runners = race.runners || []
+    const processed = racecards.map((race) => {
+      const runners = race.runners || []
 
-        const scoredRunners = runners.map(
-          (runner) => {
-            const horseId =
-              runner.horse_id ||
-              runner.horse
+      const scoredRunners = runners.map((runner) => {
+        const horseId = runner.horse_id || runner.horse
 
-            if (
-              !HORSE_DATABASE[horseId]
-            ) {
-              HORSE_DATABASE[horseId] = {
-                horse: runner.horse,
-                runs: 0,
-                bestScore: 0,
-              }
-            }
-
-            const previousOdds =
-              MARKET_DATABASE[horseId]
-                ?.lastOdds || runner.odds
-
-            const aiProfile =
-              generateConfidence({
-                ...runner,
-                horseProfile:
-                  HORSE_DATABASE[horseId],
-              })
-
-            const marketMovement =
-              analyzeMarketMovement({
-                horse: runner.horse,
-                currentOdds: runner.odds,
-                previousOdds,
-                aiConfidence:
-                  aiProfile.confidence,
-              })
-
-            MARKET_DATABASE[horseId] = {
-              horse: runner.horse,
-              lastOdds: runner.odds,
-              movement:
-                marketMovement.movement,
-              updatedAt:
-                new Date().toISOString(),
-            }
-
-            if (marketMovement.alert) {
-              createAlert(
-                horseId,
-                runner.horse,
-                marketMovement.alert.type,
-                marketMovement.alert.message,
-                marketMovement.alert.severity
-              )
-            }
-
-            const bettingSignals =
-              generateSignals({
-                ...runner,
-                aiProfile,
-                marketMovement,
-              })
-
-            return {
-              ...runner,
-              aiProfile,
-              bettingSignals,
-              marketMovement,
-            }
+        if (!HORSE_DATABASE[horseId]) {
+          HORSE_DATABASE[horseId] = {
+            horse: runner.horse,
+            runs: 0,
+            bestScore: 0,
           }
-        )
+        }
+
+        const previousOdds =
+          MARKET_DATABASE[horseId]?.lastOdds || runner.odds
+
+        const aiProfile = generateConfidence({
+          ...runner,
+          horseProfile: HORSE_DATABASE[horseId],
+        })
+
+        const marketMovement = analyzeMarketMovement({
+          horse: runner.horse,
+          currentOdds: runner.odds,
+          previousOdds,
+          aiConfidence: aiProfile.confidence,
+        })
+
+        MARKET_DATABASE[horseId] = {
+          horse: runner.horse,
+          lastOdds: runner.odds,
+          movement: marketMovement.movement,
+          updatedAt: new Date().toISOString(),
+        }
+
+        if (marketMovement.alert) {
+          createAlert(
+            horseId,
+            runner.horse,
+            marketMovement.alert.type,
+            marketMovement.alert.message,
+            marketMovement.alert.severity
+          )
+        }
+
+        const bettingSignals = generateSignals({
+          ...runner,
+          aiProfile,
+          marketMovement,
+        })
+
+        const learningRecord = buildLearningRecord({
+          horse: runner.horse,
+          aiConfidence: aiProfile.confidence,
+          signal: bettingSignals?.[0]?.type || 'NONE',
+          spOdds: runner.odds || 0,
+          position: 0,
+          marketMovement: marketMovement.movement,
+        })
+
+        storeLearningRecord(learningRecord)
 
         return {
-          ...race,
-          runners:
-            scoredRunners.sort(
-              (a, b) =>
-                b.aiProfile
-                  .confidence -
-                a.aiProfile
-                  .confidence
-            ),
+          ...runner,
+          aiProfile,
+          bettingSignals,
+          marketMovement,
         }
+      })
+
+      return {
+        ...race,
+        runners: scoredRunners.sort(
+          (a, b) =>
+            b.aiProfile.confidence - a.aiProfile.confidence
+        ),
       }
-    )
+    })
 
     LIVE_STATE.racecards = processed
-
-    LIVE_STATE.updatedAt =
-      new Date().toISOString()
-
+    LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
 
-    saveDatabase(
-      MARKET_DB_PATH,
-      MARKET_DATABASE
-    )
-
-    saveDatabase(
-      ALERT_DB_PATH,
-      ALERT_DATABASE
-    )
+    saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
+    saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
+    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
 
     io.emit('live-update', LIVE_STATE)
 
-    console.log(
-      `Broadcasted ${processed.length} races`
-    )
+    console.log(`Broadcasted ${processed.length} races`)
   } catch (error) {
     console.error(error)
   }
 }
 
 fetchLiveMeetings()
-
 setInterval(fetchLiveMeetings, 60000)
 
 io.on('connection', (socket) => {
   console.log('Client connected')
-
   socket.emit('live-update', LIVE_STATE)
 })
 
@@ -275,9 +238,7 @@ app.get('/api/live-state', (_req, res) => {
 })
 
 app.get('/api/alerts', (_req, res) => {
-  const alerts = Object.values(
-    ALERT_DATABASE
-  )
+  const alerts = Object.values(ALERT_DATABASE)
     .flat()
     .slice(0, 100)
 
@@ -285,15 +246,22 @@ app.get('/api/alerts', (_req, res) => {
 })
 
 app.get('/api/market-movers', (_req, res) => {
-  const movers = Object.values(
-    MARKET_DATABASE
-  )
+  res.json(Object.values(MARKET_DATABASE))
+})
 
-  res.json(movers)
+app.get('/api/learning-stats', (_req, res) => {
+  res.json(
+    LEARNING_DATABASE.analytics || {
+      totalBets: 0,
+      winners: 0,
+      strikeRate: 0,
+      roi: 0,
+      averageConfidence: 0,
+      profitableSignals: [],
+    }
+  )
 })
 
 server.listen(PORT, () => {
-  console.log(
-    `APEX websocket engine running on ${PORT}`
-  )
+  console.log(`APEX websocket engine running on ${PORT}`)
 })
