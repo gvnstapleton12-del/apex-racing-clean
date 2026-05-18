@@ -1,7 +1,7 @@
 {
   "hrs_64780492": {
     "horse": "Calef",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -13,11 +13,11 @@
     "trainer": "David O'Meara",
     "jockey": "Daniel Tudhope",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.006Z"
   },
   "hrs_63811160": {
     "horse": "Crownbreaker",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -29,11 +29,11 @@
     "trainer": "Kevin Philippart De Foy",
     "jockey": "Rowan Scott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.006Z"
   },
   "hrs_64780513": {
     "horse": "Miss Havisham",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -45,11 +45,11 @@
     "trainer": "Kevin Ryan",
     "jockey": "Kevin Stott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_64780499": {
     "horse": "Wild Blossom",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -61,15 +61,18 @@
     "trainer": "K R Burke",
     "jockey": "James Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_42554267": {
     "horse": "Acrisius",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -77,11 +80,11 @@
     "trainer": "Michael & David Easterby",
     "jockey": "Daniel Tudhope",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_36221591": {
     "horse": "Keldeo",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -93,15 +96,17 @@
     "trainer": "Ollie Pears",
     "jockey": "Cam Hardie",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_30765098": {
     "horse": "Wen Moon",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -109,15 +114,17 @@
     "trainer": "Ben Haslam",
     "jockey": "Andrew Mullen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_35149646": {
     "horse": "Speeding Bullet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -125,15 +132,17 @@
     "trainer": "Paul Midgley",
     "jockey": "David Nolan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_24907680": {
     "horse": "Hurt You Never",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -141,15 +150,17 @@
     "trainer": "Adrian Nicholls",
     "jockey": "Jack Nicholls(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_31055570": {
     "horse": "Fierce",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -157,15 +168,17 @@
     "trainer": "Paul Midgley",
     "jockey": "Ray Dawson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_36428168": {
     "horse": "Imperial Guard",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -173,11 +186,11 @@
     "trainer": "Michael Dods",
     "jockey": "Mark Winn",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_46913300": {
     "horse": "Dc Cogent",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -189,11 +202,11 @@
     "trainer": "Bryan Smart",
     "jockey": "Paul Mulrennan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_39190459": {
     "horse": "Blue Lakota",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -205,11 +218,11 @@
     "trainer": "Kevin Ryan",
     "jockey": "Kevin Stott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_24541503": {
     "horse": "Harb",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -221,15 +234,17 @@
     "trainer": "Tristan Davidson",
     "jockey": "Rowan Scott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_53181527": {
     "horse": "Harry Mole",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -237,15 +252,17 @@
     "trainer": "Steph Hollinshead",
     "jockey": "Faye McManoman",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_39961040": {
     "horse": "Call Me Betty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -253,11 +270,11 @@
     "trainer": "Michael Dods",
     "jockey": "Mark Winn",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_44417597": {
     "horse": "Magic Boy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -269,15 +286,17 @@
     "trainer": "Nigel Tinkler",
     "jockey": "Faye McManoman",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_41223098": {
     "horse": "Ran Amok",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -285,15 +304,17 @@
     "trainer": "Hugo Palmer",
     "jockey": "Jack Nicholls(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_56746452": {
     "horse": "Mr Dreamseller",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -301,11 +322,11 @@
     "trainer": "David & Nicola Barron",
     "jockey": "David Nolan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_43351994": {
     "horse": "Counting Cards",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -317,15 +338,18 @@
     "trainer": "Edward Bethell",
     "jockey": "Callum Rodriguez",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.457Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_44417667": {
     "horse": "Surprised",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -333,11 +357,11 @@
     "trainer": "Bryan Smart",
     "jockey": "Paul Mulrennan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_35714469": {
     "horse": "Raft Up",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -349,15 +373,17 @@
     "trainer": "Harriet Bethell",
     "jockey": "Ethan Tindall(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_30628304": {
     "horse": "Mount Ruapehu",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -365,15 +391,17 @@
     "trainer": "Iain Jardine",
     "jockey": "Andrew Mullen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_19138882": {
     "horse": "Impressor",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -381,15 +409,17 @@
     "trainer": "Phillip Makin",
     "jockey": "P J McDonald",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_52087504": {
     "horse": "Invincible Ruby",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -397,15 +427,17 @@
     "trainer": "Iain Jardine",
     "jockey": "Mohammed Tabti(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_43860187": {
     "horse": "Lightning Galaxy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -413,15 +445,17 @@
     "trainer": "Michael Dods",
     "jockey": "Rhys Elliott(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_43287860": {
     "horse": "Fan Mail",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -429,15 +463,17 @@
     "trainer": "Tim Easterby",
     "jockey": "Sean Kirrane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_21648795": {
     "horse": "Iris Dancer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -445,15 +481,17 @@
     "trainer": "Tristan Davidson",
     "jockey": "Rowan Scott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_53420353": {
     "horse": "Loki",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -461,11 +499,11 @@
     "trainer": "Oliver Greenall & Josh Guerriero",
     "jockey": "P J McDonald",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_54644814": {
     "horse": "Lord",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -477,11 +515,11 @@
     "trainer": "Donald McCain",
     "jockey": "Paul Mulrennan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_23690562": {
     "horse": "Swinging London",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -493,11 +531,11 @@
     "trainer": "John Mackie",
     "jockey": "Ray Dawson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_25908771": {
     "horse": "Haarar",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -509,11 +547,11 @@
     "trainer": "Sam England",
     "jockey": "Tom Eaves",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_45661735": {
     "horse": "Ashdown Forest",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -525,11 +563,11 @@
     "trainer": "Jedd O'Keeffe",
     "jockey": "Jack Garritty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_31344250": {
     "horse": "As Fast As Wind",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -541,11 +579,11 @@
     "trainer": "Tristan Davidson",
     "jockey": "Rowan Scott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_32277224": {
     "horse": "Charlie Darling",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -557,11 +595,11 @@
     "trainer": "Alan Brown",
     "jockey": "Sean Kirrane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_14660457": {
     "horse": "Billy No Mates",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -573,15 +611,17 @@
     "trainer": "Michael Dods",
     "jockey": "Rhys Elliott(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_43417885": {
     "horse": "Cascade Hall",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -589,11 +629,11 @@
     "trainer": "Jim Goldie",
     "jockey": "Lauren Young(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.021Z"
   },
   "hrs_50809647": {
     "horse": "Freddie Steady Go",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -605,15 +645,17 @@
     "trainer": "Susan Corbett",
     "jockey": "Cam Hardie",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_57008385": {
     "horse": "Wezzeer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -621,11 +663,11 @@
     "trainer": "Roger Varian",
     "jockey": "Ray Dawson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_64712991": {
     "horse": "Albemagic",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -637,11 +679,11 @@
     "trainer": "Steph Hollinshead",
     "jockey": "P J McDonald",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_55211135": {
     "horse": "Bee Farmer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -653,11 +695,11 @@
     "trainer": "Edward Bethell",
     "jockey": "Kevin Stott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_63809662": {
     "horse": "Blue Boy Junior",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -669,11 +711,11 @@
     "trainer": "David & Nicola Barron",
     "jockey": "David Nolan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_55764471": {
     "horse": "Dark Sovereign",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -685,15 +727,17 @@
     "trainer": "Ralph Beckett",
     "jockey": "Callum Rodriguez",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_63586264": {
     "horse": "Golden Harvest",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -701,11 +745,11 @@
     "trainer": "Steph Hollinshead",
     "jockey": "Dougie Costello",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_53390330": {
     "horse": "Great Profit",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -717,11 +761,11 @@
     "trainer": "Gary Harrison",
     "jockey": "Rhys Elliott(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_63586362": {
     "horse": "Tzarmaggedon",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -733,11 +777,11 @@
     "trainer": "Bryan Smart",
     "jockey": "Paul Mulrennan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_54811379": {
     "horse": "Lunar Melody",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -749,15 +793,17 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "James Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_58132606": {
     "horse": "Royal Sizzler",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -765,11 +811,11 @@
     "trainer": "Michael Dods",
     "jockey": "Mark Winn",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_62235810": {
     "horse": "Too Darn Spicy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -781,11 +827,11 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "Jack Garritty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_52452106": {
     "horse": "Thankfully Simmy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -797,15 +843,17 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "David Nolan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_61455688": {
     "horse": "Cobalt Comet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -813,11 +861,11 @@
     "trainer": "John Mackie",
     "jockey": "Cam Hardie",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_49144081": {
     "horse": "Hatamoto",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -829,15 +877,17 @@
     "trainer": "Tim Easterby",
     "jockey": "Sean Kirrane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_52329256": {
     "horse": "Smoker Bellamy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -845,15 +895,17 @@
     "trainer": "Dr Richard Newland & Jamie Insole",
     "jockey": "Daniel Tudhope",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_57223075": {
     "horse": "Helios Path",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -861,11 +913,11 @@
     "trainer": "Steph Hollinshead",
     "jockey": "P J McDonald",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_56746382": {
     "horse": "Mereside Princess",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -877,15 +929,17 @@
     "trainer": "David & Nicola Barron",
     "jockey": "Mark Winn",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_55634110": {
     "horse": "The Floors Munky",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -893,11 +947,11 @@
     "trainer": "Gary Rutherford",
     "jockey": "Amie Waugh(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_52742074": {
     "horse": "Dandy Orton",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -909,15 +963,17 @@
     "trainer": "Wilf Storey",
     "jockey": "Andrew Mullen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_56873775": {
     "horse": "Royal Baroness",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -925,15 +981,17 @@
     "trainer": "R Mike Smith",
     "jockey": "Rhys Elliott(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_43508472": {
     "horse": "Native Instinct",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -941,11 +999,11 @@
     "trainer": "Edward Bethell",
     "jockey": "Callum Rodriguez",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_32568487": {
     "horse": "William Dewhirst",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -957,11 +1015,11 @@
     "trainer": "Ben Haslam",
     "jockey": "Paul Mulrennan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_43667204": {
     "horse": "They All Know Me",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -973,15 +1031,17 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "David Nolan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_43508444": {
     "horse": "This Farh",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -989,15 +1049,17 @@
     "trainer": "David Loughnane",
     "jockey": "NON-RUNNER",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_41877542": {
     "horse": "Green Pursuit",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -1005,15 +1067,17 @@
     "trainer": "Seb Spencer",
     "jockey": "Dale Swift",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_42715386": {
     "horse": "Black Storm",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -1021,11 +1085,11 @@
     "trainer": "Katie Scott",
     "jockey": "Daniel Tudhope",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_30123793": {
     "horse": "Vince Le Prince",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1037,11 +1101,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Sean Kirrane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_55665960": {
     "horse": "Judicature",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1053,15 +1117,17 @@
     "trainer": "Joel Parkinson & Sue Smith",
     "jockey": "Tom Eaves",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_24846409": {
     "horse": "Bay Breeze",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Carlisle"
     ],
@@ -1069,11 +1135,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Jake Dickson(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.022Z"
   },
   "hrs_41191255": {
     "horse": "Wish This",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1085,11 +1151,11 @@
     "trainer": "Alan Brown",
     "jockey": "Ray Dawson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_19877760": {
     "horse": "Detective",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1101,11 +1167,11 @@
     "trainer": "Dianne Sayer",
     "jockey": "Lauren Young(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_37208038": {
     "horse": "Primo Lara",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1117,15 +1183,17 @@
     "trainer": "Jack Morland",
     "jockey": "George Wood",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.458Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_45855299": {
     "horse": "Celestias Comet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1133,11 +1201,11 @@
     "trainer": "James Fanshawe",
     "jockey": "Ross Coakley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.459Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_50401645": {
     "horse": "Dancing Tiger",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1149,11 +1217,11 @@
     "trainer": "Roger Teal",
     "jockey": "Marco Ghiani",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.459Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_21995274": {
     "horse": "Oman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1165,11 +1233,11 @@
     "trainer": "Tony Carroll",
     "jockey": "Clifford Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.459Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_44076025": {
     "horse": "King's Hand",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1181,11 +1249,11 @@
     "trainer": "Joseph Parr",
     "jockey": "David Egan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_44873752": {
     "horse": "Premier",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1197,11 +1265,11 @@
     "trainer": "Warren Greatrex",
     "jockey": "Finley Marsh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_37686880": {
     "horse": "Bobacious",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1213,11 +1281,11 @@
     "trainer": "Mark Hoad",
     "jockey": "Ashley Lewis(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_45314927": {
     "horse": "Panama Black",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1229,11 +1297,11 @@
     "trainer": "Laura Mongan",
     "jockey": "William Carson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.023Z"
   },
   "hrs_22523613": {
     "horse": "Lunar Power",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1245,11 +1313,11 @@
     "trainer": "Laura Mongan",
     "jockey": "William Carson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_46077346": {
     "horse": "Rogue Empire",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1261,11 +1329,11 @@
     "trainer": "Roger Teal",
     "jockey": "Marco Ghiani",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_21713489": {
     "horse": "Smokey Malone",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1277,15 +1345,17 @@
     "trainer": "Julia & Shelley Birkett",
     "jockey": "Sean Levey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_30469887": {
     "horse": "Regally Blonde",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1293,11 +1363,11 @@
     "trainer": "Ben Case",
     "jockey": "Hector Crouch",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_27206690": {
     "horse": "Balgowan",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1309,11 +1379,11 @@
     "trainer": "Seamus Mullins",
     "jockey": "Ashley Lewis(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_14404243": {
     "horse": "Cherry Cola",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1325,11 +1395,11 @@
     "trainer": "Sheena West",
     "jockey": "Rose Dawes(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_37673370": {
     "horse": "Charles Morin",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1341,15 +1411,17 @@
     "trainer": "Pat Phelan",
     "jockey": "James Glennon(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_14616238": {
     "horse": "Capone",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1357,11 +1429,11 @@
     "trainer": "Dominic Ffrench Davis",
     "jockey": "Ben Ffrench Davis(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_13020959": {
     "horse": "Smith",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1373,15 +1445,17 @@
     "trainer": "Lydia Richards",
     "jockey": "Jack Dace(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_42715295": {
     "horse": "High Favour",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1389,15 +1463,17 @@
     "trainer": "Camilla Poulton",
     "jockey": "Tyler Heard",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_52236331": {
     "horse": "Golden Samba",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1405,11 +1481,11 @@
     "trainer": "Ed de Giles",
     "jockey": "Olivia Tubb(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64135064": {
     "horse": "Bin Waary",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1421,11 +1497,11 @@
     "trainer": "Charlie Johnston",
     "jockey": "Hector Crouch",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780548": {
     "horse": "Dashing Digger",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1437,11 +1513,11 @@
     "trainer": "William Stone",
     "jockey": "Ross Coakley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780562": {
     "horse": "Encounter",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1453,11 +1529,11 @@
     "trainer": "S Woods",
     "jockey": "Ryan Moore",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64257949": {
     "horse": "Notable Dream",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1469,11 +1545,11 @@
     "trainer": "Marco Botti",
     "jockey": "Marco Ghiani",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_62168211": {
     "horse": "Rafe's Da Man",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1485,11 +1561,11 @@
     "trainer": "Richard Hannon",
     "jockey": "Sean Levey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780534": {
     "horse": "Theheatison",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1501,11 +1577,11 @@
     "trainer": "Nick Scholfield",
     "jockey": "George Wood",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_56219464": {
     "horse": "Behike",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1517,11 +1593,11 @@
     "trainer": "George Scott",
     "jockey": "David Egan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63586292": {
     "horse": "Railwayman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1533,11 +1609,11 @@
     "trainer": "K R Burke",
     "jockey": "Clifford Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_52054548": {
     "horse": "Ray Mon Dough",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1549,11 +1625,11 @@
     "trainer": "Oliver Cole",
     "jockey": "Hector Crouch",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_52055066": {
     "horse": "Elite Approach",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1565,11 +1641,11 @@
     "trainer": "Joey Ramsden",
     "jockey": "NON-RUNNER",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_52054408": {
     "horse": "Jean's Boy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1581,11 +1657,11 @@
     "trainer": "Archie Watson",
     "jockey": "William Cox",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64072414": {
     "horse": "Rianka",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1597,11 +1673,11 @@
     "trainer": "Martin Dunne",
     "jockey": "Tyler Heard",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63809557": {
     "horse": "Wayward Queen",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1613,11 +1689,11 @@
     "trainer": "Ralph Beckett",
     "jockey": "Robbie Downey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_22250963": {
     "horse": "Whenthedealinsdone",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1629,15 +1705,17 @@
     "trainer": "Roger Teal",
     "jockey": "George Wood",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_36302567": {
     "horse": "Hedge Fund",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1645,11 +1723,11 @@
     "trainer": "Michael Appleby",
     "jockey": "Finley Marsh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_24921869": {
     "horse": "Twilight Jet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1661,11 +1739,11 @@
     "trainer": "Jim & Suzi Best",
     "jockey": "Sean Levey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_44785958": {
     "horse": "Spendmore Lane",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1677,11 +1755,11 @@
     "trainer": "David Loughnane",
     "jockey": "David Egan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_41661319": {
     "horse": "No Return",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1693,11 +1771,11 @@
     "trainer": "Charlie Johnston",
     "jockey": "Hector Crouch",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_45534853": {
     "horse": "Travel Agent",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1709,11 +1787,11 @@
     "trainer": "Adam Kirby",
     "jockey": "William Carson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_35149212": {
     "horse": "Invincible Speed",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1725,11 +1803,11 @@
     "trainer": "Mark Loughnane",
     "jockey": "Clifford Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_36738660": {
     "horse": "Profit Street",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1741,11 +1819,11 @@
     "trainer": "Joey Ramsden",
     "jockey": "Andrea Pinna(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_13850760": {
     "horse": "Recon Mission",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1757,11 +1835,11 @@
     "trainer": "Tony Carroll",
     "jockey": "Marco Ghiani",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_49141708": {
     "horse": "Enter Sandman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1773,11 +1851,11 @@
     "trainer": "Richard Spencer",
     "jockey": "George Wood",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_54712280": {
     "horse": "Tie Fighter",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1789,11 +1867,11 @@
     "trainer": "Ed Dunlop",
     "jockey": "Hector Crouch",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_59116827": {
     "horse": "Life After Love",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1805,11 +1883,11 @@
     "trainer": "Ollie Sangster",
     "jockey": "David Egan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_55061930": {
     "horse": "Bessie Wallis",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1821,11 +1899,11 @@
     "trainer": "David Menuisier",
     "jockey": "Sean Levey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_55882330": {
     "horse": "Solar Invincible",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -1837,15 +1915,17 @@
     "trainer": "Roger Teal",
     "jockey": "Owen Lewis(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_55763918": {
     "horse": "Viking Glory",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1853,11 +1933,11 @@
     "trainer": "James Owen",
     "jockey": "William Carson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_53081441": {
     "horse": "Red Snapper",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -1869,15 +1949,17 @@
     "trainer": "Kathy Turner",
     "jockey": "Laura Coughlan(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_54842725": {
     "horse": "Yes Waliim",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Lingfield"
     ],
@@ -1885,11 +1967,11 @@
     "trainer": "Richard Hughes",
     "jockey": "Oliver Hoodless(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_49141645": {
     "horse": "Beach Partee",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1901,11 +1983,11 @@
     "trainer": "Scott Dixon",
     "jockey": "Mikkel Mortensen(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_53052300": {
     "horse": "Adalida",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -1917,11 +1999,11 @@
     "trainer": "Stuart Williams",
     "jockey": "Marco Ghiani",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64135001": {
     "horse": "C'Est Lui",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1933,15 +2015,17 @@
     "trainer": "Dylan Cunha",
     "jockey": "Sean D Bowen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780569": {
     "horse": "Carry On Chaos",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -1949,11 +2033,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Oisin McSweeney",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63840021": {
     "horse": "Dave's Matey",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1965,11 +2049,11 @@
     "trainer": "Tim Easterby",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.460Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64102409": {
     "horse": "Eighteenth Smiles",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -1981,15 +2065,17 @@
     "trainer": "Joseph Patrick O'Brien",
     "jockey": "Cieren Fallon",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64072211": {
     "horse": "Formby George",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -1997,15 +2083,17 @@
     "trainer": "Michael Appleby",
     "jockey": "Alistair Rawlinson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64168076": {
     "horse": "Kach Above",
-    "runs": 4,
+    "runs": 8,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar",
       "Windsor"
@@ -2014,11 +2102,11 @@
     "trainer": "David Loughnane",
     "jockey": "NON-RUNNER",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64257998": {
     "horse": "Kodiak Breeze",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2030,15 +2118,17 @@
     "trainer": "Kevin Ryan",
     "jockey": "Shane Gray",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64555631": {
     "horse": "Peggy's Lad",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2046,15 +2136,17 @@
     "trainer": "Iain Jardine",
     "jockey": "Jason Hart",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780576": {
     "horse": "Arenite",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2062,11 +2154,11 @@
     "trainer": "Michael Dods",
     "jockey": "Connor Beasley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63650370": {
     "horse": "Baila Morena",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2078,15 +2170,17 @@
     "trainer": "Ollie Pears",
     "jockey": "Harry Russell",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_62170402": {
     "horse": "Bluestone Lady",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2094,11 +2188,11 @@
     "trainer": "K R Burke",
     "jockey": "Sam James",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64135015": {
     "horse": "Crystal Kraken",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2110,11 +2204,11 @@
     "trainer": "Dylan Cunha",
     "jockey": "Zak Wheatley(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64294916": {
     "horse": "Givendale",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2126,11 +2220,11 @@
     "trainer": "Nigel Tinkler",
     "jockey": "Alex Jary(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780632": {
     "horse": "Needin' U",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2142,15 +2236,17 @@
     "trainer": "Michael & David Easterby",
     "jockey": "Billy Garritty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780597": {
     "horse": "Sloequelle",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2158,11 +2254,11 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "Oisin Orr",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63809627": {
     "horse": "Tiger In The Tree",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2174,11 +2270,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Duran Fentiman",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64072372": {
     "horse": "Wells Fargo Stage",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2190,11 +2286,11 @@
     "trainer": "Tim Easterby",
     "jockey": "James Sullivan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780611": {
     "horse": "Don't Stop Movin",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2206,11 +2302,11 @@
     "trainer": "Michael Dods",
     "jockey": "Connor Beasley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63323435": {
     "horse": "Hicko's Lad",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2222,11 +2318,11 @@
     "trainer": "Michael & David Easterby",
     "jockey": "Billy Garritty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_64780618": {
     "horse": "Mottaret",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2238,11 +2334,11 @@
     "trainer": "Tim Easterby",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_63810880": {
     "horse": "Revels",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2254,11 +2350,11 @@
     "trainer": "K R Burke",
     "jockey": "Sam James",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.024Z"
   },
   "hrs_62169506": {
     "horse": "Sou'wester",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2270,11 +2366,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Duran Fentiman",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64780527": {
     "horse": "Sword Salute",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2286,11 +2382,11 @@
     "trainer": "Charlie Johnston",
     "jockey": "Jason Hart",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64780639": {
     "horse": "Farndale",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2302,11 +2398,11 @@
     "trainer": "Tim Easterby",
     "jockey": "James Sullivan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35553336": {
     "horse": "Straight A",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2318,11 +2414,11 @@
     "trainer": "Michael Appleby",
     "jockey": "Alistair Rawlinson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_40646781": {
     "horse": "Thequietman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2334,11 +2430,11 @@
     "trainer": "David O'Meara",
     "jockey": "Billy Garritty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35499492": {
     "horse": "Mariner",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2350,15 +2446,17 @@
     "trainer": "Jennie Candlish",
     "jockey": "Darragh Keenan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_40919739": {
     "horse": "We've Got This",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2366,11 +2464,11 @@
     "trainer": "Ivan Furtado",
     "jockey": "Jason Hart",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35243145": {
     "horse": "Up The Jazz",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2382,15 +2480,17 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "Oisin Orr",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_39848648": {
     "horse": "Travis",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2398,15 +2498,17 @@
     "trainer": "Geoffrey Harker",
     "jockey": "Sam James",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_43352169": {
     "horse": "Thats My Boy Luke",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2414,11 +2516,11 @@
     "trainer": "Tim Easterby",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_50875146": {
     "horse": "The Sweet Escape",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -2430,15 +2532,17 @@
     "trainer": "David Loughnane",
     "jockey": "William Pyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_36484959": {
     "horse": "Whiskey Pete",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2446,15 +2550,17 @@
     "trainer": "Nigel Tinkler",
     "jockey": "Alex Jary(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_41090882": {
     "horse": "Kiss Me My Love",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2462,15 +2568,17 @@
     "trainer": "Roger Fell",
     "jockey": "Joanna Mason",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_30750349": {
     "horse": "Chuzzlewit",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2478,11 +2586,11 @@
     "trainer": "Seb Spencer",
     "jockey": "Shane Gray",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_48414149": {
     "horse": "Hachiman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2494,15 +2602,17 @@
     "trainer": "Ruth Carr",
     "jockey": "James Sullivan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_41939184": {
     "horse": "Electric Lightning",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2510,11 +2620,11 @@
     "trainer": "Mark Walford",
     "jockey": "Warren Fentiman(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_33096553": {
     "horse": "Princess Niyla",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2526,11 +2636,11 @@
     "trainer": "Alan Brown",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_24833459": {
     "horse": "Fire Eyes",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -2542,11 +2652,11 @@
     "trainer": "Roger Fell",
     "jockey": "Oisin McSweeney",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35796691": {
     "horse": "Letmeseethecolts",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -2558,11 +2668,11 @@
     "trainer": "Brian Ellison",
     "jockey": "Ben Robinson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_56094885": {
     "horse": "Myrrh",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -2574,11 +2684,11 @@
     "trainer": "David O'Meara",
     "jockey": "Oisin Orr",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_56591045": {
     "horse": "Ammoony",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2590,11 +2700,11 @@
     "trainer": "Tom Clover",
     "jockey": "Cieren Fallon",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_58412200": {
     "horse": "Fanciulla Del West",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2606,15 +2716,17 @@
     "trainer": "Ed Walker",
     "jockey": "George Downing",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_59367273": {
     "horse": "Eze Sur Mer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2622,11 +2734,11 @@
     "trainer": "Dr Richard Newland & Jamie Insole",
     "jockey": "Alistair Rawlinson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_57718626": {
     "horse": "Clocker",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2638,11 +2750,11 @@
     "trainer": "Edward Bethell",
     "jockey": "Ryan Sexton",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_55795040": {
     "horse": "Bergamo Gold",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -2654,15 +2766,17 @@
     "trainer": "Charlie Johnston",
     "jockey": "Jason Hart",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_36763678": {
     "horse": "Glory Hyde",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2670,15 +2784,17 @@
     "trainer": "Roger Fell",
     "jockey": "Joanna Mason",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35025571": {
     "horse": "Jenni",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2686,15 +2802,17 @@
     "trainer": "Seb Spencer",
     "jockey": "Shay Farmer(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_27166524": {
     "horse": "Lord Abama",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2702,11 +2820,11 @@
     "trainer": "Michael Dods",
     "jockey": "Connor Beasley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_53841123": {
     "horse": "Lindoro",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2718,15 +2836,17 @@
     "trainer": "Stephen Hanlon",
     "jockey": "Oliver Stammers",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_41014057": {
     "horse": "Startling",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2734,15 +2854,18 @@
     "trainer": "John Wainwright",
     "jockey": "Gianluca Sanna(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_34473586": {
     "horse": "Taygar",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2750,15 +2873,17 @@
     "trainer": "Michael Dods",
     "jockey": "Jason Hart",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_37807098": {
     "horse": "Lumenbourg",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2766,11 +2891,11 @@
     "trainer": "Julie Camacho",
     "jockey": "Ryan Sexton",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35068887": {
     "horse": "Ishe Worth Agamble",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2782,11 +2907,11 @@
     "trainer": "Tim Easterby",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_46169648": {
     "horse": "Get Up Everybody",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2798,11 +2923,11 @@
     "trainer": "Paul Midgley",
     "jockey": "Barry McHugh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_30357663": {
     "horse": "One Of Our Own",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -2814,15 +2939,17 @@
     "trainer": "Rebecca Menzies",
     "jockey": "Kaiya Fraser",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35123732": {
     "horse": "Sergeant Mayer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2830,15 +2957,17 @@
     "trainer": "Nigel Tinkler",
     "jockey": "Alex Jary(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_35445431": {
     "horse": "Profiteer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2846,11 +2975,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Duran Fentiman",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_54337311": {
     "horse": "Perfect Ruler",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2862,15 +2991,17 @@
     "trainer": "William Haggas",
     "jockey": "Cieren Fallon",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_54206278": {
     "horse": "Hey Havana",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2878,11 +3009,11 @@
     "trainer": "Geoffrey Harker",
     "jockey": "Sam James",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_50435896": {
     "horse": "Full Gas",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2894,15 +3025,17 @@
     "trainer": "Kevin Ryan",
     "jockey": "Shane Gray",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_54998020": {
     "horse": "Maximum Velocity",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -2910,11 +3043,11 @@
     "trainer": "Nigel Tinkler",
     "jockey": "Alex Jary(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_61521663": {
     "horse": "Forever Twenty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2926,11 +3059,11 @@
     "trainer": "Ivan Furtado",
     "jockey": "Jason Hart",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_49142870": {
     "horse": "Only Dream Big",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2942,11 +3075,11 @@
     "trainer": "Tim Easterby",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_51766778": {
     "horse": "Harswell River",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -2958,11 +3091,11 @@
     "trainer": "Roger Fell",
     "jockey": "Oisin McSweeney",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_55148667": {
     "horse": "Queenies Pal",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2974,11 +3107,11 @@
     "trainer": "Noel Wilson",
     "jockey": "Jamie Gormley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.461Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_53960270": {
     "horse": "Twilight Serenade",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -2990,15 +3123,17 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "Warren Fentiman(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_52054933": {
     "horse": "Go Teejay",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -3006,15 +3141,17 @@
     "trainer": "Craig Lidster",
     "jockey": "Duran Fentiman",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_53808881": {
     "horse": "Secret Testimony",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -3022,11 +3159,11 @@
     "trainer": "Declan Carroll",
     "jockey": "Zak Wheatley(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_54842683": {
     "horse": "Black Rock Beauty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3038,15 +3175,17 @@
     "trainer": "Richard & Peter Fahey",
     "jockey": "Oisin Orr",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_56961513": {
     "horse": "Realistic Dream",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -3054,11 +3193,11 @@
     "trainer": "Iain Jardine",
     "jockey": "Greg Fairley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_60594821": {
     "horse": "Maybe Soon",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3070,15 +3209,17 @@
     "trainer": "Tom Tate",
     "jockey": "Andrew Elliott",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_53148704": {
     "horse": "Walk On Walk On",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -3086,11 +3227,11 @@
     "trainer": "Noel Wilson",
     "jockey": "Jamie Gormley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_55030129": {
     "horse": "Truly Special",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3102,15 +3243,17 @@
     "trainer": "John Wainwright",
     "jockey": "Barry McHugh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_56094864": {
     "horse": "Long Shot",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -3118,15 +3261,17 @@
     "trainer": "Tim Easterby",
     "jockey": "David Allan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_53871321": {
     "horse": "Twilight Dawn",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Redcar"
     ],
@@ -3134,11 +3279,11 @@
     "trainer": "Simon Whitaker",
     "jockey": "Joanna Mason",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_61911654": {
     "horse": "Enduring Story",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3150,15 +3295,17 @@
     "trainer": "Ruth Carr",
     "jockey": "James Sullivan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64780646": {
     "horse": "Better Nature",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3166,11 +3313,11 @@
     "trainer": "Jonathan Portman",
     "jockey": "Joe Leavy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_62169394": {
     "horse": "Celtic Charioteer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3182,11 +3329,11 @@
     "trainer": "James Ferguson",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_63908663": {
     "horse": "Concert Pitch",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3198,11 +3345,11 @@
     "trainer": "Brian Ellison",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64135043": {
     "horse": "Graceful George",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3214,11 +3361,11 @@
     "trainer": "Charlie Fellowes",
     "jockey": "Paddy Bradley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_63809487": {
     "horse": "Terry O",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3230,15 +3377,17 @@
     "trainer": "Jim & Suzi Best",
     "jockey": "Dylan Hogan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_62170255": {
     "horse": "Top Cote",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3246,11 +3395,11 @@
     "trainer": "Jack Morland",
     "jockey": "Jonny Peate",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64460256": {
     "horse": "Fire Thunder",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3262,11 +3411,11 @@
     "trainer": "Marco Botti",
     "jockey": "Benoit De La Sayette",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_63650349": {
     "horse": "May Bee In Profit",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3278,11 +3427,11 @@
     "trainer": "Tim Easterby",
     "jockey": "Rossa Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64488060": {
     "horse": "Serenity Bay",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3294,11 +3443,11 @@
     "trainer": "Ed Dunlop",
     "jockey": "Kieran Shoemark",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64135036": {
     "horse": "Tina Fromtransport",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3310,11 +3459,11 @@
     "trainer": "Dylan Cunha",
     "jockey": "Jason Watson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_64780674": {
     "horse": "Velma Dinkley",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3326,11 +3475,11 @@
     "trainer": "Faye Bramley",
     "jockey": "Charles Bishop",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_57845151": {
     "horse": "Gaeli",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -3342,15 +3491,17 @@
     "trainer": "Marco Botti",
     "jockey": "Jack Gilligan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_29608887": {
     "horse": "Democracy Dilemma",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3358,11 +3509,11 @@
     "trainer": "Robert Cowell",
     "jockey": "Jack Mitchell",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_41304634": {
     "horse": "Redorange",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3374,11 +3525,11 @@
     "trainer": "Clive Cox",
     "jockey": "Rossa Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_42041363": {
     "horse": "Adrestia",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -3390,15 +3541,17 @@
     "trainer": "Simon & Ed Crisford",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_36763622": {
     "horse": "Rogue Enforcer",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3406,15 +3559,17 @@
     "trainer": "Archie Watson",
     "jockey": "Kieran Shoemark",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_33644464": {
     "horse": "Desert Cop",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3422,15 +3577,18 @@
     "trainer": "George Baker",
     "jockey": "Charles Bishop",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_22897546": {
     "horse": "Baldomero",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3438,15 +3596,17 @@
     "trainer": "Michael Appleby",
     "jockey": "Jason Watson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_24686235": {
     "horse": "Regal Envoy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3454,11 +3614,11 @@
     "trainer": "William Knight",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.025Z"
   },
   "hrs_43572935": {
     "horse": "All Ways Glamorous",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3470,11 +3630,11 @@
     "trainer": "Christopher Mason",
     "jockey": "Gina Mangan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_29918651": {
     "horse": "Rhythm N Hooves",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3486,15 +3646,17 @@
     "trainer": "Robert Cowell",
     "jockey": "Joe Leavy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_40919116": {
     "horse": "Marty Hopkirk",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3502,11 +3664,11 @@
     "trainer": "David Loughnane",
     "jockey": "Laura Pearson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_63742070": {
     "horse": "Cap Santa Lucia",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3518,11 +3680,11 @@
     "trainer": "Brian Meehan",
     "jockey": "Joe Leavy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_57223103": {
     "horse": "Chimes Of Thunder",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3534,15 +3696,17 @@
     "trainer": "William Haggas",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_63171458": {
     "horse": "Madame Passant",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3550,11 +3714,11 @@
     "trainer": "Charlie Pike",
     "jockey": "Thomas Greatrex",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_57718661": {
     "horse": "Moonlit Surf",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3566,11 +3730,11 @@
     "trainer": "Owen Burrows",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_64712998": {
     "horse": "Quisana",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3582,15 +3746,17 @@
     "trainer": "Eve Johnson Houghton",
     "jockey": "Charles Bishop",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_63171451": {
     "horse": "Rajwaah",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3598,15 +3764,17 @@
     "trainer": "Archie Watson",
     "jockey": "Gina Mangan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_52418121": {
     "horse": "Tahalel",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3614,11 +3782,11 @@
     "trainer": "Richard Hannon",
     "jockey": "Pat Dobbs",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_64167985": {
     "horse": "Trelissick",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3630,11 +3798,11 @@
     "trainer": "Andrew Balding",
     "jockey": "Callum Hutchinson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_63742147": {
     "horse": "Withtearsinmyeyes",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3646,11 +3814,11 @@
     "trainer": "Jack Channon",
     "jockey": "George Bass",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_63203476": {
     "horse": "Zeriya",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3662,15 +3830,17 @@
     "trainer": "Andrew Balding",
     "jockey": "Jason Watson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_39960431": {
     "horse": "Shavkat",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3678,11 +3848,11 @@
     "trainer": "Hilal Kobeissi",
     "jockey": "Taryn Langley(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_46913321": {
     "horse": "Sandscreendeliverd",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -3694,15 +3864,17 @@
     "trainer": "Peter Crate",
     "jockey": "Tom Queally",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_30850463": {
     "horse": "Jax Edge",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3710,15 +3882,17 @@
     "trainer": "Christopher Mason",
     "jockey": "Gina Mangan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_39960480": {
     "horse": "The Flying Seagull",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3726,15 +3900,18 @@
     "trainer": "Hugo Palmer",
     "jockey": "Jason Watson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_39059811": {
     "horse": "Rogue Bullet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3742,11 +3919,11 @@
     "trainer": "Jack Jones",
     "jockey": "Kieran Shoemark",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_20976340": {
     "horse": "Isle Of Lismore",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3758,11 +3935,11 @@
     "trainer": "Robert Cowell",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.462Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_26473181": {
     "horse": "Al Barez",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3774,15 +3951,17 @@
     "trainer": "Tom Clover",
     "jockey": "Jack Mitchell",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.463Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_35513632": {
     "horse": "Kiss And Run",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3790,11 +3969,11 @@
     "trainer": "Rachel Cook & John Bridger",
     "jockey": "Taylor Fisher",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.463Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_33788440": {
     "horse": "General Assembly",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3806,11 +3985,11 @@
     "trainer": "Clare Hobson",
     "jockey": "Dylan Hogan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_18046084": {
     "horse": "Lequinto",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3822,11 +4001,11 @@
     "trainer": "Tony Carroll",
     "jockey": "Rossa Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_29228773": {
     "horse": "Maharajas Express",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -3838,11 +4017,11 @@
     "trainer": "Ian Williams",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_39962979": {
     "horse": "Sarafina Mshairi",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -3854,15 +4033,17 @@
     "trainer": "Edward Smyth-Osbourne",
     "jockey": "Georgia Dobie",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_49142310": {
     "horse": "Any Which Way",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3870,11 +4051,11 @@
     "trainer": "Michael Bell",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_56437843": {
     "horse": "King Of Berkshire",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -3886,15 +4067,17 @@
     "trainer": "Andrew Balding",
     "jockey": "Jason Watson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_54398449": {
     "horse": "Morbeh",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3902,15 +4085,17 @@
     "trainer": "Roger Varian",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_56873740": {
     "horse": "Wardlaw",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3918,11 +4103,11 @@
     "trainer": "Sir Mark Prescott Bt",
     "jockey": "Dylan Hogan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_56094836": {
     "horse": "Oh Yes You Do",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -3934,11 +4119,11 @@
     "trainer": "David Menuisier",
     "jockey": "Rossa Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_63551236": {
     "horse": "Sir Griflet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -3950,15 +4135,17 @@
     "trainer": "Dylan Cunha",
     "jockey": "Rhys Clutterbuck",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_52054184": {
     "horse": "Grey Sands",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -3966,11 +4153,11 @@
     "trainer": "Kim Bailey & Mat Nicholls",
     "jockey": "Gina Mangan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_22006663": {
     "horse": "Wisper",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -3982,11 +4169,11 @@
     "trainer": "Alan King",
     "jockey": "Kieran Shoemark",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_45192602": {
     "horse": "Naval Command",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -3998,11 +4185,11 @@
     "trainer": "Ralph Beckett",
     "jockey": "Rossa Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_37193359": {
     "horse": "Son Of Man",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4014,11 +4201,11 @@
     "trainer": "Jim Boyle",
     "jockey": "Paddy Bradley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_43796606": {
     "horse": "Siouxfonic",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4030,15 +4217,17 @@
     "trainer": "James Owen",
     "jockey": "Mason Paetel(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_37758273": {
     "horse": "Due To Henry",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4046,15 +4235,17 @@
     "trainer": "Eve Johnson Houghton",
     "jockey": "Charles Bishop",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_34775195": {
     "horse": "Charlie's Choice",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4062,15 +4253,17 @@
     "trainer": "David Simcock",
     "jockey": "Taryn Langley(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_43287734": {
     "horse": "Sir William",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4078,15 +4271,17 @@
     "trainer": "Charlie Johnston",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_37889880": {
     "horse": "Don Simon",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4094,15 +4289,17 @@
     "trainer": "Ed Dunlop",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_53633027": {
     "horse": "Yachtsman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4110,11 +4307,11 @@
     "trainer": "Jack Morland",
     "jockey": "Jonny Peate",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_57941905": {
     "horse": "Chelio",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4126,15 +4323,17 @@
     "trainer": "Denis Coakley",
     "jockey": "Tom Marquand",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_53633062": {
     "horse": "Marra Donna",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4142,11 +4341,11 @@
     "trainer": "Ollie Sangster",
     "jockey": "Jason Watson",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_51736097": {
     "horse": "Corniche Girl",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4158,15 +4357,17 @@
     "trainer": "Richard Hannon",
     "jockey": "Alec Voikhansky",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_49143696": {
     "horse": "Nzuri",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4174,11 +4375,11 @@
     "trainer": "Jack Channon",
     "jockey": "George Bass",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_53328492": {
     "horse": "Madman",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4190,11 +4391,11 @@
     "trainer": "Rachel Cook & John Bridger",
     "jockey": "Rossa Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_55241746": {
     "horse": "My Dad Tom",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4206,11 +4407,11 @@
     "trainer": "Richard Hannon",
     "jockey": "Tyrese Cameron(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_55273162": {
     "horse": "Stolen",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4222,11 +4423,11 @@
     "trainer": "Eve Johnson Houghton",
     "jockey": "Charles Bishop",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_57316574": {
     "horse": "Rosieisme Darling",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4238,11 +4439,11 @@
     "trainer": "Hayley Burton",
     "jockey": "Jack Mitchell",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_61910618": {
     "horse": "Zoulette",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4254,15 +4455,17 @@
     "trainer": "Ollie Sangster",
     "jockey": "Joe Leavy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_52451903": {
     "horse": "Arvana Belle",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4270,15 +4473,17 @@
     "trainer": "Rod Millman",
     "jockey": "Gina Mangan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_53993954": {
     "horse": "Cape Toronada",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Windsor"
     ],
@@ -4286,11 +4491,11 @@
     "trainer": "Tony Carroll",
     "jockey": "Saffie Osborne",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_35431431": {
     "horse": "Smooth Silesie",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4302,11 +4507,11 @@
     "trainer": "Lisa Williamson",
     "jockey": "Edward Greatrex",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_43385363": {
     "horse": "Magna",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4318,15 +4523,17 @@
     "trainer": "Tony Carroll",
     "jockey": "Luke Morris",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_48112323": {
     "horse": "Fantasy Obsessor",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4334,11 +4541,11 @@
     "trainer": "Michael Appleby",
     "jockey": "Robert Havlin",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_51832228": {
     "horse": "Guernsey Lady",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4350,11 +4557,11 @@
     "trainer": "David Evans",
     "jockey": "NON-RUNNER",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_36527981": {
     "horse": "Midnight Call",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4366,11 +4573,11 @@
     "trainer": "Tony Carroll",
     "jockey": "Hollie Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_51557751": {
     "horse": "Rotokura Belle",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4382,11 +4589,11 @@
     "trainer": "Ivan Furtado",
     "jockey": "Silvestre De Sousa",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.027Z"
   },
   "hrs_52055031": {
     "horse": "Little Jaybee",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4398,11 +4605,11 @@
     "trainer": "Tom Ward",
     "jockey": "Rob Hornby",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_52451714": {
     "horse": "Star Marian",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4414,15 +4621,17 @@
     "trainer": "David Loughnane",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_53960263": {
     "horse": "Powernap",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4430,11 +4639,11 @@
     "trainer": "Jessica Bedi",
     "jockey": "Kieran O'Neill",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64225518": {
     "horse": "Agamemnon",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4446,11 +4655,11 @@
     "trainer": "Richard Hughes",
     "jockey": "Oisin Murphy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64621494": {
     "horse": "American Psycho",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4462,11 +4671,11 @@
     "trainer": "Archie Watson",
     "jockey": "Hollie Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_63034020": {
     "horse": "Bill The Bull",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4478,11 +4687,11 @@
     "trainer": "Adam Kirby",
     "jockey": "Pat Cosgrave",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_63742028": {
     "horse": "Drum Major",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4494,11 +4703,11 @@
     "trainer": "William Muir & Chris Grassick",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64713012": {
     "horse": "Katie's Cavalier",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4510,11 +4719,11 @@
     "trainer": "David Loughnane",
     "jockey": "Daniel Muscutt",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64073086": {
     "horse": "Undercover Affair",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4526,11 +4735,11 @@
     "trainer": "David Evans",
     "jockey": "J F Egan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64135071": {
     "horse": "Najmet Minzaal",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4542,15 +4751,17 @@
     "trainer": "Jack Channon",
     "jockey": "Rob Hornby",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56843682": {
     "horse": "Rua Mor",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4558,11 +4769,11 @@
     "trainer": "Sam England",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64102304": {
     "horse": "Mountain Cat",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4574,11 +4785,11 @@
     "trainer": "Saeed bin Suroor",
     "jockey": "Oisin Murphy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64073121": {
     "horse": "Rogue Defence",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4590,11 +4801,11 @@
     "trainer": "Jack Jones",
     "jockey": "Robert Havlin",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64780702": {
     "horse": "Leopards Rock",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4606,11 +4817,11 @@
     "trainer": "Edward Bethell",
     "jockey": "David Probert",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64102276": {
     "horse": "Roi De Coeur",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4622,11 +4833,11 @@
     "trainer": "Marco Botti",
     "jockey": "Hollie Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.464Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56278341": {
     "horse": "Zabeel Small",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4638,11 +4849,11 @@
     "trainer": "James Tate",
     "jockey": "Luke Morris",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_63514899": {
     "horse": "Arc At Her",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4654,11 +4865,11 @@
     "trainer": "Dylan Cunha",
     "jockey": "Kieren Fox",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_59059315": {
     "horse": "Symbol Of Majesty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4670,11 +4881,11 @@
     "trainer": "John & Thady Gosden",
     "jockey": "Robert Havlin",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_59460940": {
     "horse": "Estissa",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4686,11 +4897,11 @@
     "trainer": "James Fanshawe",
     "jockey": "Daniel Muscutt",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56713314": {
     "horse": "Morven",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4702,11 +4913,11 @@
     "trainer": "Ralph Beckett",
     "jockey": "Edward Greatrex",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56066003": {
     "horse": "City Queen",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4718,11 +4929,11 @@
     "trainer": "Charlie Appleby",
     "jockey": "Connor Planas",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_61911675": {
     "horse": "Silken Bay",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4734,11 +4945,11 @@
     "trainer": "Dr Richard Newland & Jamie Insole",
     "jockey": "Jack Doughty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_52451987": {
     "horse": "Lyra Lea",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4750,11 +4961,11 @@
     "trainer": "Rod Millman",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_62813037": {
     "horse": "Golden Mabel",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4766,11 +4977,11 @@
     "trainer": "Lisa Williamson",
     "jockey": "Tom Kiely-Marshall(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_37208045": {
     "horse": "Age Of Baroque",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4782,15 +4993,17 @@
     "trainer": "Jessica Macey",
     "jockey": "Daniel Muscutt",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_44105355": {
     "horse": "Bizou",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4798,11 +5011,11 @@
     "trainer": "Jonathan Portman",
     "jockey": "Rob Hornby",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_35137319": {
     "horse": "Between Me And U",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4814,11 +5027,11 @@
     "trainer": "Michael Herrington",
     "jockey": "David Probert",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_45598518": {
     "horse": "Stipulation",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -4830,11 +5043,11 @@
     "trainer": "Mark Loughnane",
     "jockey": "Luke Morris",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_34471815": {
     "horse": "Dingwall",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4846,15 +5059,17 @@
     "trainer": "Iain Jardine",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_61078689": {
     "horse": "The Ubermensch",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4862,11 +5077,11 @@
     "trainer": "Michael Bell",
     "jockey": "Joe Bradnam(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_50755446": {
     "horse": "Karakula",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4878,11 +5093,11 @@
     "trainer": "James Ferguson",
     "jockey": "Oisin Murphy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_35123522": {
     "horse": "Silkies Sib",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -4894,11 +5109,11 @@
     "trainer": "James Owen",
     "jockey": "Silvestre De Sousa",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_59367294": {
     "horse": "Seeing Stars",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -4910,15 +5125,17 @@
     "trainer": "William Knight",
     "jockey": "Luke Morris",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_52709671": {
     "horse": "Perfect Location",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4926,15 +5143,17 @@
     "trainer": "Tom Ward",
     "jockey": "David Probert",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_53148788": {
     "horse": "Court Of Stars",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4942,11 +5161,11 @@
     "trainer": "Ollie Sangster",
     "jockey": "Oisin Murphy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_54494475": {
     "horse": "Okiru",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -4958,15 +5177,17 @@
     "trainer": "Archie Watson",
     "jockey": "Hollie Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_59246859": {
     "horse": "Horwich",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4974,15 +5195,17 @@
     "trainer": "Ruth Carr",
     "jockey": "Rob Hornby",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_55061937": {
     "horse": "Sprinting Speed",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -4990,15 +5213,17 @@
     "trainer": "Jennie Candlish",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_62615126": {
     "horse": "The Anthony Gover",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Wolverhampton (AW)"
     ],
@@ -5006,11 +5231,11 @@
     "trainer": "Dr Richard Newland & Jamie Insole",
     "jockey": "Jack Doughty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_52297427": {
     "horse": "Espona Bay",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5022,11 +5247,11 @@
     "trainer": "Scott Dixon",
     "jockey": "Kieran O'Neill",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_54027204": {
     "horse": "Jowalla",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5038,11 +5263,11 @@
     "trainer": "Tom Dascombe",
     "jockey": "Pierre-Louis Jamin",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_55392841": {
     "horse": "Dontwaste A Moment",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5054,11 +5279,11 @@
     "trainer": "Ivan Furtado",
     "jockey": "Silvestre De Sousa",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_36837017": {
     "horse": "Free Speech",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5070,11 +5295,11 @@
     "trainer": "Sam England",
     "jockey": "Silvestre De Sousa",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_39960837": {
     "horse": "Romantic Spirit",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -5086,11 +5311,11 @@
     "trainer": "David Menuisier",
     "jockey": "Oisin Murphy",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56406763": {
     "horse": "Pyleates",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5102,11 +5327,11 @@
     "trainer": "William Muir & Chris Grassick",
     "jockey": "Lewis Edmunds",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_60626853": {
     "horse": "You Got To My Soul",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5118,11 +5343,11 @@
     "trainer": "Ralph Beckett",
     "jockey": "Edward Greatrex",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_62743569": {
     "horse": "Desert Belle",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -5134,11 +5359,11 @@
     "trainer": "Sir Mark Prescott Bt",
     "jockey": "Luke Morris",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_58283043": {
     "horse": "Kelly Burn",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5150,11 +5375,11 @@
     "trainer": "James Fanshawe",
     "jockey": "Hollie Doyle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_62360865": {
     "horse": "Prince Andorra",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5166,11 +5391,11 @@
     "trainer": "Ms Claire O'Connell",
     "jockey": "James Ryan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_58380182": {
     "horse": "Due In June",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5182,15 +5407,17 @@
     "trainer": "Ian Patrick Donoghue",
     "jockey": "Gary Carroll",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_55700778": {
     "horse": "Star Of Beauty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5198,15 +5425,17 @@
     "trainer": "K J Condon",
     "jockey": "W J Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_63875322": {
     "horse": "Cosmic Funk",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5214,15 +5443,17 @@
     "trainer": "G M Lyons",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56843850": {
     "horse": "Mo Anam Chara",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5230,15 +5461,17 @@
     "trainer": "Mark Fahey",
     "jockey": "Ronan Whelan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_63104643": {
     "horse": "Fay Og",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5246,15 +5479,17 @@
     "trainer": "Miss Natalia Lupini",
     "jockey": "Chris Hayes",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_56559230": {
     "horse": "Schoolyard Days",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5262,15 +5497,17 @@
     "trainer": "M C Grassick",
     "jockey": "N G McCullagh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_53602227": {
     "horse": "Six Wings",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5278,11 +5515,11 @@
     "trainer": "Paul W Flynn",
     "jockey": "Robert Whearty",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64523228": {
     "horse": "Monamie",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5294,15 +5531,17 @@
     "trainer": "Paul W Flynn",
     "jockey": "Leigh Roche",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_52267887": {
     "horse": "Queen Of Newark",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5310,11 +5549,11 @@
     "trainer": "Matthew J Smith",
     "jockey": "Wesley Joyce(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64812797": {
     "horse": "Glenade",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5326,11 +5565,11 @@
     "trainer": "P Twomey",
     "jockey": "W J Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64556079": {
     "horse": "Cochise County",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5342,11 +5581,11 @@
     "trainer": "Joseph G Murphy",
     "jockey": "Gary Carroll",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_64812783": {
     "horse": "Dominic Street",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5358,11 +5597,11 @@
     "trainer": "Simon Cavanagh",
     "jockey": "Donagh O'Connor",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_62169632": {
     "horse": "Seaxburh",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5374,11 +5613,11 @@
     "trainer": "Joseph Patrick O'Brien",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.028Z"
   },
   "hrs_63810201": {
     "horse": "Arizona Raider",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5390,11 +5629,11 @@
     "trainer": "Michael Mulvany",
     "jockey": "Wesley Joyce(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_64812804": {
     "horse": "Magma Law",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5406,11 +5645,11 @@
     "trainer": "Joseph G Murphy",
     "jockey": "Seamie Heffernan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_64812818": {
     "horse": "Penny Benjamin",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5422,11 +5661,11 @@
     "trainer": "Noel Meade",
     "jockey": "Chris Hayes",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_64812825": {
     "horse": "Sea Of Rain",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5438,15 +5677,17 @@
     "trainer": "J S Bolger",
     "jockey": "Declan McDonogh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_24517843": {
     "horse": "Mercurial",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5454,15 +5695,18 @@
     "trainer": "John J Nallen",
     "jockey": "Darragh O'Sullivan(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_18504633": {
     "horse": "Free Solo",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5470,15 +5714,18 @@
     "trainer": "P J F Murphy",
     "jockey": "Conor Cusack(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_37476565": {
     "horse": "Thrifty Of Digby",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5486,11 +5733,11 @@
     "trainer": "Mrs John Harrington",
     "jockey": "Shane Foley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_56188811": {
     "horse": "Royal Impact",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -5502,15 +5749,17 @@
     "trainer": "Jack W Davison",
     "jockey": "Jack Kearney(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_50282106": {
     "horse": "Go Out",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5518,15 +5767,17 @@
     "trainer": "Daniel James Murphy",
     "jockey": "Terry Casey(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_42451920": {
     "horse": "Famed Again",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5534,15 +5785,17 @@
     "trainer": "Miss Hilary McLoughlin",
     "jockey": "Donagh O'Connor",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_37987796": {
     "horse": "Bucaneer's Spirit",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5550,15 +5803,18 @@
     "trainer": "Ian Patrick Donoghue",
     "jockey": "Sam Coen(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_36515612": {
     "horse": "Lohengrin",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5566,15 +5822,17 @@
     "trainer": "E D Delany",
     "jockey": "Ben Coen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_43951131": {
     "horse": "Blue Anthem",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5582,15 +5840,17 @@
     "trainer": "Gerard O'Leary",
     "jockey": "Siobhan Rutledge(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_53539563": {
     "horse": "Queen Aethelflaed",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5598,11 +5858,11 @@
     "trainer": "Andrew Slattery",
     "jockey": "Andrew Slattery",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.465Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_36738478": {
     "horse": "Bella Colombia",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
@@ -5614,15 +5874,17 @@
     "trainer": "W McCreery",
     "jockey": "W J Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_35828177": {
     "horse": "Irish Rumour",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5630,15 +5892,18 @@
     "trainer": "Miss Jennifer Anne Lynch",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_43417969": {
     "horse": "Suerte",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5646,15 +5911,18 @@
     "trainer": "Ms Sheila Lavery",
     "jockey": "Robbie Colgan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_46295648": {
     "horse": "Tara Na Ri",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5662,11 +5930,11 @@
     "trainer": "Noel Meade",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_35625681": {
     "horse": "Zabriskie Point",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5678,15 +5946,17 @@
     "trainer": "Adrian McGuinness",
     "jockey": "Adam Caffrey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_20196092": {
     "horse": "Loingseoir",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5694,15 +5964,17 @@
     "trainer": "M C Grassick",
     "jockey": "Jack Cleary(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_36035881": {
     "horse": "Buttermere Ridge",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5710,15 +5982,18 @@
     "trainer": "Oliver McKiernan",
     "jockey": "",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_21714637": {
     "horse": "Lust",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5726,11 +6001,11 @@
     "trainer": "Conor David Maxwell",
     "jockey": "",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_52741927": {
     "horse": "Believe Again",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5742,15 +6017,17 @@
     "trainer": "Seamus G O'Donnell",
     "jockey": "Seamie Heffernan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_61684532": {
     "horse": "It's Good To Talk",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5758,11 +6035,11 @@
     "trainer": "Emmet Mullins",
     "jockey": "Scott McCullagh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_412712069": {
     "horse": "Galileo Springs",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5774,15 +6051,18 @@
     "trainer": "Martin Brassil",
     "jockey": "Leigh Roche",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_56843626": {
     "horse": "African Affair",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5790,15 +6070,17 @@
     "trainer": "Ms Sheila Lavery",
     "jockey": "Robbie Colgan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_58347583": {
     "horse": "Avec Grand Plaisir",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5806,15 +6088,17 @@
     "trainer": "Jarlath P Fahey",
     "jockey": "Nathan Crosse",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_63875364": {
     "horse": "Changing Lanes",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5822,11 +6106,11 @@
     "trainer": "Joseph Patrick O'Brien",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_64556128": {
     "horse": "Elzaam Express",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5838,15 +6122,17 @@
     "trainer": "Gavin Cromwell",
     "jockey": "Gary Carroll",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_63650076": {
     "horse": "Gaelic Drills",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5854,15 +6140,17 @@
     "trainer": "J S Bolger",
     "jockey": "Declan McDonogh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_59862446": {
     "horse": "Garryowen Green",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5870,11 +6158,11 @@
     "trainer": "Andrew McNamara",
     "jockey": "Jack Kearney(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_56843899": {
     "horse": "Huff'n'puff",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5886,11 +6174,11 @@
     "trainer": "Henry De Bromhead",
     "jockey": "W J Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_57878093": {
     "horse": "Karrygrant",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5902,15 +6190,17 @@
     "trainer": "J P Murtagh",
     "jockey": "Ben Coen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_64812839": {
     "horse": "Solar Jet",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5918,11 +6208,11 @@
     "trainer": "John S O'Donoghue",
     "jockey": "Ronan Whelan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_54242720": {
     "horse": "Zelani",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5934,11 +6224,11 @@
     "trainer": "D K Weld",
     "jockey": "Chris Hayes",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_57008504": {
     "horse": "Noble Honour",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -5950,15 +6240,18 @@
     "trainer": "Mrs John Harrington",
     "jockey": "Shane Foley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_57008273": {
     "horse": "Grennanstown Lady",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5966,15 +6259,18 @@
     "trainer": "Gerard Keane",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_63104657": {
     "horse": "Matada",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -5982,11 +6278,11 @@
     "trainer": "Gavin Cromwell",
     "jockey": "",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_50065582": {
     "horse": "Ryans Hope",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -5998,15 +6294,17 @@
     "trainer": "G A Kingston",
     "jockey": "",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_36258775": {
     "horse": "Follow Me",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6014,11 +6312,11 @@
     "trainer": "Ross O'Sullivan",
     "jockey": "Scott McCullagh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_46045979": {
     "horse": "Syzygy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -6030,11 +6328,11 @@
     "trainer": "Daniel McLoughlin",
     "jockey": "Ben Coen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_35781347": {
     "horse": "Queen Lioness",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -6046,11 +6344,11 @@
     "trainer": "Mark Fahey",
     "jockey": "Reese Holohan(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_44721943": {
     "horse": "Kilcrea Rock",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -6062,15 +6360,17 @@
     "trainer": "Joseph Patrick O'Brien",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_47282326": {
     "horse": "Electric Beauty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6078,15 +6378,17 @@
     "trainer": "Michael Mulvany",
     "jockey": "Wesley Joyce(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.029Z"
   },
   "hrs_53181415": {
     "horse": "Lahore Da King",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6094,15 +6396,17 @@
     "trainer": "Anthony Mullins",
     "jockey": "Yudish Geerdharry(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_52862614": {
     "horse": "Little Miss P",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6110,15 +6414,17 @@
     "trainer": "W McCreery",
     "jockey": "W J Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_43796522": {
     "horse": "Sir Jeremy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6126,15 +6432,17 @@
     "trainer": "Noel Meade",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_43385566": {
     "horse": "Gotta Catch'em All",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6142,15 +6450,17 @@
     "trainer": "H Rogers",
     "jockey": "Adam Caffrey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_53269181": {
     "horse": "Robot Rock",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6158,15 +6468,17 @@
     "trainer": "A J Martin",
     "jockey": "Robbie Colgan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_42326592": {
     "horse": "Rising Sky",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6174,11 +6486,11 @@
     "trainer": "Anthony McCann",
     "jockey": "Patrick McGettigan(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_58811382": {
     "horse": "Oust",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -6190,11 +6502,11 @@
     "trainer": "Josh Halley",
     "jockey": "Rory Cleary",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_55061979": {
     "horse": "Adel",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -6206,15 +6518,17 @@
     "trainer": "M D O'Callaghan",
     "jockey": "Jamie Powell",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_57718038": {
     "horse": "Musashi",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6222,11 +6536,11 @@
     "trainer": "Joseph Patrick O'Brien",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_56338513": {
     "horse": "Admiral Will Brown",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -6238,11 +6552,11 @@
     "trainer": "Daniel McLoughlin",
     "jockey": "Ben Coen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_53081231": {
     "horse": "Femme Beauty",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -6254,11 +6568,11 @@
     "trainer": "K J Condon",
     "jockey": "Shane Foley",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_57008511": {
     "horse": "Retro Gal",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -6270,15 +6584,18 @@
     "trainer": "Henry De Bromhead",
     "jockey": "Ronan Whelan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_57878016": {
     "horse": "Sea Of Dubka",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6286,15 +6603,17 @@
     "trainer": "Henry De Bromhead",
     "jockey": "W J Lee",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_52496206": {
     "horse": "Tenacious",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6302,15 +6621,18 @@
     "trainer": "Mrs John Harrington",
     "jockey": "Nathan Crosse",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_54998048": {
     "horse": "Captain Con",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6318,11 +6640,11 @@
     "trainer": "Noel Meade",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_53211620": {
     "horse": "Onyeisi",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -6334,15 +6656,17 @@
     "trainer": "Karl Thornton",
     "jockey": "Robbie Colgan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_57255170": {
     "horse": "Arizona Star",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6350,15 +6674,17 @@
     "trainer": "Peter McCreery",
     "jockey": "Leigh Roche",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_58165219": {
     "horse": "Connecteo",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6366,15 +6692,17 @@
     "trainer": "A Oliver",
     "jockey": "Chris Hayes",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_55211191": {
     "horse": "Wipeawayyourtears",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6382,15 +6710,18 @@
     "trainer": "Michael Butler",
     "jockey": "Jack Cleary(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_56525392": {
     "horse": "Survivor's Code",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6398,15 +6729,18 @@
     "trainer": "Conor David Maxwell",
     "jockey": "Rory Cleary",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_55764590": {
     "horse": "Lilo Pelekai",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6414,15 +6748,17 @@
     "trainer": "Jack Foley",
     "jockey": "Orla Tynan(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_43796445": {
     "horse": "Amplitude",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6430,11 +6766,11 @@
     "trainer": "Joseph G Murphy",
     "jockey": "Gary Carroll",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_55764618": {
     "horse": "Obscenity",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
@@ -6446,11 +6782,11 @@
     "trainer": "Joseph Patrick O'Brien",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_38884804": {
     "horse": "Pavilion End",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -6462,11 +6798,11 @@
     "trainer": "Charles O'Brien",
     "jockey": "Declan McDonogh",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_45887499": {
     "horse": "Superficial",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
@@ -6478,15 +6814,18 @@
     "trainer": "Andrew McNamara",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.466Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_44939958": {
     "horse": "Silent Guardian",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6494,15 +6833,17 @@
     "trainer": "Anthony McCann",
     "jockey": "Luke McAteer",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_37207828": {
     "horse": "Radar Ahead",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6510,15 +6851,17 @@
     "trainer": "T G McCourt",
     "jockey": "Sadhbh Tormey(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_29919085": {
     "horse": "La Dame Blanche",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6526,11 +6869,11 @@
     "trainer": "Dermot Kilmartin",
     "jockey": "Ronan Whelan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_46265415": {
     "horse": "Lily Parr",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
@@ -6542,15 +6885,17 @@
     "trainer": "Ms Sheila Lavery",
     "jockey": "Robbie Colgan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_26260857": {
     "horse": "Mr Rango",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6558,15 +6903,18 @@
     "trainer": "James M Barcoe",
     "jockey": "Siobhan Rutledge(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_16449230": {
     "horse": "Out On Friday",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6574,15 +6922,17 @@
     "trainer": "Philip M Byrne",
     "jockey": "Wesley Joyce(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_50965019": {
     "horse": "Cooley's Mist",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6590,15 +6940,17 @@
     "trainer": "H Rogers",
     "jockey": "Chris Hayes",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_23566767": {
     "horse": "God Of Thunder",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6606,15 +6958,17 @@
     "trainer": "Denis Gerard Hogan",
     "jockey": "Reese Holohan(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_37052323": {
     "horse": "Burlington House",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6622,15 +6976,17 @@
     "trainer": "Oliver McKiernan",
     "jockey": "Reese Holohan(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_30017484": {
     "horse": "Grey Fable",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6638,15 +6994,17 @@
     "trainer": "Karl Thornton",
     "jockey": "Ben Coen",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_51832298": {
     "horse": "Sayidah New Bay",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6654,15 +7012,17 @@
     "trainer": "John S O'Donoghue",
     "jockey": "Nathan Crosse",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_46013625": {
     "horse": "Miss Australie",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6670,15 +7030,17 @@
     "trainer": "Adrian McGuinness",
     "jockey": "Adam Caffrey",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_36894242": {
     "horse": "Mapa",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6686,15 +7048,18 @@
     "trainer": "Ms Sheila Lavery",
     "jockey": "Robbie Colgan",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_46077906": {
     "horse": "Whosethebestboy",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6702,15 +7067,18 @@
     "trainer": "Ian Patrick Donoghue",
     "jockey": "Dylan Browne McMonagle",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_50875286": {
     "horse": "Al What",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6718,15 +7086,17 @@
     "trainer": "Noel Meade",
     "jockey": "Emily Grifferty(10)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_45662141": {
     "horse": "Cuckaloo Hill",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6734,15 +7104,17 @@
     "trainer": "M Flannery",
     "jockey": "Siobhan Rutledge(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_45226293": {
     "horse": "If Dora Could",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6750,15 +7122,17 @@
     "trainer": "Dermot Kilmartin",
     "jockey": "Wesley Joyce(3)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_40493782": {
     "horse": "Jack Major",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6766,15 +7140,18 @@
     "trainer": "Miss Jennifer Anne Lynch",
     "jockey": "Leigh Roche",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_38434179": {
     "horse": "Prom Queen",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 75,
     "bestScore": 75,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6782,15 +7159,17 @@
     "trainer": "Anthony McCann",
     "jockey": "Luke McAteer",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_31451350": {
     "horse": "Edge Of Darkness",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6798,15 +7177,17 @@
     "trainer": "Daniel John Howard",
     "jockey": "Colin Keane",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.030Z"
   },
   "hrs_43418123": {
     "horse": "Idomything",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6814,15 +7195,17 @@
     "trainer": "Thomas Cleary",
     "jockey": "Rory Cleary",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.031Z"
   },
   "hrs_46484228": {
     "horse": "Piatra Neamt",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6830,15 +7213,17 @@
     "trainer": "S M Duffy",
     "jockey": "Alan Casey(7)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.031Z"
   },
   "hrs_28532308": {
     "horse": "Deluca Chop",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 60,
     "bestScore": 60,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6846,15 +7231,17 @@
     "trainer": "S M Duffy",
     "jockey": "Patrick McGettigan(5)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.031Z"
   },
   "hrs_21678685": {
     "horse": "Kartayaz",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 65,
     "bestScore": 65,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6862,15 +7249,17 @@
     "trainer": "G A Kingston",
     "jockey": "Zoe McMullan(10)",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.031Z"
   },
   "hrs_46077367": {
     "horse": "Tassarolo",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6878,15 +7267,18 @@
     "trainer": "Denis Gerard Hogan",
     "jockey": "",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.467Z"
+    "lastSeen": "2026-05-18T13:14:14.031Z"
   },
   "hrs_22250781": {
     "horse": "Church Mountain",
-    "runs": 2,
+    "runs": 4,
     "wins": 0,
     "averageScore": 50,
     "bestScore": 50,
-    "replayFlags": [],
+    "replayFlags": [
+      "Potential Bounce Back",
+      "Wide Draw Challenge"
+    ],
     "courses": [
       "Roscommon"
     ],
@@ -6894,6 +7286,6 @@
     "trainer": "Denis Gerard Hogan",
     "jockey": "",
     "marketSupport": 0,
-    "lastSeen": "2026-05-18T13:07:30.468Z"
+    "lastSeen": "2026-05-18T13:14:14.031Z"
   }
 }
