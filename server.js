@@ -25,6 +25,12 @@ const REPLAY_DB_PATH = path.join(
   'replays.json'
 )
 
+const MARKET_DB_PATH = path.join(
+  process.cwd(),
+  'data',
+  'market.json'
+)
+
 function loadDatabase(filePath) {
   try {
     if (!fs.existsSync(filePath)) {
@@ -56,7 +62,10 @@ function saveDatabase(filePath, database) {
 }
 
 const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
+
 const REPLAY_DATABASE = loadDatabase(REPLAY_DB_PATH)
+
+const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
 
 const LIVE_STATE = {
   racecards: [],
@@ -75,15 +84,31 @@ function generateReplayFlags(runner, score) {
     flags.push('Potential Bounce Back')
   }
 
-  if (runner.odds && parseFloat(runner.odds) > 10) {
+  if (
+    runner.odds &&
+    parseFloat(runner.odds) > 10
+  ) {
     flags.push('Hidden Value Runner')
   }
 
-  if (runner.draw && Number(runner.draw) > 10) {
+  if (
+    runner.draw &&
+    Number(runner.draw) > 10
+  ) {
     flags.push('Wide Draw Challenge')
   }
 
   return flags
+}
+
+function parseOdds(odds) {
+  if (!odds) return null
+
+  const parsed = parseFloat(odds)
+
+  if (isNaN(parsed)) return null
+
+  return parsed
 }
 
 async function fetchLiveMeetings() {
@@ -110,96 +135,188 @@ async function fetchLiveMeetings() {
     const processed = racecards.map((race) => {
       const runners = race.runners || []
 
-      const scoredRunners = runners.map((runner) => {
-        let score = 50
+      const scoredRunners = runners.map(
+        (runner) => {
+          let score = 50
 
-        if (runner.form?.includes('1')) score += 15
-        if (runner.form?.includes('2')) score += 10
+          if (runner.form?.includes('1'))
+            score += 15
 
-        if (runner.odds && parseFloat(runner.odds) < 6) {
-          score += 15
-        }
+          if (runner.form?.includes('2'))
+            score += 10
 
-        const replayFlags = generateReplayFlags(
-          runner,
-          score
-        )
-
-        const horseId =
-          runner.horse_id || runner.horse
-
-        if (!HORSE_DATABASE[horseId]) {
-          HORSE_DATABASE[horseId] = {
-            horse: runner.horse,
-            runs: 0,
-            wins: 0,
-            averageScore: 0,
-            bestScore: 0,
-            replayFlags: [],
-            courses: [],
-            notes: [],
-            trainer: runner.trainer,
-            jockey: runner.jockey,
-            marketSupport: 0,
-          }
-        }
-
-        if (!REPLAY_DATABASE[horseId]) {
-          REPLAY_DATABASE[horseId] = {
-            horse: runner.horse,
-            replayNotes: [],
-          }
-        }
-
-        const profile = HORSE_DATABASE[horseId]
-
-        profile.runs += 1
-        profile.lastSeen = new Date().toISOString()
-
-        profile.bestScore = Math.max(
-          profile.bestScore,
-          score
-        )
-
-        profile.averageScore = Math.round(
-          (
-            profile.averageScore *
-              (profile.runs - 1) +
-            score
-          ) / profile.runs
-        )
-
-        if (
-          !profile.courses.includes(race.course)
-        ) {
-          profile.courses.push(race.course)
-        }
-
-        replayFlags.forEach((flag) => {
           if (
-            !profile.replayFlags.includes(flag)
+            runner.odds &&
+            parseFloat(runner.odds) < 6
           ) {
-            profile.replayFlags.push(flag)
+            score += 15
           }
 
-          REPLAY_DATABASE[
-            horseId
-          ].replayNotes.push({
-            date: new Date().toISOString(),
-            race: race.race_name,
-            course: race.course,
-            note: flag,
-            confidence: score,
-          })
-        })
+          const replayFlags =
+            generateReplayFlags(
+              runner,
+              score
+            )
 
-        return {
-          ...runner,
-          score,
-          replayTriggers: replayFlags,
-          horseProfile: profile,
+          const horseId =
+            runner.horse_id || runner.horse
+
+          const currentOdds = parseOdds(
+            runner.odds
+          )
+
+          if (!HORSE_DATABASE[horseId]) {
+            HORSE_DATABASE[horseId] = {
+              horse: runner.horse,
+              runs: 0,
+              wins: 0,
+              averageScore: 0,
+              bestScore: 0,
+              replayFlags: [],
+              courses: [],
+              notes: [],
+              trainer: runner.trainer,
+              jockey: runner.jockey,
+              marketSupport: 0,
+            }
+          }
+
+          if (!REPLAY_DATABASE[horseId]) {
+            REPLAY_DATABASE[horseId] = {
+              horse: runner.horse,
+              replayNotes: [],
+            }
+          }
+
+          if (!MARKET_DATABASE[horseId]) {
+            MARKET_DATABASE[horseId] = {
+              horse: runner.horse,
+              openingOdds: currentOdds,
+              currentOdds,
+              lowestOdds: currentOdds,
+              highestOdds: currentOdds,
+              movements: [],
+              steamCount: 0,
+              driftCount: 0,
+              marketSignals: [],
+            }
+          }
+
+          const market =
+            MARKET_DATABASE[horseId]
+
+          if (
+            currentOdds &&
+            market.currentOdds
+          ) {
+            const previousOdds =
+              market.currentOdds
+
+            const movement =
+              previousOdds - currentOdds
+
+            if (movement > 1) {
+              market.steamCount += 1
+
+              market.marketSignals.push({
+                type: 'STEAMER',
+                movement,
+                timestamp:
+                  new Date().toISOString(),
+              })
+            }
+
+            if (movement < -1) {
+              market.driftCount += 1
+
+              market.marketSignals.push({
+                type: 'DRIFTER',
+                movement,
+                timestamp:
+                  new Date().toISOString(),
+              })
+            }
+
+            market.movements.push({
+              previousOdds,
+              currentOdds,
+              movement,
+              timestamp:
+                new Date().toISOString(),
+            })
+
+            market.currentOdds = currentOdds
+
+            market.lowestOdds = Math.min(
+              market.lowestOdds || currentOdds,
+              currentOdds
+            )
+
+            market.highestOdds = Math.max(
+              market.highestOdds || currentOdds,
+              currentOdds
+            )
+          }
+
+          const profile =
+            HORSE_DATABASE[horseId]
+
+          profile.runs += 1
+
+          profile.lastSeen =
+            new Date().toISOString()
+
+          profile.bestScore = Math.max(
+            profile.bestScore,
+            score
+          )
+
+          profile.averageScore =
+            Math.round(
+              (
+                profile.averageScore *
+                  (profile.runs - 1) +
+                score
+              ) / profile.runs
+            )
+
+          if (
+            !profile.courses.includes(
+              race.course
+            )
+          ) {
+            profile.courses.push(race.course)
+          }
+
+          replayFlags.forEach((flag) => {
+            if (
+              !profile.replayFlags.includes(
+                flag
+              )
+            ) {
+              profile.replayFlags.push(flag)
+            }
+
+            REPLAY_DATABASE[
+              horseId
+            ].replayNotes.push({
+              date: new Date().toISOString(),
+              race: race.race_name,
+              course: race.course,
+              note: flag,
+              confidence: score,
+            })
+          })
+
+          return {
+            ...runner,
+            score,
+            replayTriggers: replayFlags,
+            horseProfile: profile,
+            market,
+          }
         }
-      })
+      )
 
       return {
         ...race,
@@ -210,8 +327,10 @@ async function fetchLiveMeetings() {
     })
 
     LIVE_STATE.racecards = processed
+
     LIVE_STATE.updatedAt =
       new Date().toISOString()
+
     LIVE_STATE.loading = false
 
     saveDatabase(
@@ -222,6 +341,11 @@ async function fetchLiveMeetings() {
     saveDatabase(
       REPLAY_DB_PATH,
       REPLAY_DATABASE
+    )
+
+    saveDatabase(
+      MARKET_DB_PATH,
+      MARKET_DATABASE
     )
 
     console.log(
@@ -235,12 +359,15 @@ async function fetchLiveMeetings() {
     )
 
     console.log(
-      `Replay intelligence active for ${
-        Object.keys(REPLAY_DATABASE).length
+      `Market intelligence tracking ${
+        Object.keys(MARKET_DATABASE).length
       } horses`
     )
   } catch (error) {
-    console.error('Live engine failed:', error)
+    console.error(
+      'Live engine failed:',
+      error
+    )
   }
 }
 
@@ -261,6 +388,22 @@ app.get('/api/horses', (_req, res) => {
 app.get('/api/replay-flags', (_req, res) => {
   res.json(REPLAY_DATABASE)
 })
+
+app.get(
+  '/api/market-movers',
+  (_req, res) => {
+    const movers = Object.values(
+      MARKET_DATABASE
+    )
+      .sort(
+        (a, b) =>
+          b.steamCount - a.steamCount
+      )
+      .slice(0, 50)
+
+    res.json(movers)
+  }
+)
 
 app.listen(PORT, () => {
   console.log(
