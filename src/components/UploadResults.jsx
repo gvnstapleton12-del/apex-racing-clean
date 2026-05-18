@@ -11,42 +11,33 @@ export default function UploadResults() {
       e.stopPropagation()
     }
 
-    window.addEventListener(
-      'dragover',
-      preventDefaults
-    )
-
-    window.addEventListener(
-      'drop',
-      preventDefaults
-    )
+    window.addEventListener('dragover', preventDefaults)
+    window.addEventListener('drop', preventDefaults)
 
     return () => {
-      window.removeEventListener(
-        'dragover',
-        preventDefaults
-      )
-
-      window.removeEventListener(
-        'drop',
-        preventDefaults
-      )
+      window.removeEventListener('dragover', preventDefaults)
+      window.removeEventListener('drop', preventDefaults)
     }
   }, [])
 
   async function handleFile(file) {
-    if (!file) return
+    if (!file) {
+      setMessage('No file detected')
+      return
+    }
 
     setUploading(true)
-    setMessage('Uploading results...')
+    setMessage(`Uploading ${file.name}...`)
 
     try {
       const text = await file.text()
 
       const parsed = JSON.parse(text)
 
+      console.log('Parsed upload:', parsed)
+
       const response = await fetch(
-        '/api/upload-results',
+        'http://localhost:3000/api/upload-results',
         {
           method: 'POST',
           headers: {
@@ -60,6 +51,8 @@ export default function UploadResults() {
 
       const data = await response.json()
 
+      console.log('Upload response:', data)
+
       setStats(data)
 
       setMessage(
@@ -67,7 +60,10 @@ export default function UploadResults() {
       )
     } catch (error) {
       console.error(error)
-      setMessage('Failed to upload results')
+
+      setMessage(
+        `Failed to upload results: ${error.message}`
+      )
     }
 
     setUploading(false)
@@ -78,6 +74,8 @@ export default function UploadResults() {
     event.stopPropagation()
 
     const file = event.dataTransfer.files[0]
+
+    console.log('Dropped file:', file)
 
     handleFile(file)
   }
@@ -109,7 +107,7 @@ export default function UploadResults() {
         )}
 
         {message && (
-          <p className='mt-4 text-green-400'>
+          <p className='mt-4 text-green-400 break-all'>
             {message}
           </p>
         )}
@@ -121,6 +119,7 @@ export default function UploadResults() {
             <p className='text-zinc-400 text-sm'>
               Races
             </p>
+
             <h3 className='text-2xl font-bold'>
               {stats.processedRaces}
             </h3>
@@ -130,6 +129,7 @@ export default function UploadResults() {
             <p className='text-zinc-400 text-sm'>
               Results
             </p>
+
             <h3 className='text-2xl font-bold'>
               {stats.updatedRecords}
             </h3>
@@ -139,8 +139,9 @@ export default function UploadResults() {
             <p className='text-zinc-400 text-sm'>
               ROI
             </p>
+
             <h3 className='text-2xl font-bold'>
-              {stats.roi}%
+              {stats.analytics?.roi || 0}%
             </h3>
           </div>
 
@@ -148,8 +149,9 @@ export default function UploadResults() {
             <p className='text-zinc-400 text-sm'>
               Strike Rate
             </p>
+
             <h3 className='text-2xl font-bold'>
-              {stats.strikeRate}%
+              {stats.analytics?.strikeRate || 0}%
             </h3>
           </div>
         </div>
