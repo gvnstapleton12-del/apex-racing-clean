@@ -26,8 +26,13 @@ function App() {
   useEffect(() => {
     async function fetchMeetings() {
       try {
-        const response = await fetch('/api/live-state')
-        const alertsResponse = await fetch('/api/alerts')
+        const response = await fetch(
+  'http://localhost:3000/api/live-state'
+)
+
+const alertsResponse = await fetch(
+  'http://localhost:3000/api/alerts'
+)
 
         const data = await response.json()
         const alertsData = await alertsResponse.json()
@@ -373,26 +378,33 @@ function App() {
             <p>Racing Intelligence</p>
           </div>
 
-          <nav>
-            {[
-              'Dashboard',
-              'Racecards',
-              'Results',
-              'Intelligence',
-              'Alerts',
-              'Horses',
-              'Upload',
-              'Analytics',
-            ].map((tab) => (
-              <a
-                key={tab}
-                className={activeTab === tab ? 'active' : ''}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </a>
-            ))}
-          </nav>
+        <nav>
+  {[
+    'Dashboard',
+    'Racecards',
+    'Results',
+    'Intelligence',
+    'Alerts',
+    'Horses',
+    'Upload',
+    'Analytics',
+  ].map((tab) => (
+    <button
+      key={tab}
+      type='button'
+      className={
+        activeTab === tab
+          ? 'active'
+          : ''
+      }
+      onClick={() =>
+        setActiveTab(tab)
+      }
+    >
+      {tab}
+    </button>
+  ))}
+</nav>
         </aside>
 
         <main className='main'>

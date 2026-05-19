@@ -2,7 +2,9 @@ interface TopRatedBoardProps {
   races: any[]
 }
 
-export default function TopRatedBoard({ races }: TopRatedBoardProps) {
+export default function TopRatedBoard({
+  races,
+}: TopRatedBoardProps) {
   const topSelections = races
     .flatMap((race: any) => {
       const top = race.runners?.[0]
@@ -15,58 +17,152 @@ export default function TopRatedBoard({ races }: TopRatedBoardProps) {
           course: race.course,
           time: race.off_time,
           horse: top.horse,
-          score: top.score,
+
+          score:
+            top.aiProfile?.confidence ||
+            top.score ||
+            0,
+
           odds: top.odds,
         },
       ]
     })
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .sort(
+      (a, b) =>
+        (b.score || 0) -
+        (a.score || 0)
+    )
     .slice(0, 5)
 
+  function getGrade(score: number) {
+    if (score >= 90) return 'A+'
+    if (score >= 80) return 'A'
+    if (score >= 70) return 'B'
+    if (score >= 60) return 'C'
+    return 'D'
+  }
+
+  function getScoreColor(score: number) {
+    if (score >= 90)
+      return 'text-green-400'
+
+    if (score >= 80)
+      return 'text-emerald-400'
+
+    if (score >= 70)
+      return 'text-amber-400'
+
+    if (score >= 60)
+      return 'text-yellow-400'
+
+    return 'text-red-400'
+  }
+
   return (
-    <div className='rounded-2xl border bg-card p-6'>
-      <div className='mb-5'>
-        <h2 className='text-2xl font-bold'>Top Rated Board</h2>
-        <p className='text-muted-foreground'>Highest rated APEX selections today</p>
+    <div className='relative z-10 rounded-2xl border bg-card p-6 pointer-events-auto'>
+      <div className='mb-5 flex items-center justify-between'>
+        <div>
+          <h2 className='text-2xl font-bold'>
+            Top Rated Board
+          </h2>
+
+          <p className='text-muted-foreground'>
+            Highest rated APEX
+            selections today
+          </p>
+        </div>
+
+        <button
+          type='button'
+          onClick={() => {
+            window.alert(
+              'APEX Live Engine Active'
+            )
+          }}
+          className='relative z-20 pointer-events-auto px-4 py-2 rounded-xl bg-amber-500 text-black font-bold hover:opacity-90'
+        >
+          LIVE ENGINE
+        </button>
       </div>
 
       <div className='space-y-3'>
-        {topSelections.map((selection, index) => (
-          <div
-            key={index}
-            className='rounded-xl border p-4 flex items-center justify-between'
-          >
-            <div>
-              <div className='flex items-center gap-2'>
-                <span className='text-xs px-2 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20'>
-                  #{index + 1}
-                </span>
+        {topSelections.map(
+          (selection, index) => (
+            <div
+              key={index}
+              className='relative z-10 rounded-xl border p-4 flex items-center justify-between'
+            >
+              <div>
+                <div className='flex items-center gap-2'>
+                  <span className='text-xs px-2 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20'>
+                    #{index + 1}
+                  </span>
 
-                <p className='text-sm text-muted-foreground'>
-                  {selection.time} · {selection.course}
+                  <p className='text-sm text-muted-foreground'>
+                    {selection.time} ·{' '}
+                    {selection.course}
+                  </p>
+                </div>
+
+                <h3 className='font-bold text-lg mt-2'>
+                  {selection.horse}
+                </h3>
+
+                <p className='text-muted-foreground text-sm'>
+                  {selection.race}
                 </p>
               </div>
 
-              <h3 className='font-bold text-lg mt-2'>
-                {selection.horse}
-              </h3>
+              <div className='text-right space-y-2'>
+                <p
+                  className={`text-3xl font-black ${getScoreColor(
+                    selection.score || 0
+                  )}`}
+                >
+                  {selection.score}
+                </p>
 
-              <p className='text-muted-foreground text-sm'>
-                {selection.race}
-              </p>
+                <p className='text-sm text-muted-foreground'>
+                  Grade:{' '}
+                  {getGrade(
+                    selection.score || 0
+                  )}
+                </p>
+
+                <p className='text-sm text-muted-foreground'>
+                  Odds:{' '}
+                  {selection.odds}
+                </p>
+
+                <div className='flex gap-2 justify-end'>
+                  <button
+                    type='button'
+                    onClick={() => {
+                      window.alert(
+                        `Viewing race:\n\n${selection.race}\n${selection.course}\n${selection.time}`
+                      )
+                    }}
+                    className='relative z-20 pointer-events-auto px-4 py-2 rounded-lg bg-zinc-800 border hover:bg-zinc-700'
+                  >
+                    View Race
+                  </button>
+
+                  <button
+                    type='button'
+                    onClick={() => {
+                      window.alert(
+                        `Tracking ${selection.horse}`
+                      )
+                    }}
+                    className='relative z-20 pointer-events-auto px-4 py-2 rounded-lg bg-amber-500 text-black font-bold hover:opacity-90'
+                  >
+                    Track Runner
+                  </button>
+                </div>
+              </div>
             </div>
-
-            <div className='text-right'>
-              <p className='text-2xl font-bold text-amber-400'>
-                {selection.score}
-              </p>
-
-              <p className='text-sm text-muted-foreground'>
-                {selection.odds}
-              </p>
-            </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   )

@@ -3,11 +3,12 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "scripts": {
-    "dev": "concurrently \"pnpm start\" \"vite\"",
-    "start": "node server.js",
-    "build": "vite build"
-  },
+ "scripts": {
+   "dev": "concurrently \"node server.js\" \"vite\"",
+   "start": "node server.js",
+   "frontend": "vite",
+   "build": "vite build"
+ },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.4.2",
