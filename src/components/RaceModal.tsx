@@ -55,7 +55,7 @@ export default function RaceModal({
                         '_blank'
                       )
                     }}
-                    className='font-bold text-xl text-left hover:text-amber-400 transition-colors'
+                    className='relative z-50 pointer-events-auto font-bold text-xl text-left hover:text-amber-400 transition-colors cursor-pointer'
                   >
                     {runner.horse}
                   </button>
