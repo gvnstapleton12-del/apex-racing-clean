@@ -1,129 +1,100 @@
-import { useEffect, useRef, useState } from 'react'
-import { fetchResults, saveResults } from '@/lib/racingApi'
+import { useRef, useState } from 'react'
 
 export default function Results() {
-  const [results, setResults] = useState<any[]>([])
-  const [uploadMessage, setUploadMessage] = useState('')
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const fileInputRef = useRef(null)
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const saved = await fetchResults()
-        setResults(saved || [])
-      } catch (error) {
-        console.error(error)
-      }
-    }
+  const [message, setMessage] = useState('')
 
-    load()
-  }, [])
-
-  useEffect(() => {
-    const stopBrowserDrop = (event: DragEvent) => {
-      event.preventDefault()
-      event.stopPropagation()
-    }
-
-    window.addEventListener('dragover', stopBrowserDrop)
-    window.addEventListener('drop', stopBrowserDrop)
-
-    return () => {
-      window.removeEventListener('dragover', stopBrowserDrop)
-      window.removeEventListener('drop', stopBrowserDrop)
-    }
-  }, [])
-
-  async function handleUpload(event: any) {
+  async function handleUpload(event) {
     const file = event.target.files?.[0]
 
     if (!file) return
 
     try {
-      setUploadMessage('Uploading results...')
+      setMessage('Uploading results...')
 
       const text = await file.text()
-      const json = JSON.parse(text)
 
-      const parsed = json.racecards || json.results || json
+      JSON.parse(text)
 
-      setResults(Array.isArray(parsed) ? parsed : [])
+      setMessage(`Uploaded: ${file.name}`)
+    } catch (error) {
+      console.error(error)
 
-      await saveResults(parsed)
-
-      setUploadMessage(
-        `Imported ${Array.isArray(parsed) ? parsed.length : 0} races successfully`
-      )
-
-      event.target.value = ''
-    } catch (err) {
-      console.error(err)
-      setUploadMessage('Invalid JSON file')
+      setMessage('Invalid JSON file')
     }
   }
 
   return (
-    <div className='p-6 text-white'>
-      <div className='max-w-5xl rounded-3xl border border-zinc-800 bg-zinc-950 p-8'>
-        <h1 className='text-4xl font-bold mb-2'>
+    <div style={{ padding: '40px', color: 'white' }}>
+      <div
+        style={{
+          background: '#111111',
+          border: '1px solid #333333',
+          borderRadius: '24px',
+          padding: '40px',
+          maxWidth: '900px'
+        }}
+      >
+        <h1
+          style={{
+            fontSize: '42px',
+            fontWeight: '700',
+            marginBottom: '20px'
+          }}
+        >
           Upload Official Results
         </h1>
 
-        <p className='text-zinc-400 mb-6'>
-          Click the button below to choose your results JSON file.
+        <p
+          style={{
+            color: '#999999',
+            marginBottom: '30px',
+            fontSize: '18px'
+          }}
+        >
+          Choose your Racing API results JSON file
         </p>
 
         <button
           type='button'
           onClick={() => fileInputRef.current?.click()}
-          className='rounded-xl bg-amber-500 px-6 py-4 text-lg font-bold text-black hover:bg-amber-400 transition'
+          style={{
+            background: '#f59e0b',
+            color: '#000000',
+            border: 'none',
+            borderRadius: '14px',
+            padding: '18px 30px',
+            fontSize: '20px',
+            fontWeight: '700',
+            cursor: 'pointer'
+          }}
         >
-          Choose Results JSON File
+          Choose Results JSON
         </button>
 
         <input
           ref={fileInputRef}
           type='file'
-          accept='.json,application/json'
-          className='hidden'
+          accept='.json'
+          style={{ display: 'none' }}
           onChange={handleUpload}
         />
 
-        {uploadMessage && (
-          <div className='mt-6 rounded-xl border border-zinc-700 bg-zinc-900 p-4 text-lg'>
-            {uploadMessage}
+        {message && (
+          <div
+            style={{
+              marginTop: '30px',
+              background: '#181818',
+              border: '1px solid #333333',
+              borderRadius: '14px',
+              padding: '20px',
+              fontSize: '18px'
+            }}
+          >
+            {message}
           </div>
         )}
-
-        <div className='mt-10 grid gap-4'>
-          {results.length === 0 ? (
-            <div className='rounded-2xl border border-zinc-800 bg-black p-6 text-zinc-400'>
-              No uploaded results yet.
-            </div>
-          ) : (
-            results.map((race: any, index: number) => (
-              <div
-                key={race.race_id || index}
-                className='flex items-center justify-between rounded-2xl border border-zinc-800 bg-black p-5'
-              >
-                <div>
-                  <h2 className='text-xl font-semibold'>
-                    {race.race_name || 'Race Result'}
-                  </h2>
-
-                  <p className='text-zinc-400'>
-                    {race.course || 'Unknown Course'} · {race.off_time || 'Unknown Time'}
-                  </p>
-                </div>
-
-                <div className='text-right'>
-                  <p>{race.field_size || 0} runners</p>
-                  <p className='text-amber-400'>Processed</p>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
       </div>
     </div>
   )
