@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 import { socket } from './socket'
+import Results from './pages/Results'
 
 function App() {
   const [activeTab, setActiveTab] =
@@ -25,37 +26,22 @@ function App() {
   useEffect(() => {
     async function fetchMeetings() {
       try {
-        const response = await fetch(
-          '/api/live-state'
-        )
-
-        const alertsResponse =
-          await fetch(
-            '/api/alerts'
-          )
+        const response = await fetch('/api/live-state')
+        const alertsResponse = await fetch('/api/alerts')
 
         const data = await response.json()
-
-        const alertsData =
-          await alertsResponse.json()
+        const alertsData = await alertsResponse.json()
 
         setAlerts(alertsData || [])
 
-        const liveRaces =
-          data.racecards || []
+        const liveRaces = data.racecards || []
 
-        const today =
-          new Date().toDateString()
+        const today = new Date().toDateString()
 
-        const savedDate =
-          localStorage.getItem(
-            'apex-race-date'
-          )
+        const savedDate = localStorage.getItem('apex-race-date')
 
         const savedRaces = JSON.parse(
-          localStorage.getItem(
-            'apex-old-races'
-          ) || '[]'
+          localStorage.getItem('apex-old-races') || '[]'
         )
 
         if (
@@ -73,10 +59,7 @@ function App() {
           setResultsArchive(savedRaces)
         }
 
-        localStorage.setItem(
-          'apex-race-date',
-          today
-        )
+        localStorage.setItem('apex-race-date', today)
 
         setRacecards(liveRaces)
       } catch (error) {
@@ -96,10 +79,7 @@ function App() {
     })
 
     socket.on('new-alert', (alert) => {
-      setAlerts((prev) => [
-        alert,
-        ...prev,
-      ])
+      setAlerts((prev) => [alert, ...prev])
     })
 
     return () => {
@@ -112,9 +92,7 @@ function App() {
     if (loading) {
       return (
         <div className='card'>
-          <h2>
-            Loading live race meetings...
-          </h2>
+          <h2>Loading live race meetings...</h2>
         </div>
       )
     }
@@ -122,51 +100,35 @@ function App() {
     return (
       <section className='bet-board'>
         <div className='board-header'>
-          <h2>
-            UK & Ireland Racecards
-          </h2>
+          <h2>UK & Ireland Racecards</h2>
         </div>
 
-        {racecards
-          .slice(0, 20)
-          .map((race) => (
-            <div
-              className='bet-card'
-              key={race.race_id}
-            >
-              <div>
-                <div className='bet-top'>
-                  <span className='tag'>
-                    {race.type}
-                  </span>
-
-                  <span className='odds'>
-                    {race.field_size} Runners
-                  </span>
-                </div>
-
-                <h3>{race.race_name}</h3>
-
-                <p>
-                  {race.course} ·{' '}
-                  {race.off_time}
-                </p>
-
-                <p>
-                  {race.going} ·{' '}
-                  {race.distance_f}
-                </p>
+        {racecards.slice(0, 20).map((race) => (
+          <div className='bet-card' key={race.race_id}>
+            <div>
+              <div className='bet-top'>
+                <span className='tag'>{race.type}</span>
+                <span className='odds'>
+                  {race.field_size} Runners
+                </span>
               </div>
 
-              <button
-                onClick={() =>
-                  setSelectedRace(race)
-                }
-              >
-                View Race
-              </button>
+              <h3>{race.race_name}</h3>
+
+              <p>
+                {race.course} · {race.off_time}
+              </p>
+
+              <p>
+                {race.going} · {race.distance_f}
+              </p>
             </div>
-          ))}
+
+            <button onClick={() => setSelectedRace(race)}>
+              View Race
+            </button>
+          </div>
+        ))}
       </section>
     )
   }
@@ -180,22 +142,14 @@ function App() {
 
         {resultsArchive.length === 0 ? (
           <div className='card'>
-            <h2>
-              No archived meetings yet
-            </h2>
+            <h2>No archived meetings yet</h2>
           </div>
         ) : (
           resultsArchive.map((race) => (
-            <div
-              className='bet-card'
-              key={race.race_id}
-            >
+            <div className='bet-card' key={race.race_id}>
               <div>
                 <div className='bet-top'>
-                  <span className='tag'>
-                    {race.type}
-                  </span>
-
+                  <span className='tag'>{race.type}</span>
                   <span className='odds'>
                     {race.field_size} Runners
                   </span>
@@ -204,16 +158,11 @@ function App() {
                 <h3>{race.race_name}</h3>
 
                 <p>
-                  {race.course} ·{' '}
-                  {race.off_time}
+                  {race.course} · {race.off_time}
                 </p>
               </div>
 
-              <button
-                onClick={() =>
-                  setSelectedRace(race)
-                }
-              >
+              <button onClick={() => setSelectedRace(race)}>
                 View Race
               </button>
             </div>
@@ -235,38 +184,26 @@ function App() {
             <h2>No live alerts yet</h2>
           </div>
         ) : (
-          alerts
-            .slice(0, 25)
-            .map((alert, index) => (
-              <div
-                className='bet-card'
-                key={index}
-              >
-                <div>
-                  <div className='bet-top'>
-                    <span className='tag'>
-                      {alert.type}
-                    </span>
-
-                    <span className='odds'>
-                      {alert.severity}
-                    </span>
-                  </div>
-
-                  <h3>{alert.horse}</h3>
-
-                  <p>{alert.message}</p>
-
-                  <p>
-                    {new Date(
-                      alert.timestamp
-                    ).toLocaleTimeString()}
-                  </p>
+          alerts.slice(0, 25).map((alert, index) => (
+            <div className='bet-card' key={index}>
+              <div>
+                <div className='bet-top'>
+                  <span className='tag'>{alert.type}</span>
+                  <span className='odds'>
+                    {alert.severity}
+                  </span>
                 </div>
 
-                <button>ACTIVE</button>
+                <h3>{alert.horse}</h3>
+                <p>{alert.message}</p>
+                <p>
+                  {new Date(alert.timestamp).toLocaleTimeString()}
+                </p>
               </div>
-            ))
+
+              <button>ACTIVE</button>
+            </div>
+          ))
         )}
       </section>
     )
@@ -275,21 +212,17 @@ function App() {
   const renderIntelligence = () => {
     const topRunners = racecards
       .flatMap((race) =>
-        (race.runners || []).map(
-          (runner) => ({
-            ...runner,
-            race_name: race.race_name,
-            course: race.course,
-            off_time: race.off_time,
-          })
-        )
+        (race.runners || []).map((runner) => ({
+          ...runner,
+          race_name: race.race_name,
+          course: race.course,
+          off_time: race.off_time,
+        }))
       )
       .sort(
         (a, b) =>
-          (b.aiProfile?.confidence ||
-            0) -
-          (a.aiProfile?.confidence ||
-            0)
+          (b.aiProfile?.confidence || 0) -
+          (a.aiProfile?.confidence || 0)
       )
       .slice(0, 12)
 
@@ -297,14 +230,8 @@ function App() {
       <>
         <section className='hero'>
           <div>
-            <h2>
-              APEX Intelligence Terminal
-            </h2>
-
-            <p>
-              Advanced AI betting
-              intelligence
-            </p>
+            <h2>APEX Intelligence Terminal</h2>
+            <p>Advanced AI betting intelligence</p>
           </div>
 
           <button>LIVE ENGINE</button>
@@ -313,19 +240,15 @@ function App() {
         <section className='stats'>
           <div className='card'>
             <span>Live Meetings</span>
-
             <h3>{racecards.length}</h3>
           </div>
 
           <div className='card'>
             <span>Tracked Runners</span>
-
             <h3>
               {racecards.reduce(
                 (acc, race) =>
-                  acc +
-                  (race.runners?.length ||
-                    0),
+                  acc + (race.runners?.length || 0),
                 0
               )}
             </h3>
@@ -333,65 +256,44 @@ function App() {
 
           <div className='card'>
             <span>Alerts</span>
-
             <h3>{alerts.length}</h3>
           </div>
 
           <div className='card'>
             <span>AI Engine</span>
-
             <h3>ONLINE</h3>
           </div>
         </section>
 
         <section className='bet-board'>
           <div className='board-header'>
-            <h2>
-              Top Intelligence Runners
-            </h2>
+            <h2>Top Intelligence Runners</h2>
           </div>
 
-          {topRunners.map(
-            (runner, index) => (
-              <div
-                className='bet-card'
-                key={index}
-              >
-                <div>
-                  <div className='bet-top'>
-                    <span className='tag'>
-                      AI
-                    </span>
-
-                    <span className='odds'>
-                      Confidence{' '}
-                      {runner.aiProfile
-                        ?.confidence ||
-                        'N/A'}
-                    </span>
-                  </div>
-
-                  <h3>{runner.horse}</h3>
-
-                  <p>
-                    {runner.course} ·{' '}
-                    {runner.off_time}
-                  </p>
-
-                  <p>
-                    {
-                      runner.bettingSignals?.[0]
-                        ?.type
-                    }
-                  </p>
+          {topRunners.map((runner, index) => (
+            <div className='bet-card' key={index}>
+              <div>
+                <div className='bet-top'>
+                  <span className='tag'>AI</span>
+                  <span className='odds'>
+                    Confidence {runner.aiProfile?.confidence || 'N/A'}
+                  </span>
                 </div>
 
-                <button>
-                  Track Runner
-                </button>
+                <h3>{runner.horse}</h3>
+
+                <p>
+                  {runner.course} · {runner.off_time}
+                </p>
+
+                <p>
+                  {runner.bettingSignals?.[0]?.type}
+                </p>
               </div>
-            )
-          )}
+
+              <button>Track Runner</button>
+            </div>
+          ))}
         </section>
       </>
     )
@@ -403,13 +305,8 @@ function App() {
         <>
           <section className='hero'>
             <div>
-              <h2>
-                APEX Racing Intelligence
-              </h2>
-
-              <p>
-                Live AI betting terminal
-              </p>
+              <h2>APEX Racing Intelligence</h2>
+              <p>Live AI betting terminal</p>
             </div>
 
             <button>LIVE</button>
@@ -418,28 +315,22 @@ function App() {
           <section className='stats'>
             <div className='card'>
               <span>Today's Races</span>
-
               <h3>{racecards.length}</h3>
             </div>
 
             <div className='card'>
               <span>Alerts</span>
-
               <h3>{alerts.length}</h3>
             </div>
 
             <div className='card'>
               <span>AI Status</span>
-
               <h3>ONLINE</h3>
             </div>
 
             <div className='card'>
               <span>Archive</span>
-
-              <h3>
-                {resultsArchive.length}
-              </h3>
+              <h3>{resultsArchive.length}</h3>
             </div>
           </section>
         </>
@@ -462,6 +353,10 @@ function App() {
       return renderAlerts()
     }
 
+    if (activeTab === 'Upload') {
+      return <Results />
+    }
+
     return (
       <div className='card'>
         <h2>{activeTab}</h2>
@@ -475,10 +370,7 @@ function App() {
         <aside className='sidebar'>
           <div>
             <h1>APEX</h1>
-
-            <p>
-              Racing Intelligence
-            </p>
+            <p>Racing Intelligence</p>
           </div>
 
           <nav>
@@ -494,14 +386,8 @@ function App() {
             ].map((tab) => (
               <a
                 key={tab}
-                className={
-                  activeTab === tab
-                    ? 'active'
-                    : ''
-                }
-                onClick={() =>
-                  setActiveTab(tab)
-                }
+                className={activeTab === tab ? 'active' : ''}
+                onClick={() => setActiveTab(tab)}
               >
                 {tab}
               </a>
@@ -517,9 +403,7 @@ function App() {
   )
 }
 
-ReactDOM.createRoot(
-  document.getElementById('root')
-).render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
