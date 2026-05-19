@@ -19,6 +19,21 @@ export default function Results() {
     load()
   }, [])
 
+  useEffect(() => {
+    const stopBrowserDrop = (event: DragEvent) => {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+
+    window.addEventListener('dragover', stopBrowserDrop)
+    window.addEventListener('drop', stopBrowserDrop)
+
+    return () => {
+      window.removeEventListener('dragover', stopBrowserDrop)
+      window.removeEventListener('drop', stopBrowserDrop)
+    }
+  }, [])
+
   async function handleUpload(event: any) {
     const file = event.target.files?.[0]
 
@@ -55,20 +70,21 @@ export default function Results() {
         </h1>
 
         <p className='text-zinc-400 mb-6'>
-          Drag & drop OR click to upload results JSON
+          Click the button below to choose your results JSON file.
         </p>
 
         <button
+          type='button'
           onClick={() => fileInputRef.current?.click()}
           className='rounded-xl bg-amber-500 px-6 py-4 text-lg font-bold text-black hover:bg-amber-400 transition'
         >
-          Choose Results JSON
+          Choose Results JSON File
         </button>
 
         <input
           ref={fileInputRef}
           type='file'
-          accept='.json'
+          accept='.json,application/json'
           className='hidden'
           onChange={handleUpload}
         />
