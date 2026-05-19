@@ -1,31 +1,19 @@
 import React, { useRef, useState } from 'react'
 
-<<<<<<< HEAD
 type ResultsProps = {
   onResultsLoaded?: (results: any[]) => void
 }
 
-export default function Results({
-  onResultsLoaded
-}: ResultsProps = {}) {
+export default function Results(props: ResultsProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-=======
-export default function Results(props: any) {
-  const fileInputRef = useRef<any>(null)
->>>>>>> a6f327a (Fix Results upload page)
 
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-<<<<<<< HEAD
   async function handleUpload(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = event.target.files?.[0]
-=======
-  async function handleUpload(event: any) {
-    const file = event.target.files[0]
->>>>>>> a6f327a (Fix Results upload page)
 
     if (!file) return
 
@@ -36,18 +24,13 @@ export default function Results(props: any) {
       const text = await file.text()
       const json = JSON.parse(text)
 
-      const races = Array.isArray(json)
-        ? json
-        : json.races || json.results || []
-
-      const response = await fetch(
-        'http://localhost:3000/api/upload-results',
+      const response = await fetch('http://localhost:3000/api/upload-results', 
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(races)
+          body: JSON.stringify(json)
         }
       )
 
@@ -57,23 +40,21 @@ export default function Results(props: any) {
         throw new Error(data.error || 'Upload failed')
       }
 
-<<<<<<< HEAD
-      if (onResultsLoaded) {
-        onResultsLoaded(races)
-      }
+const races =
+  json.results ||
+  json.races ||
+  json.data ||
+  []
 
-      setMessage(
-        `Successfully processed ${data.processedRaces || races.length || 0} races`
-=======
-      if (props?.onResultsLoaded) {
+
+      if (props.onResultsLoaded) {
         props.onResultsLoaded(races)
       }
 
       setMessage(
-        'Successfully processed ' +
-          (data.processedRaces || races.length || 0) +
-          ' races'
->>>>>>> a6f327a (Fix Results upload page)
+        `Successfully processed ${
+          data.processedRaces || races.length || 0
+        } races`
       )
     } catch (error: any) {
       console.error(error)
@@ -84,16 +65,12 @@ export default function Results(props: any) {
   }
 
   return (
-<<<<<<< HEAD
     <div
       style={{
         padding: '40px',
         color: 'white'
       }}
     >
-=======
-    <div style={{ padding: '40px', color: 'white' }}>
->>>>>>> a6f327a (Fix Results upload page)
       <div
         style={{
           background: '#111',
@@ -124,9 +101,11 @@ export default function Results(props: any) {
         </p>
 
         <button
-          type='button'
+          type="button"
           disabled={loading}
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() =>
+            fileInputRef.current?.click()
+          }
           style={{
             background: '#f59e0b',
             color: '#000',
@@ -145,8 +124,8 @@ export default function Results(props: any) {
 
         <input
           ref={fileInputRef}
-          type='file'
-          accept='.json,application/json'
+          type="file"
+          accept=".json,application/json"
           style={{ display: 'none' }}
           onChange={handleUpload}
         />

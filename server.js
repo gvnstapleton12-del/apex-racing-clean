@@ -303,9 +303,13 @@ app.get('/api/results', (_req, res) => {
 
 app.post('/api/upload-results', (req, res) => {
   try {
-    const races = req.body
+    const races =
+  req.body.results ||
+  req.body.racecards ||
+  req.body.data ||
+  req.body
 
-    if (!Array.isArray(races)) {
+if (!Array.isArray(races)) {
       return res.status(400).json({
         error: 'Invalid results format',
       })
