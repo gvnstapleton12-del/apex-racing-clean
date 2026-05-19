@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
 
+<<<<<<< HEAD
 type ResultsProps = {
   onResultsLoaded?: (results: any[]) => void
 }
@@ -8,14 +9,23 @@ export default function Results({
   onResultsLoaded
 }: ResultsProps = {}) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+=======
+export default function Results(props: any) {
+  const fileInputRef = useRef<any>(null)
+>>>>>>> a6f327a (Fix Results upload page)
 
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
+<<<<<<< HEAD
   async function handleUpload(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = event.target.files?.[0]
+=======
+  async function handleUpload(event: any) {
+    const file = event.target.files[0]
+>>>>>>> a6f327a (Fix Results upload page)
 
     if (!file) return
 
@@ -28,7 +38,7 @@ export default function Results({
 
       const races = Array.isArray(json)
         ? json
-        : json.races || json.results || json.racecards || []
+        : json.races || json.results || []
 
       const response = await fetch(
         'http://localhost:3000/api/upload-results',
@@ -47,12 +57,23 @@ export default function Results({
         throw new Error(data.error || 'Upload failed')
       }
 
+<<<<<<< HEAD
       if (onResultsLoaded) {
         onResultsLoaded(races)
       }
 
       setMessage(
         `Successfully processed ${data.processedRaces || races.length || 0} races`
+=======
+      if (props?.onResultsLoaded) {
+        props.onResultsLoaded(races)
+      }
+
+      setMessage(
+        'Successfully processed ' +
+          (data.processedRaces || races.length || 0) +
+          ' races'
+>>>>>>> a6f327a (Fix Results upload page)
       )
     } catch (error: any) {
       console.error(error)
@@ -63,12 +84,16 @@ export default function Results({
   }
 
   return (
+<<<<<<< HEAD
     <div
       style={{
         padding: '40px',
         color: 'white'
       }}
     >
+=======
+    <div style={{ padding: '40px', color: 'white' }}>
+>>>>>>> a6f327a (Fix Results upload page)
       <div
         style={{
           background: '#111',
