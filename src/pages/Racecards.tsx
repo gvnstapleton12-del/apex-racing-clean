@@ -145,22 +145,24 @@ export default function Racecards() {
                       >
                         <div>
                           <button
-                            type='button'
-                            onClick={() => {
-                              window.open(
-                                `https://www.google.com/search?q=${encodeURIComponent(
-                                  runner.horse +
-                                    ' At The Races'
-                                )}`,
-                                '_blank'
-                              )
-                            }}
-                            className='font-semibold hover:text-amber-400 transition-colors text-left'
-                          >
-                            {
-                              runner.horse
-                            }
-                          </button>
+  type='button'
+  onMouseDown={(e) => {
+    e.preventDefault()
+
+    const searchUrl =
+      `https://www.attheraces.com/search?search=` +
+      encodeURIComponent(race.race_name)
+
+    window.open(
+      searchUrl,
+      '_blank',
+      'noopener,noreferrer'
+    )
+  }}
+  className='px-4 py-2 rounded-xl bg-amber-500 text-black font-bold hover:opacity-90 cursor-pointer'
+>
+  View Race
+</button>
 
                           <p className='text-sm text-muted-foreground'>
                             {
