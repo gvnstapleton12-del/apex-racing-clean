@@ -17,12 +17,16 @@ export default function Results() {
       const text = await file.text()
       const json = JSON.parse(text)
 
-      const response = await fetch('/api/process-results', {
+      const races = Array.isArray(json)
+        ? json
+        : json.races || json.results || json.racecards || []
+
+      const response = await fetch('http://localhost:3000/api/upload-results', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(json)
+        body: JSON.stringify(races)
       })
 
       const data = await response.json()
