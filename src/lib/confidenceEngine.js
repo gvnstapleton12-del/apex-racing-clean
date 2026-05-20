@@ -211,7 +211,20 @@ export function generateConfidence(runner, race = {}, options = {}) {
     if (m.clv) confidence += clvScore * (m.clv - 1)
   }
 
-  confidence = Math.round(confidence * (0.75 + completeness / 300))
+  let synergyMultiplier = 1
+  const noNegFlags = classLockScore > 1 && strideScore > 3 && recentNR < 1
+  if (noNegFlags) {
+    let strongCount = 0
+    if (classLockScore >= 30) strongCount++
+    if (strideScore >= 12) strongCount++
+    if (trafficScore >= 7) strongCount++
+    if (trainerScore >= 5) strongCount++
+    if (clvScore >= 5) strongCount++
+    if (strongCount >= 4) synergyMultiplier = 1.15
+    else if (strongCount >= 3) synergyMultiplier = 1.08
+  }
+
+  confidence = Math.round(confidence * (0.75 + completeness / 300) * synergyMultiplier)
 
   const replayAdj = Number(options.replayAdjustment) || 0
   confidence += Math.max(-10, Math.min(10, replayAdj))
@@ -256,6 +269,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
       trafficScore,
       clvScore,
       replayAdjustment: replayAdj,
+      synergyMultiplier,
       or: bestRating,
       rpr,
       odds,
