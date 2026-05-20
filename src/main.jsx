@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 
@@ -199,6 +199,29 @@ function App() {
     useState('Home')
   const [uploadedResults, setUploadedResults] =
     useState([])
+
+  useEffect(() => {
+    async function loadSavedResults() {
+      try {
+        const response = await fetch(
+          'http://localhost:3000/api/results'
+        )
+
+        const data = await response.json()
+
+        if (Array.isArray(data)) {
+          setUploadedResults(data)
+        }
+      } catch (error) {
+        console.error(
+          'Failed to load saved results',
+          error
+        )
+      }
+    }
+
+    loadSavedResults()
+  }, [])
 
   const handleResultsLoaded = (
   results,
