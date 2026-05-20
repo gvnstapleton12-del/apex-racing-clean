@@ -262,7 +262,7 @@ function Home() {
         <section className='home-picks-section'>
           {todayStats && todayStats.won + todayStats.placed + todayStats.lost > 0 && (
             <div className={`home-picks-stats-bar ${todayStats.won > 0 ? 'has-wins' : 'no-wins'}`}>
-              <span>Today's results: <strong className='stat-won'>{todayStats.won}W</strong> &middot; <strong className='stat-placed'>{todayStats.placed}P</strong> &middot; <strong className='stat-lost'>{todayStats.lost}L</strong> &middot; <strong className='stat-pend'>{todayStats.pending}P</strong>
+              <span>Today's results: <strong className='stat-won'>{todayStats.won}W</strong> &middot; <strong className='stat-placed'>{todayStats.placed}PLC</strong> &middot; <strong className='stat-lost'>{todayStats.lost}L</strong> &middot; <strong className='stat-pend'>{todayStats.pending}P</strong>
                 {todayStats.won + todayStats.lost > 0 && (
                   <> &middot; SR <strong>{(todayStats.won / (todayStats.won + todayStats.placed + todayStats.lost) * 100).toFixed(0)}%</strong></>
                 )}
@@ -305,7 +305,7 @@ function Home() {
                     <span className='home-track-date'>{date}</span>
                     <span className='home-track-stats'>
                       <span className='home-track-won'>{s.won}W</span>
-                      <span className='home-track-placed'>{s.placed}P</span>
+                      <span className='home-track-placed'>{s.placed}PLC</span>
                       <span className='home-track-lost'>{s.lost}L</span>
                       {s.pending > 0 && <span className='home-track-pend'>{s.pending}P</span>}
                       <span className='home-track-rate'>{rate !== '--' ? `${rate}%` : '--'}</span>
