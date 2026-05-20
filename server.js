@@ -592,8 +592,9 @@ function matchDailyPicksWithResults(races) {
     const entry = DAILY_PICKS_DATABASE[date]
     const picks = entry.picks || []
     const won = picks.filter((p) => p.result === 'won').length
-    const lost = picks.filter((p) => p.result !== null && p.result !== 'won').length
-    entry.stats = { won, lost, pending: picks.length - won - lost }
+    const placed = picks.filter((p) => p.result === '2nd' || p.result === '3rd').length
+    const lost = picks.filter((p) => p.result !== null && p.result !== 'won' && p.result !== '2nd' && p.result !== '3rd').length
+    entry.stats = { won, placed, lost, pending: picks.length - won - placed - lost }
   })
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
@@ -624,7 +625,7 @@ app.post('/api/daily-picks', (req, res) => {
       result: null,
       position: null,
     })),
-    stats: { won: 0, lost: 0, pending: picks.length },
+    stats: { won: 0, placed: 0, lost: 0, pending: picks.length },
   }
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
