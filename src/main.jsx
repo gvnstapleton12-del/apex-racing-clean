@@ -62,14 +62,23 @@ function gradeClass(grade) {
   return map[grade] || 'c'
 }
 
-function PickCard({ selection, rank, result }) {
+function resultLabel(result, position) {
+  if (!result) return null
+  if (position === 1 || result === 'won') return { text: 'WON', cls: 'won' }
+  if (position === 2 || result === '2nd') return { text: '2nd', cls: 'placed' }
+  if (position === 3 || result === '3rd') return { text: '3rd', cls: 'placed' }
+  return { text: 'LOST', cls: 'lost' }
+}
+
+function PickCard({ selection, rank, result, position }) {
   if (!selection) return null
+  const label = resultLabel(result, position)
   return (
-    <article className={`pick-card rank-${rank}${result ? ' has-result' : ''}`}>
+    <article className={`pick-card rank-${rank}${label ? ' has-result' : ''}`}>
       <div className='pick-card-glow' />
-      {result && (
-        <div className={`pick-card-result-badge ${result}`}>
-          {result === 'won' ? 'WON' : 'LOST'}
+      {label && (
+        <div className={`pick-card-result-badge ${label.cls}`}>
+          {label.text}
         </div>
       )}
       <div className='pick-card-body'>
@@ -270,6 +279,7 @@ function Home() {
                   selection={s}
                   rank={i + 1}
                   result={saved?.result || null}
+                  position={saved?.position || null}
                 />
               )
             })}
@@ -301,12 +311,12 @@ function Home() {
                   </summary>
                   <div className='home-track-detail'>
                     {day.picks.map((p, i) => (
-                      <div key={i} className={`home-track-row ${p.result || ''}`}>
+                      <div key={i} className={`home-track-row ${p.result === 'won' ? 'won' : p.result === '2nd' || p.result === '3rd' ? 'placed' : p.result || ''}`}>
                         <span className='home-track-row-name'>{p.horse}</span>
                         <span className='home-track-row-course'>{p.course}</span>
                         <span className='home-track-row-score'>{p.score}</span>
                         <span className={`home-track-row-result ${p.result || 'pending'}`}>
-                          {p.result ? (p.result === 'won' ? 'WON' : 'LOST') : 'PEND'}
+                          {p.result === 'won' ? 'WON' : p.result === '2nd' ? '2nd' : p.result === '3rd' ? '3rd' : p.result ? 'LOST' : 'PEND'}
                         </span>
                       </div>
                     ))}

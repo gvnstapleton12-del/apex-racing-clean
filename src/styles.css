@@ -589,6 +589,11 @@ button {
   color: #052e16;
 }
 
+.pick-card-result-badge.placed {
+  background: #f59e0b;
+  color: #422006;
+}
+
 .pick-card-result-badge.lost {
   background: rgba(255, 255, 255, 0.1);
   color: #a1a1aa;
@@ -743,6 +748,11 @@ button {
 .home-track-row-result.won {
   background: #22c55e;
   color: #052e16;
+}
+
+.home-track-row-result.placed {
+  background: #f59e0b;
+  color: #422006;
 }
 
 .home-track-row-result.lost {

@@ -551,9 +551,16 @@ app.get('/api/predictions', (_req, res) => {
   res.json(PREDICTIONS_DATABASE)
 })
 
+function normalizeCourse(name = '') {
+  return String(name).toLowerCase().replace(/\(.*?\)/g, '').trim()
+}
+
 function matchDailyPicksWithResults(races) {
+  let matchCount = 0
+
   races.forEach((race) => {
-    const date = race.date
+    const rawDate = String(race.date || (race.off_dt || '').slice(0, 10) || '')
+    const date = rawDate.replace(/[/]/g, '-')
     if (!date || !DAILY_PICKS_DATABASE[date]) return
 
     const dailyPicks = DAILY_PICKS_DATABASE[date].picks || []
@@ -563,19 +570,29 @@ function matchDailyPicksWithResults(races) {
       const match = dailyPicks.find(
         (p) =>
           normalizeHorseName(p.horse) === normalizeHorseName(runner.horse) &&
-          p.course === race.course
+          normalizeCourse(p.course) === normalizeCourse(race.course)
       )
       if (match && match.result === null) {
-        match.result = Number(runner.position || 0) === 1 ? 'won' : 'lost'
+        const pos = Number(runner.position || runner.pos || 0)
+        if (pos === 1) match.result = 'won'
+        else if (pos === 2) match.result = '2nd'
+        else if (pos === 3) match.result = '3rd'
+        else match.result = 'lost'
+        match.position = pos
+        matchCount++
       }
     })
   })
+
+  if (matchCount > 0) {
+    console.log(`[DAILY PICKS] Matched ${matchCount} runners with results`)
+  }
 
   Object.keys(DAILY_PICKS_DATABASE).forEach((date) => {
     const entry = DAILY_PICKS_DATABASE[date]
     const picks = entry.picks || []
     const won = picks.filter((p) => p.result === 'won').length
-    const lost = picks.filter((p) => p.result === 'lost').length
+    const lost = picks.filter((p) => p.result !== null && p.result !== 'won').length
     entry.stats = { won, lost, pending: picks.length - won - lost }
   })
 
@@ -605,6 +622,7 @@ app.post('/api/daily-picks', (req, res) => {
       form: p.form,
       draw: p.draw,
       result: null,
+      position: null,
     })),
     stats: { won: 0, lost: 0, pending: picks.length },
   }
@@ -729,6 +747,9 @@ app.post('/api/upload-results', (req, res) => {
     )
 
     matchDailyPicksWithResults(races)
+
+    const pickDates = Object.keys(DAILY_PICKS_DATABASE)
+    console.log(`[UPLOAD] Processed ${races.length} races - daily pick dates: [${pickDates.join(', ')}]`)
 
     res.json({
       success: true,

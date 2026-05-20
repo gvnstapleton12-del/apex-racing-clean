@@ -1,3 +1,5 @@
+import { getDrawAdjustment } from './drawBias.js'
+
 export function generateConfidence(runner, race = {}, options = {}) {
   const or = Number(runner.ofr || runner.official_rating || runner.or || 0)
   const rpr = Number(runner.rpr || 0)
@@ -8,6 +10,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
   const trainerRtf = Number(runner.trainer_rtf || 0)
   const jockey = String(runner.jockey || '').toLowerCase()
   const trainer = String(runner.trainer || '').toLowerCase()
+  const course = String(race.course || runner.course || '').toLowerCase()
   const fieldSize = (race.runners && race.runners.length) || Number(runner.number_of_runners || 0)
   const formString = String(runner.form || '')
   const weight = Number(runner.lbs || runner.weight_lbs || runner.weight || 0)
@@ -151,6 +154,8 @@ export function generateConfidence(runner, race = {}, options = {}) {
     if (draw >= fieldSize - 2 && fieldSize >= 14) trafficScore -= 1
   }
 
+  const drawBiasAdj = getDrawAdjustment(course, draw, fieldSize)
+  trafficScore += drawBiasAdj
   trafficScore = Math.max(0, Math.min(10, Math.round(trafficScore)))
 
   let clvScore = 3
@@ -229,6 +234,8 @@ export function generateConfidence(runner, race = {}, options = {}) {
       rpr,
       odds,
       draw,
+      course,
+      drawBiasAdj,
       trainerRtf,
       lastRun,
       age,
