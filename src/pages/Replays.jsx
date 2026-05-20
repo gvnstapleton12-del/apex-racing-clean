@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchRacecards } from '../lib/racingApi'
 import { formatOffTime } from '../lib/formatTime'
+import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 
 const QUICK_TAGS = {
   positive: [
@@ -125,7 +126,7 @@ export default function Replays() {
             <div key={key} className={`replay-card${isOpen ? ' is-open' : ''}`}>
               <div className='replay-card-head' onClick={() => openForm(key, existing)}>
                 <div className='replay-card-info'>
-                  <strong className='replay-card-horse'>{runner.horse}</strong>
+                  <strong className='replay-card-horse' onClick={() => openAtTheRacesHorseForm(runner, runner.race)}>{runner.horse}</strong>
                   <span className='replay-card-meta'>
                     {runner.offTime} &middot; {runner.course} &middot; {runner.raceName}
                   </span>
