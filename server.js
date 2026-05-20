@@ -45,6 +45,7 @@ const LEARNING_DB_PATH = path.join(process.cwd(), 'data', 'learning.json')
 const PREDICTIONS_DB_PATH = path.join(process.cwd(), 'data', 'predictions.json')
 const DAILY_PICKS_PATH = path.join(process.cwd(), 'data', 'daily-picks.json')
 const REPLAY_NOTES_PATH = path.join(process.cwd(), 'data', 'replay-notes.json')
+const NON_RUNNER_PATH = path.join(process.cwd(), 'data', 'non-runners.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -131,6 +132,7 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
 
 const DAILY_PICKS_DATABASE = loadDatabase(DAILY_PICKS_PATH)
 const REPLAY_NOTES_DATABASE = loadDatabase(REPLAY_NOTES_PATH)
+const NON_RUNNER_DATABASE = loadDatabase(NON_RUNNER_PATH)
 
 const LIVE_STATE = {
   racecards: [],
@@ -360,12 +362,20 @@ async function fetchLiveMeetings() {
         const replayKey = `${runner.horse}|${race.course}`
         const replayNote = REPLAY_NOTES_DATABASE[replayKey] || {}
 
+        const nrKey = normalizeHorseName(runner.horse)
+        const nrEntries = NON_RUNNER_DATABASE[nrKey] || []
+        const recentNR = nrEntries.filter((e) => {
+          const daysSince = (new Date() - new Date(e.date + 'T00:00:00')) / 86400000
+          return daysSince <= 90 && daysSince >= 0
+        })
+
         const aiProfile = generateConfidence({
           ...runner,
           horseProfile: HORSE_DATABASE[horseId],
         }, race, {
           ...weights,
           replayAdjustment: replayNote.adjustment || 0,
+          recentNR: recentNR.length,
         })
 
         logPrediction(race, runner, aiProfile)
@@ -614,6 +624,13 @@ function matchDailyPicksWithResults(races) {
       ) {
         p.result = 'nr'
         p.position = 0
+        const nh = normalizeHorseName(p.horse)
+        if (!NON_RUNNER_DATABASE[nh]) NON_RUNNER_DATABASE[nh] = []
+        NON_RUNNER_DATABASE[nh].push({
+          date,
+          course: p.course,
+          horse: p.horse,
+        })
         matchCount++
       }
     })
@@ -630,6 +647,7 @@ function matchDailyPicksWithResults(races) {
   })
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+  saveDatabase(NON_RUNNER_PATH, NON_RUNNER_DATABASE)
 }
 
 app.post('/api/daily-picks', (req, res) => {

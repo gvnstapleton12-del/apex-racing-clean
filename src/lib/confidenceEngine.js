@@ -8,6 +8,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
   const odds = Number(runner.odds || runner.price || 0)
   const lastRun = Number(runner.last_run || 0)
   const trainerRtf = Number(runner.trainer_rtf || 0)
+  const recentNR = Number(options.recentNR || 0)
   const jockey = String(runner.jockey || '').toLowerCase()
   const trainer = String(runner.trainer || '').toLowerCase()
   const course = String(race.course || runner.course || '').toLowerCase()
@@ -110,6 +111,8 @@ export function generateConfidence(runner, race = {}, options = {}) {
 
   if (weight > 0 && weight <= 154) strideScore += 1
   if (age >= 5 && age <= 8) strideScore += 1
+  if (recentNR >= 2) strideScore -= 4
+  else if (recentNR >= 1) strideScore -= 2
 
   strideScore = Math.max(0, Math.min(25, Math.round(strideScore)))
 
