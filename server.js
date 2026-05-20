@@ -145,7 +145,10 @@ function formatAtrRacecardDate(date = '') {
 }
 
 function buildAtrRacecardUrl(race = {}) {
-  const course = String(race.course || '').replace(/\s+/g, '-')
+  const course = String(race.course || '')
+    .replace(/\(.*?\)/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
   const date = formatAtrRacecardDate(race.date)
   const offDateTime =
     String(race.off_dt || '').match(/T(\d{2}):(\d{2})/)

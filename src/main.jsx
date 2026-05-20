@@ -5,16 +5,21 @@ import './styles.css'
 import {
   QueryClient,
   QueryClientProvider,
+  useQuery,
 } from '@tanstack/react-query'
 
 import Racecards from './pages/Racecards'
-import Results from './pages/Results'
+import UploadResults, {
+  ResultsList,
+} from './pages/Results'
+import { fetchRacecards } from './lib/racingApi'
+import { openAtTheRacesHorseForm } from './lib/horseLinks'
 
 const queryClient =
   new QueryClient()
 
 const tabs = [
-  'Dashboard',
+  'Home',
   'Racecards',
   'Results',
   'Intelligence',
@@ -24,47 +29,153 @@ const tabs = [
   'Analytics',
 ]
 
-function DashboardHome() {
+function getRunnerScore(runner) {
+  return (
+    runner.aiProfile?.confidence ||
+    runner.score ||
+    0
+  )
+}
+
+function getHomeSelections(races) {
+  return races
+    .flatMap((race) =>
+      (race.runners || []).map((runner) => ({
+        ...runner,
+        race,
+        raceName: race.race_name,
+        course: race.course,
+        offTime: race.off_time,
+        score: getRunnerScore(runner),
+      }))
+    )
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+}
+
+function PickCard({ label, selection, featured = false }) {
+  if (!selection) {
+    return (
+      <article className='pick-card'>
+        <span>{label}</span>
+        <h3>No pick available</h3>
+        <p>Waiting for the live race feed.</p>
+      </article>
+    )
+  }
+
+  return (
+    <article
+      className={
+        featured ? 'pick-card pick-card-featured' : 'pick-card'
+      }
+    >
+      <div className='pick-card-top'>
+        <span>{label}</span>
+        <strong>{selection.score}</strong>
+      </div>
+
+      <button
+        type='button'
+        className='pick-horse-button'
+        onClick={() =>
+          openAtTheRacesHorseForm(selection, selection.race)
+        }
+      >
+        {selection.horse}
+      </button>
+
+      <p>
+        {selection.offTime} - {selection.course}
+      </p>
+
+      <p>{selection.raceName}</p>
+
+      <div className='pick-meta'>
+        <span>Odds {selection.odds || '-'}</span>
+        <span>Form {selection.form || '-'}</span>
+        <span>Draw {selection.draw || '-'}</span>
+      </div>
+    </article>
+  )
+}
+
+function Home() {
+  const {
+    data: races = [],
+    isLoading,
+  } = useQuery({
+    queryKey: ['home-racecards'],
+    queryFn: fetchRacecards,
+    refetchInterval: 60000,
+  })
+
+  const selections = getHomeSelections(races)
+  const nap = selections[0]
+  const nextBest = selections[1]
+  const eachWay = selections.find(
+    (selection) =>
+      selection !== nap &&
+      selection.odds &&
+      (selection.score || 0) >= 60
+  )
+  const totalRunners = selections.length
+
   return (
     <div className='dashboard-page'>
       <section className='dashboard-hero'>
         <div className='hero-copy'>
-          <span className='eyebrow'>APEX overview</span>
+          <span className='eyebrow'>Home</span>
 
-          <h1>Racing intelligence dashboard</h1>
+          <h1>Today&apos;s system picks</h1>
 
           <p>
-            Your high-level workspace for market signals, alerts,
-            bankroll performance and daily racing intelligence.
+            The live APEX model ranks every runner and promotes the
+            strongest selections into NAP, next best and value slots.
           </p>
         </div>
 
         <div className='hero-metrics'>
           <div>
-            <span>Mode</span>
-            <strong>Live</strong>
+            <span>Races</span>
+            <strong>{races.length}</strong>
           </div>
 
           <div>
-            <span>Feed</span>
-            <strong>On</strong>
+            <span>Runners</span>
+            <strong>{totalRunners}</strong>
           </div>
 
           <div>
-            <span>Status</span>
-            <strong>Ready</strong>
+            <span>Top score</span>
+            <strong>{nap?.score || '--'}</strong>
           </div>
         </div>
       </section>
 
-      <section className='empty-state'>
-        <span>Dashboard</span>
-        <h2>Live races now live under Racecards</h2>
-        <p>
-          Use the Racecards tab in the sidebar to view the live
-          race list, runner scores and race modals.
-        </p>
-      </section>
+      {isLoading ? (
+        <div className='loading-card'>
+          <div className='pulse-dot' />
+          <span>Finding the strongest system picks...</span>
+        </div>
+      ) : (
+        <section className='pick-grid'>
+          <PickCard
+            label='NAP'
+            selection={nap}
+            featured
+          />
+
+          <PickCard
+            label='Next Best'
+            selection={nextBest}
+          />
+
+          <PickCard
+            label='Each-Way Value'
+            selection={eachWay}
+          />
+        </section>
+      )}
     </div>
   )
 }
@@ -85,22 +196,34 @@ function PlaceholderPage({ title }) {
 
 function App() {
   const [activeTab, setActiveTab] =
-    useState('Dashboard')
+    useState('Home')
+  const [uploadedResults, setUploadedResults] =
+    useState([])
+
+  const handleResultsLoaded = (results) => {
+    setUploadedResults(results)
+    setActiveTab('Results')
+  }
 
   const renderPage = () => {
     if (activeTab === 'Racecards') {
       return <Racecards />
     }
 
-    if (
-      activeTab === 'Results' ||
-      activeTab === 'Upload'
-    ) {
-      return <Results />
+    if (activeTab === 'Results') {
+      return <ResultsList results={uploadedResults} />
     }
 
-    if (activeTab === 'Dashboard') {
-      return <DashboardHome />
+    if (activeTab === 'Upload') {
+      return (
+        <UploadResults
+          onResultsLoaded={handleResultsLoaded}
+        />
+      )
+    }
+
+    if (activeTab === 'Home') {
+      return <Home />
     }
 
     return <PlaceholderPage title={activeTab} />
