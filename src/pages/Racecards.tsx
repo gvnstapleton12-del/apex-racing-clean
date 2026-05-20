@@ -28,6 +28,7 @@ export default function Racecards() {
   }
 
   const now = new Date()
+  const todayStr = now.toISOString().slice(0, 10)
 
   const sortedRaces = [...races].sort((a: any, b: any) => {
     const aTime = a.off_dt || a.off_time || ''
@@ -35,20 +36,20 @@ export default function Racecards() {
     return aTime < bTime ? -1 : aTime > bTime ? 1 : 0
   })
 
-  const upcomingRaces = sortedRaces.filter((race: any) => {
-    if (race.off_dt) {
-      return new Date(race.off_dt) > now
-    }
+  const todayRaces = sortedRaces.filter((race: any) => {
+    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
+    if (raceDate !== todayStr) return false
+    if (race.off_dt) return new Date(race.off_dt) > now
     return true
   })
 
-  const totalRunners = sortedRaces.reduce(
+  const totalRunners = todayRaces.reduce(
     (total: number, race: any) =>
       total + (race.runners?.length || 0),
     0
   )
 
-  const nextRace = upcomingRaces[0]
+  const nextRace = todayRaces[0]
 
   return (
     <div className='dashboard-page'>
@@ -82,8 +83,15 @@ export default function Racecards() {
         </div>
       </section>
 
+      {!todayRaces.length && (
+        <div className='empty-state'>
+          <h2>No more races today</h2>
+          <p>All of today's races have finished. Check the Results tab for completed races.</p>
+        </div>
+      )}
+
       <section className='race-grid'>
-        {sortedRaces.map((race: any, index: number) => {
+        {todayRaces.map((race: any, index: number) => {
           const scoredRunners = (race.runners || []).map(
             (runner: any) => ({
               ...runner,

@@ -2,7 +2,9 @@ import React, {
   useRef,
   useState,
 } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
+import { fetchRacecards } from '../lib/racingApi'
 import { formatOffTime } from '../lib/formatTime'
 
 type UploadResultsProps = {
@@ -23,12 +25,46 @@ function getRacesFromResults(results: any[]) {
 
 export function ResultsList({ results }: ResultsListProps) {
   const races = getRacesFromResults(results)
-  const totalRunners = races.reduce(
-    (total, race) => total + (race.runners?.length || 0),
-    0
+
+  const { data: liveRaces = [] } = useQuery<any[]>({
+    queryKey: ['results-racecards'],
+    queryFn: fetchRacecards,
+    refetchInterval: 60000,
+  })
+
+  const now = new Date()
+  const todayStr = now.toISOString().slice(0, 10)
+
+  const completedRaces = liveRaces.filter((race: any) => {
+    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
+    if (raceDate !== todayStr) return false
+    if (race.off_dt && new Date(race.off_dt) > now) return false
+    const hasResults = (race.runners || []).some(
+      (r: any) => r.position || r.pos
+    )
+    return hasResults
+  })
+
+  const todayUploaded = races.filter((race: any) => {
+    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
+    if (raceDate !== todayStr) return false
+    const hasResults = (race.runners || []).some(
+      (r: any) => r.position || r.pos
+    )
+    return hasResults
+  })
+
+  const totalCompleted = completedRaces.length + todayUploaded.length
+
+  const todayUploadedIds = new Set(todayUploaded.map((r: any) => r.race_id))
+
+  const olderRaces = races.filter(
+    (r: any) => !todayUploadedIds.has(r.race_id)
   )
 
-  if (!races.length) {
+  const noContent = !olderRaces.length && !totalCompleted
+
+  if (noContent) {
     return (
       <div className='dashboard-page'>
         <section className='empty-state'>
@@ -47,95 +83,159 @@ export function ResultsList({ results }: ResultsListProps) {
     <div className='dashboard-page'>
       <section className='dashboard-hero'>
         <div className='hero-copy'>
-          <span className='eyebrow'>Processed results</span>
+          <span className='eyebrow'>Results</span>
 
-          <h1>Official results review</h1>
+          <h1>Race results</h1>
 
           <p>
-            Uploaded race outcomes are grouped here so you can review
-            positions, SP odds and runner-level records after import.
+            Live completed races appear automatically. Uploaded results
+            from official JSON files are shown below.
           </p>
         </div>
 
         <div className='hero-metrics'>
           <div>
-            <span>Races</span>
+            <span>Completed today</span>
+            <strong>{totalCompleted}</strong>
+          </div>
+
+          <div>
+            <span>Saved uploads</span>
             <strong>{races.length}</strong>
-          </div>
-
-          <div>
-            <span>Runners</span>
-            <strong>{totalRunners}</strong>
-          </div>
-
-          <div>
-            <span>Status</span>
-            <strong>Saved</strong>
           </div>
         </div>
       </section>
 
-      <section className='race-grid'>
-        {races.map((race, raceIndex) => (
-          <article
-            key={race.race_id || raceIndex}
-            className='race-card'
-          >
-            <div className='race-card-header'>
-              <div>
-                <div className='race-meta-row'>
-                  <span className='live-badge'>RESULT</span>
-                  <span>{race.runners?.length || 0} runners</span>
-                </div>
-
-                <h2>
-                  {race.race_name || race.name || 'Imported race'}
-                </h2>
-
-                <p>
-                  {race.course || 'Unknown course'}
-                  {race.off_time ? ` - ${formatOffTime(race)}` : ''}
-                </p>
-              </div>
-            </div>
-
-            <div className='runner-list'>
-              {(race.runners || []).map(
-                (runner: any, runnerIndex: number) => (
-                  <div
-                    key={runner.horse_id || runnerIndex}
-                    className='runner-row'
-                  >
-                    <div>
-                      <strong className='result-position'>
-                        {runner.position || runner.pos || '-'}
-                      </strong>
-
-                      <span className='result-horse-name'>
-                        {runner.horse || runner.name || 'Unnamed runner'}
-                      </span>
-
-                      <p>
-                        {runner.jockey || '-'} - {runner.trainer || '-'}
-                      </p>
-                    </div>
-
-                    <div className='runner-score'>
-                      <strong>
-                        {runner.spOdds ||
-                          runner.sp ||
-                          runner.odds ||
-                          '-'}
-                      </strong>
-                      <span>SP</span>
-                    </div>
+      {totalCompleted > 0 && (
+        <section className='race-grid'>
+          <div className='race-grid-header'>
+            <h2>Today's results</h2>
+          </div>
+          {[...completedRaces, ...todayUploaded].map((race: any, raceIndex: number) => (
+            <article
+              key={race.race_id || `live-${raceIndex}`}
+              className='race-card'
+            >
+              <div className='race-card-header'>
+                <div>
+                  <div className='race-meta-row'>
+                    <span className='live-badge'>RESULT</span>
+                    <span>{race.runners?.length || 0} runners</span>
                   </div>
-                )
-              )}
-            </div>
-          </article>
-        ))}
-      </section>
+
+                  <h2>{race.race_name}</h2>
+
+                  <p>
+                    {race.course} - {formatOffTime(race)}
+                  </p>
+                </div>
+              </div>
+
+              <div className='runner-list'>
+                {(race.runners || []).map(
+                  (runner: any, runnerIndex: number) => (
+                    <div
+                      key={runner.horse_id || runnerIndex}
+                      className='runner-row'
+                    >
+                      <div>
+                        <strong className='result-position'>
+                          {runner.position || runner.pos || '-'}
+                        </strong>
+
+                        <span className='result-horse-name'>
+                          {runner.horse || runner.name || 'Unnamed runner'}
+                        </span>
+
+                        <p>
+                          {runner.jockey || '-'} - {runner.trainer || '-'}
+                        </p>
+                      </div>
+
+                      <div className='runner-score'>
+                        <strong>
+                          {runner.spOdds ||
+                            runner.sp ||
+                            runner.odds ||
+                            '-'}
+                        </strong>
+                        <span>SP</span>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
+
+      {olderRaces.length > 0 && (
+        <section className='race-grid'>
+          <div className='race-grid-header'>
+            <h2>Uploaded results</h2>
+          </div>
+          {olderRaces.map((race, raceIndex) => (
+            <article
+              key={race.race_id || raceIndex}
+              className='race-card'
+            >
+              <div className='race-card-header'>
+                <div>
+                  <div className='race-meta-row'>
+                    <span className='live-badge'>RESULT</span>
+                    <span>{race.runners?.length || 0} runners</span>
+                  </div>
+
+                  <h2>
+                    {race.race_name || race.name || 'Imported race'}
+                  </h2>
+
+                  <p>
+                    {race.course || 'Unknown course'}
+                    {race.off_time ? ` - ${formatOffTime(race)}` : ''}
+                  </p>
+                </div>
+              </div>
+
+              <div className='runner-list'>
+                {(race.runners || []).map(
+                  (runner: any, runnerIndex: number) => (
+                    <div
+                      key={runner.horse_id || runnerIndex}
+                      className='runner-row'
+                    >
+                      <div>
+                        <strong className='result-position'>
+                          {runner.position || runner.pos || '-'}
+                        </strong>
+
+                        <span className='result-horse-name'>
+                          {runner.horse || runner.name || 'Unnamed runner'}
+                        </span>
+
+                        <p>
+                          {runner.jockey || '-'} - {runner.trainer || '-'}
+                        </p>
+                      </div>
+
+                      <div className='runner-score'>
+                        <strong>
+                          {runner.spOdds ||
+                            runner.sp ||
+                            runner.odds ||
+                            '-'}
+                        </strong>
+                        <span>SP</span>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
     </div>
   )
 }

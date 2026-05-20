@@ -229,3 +229,119 @@ export function buildLearningRecord({
     timestamp: new Date().toISOString(),
   }
 }
+
+export function learnFromResults(records = [], currentWeights = {}) {
+  const withBreakdown = records.filter(
+    (r) => r.breakdown && typeof r.breakdown.classScore === 'number'
+  )
+
+  if (withBreakdown.length < 10) {
+    return {
+      adjusted: false,
+      reason: `Only ${withBreakdown.length} records with breakdown data (need 10+)`,
+      weights: currentWeights,
+    }
+  }
+
+  const winners = withBreakdown.filter((r) => Number(r.position) === 1)
+  const losers = withBreakdown.filter(
+    (r) => Number(r.position) > 1 && Number(r.position) <= 20
+  )
+
+  if (!winners.length || !losers.length) {
+    return {
+      adjusted: false,
+      reason: 'Need both winners and losers in data',
+      weights: currentWeights,
+    }
+  }
+
+  const factors = ['classScore', 'formScore', 'marketScore', 'paceDrawScore', 'trainerJockeyScore', 'profileScore']
+
+  const factorLabels = {
+    classScore: 'class',
+    formScore: 'form',
+    marketScore: 'market',
+    paceDrawScore: 'pace',
+    trainerJockeyScore: 'trainer',
+    profileScore: 'profile',
+  }
+
+  const analysis = factors.map((factor) => {
+    const winAvg = winners.reduce((s, r) => s + (r.breakdown[factor] || 0), 0) / winners.length
+    const loseAvg = losers.reduce((s, r) => s + (r.breakdown[factor] || 0), 0) / losers.length
+    const separation = winAvg - loseAvg
+    const maxScore = Math.max(winAvg, loseAvg, 1)
+    const ratio = maxScore > 0 ? separation / maxScore : 0
+
+    return {
+      factor: factorLabels[factor] || factor,
+      winAvg: Number(winAvg.toFixed(2)),
+      loseAvg: Number(loseAvg.toFixed(2)),
+      separation: Number(separation.toFixed(2)),
+      ratio: Number(ratio.toFixed(3)),
+    }
+  })
+
+  const totalSeparation = analysis.reduce((s, a) => s + Math.abs(a.separation), 0) || 1
+
+  const baseCaps = {
+    class: currentWeights.capClass || 22,
+    form: currentWeights.capFormMarket || 32,
+    market: currentWeights.capFormMarket || 32,
+    pace: currentWeights.capPace || 8,
+    trainer: currentWeights.capTrainerJockey || 7,
+    profile: currentWeights.capProfile || 4,
+  }
+
+  const baseMult = currentWeights.multiplier || {}
+
+  const learningRate = 0.3
+
+  const newCaps = { ...currentWeights }
+  const newMult = { ...baseMult }
+
+  const factorCapMap = {
+    classScore: 'capClass',
+    formScore: 'capFormMarket',
+    marketScore: 'capFormMarket',
+    paceDrawScore: 'capPace',
+    trainerJockeyScore: 'capTrainerJockey',
+    profileScore: 'capProfile',
+  }
+
+  const factorMultKey = {
+    classScore: 'class',
+    formScore: 'form',
+    marketScore: 'market',
+    paceDrawScore: 'pace',
+    trainerJockeyScore: 'trainer',
+    profileScore: 'profile',
+  }
+
+  analysis.forEach((a) => {
+    const multKey = a.factor
+    const currentMult = baseMult[multKey] || 1
+    const normalizedRatio = Math.max(-0.5, Math.min(0.5, a.ratio))
+    const adjustment = 1 + normalizedRatio * learningRate
+    newMult[multKey] = Number((currentMult * adjustment).toFixed(3))
+  })
+
+  newCaps.multiplier = newMult
+  newCaps.baseline = currentWeights.baseline || 18
+  newCaps.capClass = currentWeights.capClass || 22
+  newCaps.capFormMarket = currentWeights.capFormMarket || 32
+  newCaps.capPace = currentWeights.capPace || 8
+  newCaps.capTrainerJockey = currentWeights.capTrainerJockey || 7
+  newCaps.capProfile = currentWeights.capProfile || 4
+
+  return {
+    adjusted: true,
+    totalRecords: withBreakdown.length,
+    winners: winners.length,
+    losers: losers.length,
+    analysis,
+    weights: newCaps,
+    previousWeights: currentWeights,
+  }
+}

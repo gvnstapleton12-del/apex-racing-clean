@@ -1,4 +1,20 @@
-export function generateConfidence(runner) {
+export function generateConfidence(runner, options = {}) {
+  const {
+    baseline = 18,
+    capClass = 22,
+    capFormMarket = 32,
+    capPace = 8,
+    capTrainerJockey = 7,
+    capProfile = 4,
+    multiplier = {},
+  } = options
+
+  const classMult = multiplier.class || 1
+  const formMult = multiplier.form || 1
+  const marketMult = multiplier.market || 1
+  const paceMult = multiplier.pace || 1
+  const trainerMult = multiplier.trainer || 1
+  const profileMult = multiplier.profile || 1
   const or = Number(
     runner.official_rating ||
     runner.or ||
@@ -163,12 +179,12 @@ export function generateConfidence(runner) {
   if (draw > 0 && draw <= 3) profileScore += 2
 
   let confidence =
-    18 +
-    Math.min(classScore, 22) +
-    Math.min(formScore + marketScore, 32) +
-    Math.min(paceDrawScore, 8) +
-    Math.min(trainerJockeyScore, 7) +
-    Math.min(profileScore, 4)
+    baseline +
+    Math.min(classScore * classMult, capClass) +
+    Math.min(formScore * formMult + marketScore * marketMult, capFormMarket) +
+    Math.min(paceDrawScore * paceMult, capPace) +
+    Math.min(trainerJockeyScore * trainerMult, capTrainerJockey) +
+    Math.min(profileScore * profileMult, capProfile)
 
   confidence *= 0.75 + completeness / 300
 
@@ -205,6 +221,7 @@ export function generateConfidence(runner) {
     impliedProbability: Number((impliedProbability * 100).toFixed(1)),
     valueEdge,
     completeness,
+    weights: { baseline, capClass, capFormMarket, capPace, capTrainerJockey, capProfile, multiplier },
     breakdown: {
       or: estimatedOR,
       rpr: estimatedRPR,

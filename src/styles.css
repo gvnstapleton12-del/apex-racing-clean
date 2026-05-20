@@ -266,6 +266,19 @@ button {
   gap: 18px;
 }
 
+.race-grid-header {
+  grid-column: 1 / -1;
+}
+
+.race-grid-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+
 .race-card,
 .loading-card,
 .rounded-2xl,

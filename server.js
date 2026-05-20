@@ -14,6 +14,7 @@ import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 import {
   analyzeHistoricalPerformance,
   buildLearningRecord,
+  learnFromResults,
 } from './src/lib/learningEngine.js'
 
 import { ingestRaceResults } from './src/lib/resultEngine.js'
@@ -123,6 +124,7 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
       records: [],
       races: [],
       analytics: {},
+      weights: {},
     }
 
 const LIVE_STATE = {
@@ -159,6 +161,7 @@ function logPrediction(race, runner, aiProfile) {
     valueEdge: aiProfile.valueEdge,
     completeness: aiProfile.completeness,
     grade: aiProfile.grade,
+    breakdown: aiProfile.breakdown || null,
     timestamp: new Date().toISOString(),
   }
 
@@ -333,10 +336,12 @@ async function fetchLiveMeetings() {
         const previousOdds =
           MARKET_DATABASE[horseId]?.lastOdds || runner.odds
 
+        const weights = LEARNING_DATABASE.weights || {}
+
         const aiProfile = generateConfidence({
           ...runner,
           horseProfile: HORSE_DATABASE[horseId],
-        })
+        }, weights)
 
         logPrediction(race, runner, aiProfile)
 
@@ -436,16 +441,18 @@ app.get('/api/predictions', (_req, res) => {
 })
 
 app.get('/api/learning-stats', (_req, res) => {
-  res.json(
-    LEARNING_DATABASE.analytics || {
+  res.json({
+    ...(LEARNING_DATABASE.analytics || {
       totalBets: 0,
       winners: 0,
       strikeRate: 0,
       roi: 0,
       averageConfidence: 0,
       profitableSignals: [],
-    }
-  )
+    }),
+    weights: LEARNING_DATABASE.weights || {},
+    lastLearningRun: LEARNING_DATABASE.lastLearningRun || null,
+  })
 })
 
 app.get('/api/results', (_req, res) => {
@@ -468,19 +475,29 @@ app.post('/api/upload-results', (req, res) => {
 
     races.forEach((race) => {
       const runners = race.runners || []
+      const raceId = `${race.course}-${race.off_time}-${race.date}`
+      const predictions = PREDICTIONS_DATABASE[raceId] || []
 
       runners.forEach((runner) => {
-        LEARNING_DATABASE.records.push({
+        const prediction = predictions.find(
+          (p) => p.horse === runner.horse
+        )
+
+        const record = {
           horse: runner.horse,
           position: Number(runner.position || 0),
           won: Number(runner.position || 0) === 1,
           spOdds: resolveOdds(runner),
-          aiConfidence: Number(runner.aiConfidence || 75),
+          aiConfidence: Number(runner.aiConfidence || prediction?.confidence || 75),
           signal: runner.signal || 'UPLOAD',
           marketMovement: runner.marketMovement || 'UNKNOWN',
           timestamp: new Date().toISOString(),
           resultProcessed: true,
-        })
+          breakdown: prediction?.breakdown || null,
+          weights: prediction?.weights || null,
+        }
+
+        LEARNING_DATABASE.records.push(record)
       })
     })
 
@@ -489,6 +506,22 @@ app.post('/api/upload-results', (req, res) => {
     LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
       LEARNING_DATABASE.records
     )
+
+    const existingWeights = LEARNING_DATABASE.weights || {}
+    const learningResult = learnFromResults(
+      LEARNING_DATABASE.records,
+      existingWeights
+    )
+
+    if (learningResult.adjusted) {
+      LEARNING_DATABASE.weights = learningResult.weights
+      LEARNING_DATABASE.lastLearningRun = {
+        date: new Date().toISOString(),
+        totalRecords: learningResult.totalRecords,
+        winners: learningResult.winners,
+        analysis: learningResult.analysis,
+      }
+    }
 
     saveDatabase(
       LEARNING_DB_PATH,
@@ -500,6 +533,7 @@ app.post('/api/upload-results', (req, res) => {
       processedRaces: races.length,
       totalRecords: LEARNING_DATABASE.records.length,
       analytics: LEARNING_DATABASE.analytics,
+      learning: learningResult,
     })
   } catch (error) {
     console.error(error)
