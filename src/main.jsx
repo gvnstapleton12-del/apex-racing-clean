@@ -64,10 +64,10 @@ function gradeClass(grade) {
 
 function resultLabel(result, position) {
   if (!result) return null
-  if (position === 1 || result === 'won') return { text: 'WON', cls: 'won' }
-  if (position === 2 || result === '2nd') return { text: '2nd', cls: 'placed' }
-  if (position === 3 || result === '3rd') return { text: '3rd', cls: 'placed' }
-  return { text: 'LOST', cls: 'lost' }
+  if (result === 'won') return { text: 'WON', cls: 'won' }
+  if (result === 'placed') return { text: 'PLC', cls: 'placed' }
+  if (result === 'lost') return { text: 'LOST', cls: 'lost' }
+  return null
 }
 
 function PickCard({ selection, rank, result, position }) {
@@ -313,12 +313,12 @@ function Home() {
                   </summary>
                   <div className='home-track-detail'>
                     {day.picks.map((p, i) => (
-                      <div key={i} className={`home-track-row ${p.result === 'won' ? 'won' : p.result === '2nd' || p.result === '3rd' ? 'placed' : p.result || ''}`}>
+                      <div key={i} className={`home-track-row ${p.result || ''}`}>
                         <span className='home-track-row-name'>{p.horse}</span>
                         <span className='home-track-row-course'>{p.course}</span>
                         <span className='home-track-row-score'>{p.score}</span>
                         <span className={`home-track-row-result ${p.result || 'pending'}`}>
-                          {p.result === 'won' ? 'WON' : p.result === '2nd' ? '2nd' : p.result === '3rd' ? '3rd' : p.result ? 'LOST' : 'PEND'}
+                          {p.result === 'won' ? 'WON' : p.result === 'placed' ? 'PLC' : p.result === 'lost' ? 'LOST' : 'PEND'}
                         </span>
                       </div>
                     ))}

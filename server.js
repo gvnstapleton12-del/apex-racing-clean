@@ -555,6 +555,13 @@ function normalizeCourse(name = '') {
   return String(name).toLowerCase().replace(/\(.*?\)/g, '').trim()
 }
 
+function placedPositions(fieldSize) {
+  if (fieldSize <= 4) return 1
+  if (fieldSize <= 7) return 2
+  if (fieldSize <= 15) return 3
+  return 4
+}
+
 function matchDailyPicksWithResults(races) {
   let matchCount = 0
 
@@ -565,6 +572,7 @@ function matchDailyPicksWithResults(races) {
 
     const dailyPicks = DAILY_PICKS_DATABASE[date].picks || []
     const runners = race.runners || []
+    const fieldSize = runners.length
 
     runners.forEach((runner) => {
       const match = dailyPicks.find(
@@ -575,10 +583,10 @@ function matchDailyPicksWithResults(races) {
       if (match && match.result === null) {
         const pos = Number(runner.position || runner.pos || 0)
         if (pos === 1) match.result = 'won'
-        else if (pos === 2) match.result = '2nd'
-        else if (pos === 3) match.result = '3rd'
-        else match.result = 'lost'
+        else if (pos > 1 && pos <= placedPositions(fieldSize)) match.result = 'placed'
+        else if (pos > 0) match.result = 'lost'
         match.position = pos
+        match.fieldSize = fieldSize
         matchCount++
       }
     })
@@ -592,8 +600,8 @@ function matchDailyPicksWithResults(races) {
     const entry = DAILY_PICKS_DATABASE[date]
     const picks = entry.picks || []
     const won = picks.filter((p) => p.result === 'won').length
-    const placed = picks.filter((p) => p.result === '2nd' || p.result === '3rd').length
-    const lost = picks.filter((p) => p.result !== null && p.result !== 'won' && p.result !== '2nd' && p.result !== '3rd').length
+    const placed = picks.filter((p) => p.result === 'placed').length
+    const lost = picks.filter((p) => p.result === 'lost').length
     entry.stats = { won, placed, lost, pending: picks.length - won - placed - lost }
   })
 
