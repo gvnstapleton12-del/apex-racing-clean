@@ -127,8 +127,17 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
       records: [],
       races: [],
       analytics: {},
-      weights: {},
+      weights: {
+        multiplier: { class: 1.3, stride: 1.1, trainer: 0.7, traffic: 1.0, clv: 0.8 },
+      },
     }
+
+// ensure seeded multipliers even if loading existing file with empty weights
+if (!LEARNING_DATABASE.weights?.multiplier?.class) {
+  LEARNING_DATABASE.weights = {
+    multiplier: { class: 1.3, stride: 1.1, trainer: 0.7, traffic: 1.0, clv: 0.8 },
+  }
+}
 
 const DAILY_PICKS_DATABASE = loadDatabase(DAILY_PICKS_PATH)
 const REPLAY_NOTES_DATABASE = loadDatabase(REPLAY_NOTES_PATH)
