@@ -43,6 +43,8 @@ const MARKET_DB_PATH = path.join(process.cwd(), 'data', 'market.json')
 const ALERT_DB_PATH = path.join(process.cwd(), 'data', 'alerts.json')
 const LEARNING_DB_PATH = path.join(process.cwd(), 'data', 'learning.json')
 const PREDICTIONS_DB_PATH = path.join(process.cwd(), 'data', 'predictions.json')
+const DAILY_PICKS_PATH = path.join(process.cwd(), 'data', 'daily-picks.json')
+const REPLAY_NOTES_PATH = path.join(process.cwd(), 'data', 'replay-notes.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -127,6 +129,9 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
       weights: {},
     }
 
+const DAILY_PICKS_DATABASE = loadDatabase(DAILY_PICKS_PATH)
+const REPLAY_NOTES_DATABASE = loadDatabase(REPLAY_NOTES_PATH)
+
 const LIVE_STATE = {
   racecards: [],
   updatedAt: null,
@@ -134,6 +139,21 @@ const LIVE_STATE = {
 }
 
 const ATR_LINK_CACHE = new Map()
+
+function findPredictionForRunner(race, runner) {
+  const course = String(race.course || '').trim()
+  const date = String(race.date || '')
+  const raceKey = `${course}-${date}`
+  const horseName = String(runner.horse || '').trim()
+
+  const candidates = Object.entries(PREDICTIONS_DATABASE)
+    .filter(([key]) => key.includes(raceKey))
+    .flatMap(([, preds]) => preds)
+
+  return candidates.find(
+    (p) => String(p.horse || '').trim() === horseName || normalizeHorseName(p.horse) === normalizeHorseName(horseName)
+  )
+}
 
 function logPrediction(race, runner, aiProfile) {
   const raceId = `${race.course}-${race.off_time}-${race.date}`
@@ -337,11 +357,16 @@ async function fetchLiveMeetings() {
           MARKET_DATABASE[horseId]?.lastOdds || runner.odds
 
         const weights = LEARNING_DATABASE.weights || {}
+        const replayKey = `${runner.horse}|${race.course}`
+        const replayNote = REPLAY_NOTES_DATABASE[replayKey] || {}
 
         const aiProfile = generateConfidence({
           ...runner,
           horseProfile: HORSE_DATABASE[horseId],
-        }, weights)
+        }, race, {
+          ...weights,
+          replayAdjustment: replayNote.adjustment || 0,
+        })
 
         logPrediction(race, runner, aiProfile)
 
@@ -412,8 +437,94 @@ async function fetchLiveMeetings() {
   }
 }
 
+async function fetchTodayResults() {
+  try {
+    const response = await fetch(
+      'https://api.theracingapi.com/v1/results/free',
+      {
+        headers: {
+          Authorization:
+            'Basic ' +
+            Buffer.from(
+              `${process.env.RACING_API_USERNAME}:${process.env.RACING_API_PASSWORD}`
+            ).toString('base64'),
+        },
+      }
+    )
+
+    if (!response.ok) return
+
+    const data = await response.json()
+    const resultRaces = data.results || data.racecards || []
+
+    if (resultRaces.length === 0) return
+
+    matchDailyPicksWithResults(resultRaces)
+
+    const existingCount = LEARNING_DATABASE.records.length
+
+      resultRaces.forEach((race) => {
+      const runners = race.runners || []
+
+      runners.forEach((runner) => {
+        const position = Number(runner.position || 0)
+        if (position < 1) return
+
+        const alreadyRecorded = LEARNING_DATABASE.records.some(
+          (r) => r.horse === runner.horse && r.timestamp?.startsWith(new Date().toISOString().split('T')[0])
+        )
+        if (alreadyRecorded) return
+
+        const prediction = findPredictionForRunner(race, runner)
+
+        LEARNING_DATABASE.records.push({
+          horse: runner.horse,
+          position,
+          won: position === 1,
+          spOdds: resolveOdds(runner),
+          aiConfidence: prediction?.confidence || 0,
+          signal: 'RESULT_API',
+          marketMovement: 'N/A',
+          timestamp: new Date().toISOString(),
+          resultProcessed: true,
+          breakdown: prediction?.breakdown || null,
+          weights: prediction?.weights || null,
+        })
+      })
+    })
+
+    if (LEARNING_DATABASE.records.length > existingCount) {
+      LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
+        LEARNING_DATABASE.records
+      )
+
+      const learningResult = learnFromResults(
+        LEARNING_DATABASE.records,
+        LEARNING_DATABASE.weights || {}
+      )
+
+      if (learningResult.adjusted) {
+        LEARNING_DATABASE.weights = learningResult.weights
+        LEARNING_DATABASE.lastLearningRun = {
+          date: new Date().toISOString(),
+          totalRecords: learningResult.totalRecords,
+          winners: learningResult.winners,
+          analysis: learningResult.analysis,
+        }
+      }
+
+      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    }
+  } catch (error) {
+    console.error('Failed to fetch results:', error.message)
+  }
+}
+
 fetchLiveMeetings()
 setInterval(fetchLiveMeetings, 60000)
+
+setTimeout(fetchTodayResults, 30000)
+setInterval(fetchTodayResults, 300000)
 
 io.on('connection', (socket) => {
   console.log('Client connected')
@@ -438,6 +549,99 @@ app.get('/api/market-movers', (_req, res) => {
 
 app.get('/api/predictions', (_req, res) => {
   res.json(PREDICTIONS_DATABASE)
+})
+
+function matchDailyPicksWithResults(races) {
+  races.forEach((race) => {
+    const date = race.date
+    if (!date || !DAILY_PICKS_DATABASE[date]) return
+
+    const dailyPicks = DAILY_PICKS_DATABASE[date].picks || []
+    const runners = race.runners || []
+
+    runners.forEach((runner) => {
+      const match = dailyPicks.find(
+        (p) =>
+          normalizeHorseName(p.horse) === normalizeHorseName(runner.horse) &&
+          p.course === race.course
+      )
+      if (match && match.result === null) {
+        match.result = Number(runner.position || 0) === 1 ? 'won' : 'lost'
+      }
+    })
+  })
+
+  Object.keys(DAILY_PICKS_DATABASE).forEach((date) => {
+    const entry = DAILY_PICKS_DATABASE[date]
+    const picks = entry.picks || []
+    const won = picks.filter((p) => p.result === 'won').length
+    const lost = picks.filter((p) => p.result === 'lost').length
+    entry.stats = { won, lost, pending: picks.length - won - lost }
+  })
+
+  saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+}
+
+app.post('/api/daily-picks', (req, res) => {
+  const { date, picks } = req.body
+  if (!date || !Array.isArray(picks)) {
+    return res.status(400).json({ error: 'Invalid format' })
+  }
+
+  const existing = DAILY_PICKS_DATABASE[date]
+  if (existing && existing.picks && existing.picks.some((p) => p.result !== null)) {
+    return res.json({ saved: false, reason: 'results already recorded for this date' })
+  }
+
+  DAILY_PICKS_DATABASE[date] = {
+    picks: picks.map((p) => ({
+      horse: p.horse,
+      course: p.course,
+      offTime: p.offTime,
+      raceName: p.raceName,
+      score: p.score,
+      grade: p.grade,
+      odds: p.odds,
+      form: p.form,
+      draw: p.draw,
+      result: null,
+    })),
+    stats: { won: 0, lost: 0, pending: picks.length },
+  }
+
+  saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+  res.json({ saved: true, date, count: picks.length })
+})
+
+app.get('/api/daily-picks', (_req, res) => {
+  res.json(DAILY_PICKS_DATABASE)
+})
+
+app.get('/api/replay-notes', (_req, res) => {
+  res.json(REPLAY_NOTES_DATABASE)
+})
+
+app.post('/api/replay-notes', (req, res) => {
+  const { horse, course, tags, notes, adjustment } = req.body
+  if (!horse) {
+    return res.status(400).json({ error: 'Horse name required' })
+  }
+
+  const key = `${horse}|${course || ''}`
+  const existing = REPLAY_NOTES_DATABASE[key]
+
+  REPLAY_NOTES_DATABASE[key] = {
+    horse,
+    course: course || '',
+    tags: tags || [],
+    notes: notes || '',
+    adjustment: Math.max(-10, Math.min(10, Number(adjustment) || 0)),
+    reviewedAt: new Date().toISOString(),
+    reviewCount: (existing?.reviewCount || 0) + 1,
+  }
+
+  saveDatabase(REPLAY_NOTES_PATH, REPLAY_NOTES_DATABASE)
+  res.json({ saved: true, key })
 })
 
 app.get('/api/learning-stats', (_req, res) => {
@@ -475,13 +679,9 @@ app.post('/api/upload-results', (req, res) => {
 
     races.forEach((race) => {
       const runners = race.runners || []
-      const raceId = `${race.course}-${race.off_time}-${race.date}`
-      const predictions = PREDICTIONS_DATABASE[raceId] || []
 
       runners.forEach((runner) => {
-        const prediction = predictions.find(
-          (p) => p.horse === runner.horse
-        )
+        const prediction = findPredictionForRunner(race, runner)
 
         const record = {
           horse: runner.horse,
@@ -527,6 +727,8 @@ app.post('/api/upload-results', (req, res) => {
       LEARNING_DB_PATH,
       LEARNING_DATABASE
     )
+
+    matchDailyPicksWithResults(races)
 
     res.json({
       success: true,

@@ -1,192 +1,189 @@
-export function generateConfidence(runner, options = {}) {
-  const {
-    baseline = 18,
-    capClass = 22,
-    capFormMarket = 32,
-    capPace = 8,
-    capTrainerJockey = 7,
-    capProfile = 4,
-    multiplier = {},
-  } = options
-
-  const classMult = multiplier.class || 1
-  const formMult = multiplier.form || 1
-  const marketMult = multiplier.market || 1
-  const paceMult = multiplier.pace || 1
-  const trainerMult = multiplier.trainer || 1
-  const profileMult = multiplier.profile || 1
-  const or = Number(
-    runner.official_rating ||
-    runner.or ||
-    runner.officialRating ||
-    runner.ratings?.official ||
-    0
-  )
-  const rpr = Number(
-    runner.rpr ||
-    runner.racing_post_rating ||
-    runner.racingPostRating ||
-    runner.ratings?.rpr ||
-    runner.postmark ||
-    0
-  )
-
-  let estimatedOR = or
-  let estimatedRPR = rpr
-
-  if (!estimatedOR && estimatedRPR) {
-    estimatedOR = Math.max(0, estimatedRPR - 3)
-  }
-
-  if (!estimatedRPR && estimatedOR) {
-    estimatedRPR = estimatedOR + 5
-  }
-
-  const weight = Number(runner.weight_lbs || runner.weight || 0)
-  const odds = Number(runner.odds || runner.price || 0)
+export function generateConfidence(runner, race = {}, options = {}) {
+  const or = Number(runner.ofr || runner.official_rating || runner.or || 0)
+  const rpr = Number(runner.rpr || 0)
   const draw = Number(runner.draw || 0)
   const age = Number(runner.age || 0)
-
-  const trainer = String(runner.trainer || '').toLowerCase()
+  const odds = Number(runner.odds || runner.price || 0)
+  const lastRun = Number(runner.last_run || 0)
+  const trainerRtf = Number(runner.trainer_rtf || 0)
   const jockey = String(runner.jockey || '').toLowerCase()
-
-  const pace = String(runner.run_style || runner.pace || '').toLowerCase()
-  const fieldSize = Number(runner.number_of_runners || runner.runners || 0)
-  const lastPos = Number(runner.last_run_position || 0)
-
+  const trainer = String(runner.trainer || '').toLowerCase()
+  const fieldSize = (race.runners && race.runners.length) || Number(runner.number_of_runners || 0)
   const formString = String(runner.form || '')
-    .replace(/[^0-9-\/]/g, '')
-    .split(/[-\/]/)
+  const weight = Number(runner.lbs || runner.weight_lbs || runner.weight || 0)
+
+  const formPositions = formString
+    .replace(/[^0-9/-]/g, '')
+    .split(/[\/-]/)
     .map(Number)
     .filter((n) => !isNaN(n) && n > 0)
 
+  const runners = race.runners || []
+  const ors = runners
+    .map((r) => Number(r.ofr || r.official_rating || r.or || 0))
+    .filter(Boolean)
+  const avgOr = ors.length ? ors.reduce((a, b) => a + b, 0) / ors.length : 0
+  const maxOr = ors.length ? Math.max(...ors) : 0
+  const minOr = ors.length ? Math.min(...ors) : 0
+
+  const bestRating = Math.max(or, rpr)
+
   let completeness = 0
-  if (odds > 0) completeness += 20
-  if (estimatedRPR > 0) completeness += 20
-  if (estimatedOR > 0) completeness += 15
-  if (lastPos > 0) completeness += 15
-  if (formString.length >= 2) completeness += 15
-  if (pace) completeness += 10
+  if (or > 0) completeness += 15
+  if (rpr > 0) completeness += 10
+  if (odds > 0) completeness += 15
+  if (formPositions.length >= 2) completeness += 20
+  if (trainerRtf > 0) completeness += 10
+  if (draw > 0) completeness += 10
+  if (lastRun > 0) completeness += 10
+  if (jockey) completeness += 5
   if (trainer) completeness += 5
-  completeness = Math.min(100, completeness)
 
-  const bestRating = Math.max(estimatedOR, estimatedRPR)
-  let classScore = 0
+  let classLockScore = 0
 
-  if (bestRating >= 150) classScore += 22
-  else if (bestRating >= 140) classScore += 19
-  else if (bestRating >= 130) classScore += 16
-  else if (bestRating >= 120) classScore += 13
-  else if (bestRating >= 110) classScore += 10
-  else if (bestRating >= 100) classScore += 7
-  else if (bestRating >= 90) classScore += 5
-  else if (bestRating >= 80) classScore += 3
-  else if (bestRating > 0) classScore += 1
+  if (bestRating > 0 && avgOr > 0) {
+    const orRange = Math.max(maxOr - minOr, 1)
+    classLockScore = ((bestRating - minOr) / orRange) * 30 + 5
 
-  if (estimatedOR > 0 && estimatedRPR > 0) {
-    const gap = estimatedRPR - estimatedOR
-    if (gap >= 15) classScore += 6
-    else if (gap >= 10) classScore += 4
-    else if (gap >= 5) classScore += 2
-    else if (gap <= -10) classScore -= 3
-    else if (gap <= -5) classScore -= 1
-  }
-
-  let formScore = 0
-
-  if (lastPos === 1) formScore += 18
-  else if (lastPos === 2) formScore += 13
-  else if (lastPos === 3) formScore += 9
-  else if (lastPos === 4) formScore += 6
-  else if (lastPos === 5) formScore += 4
-  else if (lastPos > 0 && lastPos <= 8) formScore += 2
-  else if (lastPos > 8) formScore += 1
-
-  if (formString.length >= 3) {
-    const recent = formString.slice(0, 3)
-    const wins = recent.filter((p) => p === 1).length
-    const top3 = recent.filter((p) => p >= 1 && p <= 3).length
-
-    if (wins >= 1) formScore += 5
-    if (top3 >= 2) formScore += 4
-    if (formString.length >= 4) {
-      const older = formString.slice(3, 5)
-      const olderTop3 = older.filter((p) => p >= 1 && p <= 3).length
-      if (olderTop3 >= 2 && top3 >= 2) formScore += 3
+    const orGap = bestRating - avgOr
+    if (orGap <= -12) {
+      classLockScore = 1
+    } else if (orGap <= -8) {
+      classLockScore *= 0.15
+    } else if (orGap <= -5) {
+      classLockScore *= 0.35
+    } else if (orGap >= 8) {
+      classLockScore *= 1.25
+    } else if (orGap >= 5) {
+      classLockScore *= 1.1
     }
+  } else if (bestRating > 0) {
+    classLockScore = Math.min(30, bestRating / 4)
+  } else {
+    classLockScore = 10
   }
 
-  let marketScore = 0
+  classLockScore = Math.max(0, Math.min(40, Math.round(classLockScore)))
 
-  if (odds > 0 && odds <= 1.5) marketScore = 20
-  else if (odds <= 2.0) marketScore = 17
-  else if (odds <= 3.0) marketScore = 14
-  else if (odds <= 4.0) marketScore = 11
-  else if (odds <= 6.0) marketScore = 8
-  else if (odds <= 8.0) marketScore = 5
-  else if (odds <= 12.0) marketScore = 3
-  else if (odds <= 20.0) marketScore = 2
-  else if (odds <= 50.0) marketScore = 1
+  let strideScore = 0
 
-  if (fieldSize >= 14 && odds <= 3) marketScore -= 3
-  if (fieldSize <= 5) marketScore += 2
+  if (formPositions.length >= 2) {
+    const recent = formPositions.slice(0, 3)
+    const avgPos = recent.reduce((a, b) => a + b, 0) / recent.length
 
-  let paceDrawScore = 0
+    if (avgPos <= 2) strideScore += 10
+    else if (avgPos <= 3) strideScore += 8
+    else if (avgPos <= 4) strideScore += 6
+    else if (avgPos <= 5) strideScore += 4
+    else if (avgPos <= 7) strideScore += 2
+    else strideScore += 1
 
-  if (pace.includes('leader') || pace.includes('front')) {
-    paceDrawScore += 6
-    if (fieldSize <= 7) paceDrawScore += 3
-    if (fieldSize >= 14) paceDrawScore -= 2
-  } else if (pace.includes('prominent')) {
-    paceDrawScore += 4
-  } else if (pace.includes('midfield') || pace.includes('mid')) {
-    paceDrawScore += 2
+    if (formPositions.length >= 3) {
+      const oldest = formPositions[0]
+      const newest = formPositions[formPositions.length - 1]
+      if (newest < oldest) strideScore += 5
+      else if (newest === oldest) strideScore += 2
+      else strideScore -= 2
+    }
+
+    if (recent.includes(1)) strideScore += 4
+    if (recent.filter((p) => p <= 3).length >= 2) strideScore += 3
+  } else if (formPositions.length === 1) {
+    strideScore += formPositions[0] <= 3 ? 6 : 2
+  } else {
+    strideScore += 2
   }
 
-  if (draw > 0 && draw <= 3) paceDrawScore += 3
-  else if (draw > 0 && draw <= 5) paceDrawScore += 1
-  if (draw === 0) paceDrawScore -= 1
+  if (lastRun > 0) {
+    if (lastRun <= 7) strideScore += 4
+    else if (lastRun <= 14) strideScore += 3
+    else if (lastRun <= 30) strideScore += 2
+    else if (lastRun <= 60) strideScore += 1
+    else if (lastRun <= 90) strideScore += 0
+    else if (lastRun <= 180) strideScore -= 2
+    else if (lastRun <= 365) strideScore -= 4
+    else strideScore -= 6
+  }
 
-  let trainerJockeyScore = 0
+  if (weight > 0 && weight <= 154) strideScore += 1
+  if (age >= 5 && age <= 8) strideScore += 1
 
-  const topTrainers = [
-    'skelton', 'henderson', 'nicholls', 'pipe', 'elliott',
-    'mullins', 'hobbs', 'tizzard', 'williams', 'obrien',
-    'james owen', 'olly murphy', 'longsdon', 'bell', 'fisher',
-  ]
-  if (topTrainers.some((t) => trainer.includes(t))) {
-    trainerJockeyScore += 4
+  strideScore = Math.max(0, Math.min(25, Math.round(strideScore)))
+
+  let trainerScore = 0
+
+  if (trainerRtf > 0) {
+    trainerScore += (trainerRtf / 100) * 8
   }
 
   const topJockeys = [
     'de boinville', 'coleman', 'townend', 'blackmore',
     'skelton', 'cobden', 'bowen', 'brennan', 'doyle',
-    'quinlan', 'moore', 'powell', 'johnson', 'foster',
+    'moore', 'johnson', 'noble',
   ]
   if (topJockeys.some((j) => jockey.includes(j))) {
-    trainerJockeyScore += 3
+    trainerScore += 4
   }
 
-  let profileScore = 0
+  const topTrainers = [
+    'skelton', 'henderson', 'nicholls', 'pipe', 'elliott',
+    'mullins', 'hobbs', 'williams', 'obrien',
+  ]
+  if (topTrainers.some((t) => trainer.includes(t))) {
+    trainerScore += 3
+  }
 
-  if (age >= 5 && age <= 9) profileScore += 3
-  else if (age >= 4 && age <= 10) profileScore += 1
+  trainerScore = Math.max(0, Math.min(15, Math.round(trainerScore)))
 
-  if (weight >= 168) profileScore -= 3
-  else if (weight >= 164) profileScore -= 1
-  else if (weight > 0 && weight <= 154) profileScore += 2
+  let trafficScore = 5
 
-  if (draw > 0 && draw <= 3) profileScore += 2
+  if (draw > 0 && fieldSize > 3) {
+    const middle = (fieldSize + 1) / 2
+    const drawDiff = Math.abs(draw - middle)
+    const maxDiff = Math.max(fieldSize - middle, middle - 1)
+
+    if (maxDiff > 0) {
+      trafficScore = 5 + ((maxDiff - drawDiff) / maxDiff) * 5
+    }
+
+    if (draw >= fieldSize - 1 && fieldSize >= 12) trafficScore -= 2
+    if (draw <= 1 && fieldSize >= 12) trafficScore -= 1
+    if (draw >= fieldSize - 2 && fieldSize >= 14) trafficScore -= 1
+  }
+
+  trafficScore = Math.max(0, Math.min(10, Math.round(trafficScore)))
+
+  let clvScore = 3
+
+  if (odds > 0) {
+    if (odds <= 1.5) clvScore = 10
+    else if (odds <= 2.0) clvScore = 9
+    else if (odds <= 3.0) clvScore = 8
+    else if (odds <= 4.0) clvScore = 7
+    else if (odds <= 5.0) clvScore = 6
+    else if (odds <= 7.0) clvScore = 5
+    else if (odds <= 10.0) clvScore = 4
+    else if (odds <= 15.0) clvScore = 3
+    else if (odds <= 20.0) clvScore = 2
+    else if (odds <= 33.0) clvScore = 1
+  }
 
   let confidence =
-    baseline +
-    Math.min(classScore * classMult, capClass) +
-    Math.min(formScore * formMult + marketScore * marketMult, capFormMarket) +
-    Math.min(paceDrawScore * paceMult, capPace) +
-    Math.min(trainerJockeyScore * trainerMult, capTrainerJockey) +
-    Math.min(profileScore * profileMult, capProfile)
+    classLockScore + strideScore + trainerScore + trafficScore + clvScore
 
-  confidence *= 0.75 + completeness / 300
+  if (options.multiplier) {
+    const m = options.multiplier
+    if (m.class) confidence += classLockScore * (m.class - 1)
+    if (m.stride) confidence += strideScore * (m.stride - 1)
+    if (m.trainer) confidence += trainerScore * (m.trainer - 1)
+    if (m.traffic) confidence += trafficScore * (m.traffic - 1)
+    if (m.clv) confidence += clvScore * (m.clv - 1)
+  }
+
+  confidence = Math.round(confidence * (0.75 + completeness / 300))
+
+  const replayAdj = Number(options.replayAdjustment) || 0
+  confidence += Math.max(-10, Math.min(10, replayAdj))
 
   let impliedProbability = 0
   let aiProbability = 0
@@ -198,9 +195,7 @@ export function generateConfidence(runner, options = {}) {
 
   aiProbability = confidence / 100
 
-  valueEdge = Number(
-    ((aiProbability - impliedProbability) * 100).toFixed(2)
-  )
+  valueEdge = Number(((aiProbability - impliedProbability) * 100).toFixed(2))
 
   confidence = Math.round(Math.max(1, Math.min(99, confidence)))
 
@@ -212,6 +207,8 @@ export function generateConfidence(runner, options = {}) {
     grade = 'A'
   } else if (confidence >= 70) {
     grade = 'B'
+  } else if (confidence >= 60) {
+    grade = 'C+'
   }
 
   return {
@@ -221,19 +218,21 @@ export function generateConfidence(runner, options = {}) {
     impliedProbability: Number((impliedProbability * 100).toFixed(1)),
     valueEdge,
     completeness,
-    weights: { baseline, capClass, capFormMarket, capPace, capTrainerJockey, capProfile, multiplier },
     breakdown: {
-      or: estimatedOR,
-      rpr: estimatedRPR,
+      classLockScore,
+      strideScore,
+      trainerScore,
+      trafficScore,
+      clvScore,
+      replayAdjustment: replayAdj,
+      or: bestRating,
+      rpr,
       odds,
-      weight,
       draw,
-      classScore,
-      formScore,
-      marketScore,
-      paceDrawScore,
-      trainerJockeyScore,
-      profileScore,
+      trainerRtf,
+      lastRun,
+      age,
+      weight,
     },
   }
 }

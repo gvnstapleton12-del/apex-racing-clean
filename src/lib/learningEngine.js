@@ -232,7 +232,7 @@ export function buildLearningRecord({
 
 export function learnFromResults(records = [], currentWeights = {}) {
   const withBreakdown = records.filter(
-    (r) => r.breakdown && typeof r.breakdown.classScore === 'number'
+    (r) => r.breakdown && typeof r.breakdown.classLockScore === 'number'
   )
 
   if (withBreakdown.length < 10) {
@@ -256,15 +256,14 @@ export function learnFromResults(records = [], currentWeights = {}) {
     }
   }
 
-  const factors = ['classScore', 'formScore', 'marketScore', 'paceDrawScore', 'trainerJockeyScore', 'profileScore']
+  const factors = ['classLockScore', 'strideScore', 'trainerScore', 'trafficScore', 'clvScore']
 
   const factorLabels = {
-    classScore: 'class',
-    formScore: 'form',
-    marketScore: 'market',
-    paceDrawScore: 'pace',
-    trainerJockeyScore: 'trainer',
-    profileScore: 'profile',
+    classLockScore: 'class',
+    strideScore: 'stride',
+    trainerScore: 'trainer',
+    trafficScore: 'traffic',
+    clvScore: 'clv',
   }
 
   const analysis = factors.map((factor) => {
@@ -283,41 +282,11 @@ export function learnFromResults(records = [], currentWeights = {}) {
     }
   })
 
-  const totalSeparation = analysis.reduce((s, a) => s + Math.abs(a.separation), 0) || 1
-
-  const baseCaps = {
-    class: currentWeights.capClass || 22,
-    form: currentWeights.capFormMarket || 32,
-    market: currentWeights.capFormMarket || 32,
-    pace: currentWeights.capPace || 8,
-    trainer: currentWeights.capTrainerJockey || 7,
-    profile: currentWeights.capProfile || 4,
-  }
-
   const baseMult = currentWeights.multiplier || {}
 
   const learningRate = 0.3
 
-  const newCaps = { ...currentWeights }
   const newMult = { ...baseMult }
-
-  const factorCapMap = {
-    classScore: 'capClass',
-    formScore: 'capFormMarket',
-    marketScore: 'capFormMarket',
-    paceDrawScore: 'capPace',
-    trainerJockeyScore: 'capTrainerJockey',
-    profileScore: 'capProfile',
-  }
-
-  const factorMultKey = {
-    classScore: 'class',
-    formScore: 'form',
-    marketScore: 'market',
-    paceDrawScore: 'pace',
-    trainerJockeyScore: 'trainer',
-    profileScore: 'profile',
-  }
 
   analysis.forEach((a) => {
     const multKey = a.factor
@@ -327,13 +296,9 @@ export function learnFromResults(records = [], currentWeights = {}) {
     newMult[multKey] = Number((currentMult * adjustment).toFixed(3))
   })
 
-  newCaps.multiplier = newMult
-  newCaps.baseline = currentWeights.baseline || 18
-  newCaps.capClass = currentWeights.capClass || 22
-  newCaps.capFormMarket = currentWeights.capFormMarket || 32
-  newCaps.capPace = currentWeights.capPace || 8
-  newCaps.capTrainerJockey = currentWeights.capTrainerJockey || 7
-  newCaps.capProfile = currentWeights.capProfile || 4
+  const newWeights = {
+    multiplier: newMult,
+  }
 
   return {
     adjusted: true,
@@ -341,7 +306,7 @@ export function learnFromResults(records = [], currentWeights = {}) {
     winners: winners.length,
     losers: losers.length,
     analysis,
-    weights: newCaps,
+    weights: newWeights,
     previousWeights: currentWeights,
   }
 }

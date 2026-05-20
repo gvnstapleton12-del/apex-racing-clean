@@ -20,11 +20,15 @@ import StableAlerts from '@/components/StableAlerts'
 import ROITracker from '@/components/ROITracker'
 
 export default function IntelligenceDashboard() {
-  const { data: races = [], isLoading } = useQuery({
+  const { data: allRaces = [], isLoading } = useQuery({
     queryKey: ['apex-dashboard'],
     queryFn: fetchRacecards,
     refetchInterval: 60000,
   })
+
+  const races = allRaces.filter(
+    (r) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
+  )
 
   if (isLoading) {
     return (

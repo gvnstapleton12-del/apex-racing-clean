@@ -27,10 +27,14 @@ export default function Racecards() {
     )
   }
 
+  const ukIre = races.filter(
+    (r: any) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
+  )
+
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
 
-  const sortedRaces = [...races].sort((a: any, b: any) => {
+  const sortedRaces = [...ukIre].sort((a: any, b: any) => {
     const aTime = a.off_dt || a.off_time || ''
     const bTime = b.off_dt || b.off_time || ''
     return aTime < bTime ? -1 : aTime > bTime ? 1 : 0
