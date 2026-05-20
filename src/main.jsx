@@ -200,10 +200,16 @@ function App() {
   const [uploadedResults, setUploadedResults] =
     useState([])
 
-  const handleResultsLoaded = (results) => {
-    setUploadedResults(results)
+  const handleResultsLoaded = (
+  results,
+  switchTab = true
+) => {
+  setUploadedResults(results)
+
+  if (switchTab) {
     setActiveTab('Results')
   }
+}
 
   const renderPage = () => {
     if (activeTab === 'Racecards') {

@@ -1,4 +1,8 @@
-import React, { useRef, useState } from 'react'
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 type UploadResultsProps = {
   onResultsLoaded?: (results: any[]) => void
@@ -140,7 +144,30 @@ export default function UploadResults(props: UploadResultsProps) {
 
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  
 
+useEffect(() => {
+  async function loadSavedResults() {
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/results'
+      )
+
+      const data = await response.json()
+
+      if (Array.isArray(data)) {
+        props.onResultsLoaded?.(data, false)
+      }
+    } catch (error) {
+      console.error(
+        'Failed to load saved results',
+        error
+      )
+    }
+  }
+
+  loadSavedResults()
+}, [])
   async function handleUpload(
     event: React.ChangeEvent<HTMLInputElement>
   ) {

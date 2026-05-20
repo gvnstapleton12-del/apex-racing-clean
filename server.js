@@ -121,6 +121,7 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
   ? loadDatabase(LEARNING_DB_PATH)
   : {
       records: [],
+      races: [],
       analytics: {},
     }
 
@@ -448,7 +449,7 @@ app.get('/api/learning-stats', (_req, res) => {
 })
 
 app.get('/api/results', (_req, res) => {
-  res.json(LEARNING_DATABASE.records || [])
+  res.json(LEARNING_DATABASE.races || [])
 })
 
 app.post('/api/upload-results', (req, res) => {
@@ -464,8 +465,6 @@ app.post('/api/upload-results', (req, res) => {
         error: 'Invalid results format',
       })
     }
-
-    LEARNING_DATABASE.records = []
 
     races.forEach((race) => {
       const runners = race.runners || []
@@ -484,6 +483,8 @@ app.post('/api/upload-results', (req, res) => {
         })
       })
     })
+
+    LEARNING_DATABASE.races = races
 
     LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
       LEARNING_DATABASE.records

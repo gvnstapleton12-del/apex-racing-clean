@@ -1,6 +1,29 @@
 export function generateConfidence(runner) {
-  const or = Number(runner.official_rating || runner.or || 0)
-  const rpr = Number(runner.rpr || runner.racing_post_rating || 0)
+  const or = Number(
+  runner.official_rating ||
+  runner.or ||
+  runner.officialRating ||
+  runner.ratings?.official ||
+  0
+)
+  const rpr = Number(
+  runner.rpr ||
+  runner.racing_post_rating ||
+  runner.racingPostRating ||
+  runner.ratings?.rpr ||
+  runner.postmark ||
+  0
+)
+let estimatedOR = or
+let estimatedRPR = rpr
+
+if (!estimatedOR && estimatedRPR) {
+  estimatedOR = estimatedRPR - 3
+}
+
+if (!estimatedRPR && estimatedOR) {
+  estimatedRPR = estimatedOR + 5
+}
   const weight = Number(runner.weight_lbs || runner.weight || 0)
   const odds = Number(runner.odds || runner.price || 0)
   const draw = Number(runner.draw || 0)
@@ -31,8 +54,8 @@ export function generateConfidence(runner) {
   let completeness = 0
 
   if (odds > 0) completeness += 25
-  if (rpr > 0) completeness += 25
-  if (or > 0) completeness += 25
+  if (estimatedRPR > 0) completeness += 25
+  if (estimatedOR > 0) completeness += 25
   if (lastPos > 0) completeness += 15
   if (pace.length > 0) completeness += 10
 
@@ -48,7 +71,7 @@ export function generateConfidence(runner) {
   let trainerScore = 0
   let profileScore = 0
 
-  const rprGap = rpr - or
+  const rprGap = estimatedRPR - estimatedOR
 
   /*
     SPEED / CLASS
@@ -151,14 +174,12 @@ export function generateConfidence(runner) {
     SCALE BY DATA QUALITY
   */
 
-  confidence *= completeness / 100
+  confidence *= 0.7 + completeness / 300
 
   /*
     RESTORE BASELINE
     Prevent low-data horses from collapsing too hard
   */
-
-  confidence += 20
 
   /*
     VALUE EDGE
@@ -212,8 +233,8 @@ export function generateConfidence(runner) {
     valueEdge,
     completeness,
     breakdown: {
-      or,
-      rpr,
+      or: estimatedOR,
+      rpr: estimatedRPR,
       rprGap,
       odds,
       weight,
