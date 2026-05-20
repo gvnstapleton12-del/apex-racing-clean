@@ -1,182 +1,193 @@
 export function generateConfidence(runner) {
-  let confidence = 50
+  const or = Number(runner.official_rating || runner.or || 0)
+  const rpr = Number(runner.rpr || runner.racing_post_rating || 0)
+  const weight = Number(runner.weight_lbs || runner.weight || 0)
+  const odds = Number(runner.odds || runner.price || 0)
+  const draw = Number(runner.draw || 0)
+  const age = Number(runner.age || 0)
 
-  const or =
-    Number(
-      runner.official_rating ||
-      runner.or ||
-      0
-    )
+  const trainer = String(
+    runner.trainer || ''
+  ).toLowerCase()
 
-  const rpr =
-    Number(
-      runner.rpr ||
-      runner.racing_post_rating ||
-      0
-    )
+  const pace = String(
+    runner.run_style || runner.pace || ''
+  ).toLowerCase()
 
-  const weight =
-    Number(
-      runner.weight_lbs ||
-      runner.weight ||
-      0
-    )
+  const fieldSize = Number(
+    runner.number_of_runners ||
+    runner.runners ||
+    0
+  )
 
-  const odds =
-    Number(
-      runner.odds ||
-      runner.price ||
-      0
-    )
+  const lastPos = Number(
+    runner.last_run_position || 0
+  )
 
-  const draw =
-    Number(runner.draw || 0)
+  /*
+    DATA COMPLETENESS
+  */
 
-  const age =
-    Number(runner.age || 0)
+  let completeness = 0
+
+  if (odds > 0) completeness += 25
+  if (rpr > 0) completeness += 25
+  if (or > 0) completeness += 25
+  if (lastPos > 0) completeness += 15
+  if (pace.length > 0) completeness += 10
+
+  completeness = Math.min(100, completeness)
+
+  /*
+    CATEGORY SCORING
+  */
+
+  let speedScore = 0
+  let marketScore = 0
+  let paceScore = 0
+  let trainerScore = 0
+  let profileScore = 0
 
   const rprGap = rpr - or
 
   /*
-    OR / RPR GAP
+    SPEED / CLASS
   */
 
   if (rprGap >= 15) {
-    confidence += 20
+    speedScore += 20
   } else if (rprGap >= 10) {
-    confidence += 15
+    speedScore += 15
   } else if (rprGap >= 5) {
-    confidence += 10
+    speedScore += 10
   } else if (rprGap < 0) {
-    confidence -= 10
+    speedScore -= 10
+  }
+
+  if (lastPos === 1) {
+    speedScore += 8
   }
 
   /*
-    ODDS CONFIRMATION
+    MARKET CONFIRMATION
   */
 
   if (odds > 0 && odds <= 3) {
-    confidence += 8
+    marketScore += 8
   } else if (odds <= 6) {
-    confidence += 5
+    marketScore += 5
   } else if (odds >= 20) {
-    confidence -= 10
+    marketScore -= 10
   }
 
   /*
-    AGE PROFILE
+    PACE PROFILE
   */
 
-  if (age >= 4 && age <= 7) {
-    confidence += 5
+  if (
+    pace.includes('leader') ||
+    pace.includes('front')
+  ) {
+    paceScore += 10
+
+    if (fieldSize <= 8) {
+      paceScore += 5
+    }
   }
 
-  /*
-    WEIGHT FILTER
-  */
-
-  if (weight >= 168) {
-    confidence -= 5
+  if (pace.includes('prominent')) {
+    paceScore += 5
   }
 
-  /*
-    DRAW BIAS
-  */
-
-  if (draw > 0 && draw <= 3) {
-    confidence += 3
+  if (pace.includes('hold')) {
+    paceScore -= 4
   }
 
   /*
     TRAINER SIGNALS
   */
 
-  const trainer = String(
-    runner.trainer || ''
-  ).toLowerCase()
-
-  if (
-    trainer.includes('skelton')
-  ) {
-    confidence += 8
+  if (trainer.includes('skelton')) {
+    trainerScore += 8
   }
 
-  if (
-    trainer.includes('olly murphy')
-  ) {
-    confidence += 6
+  if (trainer.includes('olly murphy')) {
+    trainerScore += 6
   }
 
-  if (
-    trainer.includes('james owen')
-  ) {
-    confidence += 5
+  if (trainer.includes('james owen')) {
+    trainerScore += 5
   }
-/*
-  PACE PROFILE
-*/
-
-const pace =
-  String(
-    runner.run_style ||
-    runner.pace ||
-    ''
-  ).toLowerCase()
-
-const fieldSize =
-  Number(
-    runner.number_of_runners ||
-    runner.runners ||
-    0
-  )
-
-if (
-  pace.includes('leader') ||
-  pace.includes('front')
-) {
-  confidence += 10
 
   /*
-    Lone leader edge
+    HORSE PROFILE
   */
 
-  if (fieldSize <= 8) {
-    confidence += 5
+  if (age >= 4 && age <= 7) {
+    profileScore += 5
   }
-}
 
-if (
-  pace.includes('prominent')
-) {
-  confidence += 5
-}
+  if (weight >= 168) {
+    profileScore -= 5
+  }
 
-if (
-  pace.includes('hold')
-) {
-  confidence -= 4
-}
+  if (draw > 0 && draw <= 3) {
+    profileScore += 3
+  }
+
   /*
-    LAST TIME OUT
+    WEIGHTED TOTAL
   */
 
-  const lastPos =
+  let confidence =
+    50 +
+    speedScore * 0.4 +
+    marketScore * 0.25 +
+    paceScore * 0.15 +
+    trainerScore * 0.1 +
+    profileScore * 0.1
+
+  /*
+    SCALE BY DATA QUALITY
+  */
+
+  confidence *= completeness / 100
+
+  /*
+    RESTORE BASELINE
+    Prevent low-data horses from collapsing too hard
+  */
+
+  confidence += 20
+
+  /*
+    VALUE EDGE
+  */
+
+  let impliedProbability = 0
+  let aiProbability = 0
+  let valueEdge = 0
+
+  if (odds > 1) {
+    impliedProbability = 1 / odds
+  }
+
+  aiProbability = confidence / 100
+
+  valueEdge =
     Number(
-      runner.last_run_position ||
-      0
+      (
+        (aiProbability - impliedProbability) *
+        100
+      ).toFixed(2)
     )
-
-  if (lastPos === 1) {
-    confidence += 8
-  }
 
   /*
     LIMITS
   */
 
-  confidence = Math.max(
-    1,
-    Math.min(99, confidence)
+  confidence = Math.round(
+    Math.max(1, Math.min(99, confidence))
   )
 
   let grade = 'C'
@@ -192,6 +203,14 @@ if (
   return {
     confidence,
     grade,
+    estimatedWinProbability: Number(
+      (aiProbability * 100).toFixed(1)
+    ),
+    impliedProbability: Number(
+      (impliedProbability * 100).toFixed(1)
+    ),
+    valueEdge,
+    completeness,
     breakdown: {
       or,
       rpr,
@@ -199,6 +218,11 @@ if (
       odds,
       weight,
       draw,
+      speedScore,
+      marketScore,
+      paceScore,
+      trainerScore,
+      profileScore,
     },
   }
 }
