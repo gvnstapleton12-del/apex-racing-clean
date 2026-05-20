@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import { fetchRacecards } from '../lib/racingApi'
 import { openAtTheRacesHorseForm } from '../lib/horseLinks'
+import { formatOffTime } from '../lib/formatTime'
 
 import RaceModal from '../components/RaceModal'
 
@@ -26,13 +27,28 @@ export default function Racecards() {
     )
   }
 
-  const totalRunners = races.reduce(
+  const now = new Date()
+
+  const sortedRaces = [...races].sort((a: any, b: any) => {
+    const aTime = a.off_dt || a.off_time || ''
+    const bTime = b.off_dt || b.off_time || ''
+    return aTime < bTime ? -1 : aTime > bTime ? 1 : 0
+  })
+
+  const upcomingRaces = sortedRaces.filter((race: any) => {
+    if (race.off_dt) {
+      return new Date(race.off_dt) > now
+    }
+    return true
+  })
+
+  const totalRunners = sortedRaces.reduce(
     (total: number, race: any) =>
       total + (race.runners?.length || 0),
     0
   )
 
-  const nextRace = races[0]
+  const nextRace = upcomingRaces[0]
 
   return (
     <div className='dashboard-page'>
@@ -61,13 +77,13 @@ export default function Racecards() {
 
           <div>
             <span>Next off</span>
-            <strong>{nextRace?.off_time || '--'}</strong>
+            <strong>{nextRace ? formatOffTime(nextRace) : 'No more races'}</strong>
           </div>
         </div>
       </section>
 
       <section className='race-grid'>
-        {races.map((race: any, index: number) => {
+        {sortedRaces.map((race: any, index: number) => {
           const scoredRunners = (race.runners || []).map(
             (runner: any) => ({
               ...runner,
@@ -99,7 +115,7 @@ export default function Racecards() {
                   <h2>{race.race_name}</h2>
 
                   <p>
-                    {race.course} - {race.off_time}
+                    {race.course} - {formatOffTime(race)}
                   </p>
                 </div>
 

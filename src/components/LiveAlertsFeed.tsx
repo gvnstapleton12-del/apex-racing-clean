@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { formatOffTime } from '../lib/formatTime'
 
 interface LiveAlertsFeedProps {
   races: any[]
@@ -18,7 +19,7 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
           horse: runner.horse,
           race: race.race_name,
           course: race.course,
-          time: race.off_time,
+          time: formatOffTime(race),
           score: runner.score,
           odds: runner.odds,
           triggers: runner.replayTriggers || [],

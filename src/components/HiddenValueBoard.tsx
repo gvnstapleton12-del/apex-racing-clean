@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface HiddenValueBoardProps {
   races: any[]
 }
@@ -32,7 +34,7 @@ export default function HiddenValueBoard({ races }: HiddenValueBoardProps) {
         score: runner.score,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
         triggers: runner.replayTriggers || [],
       }))
   )

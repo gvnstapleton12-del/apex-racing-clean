@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface PerformanceTimelineProps {
   races: any[]
 }
@@ -11,7 +13,7 @@ export default function PerformanceTimeline({ races }: PerformanceTimelineProps)
         odds: runner.odds,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
       }))
     )
     .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))

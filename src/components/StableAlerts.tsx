@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface StableAlertsProps {
   races: any[]
 }
@@ -18,7 +20,7 @@ export default function StableAlerts({ races }: StableAlertsProps) {
         odds: runner.odds,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
         triggers: runner.replayTriggers || [],
       }))
   )

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { formatOffTime } from '../lib/formatTime'
 
 interface BettingModesProps {
   races: any[]
@@ -12,7 +13,7 @@ export default function BettingModes({ races }: BettingModesProps) {
       ...runner,
       race: race.race_name,
       course: race.course,
-      time: race.off_time,
+      time: formatOffTime(race),
     }))
   )
 

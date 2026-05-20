@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface ValueIndexProps {
   races: any[]
 }
@@ -26,7 +28,7 @@ export default function ValueIndex({ races }: ValueIndexProps) {
         horse: runner.horse,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
         odds: runner.odds,
         score,
         valueIndex,

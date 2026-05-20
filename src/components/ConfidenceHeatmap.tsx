@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface ConfidenceHeatmapProps {
   races: any[]
 }
@@ -37,7 +39,7 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
       score: runner.score || 0,
       race: race.race_name,
       course: race.course,
-      time: race.off_time,
+      time: formatOffTime(race),
     }))
   )
 

@@ -14,6 +14,7 @@ import UploadResults, {
 } from './pages/Results'
 import { fetchRacecards } from './lib/racingApi'
 import { openAtTheRacesHorseForm } from './lib/horseLinks'
+import { formatOffTime } from './lib/formatTime'
 
 const queryClient =
   new QueryClient()
@@ -45,7 +46,7 @@ function getHomeSelections(races) {
         race,
         raceName: race.race_name,
         course: race.course,
-        offTime: race.off_time,
+        offTime: formatOffTime(race),
         score: getRunnerScore(runner),
       }))
     )

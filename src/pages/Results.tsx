@@ -3,6 +3,8 @@ import React, {
   useState,
 } from 'react'
 
+import { formatOffTime } from '../lib/formatTime'
+
 type UploadResultsProps = {
   onResultsLoaded?: (results: any[]) => void
 }
@@ -92,7 +94,7 @@ export function ResultsList({ results }: ResultsListProps) {
 
                 <p>
                   {race.course || 'Unknown course'}
-                  {race.off_time ? ` - ${race.off_time}` : ''}
+                  {race.off_time ? ` - ${formatOffTime(race)}` : ''}
                 </p>
               </div>
             </div>

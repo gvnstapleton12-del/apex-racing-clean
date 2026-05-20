@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface PredictionConsensusProps {
   races: any[]
 }
@@ -12,7 +14,7 @@ export default function PredictionConsensus({ races }: PredictionConsensusProps)
       horse: runner.horse,
       race: race.race_name,
       course: race.course,
-      time: race.off_time,
+      time: formatOffTime(race),
       score: runner.score,
       odds: runner.odds,
       rank: index + 1,

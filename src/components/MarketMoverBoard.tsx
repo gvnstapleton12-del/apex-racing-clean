@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface MarketMoverBoardProps {
   races: any[]
 }
@@ -27,7 +29,7 @@ export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
         score: runner.score,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
         triggers: runner.replayTriggers || [],
       }))
   )

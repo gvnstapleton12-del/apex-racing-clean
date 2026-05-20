@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface VolatilityGaugeProps {
   races: any[]
 }
@@ -34,7 +36,7 @@ export default function VolatilityGauge({ races }: VolatilityGaugeProps) {
     return {
       race: race.race_name,
       course: race.course,
-      time: race.off_time,
+      time: formatOffTime(race),
       volatility,
       label,
       style,

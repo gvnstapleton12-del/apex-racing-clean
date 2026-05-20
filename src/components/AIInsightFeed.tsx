@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface AIInsightFeedProps {
   races: any[]
 }
@@ -27,7 +29,7 @@ export default function AIInsightFeed({ races }: AIInsightFeedProps) {
         horse: runner.horse,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
         score: runner.score,
         insight: generateInsight(runner),
       }))

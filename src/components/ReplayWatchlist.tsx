@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface ReplayWatchlistProps {
   races: any[]
 }
@@ -12,7 +14,7 @@ export default function ReplayWatchlist({ races }: ReplayWatchlistProps) {
         horse: runner.horse,
         race: race.race_name,
         course: race.course,
-        time: race.off_time,
+        time: formatOffTime(race),
         triggers: runner.replayTriggers,
       }))
   )

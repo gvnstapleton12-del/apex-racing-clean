@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface BestBetCardProps {
   races: any[]
 }
@@ -8,7 +10,7 @@ export default function BestBetCard({ races }: BestBetCardProps) {
       ...runner,
       raceName: race.race_name,
       course: race.course,
-      offTime: race.off_time,
+      offTime: formatOffTime(race),
     }))
   )
 

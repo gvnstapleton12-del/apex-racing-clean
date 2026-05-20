@@ -1,4 +1,5 @@
 import { openAtTheRacesHorseForm } from '../lib/horseLinks'
+import { formatOffTime } from '../lib/formatTime'
 
 interface RaceModalProps {
   race: any
@@ -24,7 +25,7 @@ export default function RaceModal({
 
             <p>
               {race.course} -{' '}
-              {race.off_time}
+              {formatOffTime(race)}
             </p>
           </div>
 

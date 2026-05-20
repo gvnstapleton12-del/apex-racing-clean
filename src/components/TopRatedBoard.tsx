@@ -1,3 +1,5 @@
+import { formatOffTime } from '../lib/formatTime'
+
 interface TopRatedBoardProps {
   races: any[]
 }
@@ -15,7 +17,7 @@ export default function TopRatedBoard({
         {
           race: race.race_name,
           course: race.course,
-          time: race.off_time,
+          time: formatOffTime(race),
           horse: top.horse,
 
           score:
