@@ -235,10 +235,10 @@ export function learnFromResults(records = [], currentWeights = {}) {
     (r) => r.breakdown && typeof r.breakdown.classLockScore === 'number'
   )
 
-  if (withBreakdown.length < 10) {
+  if (withBreakdown.length < 200) {
     return {
       adjusted: false,
-      reason: `Only ${withBreakdown.length} records with breakdown data (need 10+)`,
+      reason: `Only ${withBreakdown.length} records with breakdown data (need 200+)`,
       weights: currentWeights,
     }
   }
@@ -248,10 +248,18 @@ export function learnFromResults(records = [], currentWeights = {}) {
     (r) => Number(r.position) > 1 && Number(r.position) <= 20
   )
 
-  if (!winners.length || !losers.length) {
+  if (winners.length < 20) {
     return {
       adjusted: false,
-      reason: 'Need both winners and losers in data',
+      reason: `Only ${winners.length} winners in data (need 20+)`,
+      weights: currentWeights,
+    }
+  }
+
+  if (!losers.length) {
+    return {
+      adjusted: false,
+      reason: 'Need at least 1 loser in data',
       weights: currentWeights,
     }
   }
