@@ -15,6 +15,7 @@ import UploadResults, {
 import { fetchRacecards } from './lib/racingApi'
 import { openAtTheRacesHorseForm } from './lib/horseLinks'
 import { formatOffTime } from './lib/formatTime'
+import IntelligenceDashboard from './pages/IntelligenceDashboard'
 
 const queryClient =
   new QueryClient()
@@ -254,6 +255,10 @@ function App() {
 
     if (activeTab === 'Home') {
       return <Home />
+    }
+
+    if (activeTab === 'Intelligence') {
+      return <IntelligenceDashboard />
     }
 
     return <PlaceholderPage title={activeTab} />

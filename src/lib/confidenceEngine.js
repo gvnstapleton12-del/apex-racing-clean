@@ -57,15 +57,15 @@ export function generateConfidence(runner) {
   const bestRating = Math.max(estimatedOR, estimatedRPR)
   let classScore = 0
 
-  if (bestRating >= 150) classScore += 30
-  else if (bestRating >= 140) classScore += 26
-  else if (bestRating >= 130) classScore += 22
-  else if (bestRating >= 120) classScore += 18
-  else if (bestRating >= 110) classScore += 14
-  else if (bestRating >= 100) classScore += 10
-  else if (bestRating >= 90) classScore += 7
-  else if (bestRating >= 80) classScore += 4
-  else if (bestRating > 0) classScore += 2
+  if (bestRating >= 150) classScore += 22
+  else if (bestRating >= 140) classScore += 19
+  else if (bestRating >= 130) classScore += 16
+  else if (bestRating >= 120) classScore += 13
+  else if (bestRating >= 110) classScore += 10
+  else if (bestRating >= 100) classScore += 7
+  else if (bestRating >= 90) classScore += 5
+  else if (bestRating >= 80) classScore += 3
+  else if (bestRating > 0) classScore += 1
 
   if (estimatedOR > 0 && estimatedRPR > 0) {
     const gap = estimatedRPR - estimatedOR
@@ -78,8 +78,8 @@ export function generateConfidence(runner) {
 
   let formScore = 0
 
-  if (lastPos === 1) formScore += 16
-  else if (lastPos === 2) formScore += 12
+  if (lastPos === 1) formScore += 18
+  else if (lastPos === 2) formScore += 13
   else if (lastPos === 3) formScore += 9
   else if (lastPos === 4) formScore += 6
   else if (lastPos === 5) formScore += 4
@@ -107,22 +107,22 @@ export function generateConfidence(runner) {
   else if (odds <= 3.0) marketScore = 14
   else if (odds <= 4.0) marketScore = 11
   else if (odds <= 6.0) marketScore = 8
-  else if (odds <= 8.0) marketScore = 6
-  else if (odds <= 12.0) marketScore = 4
+  else if (odds <= 8.0) marketScore = 5
+  else if (odds <= 12.0) marketScore = 3
   else if (odds <= 20.0) marketScore = 2
   else if (odds <= 50.0) marketScore = 1
 
-  if (fieldSize >= 14 && odds <= 3) marketScore -= 2
+  if (fieldSize >= 14 && odds <= 3) marketScore -= 3
   if (fieldSize <= 5) marketScore += 2
 
   let paceDrawScore = 0
 
   if (pace.includes('leader') || pace.includes('front')) {
-    paceDrawScore += 7
+    paceDrawScore += 6
     if (fieldSize <= 7) paceDrawScore += 3
     if (fieldSize >= 14) paceDrawScore -= 2
   } else if (pace.includes('prominent')) {
-    paceDrawScore += 5
+    paceDrawScore += 4
   } else if (pace.includes('midfield') || pace.includes('mid')) {
     paceDrawScore += 2
   }
@@ -139,7 +139,7 @@ export function generateConfidence(runner) {
     'james owen', 'olly murphy', 'longsdon', 'bell', 'fisher',
   ]
   if (topTrainers.some((t) => trainer.includes(t))) {
-    trainerJockeyScore += 5
+    trainerJockeyScore += 4
   }
 
   const topJockeys = [
@@ -153,8 +153,8 @@ export function generateConfidence(runner) {
 
   let profileScore = 0
 
-  if (age >= 5 && age <= 9) profileScore += 4
-  else if (age >= 4 && age <= 10) profileScore += 2
+  if (age >= 5 && age <= 9) profileScore += 3
+  else if (age >= 4 && age <= 10) profileScore += 1
 
   if (weight >= 168) profileScore -= 3
   else if (weight >= 164) profileScore -= 1
@@ -163,12 +163,12 @@ export function generateConfidence(runner) {
   if (draw > 0 && draw <= 3) profileScore += 2
 
   let confidence =
-    10 +
-    Math.min(classScore, 35) +
-    Math.min(formScore + marketScore, 40) +
-    Math.min(paceDrawScore, 12) +
-    Math.min(trainerJockeyScore, 8) +
-    Math.min(profileScore, 5)
+    18 +
+    Math.min(classScore, 22) +
+    Math.min(formScore + marketScore, 32) +
+    Math.min(paceDrawScore, 8) +
+    Math.min(trainerJockeyScore, 7) +
+    Math.min(profileScore, 4)
 
   confidence *= 0.75 + completeness / 300
 
