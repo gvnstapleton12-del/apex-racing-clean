@@ -1,21 +1,23 @@
-import React from 'react'
-
 export default function AppNavigation() {
-  const tabs = ['Dashboard', 'Racecards', 'Results', 'Intelligence']
+  const tabs = [
+    'Dashboard',
+    'Racecards',
+    'Results',
+    'Intelligence',
+    'Alerts',
+    'Horses',
+    'Upload',
+    'Analytics',
+  ]
 
   return (
-    <div className='sticky top-0 z-50 border-b bg-background'>
-      <div className='flex gap-2 overflow-x-auto p-4'>
-        {tabs.map((tab) => {
-          return (
-            <button
-              key={tab}
-              className='rounded-xl border px-4 py-2 text-sm font-medium transition hover:bg-accent'
-            >
-              {tab}
-            </button>
-          )
-        })}
+    <div className="app-nav">
+      <div className="app-nav-container">
+        {tabs.map((tab) => (
+          <button key={tab} className="app-nav-button">
+            {tab}
+          </button>
+        ))}
       </div>
     </div>
   )

@@ -2,17 +2,14 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchRacecards } from '../lib/racingApi'
+import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 
 import RaceModal from '../components/RaceModal'
 
 export default function Racecards() {
-  const [selectedRace, setSelectedRace] =
-    useState(null)
+  const [selectedRace, setSelectedRace] = useState(null)
 
-  const {
-    data: races = [],
-    isLoading,
-  } = useQuery<any[]>({
+  const { data: races = [], isLoading } = useQuery<any[]>({
     queryKey: ['racecards'],
     queryFn: fetchRacecards,
     refetchInterval: 60000,
@@ -20,189 +17,161 @@ export default function Racecards() {
 
   if (isLoading) {
     return (
-      <div className='p-6'>
-        <div className='border rounded-xl p-6 bg-card'>
-          Loading live racecards...
+      <div className='dashboard-page'>
+        <div className='loading-card'>
+          <div className='pulse-dot' />
+          <span>Loading live racecards...</span>
         </div>
       </div>
     )
   }
 
+  const totalRunners = races.reduce(
+    (total: number, race: any) =>
+      total + (race.runners?.length || 0),
+    0
+  )
+
+  const nextRace = races[0]
+
   return (
-    <div className='p-6 space-y-4'>
-      <div>
-        <h1 className='text-3xl font-bold'>
-          Live Racecards
-        </h1>
+    <div className='dashboard-page'>
+      <section className='dashboard-hero'>
+        <div className='hero-copy'>
+          <span className='eyebrow'>UK & Ireland live feed</span>
 
-        <p className='text-muted-foreground'>
-          UK & Ireland meetings only
-        </p>
-      </div>
+          <h1>Racecards command centre</h1>
 
-      {races.map(
-        (race: any, index: number) => {
-          const scoredRunners =
-            (
-              race.runners || []
-            ).map((runner: any) => ({
+          <p>
+            Live runners, confidence scores, market positions and
+            race-level signals in one focused workspace.
+          </p>
+        </div>
+
+        <div className='hero-metrics'>
+          <div>
+            <span>Races</span>
+            <strong>{races.length}</strong>
+          </div>
+
+          <div>
+            <span>Runners</span>
+            <strong>{totalRunners}</strong>
+          </div>
+
+          <div>
+            <span>Next off</span>
+            <strong>{nextRace?.off_time || '--'}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className='race-grid'>
+        {races.map((race: any, index: number) => {
+          const scoredRunners = (race.runners || []).map(
+            (runner: any) => ({
               ...runner,
-
               score:
-                runner.aiProfile
-                  ?.confidence ||
+                runner.aiProfile?.confidence ||
                 runner.score ||
                 0,
-
               replayTriggers: [],
-            }))
+            })
+          )
 
-          const topRated =
-            scoredRunners?.sort(
-              (a: any, b: any) =>
-                (b.score || 0) -
-                (a.score || 0)
-            )[0]
+          const topRated = [...scoredRunners].sort(
+            (a: any, b: any) =>
+              (b.score || 0) - (a.score || 0)
+          )[0]
 
           return (
-            <div
-              key={
-                race.race_id || index
-              }
-              className='relative z-10 border rounded-2xl bg-card p-6 space-y-4'
+            <article
+              key={race.race_id || index}
+              className='race-card'
             >
-              <div className='flex items-center justify-between'>
+              <div className='race-card-header'>
                 <div>
-                  <h2 className='text-2xl font-semibold'>
-                    {race.race_name}
-                  </h2>
+                  <div className='race-meta-row'>
+                    <span className='live-badge'>LIVE</span>
+                    <span>{race.field_size} runners</span>
+                  </div>
 
-                  <p className='text-muted-foreground'>
-                    {race.course} ·{' '}
-                    {race.off_time}
-                  </p>
-                </div>
+                  <h2>{race.race_name}</h2>
 
-                <div className='text-right space-y-2'>
                   <p>
-                    {race.field_size}{' '}
-                    runners
+                    {race.course} - {race.off_time}
                   </p>
-
-                  <p className='text-amber-400'>
-                    LIVE
-                  </p>
-
-                  <button
-                    type='button'
-                    onClick={() =>
-                      setSelectedRace(
-                        race
-                      )
-                    }
-                    className='relative z-50 pointer-events-auto px-4 py-2 rounded-xl bg-amber-500 text-black font-bold hover:opacity-90 cursor-pointer'
-                  >
-                    View Race
-                  </button>
                 </div>
+
+                <button
+                  type='button'
+                  onClick={() => setSelectedRace(race)}
+                  className='primary-button'
+                >
+                  View Race
+                </button>
               </div>
 
               {topRated && (
-                <div className='rounded-xl border border-amber-500/30 bg-amber-500/10 p-4'>
-                  <p className='text-sm text-amber-300 mb-1'>
-                    Top Rated
-                  </p>
+                <div className='top-rated-strip'>
+                  <p>Top Rated</p>
 
-                  <div className='flex items-center justify-between'>
-                    <h3 className='text-xl font-bold'>
-                      {
-                        topRated.horse
+                  <div>
+                    <button
+                      type='button'
+                      onClick={() =>
+                        openAtTheRacesHorseForm(topRated, race)
                       }
-                    </h3>
+                      className='top-rated-name-button'
+                    >
+                      {topRated.horse}
+                    </button>
 
-                    <p className='text-amber-400 font-semibold'>
-                      {
-                        topRated.score
-                      }
-                    </p>
+                    <strong>{topRated.score}</strong>
                   </div>
                 </div>
               )}
 
-              <div className='grid gap-3'>
+              <div className='runner-list'>
                 {scoredRunners
                   .slice(0, 5)
-                  .map(
-                    (
-                      runner: any,
-                      runnerIndex: number
-                    ) => (
-                      <div
-                        key={
-                          runnerIndex
-                        }
-                        className='border rounded-xl p-4 flex items-center justify-between'
-                      >
-                        <div>
-                          <button
-  type='button'
-  onMouseDown={(e) => {
-    e.preventDefault()
+                  .map((runner: any, runnerIndex: number) => (
+                    <div
+                      key={runnerIndex}
+                      className='runner-row'
+                    >
+                      <div>
+                        <button
+                          type='button'
+                          onClick={() =>
+                            openAtTheRacesHorseForm(runner, race)
+                          }
+                          className='runner-name-button'
+                        >
+                          {runner.horse}
+                        </button>
 
-    const searchUrl =
-      `https://www.attheraces.com/search?search=` +
-      encodeURIComponent(race.race_name)
-
-    window.open(
-      searchUrl,
-      '_blank',
-      'noopener,noreferrer'
-    )
-  }}
-  className='px-4 py-2 rounded-xl bg-amber-500 text-black font-bold hover:opacity-90 cursor-pointer'
->
-  View Race
-</button>
-
-                          <p className='text-sm text-muted-foreground'>
-                            {
-                              runner.jockey
-                            }{' '}
-                            ·{' '}
-                            {
-                              runner.trainer
-                            }
-                          </p>
-                        </div>
-
-                        <div className='text-right'>
-                          <p className='font-bold text-lg'>
-                            {
-                              runner.score
-                            }
-                          </p>
-
-                          <p className='text-amber-400'>
-                            {
-                              runner.odds
-                            }
-                          </p>
-                        </div>
+                        <p>
+                          {runner.jockey} - {runner.trainer}
+                        </p>
                       </div>
-                    )
-                  )}
+
+                      <div className='runner-score'>
+                        <strong>{runner.score}</strong>
+                        <span>{runner.odds || '-'}</span>
+                      </div>
+                    </div>
+                  ))}
               </div>
-            </div>
+            </article>
           )
-        }
-      )}
+        })}
+      </section>
 
       {selectedRace && (
         <RaceModal
           race={selectedRace}
-          onClose={() =>
-            setSelectedRace(null)
-          }
+          onClose={() => setSelectedRace(null)}
         />
       )}
     </div>

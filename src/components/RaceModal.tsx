@@ -1,3 +1,5 @@
+import { openAtTheRacesHorseForm } from '../lib/horseLinks'
+
 interface RaceModalProps {
   race: any
   onClose: () => void
@@ -19,7 +21,7 @@ export default function RaceModal({
             </h2>
 
             <p className='text-zinc-400 mt-2'>
-              {race.course} ·{' '}
+              {race.course} -{' '}
               {race.off_time}
             </p>
           </div>
@@ -46,22 +48,16 @@ export default function RaceModal({
                 <div>
                   <button
                     type='button'
-                    onClick={() => {
-                      window.open(
-                        `https://www.google.com/search?q=${encodeURIComponent(
-                          runner.horse +
-                            ' At The Races'
-                        )}`,
-                        '_blank'
-                      )
-                    }}
+                    onClick={() =>
+                      openAtTheRacesHorseForm(runner, race)
+                    }
                     className='relative z-50 pointer-events-auto font-bold text-xl text-left hover:text-amber-400 transition-colors cursor-pointer'
                   >
                     {runner.horse}
                   </button>
 
                   <p className='text-zinc-400 text-sm mt-1'>
-                    {runner.jockey} ·{' '}
+                    {runner.jockey} -{' '}
                     {runner.trainer}
                   </p>
 
