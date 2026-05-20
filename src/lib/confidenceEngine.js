@@ -80,6 +80,16 @@ export function generateConfidence(runner, race = {}, options = {}) {
   else if (weightVsAvg <= -3) classLockScore = Math.min(40, classLockScore + 1)
   else if (weightVsAvg >= 5) classLockScore = Math.max(1, classLockScore - 2)
 
+  const formTop3 = formPositions.filter((p) => p <= 3).length
+  const formWins = formPositions.filter((p) => p === 1).length
+  const strongForm = formPositions.length >= 2 && formPositions.slice(0, 3).reduce((a, b) => a + b, 0) / Math.min(3, formPositions.length) <= 3
+
+  if (strongForm && bestRating > 0 && bestRating < avgOr) classLockScore = Math.min(40, classLockScore + 3)
+  else if (formWins >= 2 && bestRating < avgOr) classLockScore = Math.min(40, classLockScore + 2)
+  else if (strongForm && bestRating >= avgOr) classLockScore = Math.min(40, classLockScore + 1)
+
+  if (formPositions.length >= 3 && !strongForm && bestRating > avgOr) classLockScore = Math.max(1, classLockScore - 3)
+
   let strideScore = 0
 
   if (formPositions.length >= 2) {
