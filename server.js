@@ -41,6 +41,7 @@ const HORSE_DB_PATH = path.join(process.cwd(), 'data', 'horses.json')
 const MARKET_DB_PATH = path.join(process.cwd(), 'data', 'market.json')
 const ALERT_DB_PATH = path.join(process.cwd(), 'data', 'alerts.json')
 const LEARNING_DB_PATH = path.join(process.cwd(), 'data', 'learning.json')
+const PREDICTIONS_DB_PATH = path.join(process.cwd(), 'data', 'predictions.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -114,11 +115,14 @@ function saveDatabase(filePath, database) {
 const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
 const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
 const ALERT_DATABASE = loadDatabase(ALERT_DB_PATH)
+const PREDICTIONS_DATABASE = loadDatabase(PREDICTIONS_DB_PATH)
 
-const LEARNING_DATABASE = {
-  records: [],
-  analytics: {},
-}
+const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
+  ? loadDatabase(LEARNING_DB_PATH)
+  : {
+      records: [],
+      analytics: {},
+    }
 
 const LIVE_STATE = {
   racecards: [],
@@ -127,6 +131,42 @@ const LIVE_STATE = {
 }
 
 const ATR_LINK_CACHE = new Map()
+
+function logPrediction(race, runner, aiProfile) {
+  const raceId = `${race.course}-${race.off_time}-${race.date}`
+
+  if (!PREDICTIONS_DATABASE[raceId]) {
+    PREDICTIONS_DATABASE[raceId] = []
+  }
+
+  const existingIndex = PREDICTIONS_DATABASE[raceId].findIndex(
+    (entry) => entry.horse === runner.horse
+  )
+
+  const prediction = {
+    date: race.date,
+    race: `${race.course} ${race.off_time}`,
+    course: race.course,
+    offTime: race.off_time,
+    horse: runner.horse,
+    odds: runner.odds || runner.price || 0,
+    confidence: aiProfile.confidence,
+    estimatedWinProbability:
+      aiProfile.estimatedWinProbability,
+    impliedProbability:
+      aiProfile.impliedProbability,
+    valueEdge: aiProfile.valueEdge,
+    completeness: aiProfile.completeness,
+    grade: aiProfile.grade,
+    timestamp: new Date().toISOString(),
+  }
+
+  if (existingIndex >= 0) {
+    PREDICTIONS_DATABASE[raceId][existingIndex] = prediction
+  } else {
+    PREDICTIONS_DATABASE[raceId].push(prediction)
+  }
+}
 
 function formatAtrRacecardDate(date = '') {
   const parsedDate = new Date(`${date}T00:00:00`)
@@ -297,6 +337,8 @@ async function fetchLiveMeetings() {
           horseProfile: HORSE_DATABASE[horseId],
         })
 
+        logPrediction(race, runner, aiProfile)
+
         const marketMovement = analyzeMarketMovement({
           horse: runner.horse,
           currentOdds: runner.odds,
@@ -351,12 +393,13 @@ async function fetchLiveMeetings() {
 
     saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
     saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
+    saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
 
     io.emit('live-update', LIVE_STATE)
 
     console.log(`Broadcasted ${processed.length} races`)
     console.log(
-      `Tracked bets: ${LEARNING_DATABASE.records.length}`
+      `Tracked predictions: ${Object.keys(PREDICTIONS_DATABASE).length}`
     )
   } catch (error) {
     console.error(error)
@@ -387,6 +430,10 @@ app.get('/api/market-movers', (_req, res) => {
   res.json(Object.values(MARKET_DATABASE))
 })
 
+app.get('/api/predictions', (_req, res) => {
+  res.json(PREDICTIONS_DATABASE)
+})
+
 app.get('/api/learning-stats', (_req, res) => {
   res.json(
     LEARNING_DATABASE.analytics || {
@@ -407,12 +454,12 @@ app.get('/api/results', (_req, res) => {
 app.post('/api/upload-results', (req, res) => {
   try {
     const races =
-  req.body.results ||
-  req.body.racecards ||
-  req.body.data ||
-  req.body
+      req.body.results ||
+      req.body.racecards ||
+      req.body.data ||
+      req.body
 
-if (!Array.isArray(races)) {
+    if (!Array.isArray(races)) {
       return res.status(400).json({
         error: 'Invalid results format',
       })
@@ -427,6 +474,7 @@ if (!Array.isArray(races)) {
         LEARNING_DATABASE.records.push({
           horse: runner.horse,
           position: Number(runner.position || 0),
+          won: Number(runner.position || 0) === 1,
           spOdds: resolveOdds(runner),
           aiConfidence: Number(runner.aiConfidence || 75),
           signal: runner.signal || 'UPLOAD',
