@@ -41,7 +41,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
   let completeness = 0
   if (or > 0) completeness += 15
   if (rpr > 0) completeness += 10
-  if (odds > 0) completeness += 15
+  if (odds > 0) completeness += 5
   if (formPositions.length >= 2) completeness += 20
   if (trainerRtf > 0) completeness += 10
   if (draw > 0) completeness += 10
@@ -184,19 +184,12 @@ export function generateConfidence(runner, race = {}, options = {}) {
   trafficScore += drawBiasAdj
   trafficScore = Math.max(0, Math.min(6, Math.round(trafficScore)))
 
-  let clvScore = 3
+  let clvScore = 1
 
   if (odds > 0) {
-    if (odds <= 1.5) clvScore = 10
-    else if (odds <= 2.0) clvScore = 9
-    else if (odds <= 3.0) clvScore = 8
-    else if (odds <= 4.0) clvScore = 7
-    else if (odds <= 5.0) clvScore = 6
-    else if (odds <= 7.0) clvScore = 5
-    else if (odds <= 10.0) clvScore = 4
-    else if (odds <= 15.0) clvScore = 3
-    else if (odds <= 20.0) clvScore = 2
-    else if (odds <= 33.0) clvScore = 1
+    if (odds <= 1.5) clvScore = 3
+    else if (odds <= 3.0) clvScore = 2
+    else if (odds > 20) clvScore = 0
   }
 
   let confidence =
@@ -219,7 +212,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
     if (strideScore >= 12) strongCount++
     if (trafficScore >= 4) strongCount++
     if (trainerScore >= 5) strongCount++
-    if (clvScore >= 5) strongCount++
+    if (clvScore >= 2) strongCount++
     if (strongCount >= 4) synergyMultiplier = 1.15
     else if (strongCount >= 3) synergyMultiplier = 1.08
   }
