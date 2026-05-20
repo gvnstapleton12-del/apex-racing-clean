@@ -596,13 +596,37 @@ function matchDailyPicksWithResults(races) {
     console.log(`[DAILY PICKS] Matched ${matchCount} runners with results`)
   }
 
+  races.forEach((race) => {
+    const rawDate = String(race.date || (race.off_dt || '').slice(0, 10) || '')
+    const date = rawDate.replace(/[/]/g, '-')
+    if (!date || !DAILY_PICKS_DATABASE[date]) return
+
+    const dailyPicks = DAILY_PICKS_DATABASE[date].picks || []
+    const raceRunners = new Set(
+      (race.runners || []).map((r) => normalizeHorseName(r.horse))
+    )
+
+    dailyPicks.forEach((p) => {
+      if (p.result !== null) return
+      if (
+        normalizeCourse(p.course) === normalizeCourse(race.course) &&
+        !raceRunners.has(normalizeHorseName(p.horse))
+      ) {
+        p.result = 'nr'
+        p.position = 0
+        matchCount++
+      }
+    })
+  })
+
   Object.keys(DAILY_PICKS_DATABASE).forEach((date) => {
     const entry = DAILY_PICKS_DATABASE[date]
     const picks = entry.picks || []
     const won = picks.filter((p) => p.result === 'won').length
     const placed = picks.filter((p) => p.result === 'placed').length
     const lost = picks.filter((p) => p.result === 'lost').length
-    entry.stats = { won, placed, lost, pending: picks.length - won - placed - lost }
+    const nr = picks.filter((p) => p.result === 'nr').length
+    entry.stats = { won, placed, lost, nr, pending: picks.length - won - placed - lost - nr }
   })
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
@@ -633,7 +657,7 @@ app.post('/api/daily-picks', (req, res) => {
       result: null,
       position: null,
     })),
-    stats: { won: 0, placed: 0, lost: 0, pending: picks.length },
+    stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: picks.length },
   }
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)

@@ -66,6 +66,7 @@ function resultLabel(result, position) {
   if (!result) return null
   if (result === 'won') return { text: 'WON', cls: 'won' }
   if (result === 'placed') return { text: 'P', cls: 'placed' }
+  if (result === 'nr') return { text: 'NR', cls: 'nr' }
   if (result === 'lost') return { text: 'LOST', cls: 'lost' }
   return null
 }
@@ -260,10 +261,10 @@ function Home() {
         </section>
       ) : (
         <section className='home-picks-section'>
-          {todayStats && todayStats.won + todayStats.placed + todayStats.lost > 0 && (
+          {todayStats && todayStats.won + todayStats.placed + todayStats.lost + todayStats.nr > 0 && (
             <div className={`home-picks-stats-bar ${todayStats.won > 0 ? 'has-wins' : 'no-wins'}`}>
-              <span>Today's results: <strong className='stat-won'>{todayStats.won}W</strong> &middot; <strong className='stat-placed'>{todayStats.placed}P</strong> &middot; <strong className='stat-lost'>{todayStats.lost}L</strong> &middot; <strong className='stat-pend'>{todayStats.pending}PEND</strong>
-                {todayStats.won + todayStats.lost > 0 && (
+              <span>Today's results: <strong className='stat-won'>{todayStats.won}W</strong> &middot; <strong className='stat-placed'>{todayStats.placed}P</strong> &middot; <strong className='stat-lost'>{todayStats.lost}L</strong>{todayStats.nr > 0 && <> &middot; <strong className='stat-nr'>{todayStats.nr}NR</strong></>} &middot; <strong className='stat-pend'>{todayStats.pending}PEND</strong>
+                {todayStats.won + todayStats.placed + todayStats.lost > 0 && (
                   <> &middot; SR <strong>{(todayStats.won / (todayStats.won + todayStats.placed + todayStats.lost) * 100).toFixed(0)}%</strong></>
                 )}
               </span>
@@ -296,7 +297,7 @@ function Home() {
           </div>
           <div className='home-track-grid'>
             {pastDays.map(([date, day]) => {
-              const s = day.stats || { won: 0, placed: 0, lost: 0, pending: 0 }
+              const s = day.stats || { won: 0, placed: 0, lost: 0, nr: 0, pending: 0 }
               const total = s.won + s.placed + s.lost
               const rate = total > 0 ? ((s.won / total) * 100).toFixed(0) : '--'
               return (
@@ -307,7 +308,8 @@ function Home() {
                       <span className='home-track-won'>{s.won}W</span>
                       <span className='home-track-placed'>{s.placed}P</span>
                       <span className='home-track-lost'>{s.lost}L</span>
-                      {s.pending > 0 && <span className='home-track-pend'>{s.pending}P</span>}
+                      {s.nr > 0 && <span className='home-track-nr'>{s.nr}NR</span>}
+                      {s.pending > 0 && <span className='home-track-pend'>{s.pending}PEND</span>}
                       <span className='home-track-rate'>{rate !== '--' ? `${rate}%` : '--'}</span>
                     </span>
                   </summary>
@@ -318,7 +320,7 @@ function Home() {
                         <span className='home-track-row-course'>{p.course}</span>
                         <span className='home-track-row-score'>{p.score}</span>
                         <span className={`home-track-row-result ${p.result || 'pending'}`}>
-                          {p.result === 'won' ? 'WON' : p.result === 'placed' ? 'P' : p.result === 'lost' ? 'LOST' : 'PEND'}
+                          {p.result === 'won' ? 'WON' : p.result === 'placed' ? 'P' : p.result === 'nr' ? 'NR' : p.result === 'lost' ? 'LOST' : 'PEND'}
                         </span>
                       </div>
                     ))}

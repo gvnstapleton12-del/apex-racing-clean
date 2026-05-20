@@ -594,6 +594,11 @@ button {
   color: #422006;
 }
 
+.pick-card-result-badge.nr {
+  background: #6366f1;
+  color: #eef2ff;
+}
+
 .pick-card-result-badge.lost {
   background: rgba(255, 255, 255, 0.1);
   color: #a1a1aa;
@@ -629,6 +634,7 @@ button {
 
 .stat-won { color: #22c55e; }
 .stat-placed { color: #f59e0b; }
+.stat-nr { color: #6366f1; }
 .stat-lost { color: #a1a1aa; }
 .stat-pend { color: #f59e0b; }
 
@@ -696,6 +702,8 @@ button {
 .home-track-won { color: #22c55e; }
 .home-track-placed { color: #f59e0b; }
 .home-track-lost { color: #a1a1aa; }
+.home-track-nr { color: #6366f1; }
+.home-track-pend { color: #f59e0b; }
 .home-track-pend { color: #f59e0b; }
 .home-track-rate { color: #fcd34d; font-weight: 850; }
 
@@ -755,6 +763,11 @@ button {
 .home-track-row-result.placed {
   background: #f59e0b;
   color: #422006;
+}
+
+.home-track-row-result.nr {
+  background: #6366f1;
+  color: #eef2ff;
 }
 
 .home-track-row-result.lost {
