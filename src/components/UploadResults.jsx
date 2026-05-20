@@ -27,7 +27,7 @@ export default function UploadResults() {
   async function loadSavedAnalytics() {
     try {
       const response = await fetch(
-        'http://localhost:3000/api/learning-stats'
+        '/api/learning-stats'
       )
 
       const analytics = await response.json()
@@ -57,7 +57,7 @@ export default function UploadResults() {
       const parsed = JSON.parse(text)
 
       const response = await fetch(
-        'http://localhost:3000/api/upload-results',
+        '/api/upload-results',
         {
           method: 'POST',
           headers: {

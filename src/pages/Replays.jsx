@@ -33,7 +33,7 @@ export default function Replays() {
   const [draft, setDraft] = useState({ tags: [], notes: '', adjustment: 0 })
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/replay-notes')
+    fetch('/api/replay-notes')
       .then((r) => r.json())
       .then(setNotesDb)
       .catch(() => {})
@@ -75,7 +75,7 @@ export default function Replays() {
   }
 
   async function saveNote(key, horse, course) {
-    await fetch('http://localhost:3000/api/replay-notes', {
+    await fetch('/api/replay-notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -87,7 +87,7 @@ export default function Replays() {
       }),
     })
 
-    const res = await fetch('http://localhost:3000/api/replay-notes')
+    const res = await fetch('/api/replay-notes')
     const data = await res.json()
     setNotesDb(data)
     setExpanded(null)

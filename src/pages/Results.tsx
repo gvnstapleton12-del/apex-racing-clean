@@ -261,7 +261,7 @@ export default function UploadResults(props: UploadResultsProps) {
       const json = JSON.parse(text)
 
       const response = await fetch(
-        'http://localhost:3000/api/upload-results',
+        '/api/upload-results',
         {
           method: 'POST',
           headers: {

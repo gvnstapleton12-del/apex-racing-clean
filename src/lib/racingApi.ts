@@ -1,7 +1,7 @@
 export async function fetchRacecards() {
   try {
     const response = await fetch(
-      'http://localhost:3000/api/live-state'
+      '/api/live-state'
     )
 
     const data = await response.json()

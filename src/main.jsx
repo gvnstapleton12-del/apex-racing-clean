@@ -130,7 +130,7 @@ function Home() {
   })
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/daily-picks')
+    fetch('/api/daily-picks')
       .then((r) => r.json())
       .then(setDailyPicksDb)
       .catch(() => {})
@@ -165,7 +165,7 @@ function Home() {
     if (picks.length === 0) return
     if (todaySaved && todaySaved.picks.some((p) => p.result !== null)) return
 
-    fetch('http://localhost:3000/api/daily-picks', {
+    fetch('/api/daily-picks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -359,7 +359,7 @@ function App() {
     async function loadSavedResults() {
       try {
         const response = await fetch(
-          'http://localhost:3000/api/results'
+          '/api/results'
         )
 
         const data = await response.json()
