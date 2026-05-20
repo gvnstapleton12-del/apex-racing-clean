@@ -128,7 +128,7 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
       races: [],
       analytics: {},
       weights: {
-        multiplier: { class: 1.3, stride: 1.1, trainer: 0.7, traffic: 1.0, clv: 0.8 },
+        multiplier: { class: 1.3, stride: 1.1, trainer: 0.7, traffic: 0.8, clv: 0.8 },
       },
     }
 

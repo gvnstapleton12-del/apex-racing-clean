@@ -164,7 +164,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
 
   trainerScore = Math.max(0, Math.min(15, Math.round(trainerScore)))
 
-  let trafficScore = 5
+  let trafficScore = 3
 
   if (draw > 0 && fieldSize > 3) {
     const middle = (fieldSize + 1) / 2
@@ -172,17 +172,17 @@ export function generateConfidence(runner, race = {}, options = {}) {
     const maxDiff = Math.max(fieldSize - middle, middle - 1)
 
     if (maxDiff > 0) {
-      trafficScore = 5 + ((maxDiff - drawDiff) / maxDiff) * 5
+      trafficScore = 3 + ((maxDiff - drawDiff) / maxDiff) * 3
     }
 
-    if (draw >= fieldSize - 1 && fieldSize >= 12) trafficScore -= 2
+    if (draw >= fieldSize - 1 && fieldSize >= 12) trafficScore -= 1
     if (draw <= 1 && fieldSize >= 12) trafficScore -= 1
-    if (draw >= fieldSize - 2 && fieldSize >= 14) trafficScore -= 1
   }
 
-  const drawBiasAdj = getDrawAdjustment(course, draw, fieldSize)
+  const rawBiasAdj = getDrawAdjustment(course, draw, fieldSize)
+  const drawBiasAdj = Math.round(rawBiasAdj / 2)
   trafficScore += drawBiasAdj
-  trafficScore = Math.max(0, Math.min(10, Math.round(trafficScore)))
+  trafficScore = Math.max(0, Math.min(6, Math.round(trafficScore)))
 
   let clvScore = 3
 
@@ -217,7 +217,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
     let strongCount = 0
     if (classLockScore >= 30) strongCount++
     if (strideScore >= 12) strongCount++
-    if (trafficScore >= 7) strongCount++
+    if (trafficScore >= 4) strongCount++
     if (trainerScore >= 5) strongCount++
     if (clvScore >= 5) strongCount++
     if (strongCount >= 4) synergyMultiplier = 1.15
