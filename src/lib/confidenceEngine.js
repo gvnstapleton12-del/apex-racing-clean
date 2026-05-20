@@ -30,6 +30,12 @@ export function generateConfidence(runner, race = {}, options = {}) {
   const maxOr = ors.length ? Math.max(...ors) : 0
   const minOr = ors.length ? Math.min(...ors) : 0
 
+  const weights = runners
+    .map((r) => Number(r.lbs || r.weight_lbs || r.weight || 0))
+    .filter((w) => w > 0)
+  const avgWeight = weights.length ? weights.reduce((a, b) => a + b, 0) / weights.length : 0
+  const weightVsAvg = weight > 0 && avgWeight > 0 ? weight - avgWeight : 0
+
   const bestRating = Math.max(or, rpr)
 
   let completeness = 0
@@ -40,6 +46,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
   if (trainerRtf > 0) completeness += 10
   if (draw > 0) completeness += 10
   if (lastRun > 0) completeness += 10
+  if (weight > 0) completeness += 5
   if (jockey) completeness += 5
   if (trainer) completeness += 5
 
@@ -68,6 +75,10 @@ export function generateConfidence(runner, race = {}, options = {}) {
   }
 
   classLockScore = Math.max(0, Math.min(40, Math.round(classLockScore)))
+
+  if (weightVsAvg <= -5) classLockScore = Math.min(40, classLockScore + 3)
+  else if (weightVsAvg <= -3) classLockScore = Math.min(40, classLockScore + 1)
+  else if (weightVsAvg >= 5) classLockScore = Math.max(1, classLockScore - 2)
 
   let strideScore = 0
 
@@ -110,7 +121,9 @@ export function generateConfidence(runner, race = {}, options = {}) {
   }
 
   if (weight > 0 && weight <= 154) strideScore += 1
-  if (age >= 5 && age <= 8) strideScore += 1
+  if (age >= 5 && age <= 8) strideScore += 2
+  else if (age >= 9) strideScore -= 1
+  else if (age <= 3) strideScore -= 2
   if (recentNR >= 2) strideScore -= 4
   else if (recentNR >= 1) strideScore -= 2
 
