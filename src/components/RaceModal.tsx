@@ -352,6 +352,70 @@ export default function RaceModal({
                     </div>
                   </div>
                 )}
+
+                {runner.scenarioFlags && runner.scenarioFlags.flags && runner.scenarioFlags.flags.length > 0 && (
+                  <div className='modal-scenario-flags'>
+                    <div className='modal-scenario-header'>
+                      <span className='modal-scenario-title'>Scenario Flags</span>
+                    </div>
+                    <div className='modal-flags-list'>
+                      {runner.scenarioFlags.flags.map((flag, idx) => (
+                        <div key={idx} className={`modal-flag-row flag-${flag.severity}`}>
+                          <span className='modal-flag-name'>{flag.flag}</span>
+                          <span className='modal-flag-desc'>{flag.description}</span>
+                          <span className='modal-flag-action'>{flag.action}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {runner.explanation && (runner.explanation.whyCount > 0 || runner.explanation.riskCount > 0) && (
+                  <div className='modal-explainability'>
+                    {runner.explanation.whyCount > 0 && (
+                      <div className='modal-explain-section'>
+                        <span className='modal-explain-title'>WHY</span>
+                        <div className='modal-explain-list'>
+                          {runner.explanation.why.map((signal, idx) => (
+                            <div key={idx} className='modal-explain-item why'>
+                              <span className='modal-explain-icon'>{signal.icon}</span>
+                              <span className='modal-explain-label'>{signal.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {runner.explanation.riskCount > 0 && (
+                      <div className='modal-explain-section'>
+                        <span className='modal-explain-title'>RISKS</span>
+                        <div className='modal-explain-list'>
+                          {runner.explanation.risks.map((signal, idx) => (
+                            <div key={idx} className='modal-explain-item risk'>
+                              <span className='modal-explain-icon'>{signal.icon}</span>
+                              <span className='modal-explain-label'>{signal.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {runner.confidenceTier && (
+                  <div className='modal-confidence-tier'>
+                    <div className='modal-tier-header'>
+                      <span className='modal-tier-title'>Confidence Tier</span>
+                      <span className={`modal-tier-badge tier-${runner.confidenceTier.tier.toLowerCase()}`}>
+                        Tier {runner.confidenceTier.tier}
+                      </span>
+                    </div>
+                    <div className='modal-tier-content'>
+                      <span className='modal-tier-label'>{runner.confidenceTier.label}</span>
+                      <span className='modal-tier-desc'>{runner.confidenceTier.description}</span>
+                      <span className='modal-tier-max'>Max Stake: {Math.round(runner.confidenceTier.maxStake * 100)}% of bankroll</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )
           )}

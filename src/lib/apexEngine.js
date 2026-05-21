@@ -22,6 +22,10 @@ import { runRaceSimulation } from './engine2_raceSimulation.js'
 import { analyzeMarket } from './engine3_marketModel.js'
 import { computeValue } from './engine4_valueEngine.js'
 import { computeBankroll } from './engine5_bankroll.js'
+import { computeBetFilter } from './engine6_betFilter.js'
+import { generateExplanation } from './explainability.js'
+import { detectScenarioFlags } from './scenarioFlags.js'
+import { computeConfidenceTier } from './confidenceTiers.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -269,6 +273,9 @@ export function runApexEngine(runners, race, options = {}) {
     bankrollMap[b.horse_id] = b
   })
 
+  // Engine 6: Bet Filter
+  const betFilter = computeBetFilter(sorted, race, paceMap)
+
   const output = sorted.map((r, i) => {
     const band = probBand(winProbs[i])
     const odds = Number(r.odds || r.price || 0)
@@ -280,6 +287,15 @@ export function runApexEngine(runners, race, options = {}) {
     const bankroll = bankrollMap[key] || {}
 
     const kelly = syndicateStake(winProbs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
+
+    // Scenario Flags
+    const scenarioFlags = detectScenarioFlags(r, sorted, race, paceMap)
+
+    // Explainability
+    const explanation = generateExplanation(r, race, paceMap, sim, value, r.uncertainty)
+
+    // Confidence Tier
+    const confidenceTier = computeConfidenceTier(r, race, paceMap, sim, value, bankroll, betFilter)
 
     return {
       ...r,
@@ -319,6 +335,9 @@ export function runApexEngine(runners, race, options = {}) {
         valueGrade: value.valueGrade || 'F',
       },
       bankrollEngine: bankroll.stake || {},
+      scenarioFlags,
+      explanation,
+      confidenceTier,
     }
   })
 
@@ -341,5 +360,6 @@ export function runApexEngine(runners, race, options = {}) {
     marketModel: marketAnalysis.summary,
     valueEngine: valueAnalysis.summary,
     bankrollEngine: bankrollAnalysis.summary,
+    betFilter,
   }
 }

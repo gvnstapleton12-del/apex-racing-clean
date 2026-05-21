@@ -555,6 +555,76 @@ button {
   color: #9ca3af;
 }
 
+.bet-filter-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.bf-bettable {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.bf-caution {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+}
+
+.bf-highrisk {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+}
+
+.bf-autoskip {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.tier-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.tier-s {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.tier-a {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.tier-b {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.tier-c {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.tier-d {
+  background: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .pace-tempo {
   display: inline-block;
   font-size: 10px;
@@ -1831,6 +1901,239 @@ button {
   font-size: 9px;
   font-weight: 500;
   text-align: center;
+}
+
+.modal-scenario-flags {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-scenario-header {
+  margin-bottom: 10px;
+}
+
+.modal-scenario-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.modal-flags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-flag-row {
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+}
+
+.modal-flag-row.flag-high {
+  border-left: 3px solid #f87171;
+}
+
+.modal-flag-row.flag-medium {
+  border-left: 3px solid #fbbf24;
+}
+
+.modal-flag-row.flag-low {
+  border-left: 3px solid #60a5fa;
+}
+
+.modal-flag-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.modal-flag-row.flag-high .modal-flag-name {
+  color: #f87171;
+}
+
+.modal-flag-row.flag-medium .modal-flag-name {
+  color: #fbbf24;
+}
+
+.modal-flag-row.flag-low .modal-flag-name {
+  color: #60a5fa;
+}
+
+.modal-flag-desc {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.modal-flag-action {
+  color: #9ca3af;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.modal-explainability {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-explain-section {
+  margin-bottom: 10px;
+}
+
+.modal-explain-section:last-child {
+  margin-bottom: 0;
+}
+
+.modal-explain-title {
+  color: var(--muted);
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.modal-explain-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-explain-item {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.modal-explain-item.why {
+  color: #34d399;
+}
+
+.modal-explain-item.risk {
+  color: #f87171;
+}
+
+.modal-explain-icon {
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 12px;
+}
+
+.modal-explain-label {
+  font-weight: 500;
+}
+
+.modal-confidence-tier {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-tier-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.modal-tier-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.modal-tier-badge {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.tier-s {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.tier-a {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.tier-b {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.tier-c {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.tier-d {
+  background: rgba(255, 255, 255, 0.05);
+  color: #9ca3af;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-tier-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-tier-label {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tier-s + .modal-tier-content .modal-tier-label,
+.tier-a + .modal-tier-content .modal-tier-label {
+  color: #34d399;
+}
+
+.tier-b + .modal-tier-content .modal-tier-label {
+  color: #60a5fa;
+}
+
+.tier-c + .modal-tier-content .modal-tier-label {
+  color: #fbbf24;
+}
+
+.tier-d + .modal-tier-content .modal-tier-label {
+  color: #9ca3af;
+}
+
+.modal-tier-desc {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.modal-tier-max {
+  color: #9ca3af;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .loading-card {

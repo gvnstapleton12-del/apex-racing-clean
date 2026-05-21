@@ -130,6 +130,11 @@ export default function Racecards() {
                         {race.paceMap.collapseRisk === 'HIGH' ? ' ⚡' : ''}
                       </span>
                     )}
+                    {race.betFilter && (
+                      <span className={`bet-filter-badge bf-${race.betFilter.verdict.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                        {race.betFilter.verdict}
+                      </span>
+                    )}
                   </div>
 
                   <h2>{race.race_name}</h2>
@@ -228,6 +233,11 @@ export default function Racecards() {
                         {runner.selectionQuality && runner.selectionQuality.grade && (
                           <span className={`sel-grade grade-${runner.selectionQuality.grade.replace('+', 'p')}`}>
                             {runner.selectionQuality.grade}
+                          </span>
+                        )}
+                        {runner.confidenceTier && (
+                          <span className={`tier-badge tier-${runner.confidenceTier.tier.toLowerCase()}`}>
+                            T{runner.confidenceTier.tier}
                           </span>
                         )}
                       </div>
