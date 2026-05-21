@@ -164,6 +164,16 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
     }
   }
 
+  if (options.stableIntent) {
+    features.stableIntent = {
+      score: options.stableIntent.score,
+      label: options.stableIntent.label,
+      signals: options.stableIntent.signals,
+      trainerProfile: options.stableIntent.trainerProfile,
+      factors: options.stableIntent.factors,
+    }
+  }
+
   features.market = {
     odds: odds,
     impliedProb: odds > 1 ? Math.round((1 / odds) * 1000) / 10 : 0,

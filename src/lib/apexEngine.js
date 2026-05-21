@@ -13,6 +13,7 @@ import { estimateEnergyDistribution } from './energyModel.js'
 import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
 import { detectFalseFavourite } from './falseFavourite.js'
 import { detectHiddenImprover } from './hiddenImprover.js'
+import { detectStableIntent } from './stableIntent.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -106,6 +107,11 @@ export function runApexEngine(runners, race, options = {}) {
       replayDb,
     })
 
+    const stableIntent = detectStableIntent(runner, race, {
+      goingDb,
+      distanceDb,
+    })
+
     const humanAdj = humanIntelligenceLayer(replayNote)
 
     const marketAdj = marketIntelligence(runner, powerScore, { odds: runner.odds })
@@ -121,6 +127,7 @@ export function runApexEngine(runners, race, options = {}) {
       tags,
       paceCompat,
       improver,
+      stableIntent,
     })
 
     const paceNorm = ((paceScore + 15) / 30) * 100
@@ -157,6 +164,7 @@ export function runApexEngine(runners, race, options = {}) {
       tags,
       paceCompat,
       improver,
+      stableIntent,
       human: {
         score: humanAdj,
         tags: replayNote.tags || [],
