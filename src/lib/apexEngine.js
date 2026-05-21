@@ -5,6 +5,8 @@ import { humanIntelligenceLayer } from './humanIntelligence.js'
 import { marketIntelligence, marketAlignment } from './marketIntelligence.js'
 import { volatilityIndex } from './volatilityIndex.js'
 import { bayesianProbabilities } from './bayesianEngine.js'
+import { syndicateStake } from './kellyEngine.js'
+import { buildSyndicateFeatures } from './syndicateFeatures.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -61,6 +63,13 @@ export function runApexEngine(runners, race, options = {}) {
 
     const trainerScore = options.trainerScores?.[horseId] || 0
 
+    const features = buildSyndicateFeatures(runner, race, {
+      goingDb,
+      distanceDb,
+      runningStyle,
+      paceScore,
+    })
+
     const paceNorm = ((paceScore + 15) / 30) * 100
     const humanNorm = ((humanAdj + 12) / 24) * 100
     const marketNorm = ((marketAdj + 10) / 20) * 100
@@ -100,6 +109,7 @@ export function runApexEngine(runners, race, options = {}) {
       trainerScore,
       volatility: volatility.chaos,
       finalScore,
+      features,
     }
   })
 
@@ -108,6 +118,8 @@ export function runApexEngine(runners, race, options = {}) {
 
   const output = sorted.map((r, i) => {
     const band = probBand(probs[i])
+    const odds = Number(r.odds || r.price || 0)
+    const kelly = syndicateStake(probs[i], odds, r.probBand, r.volatility, { maxStake: 0.05 })
     return {
       ...r,
       winProb: Math.round(probs[i] * 10) / 10,
@@ -115,7 +127,9 @@ export function runApexEngine(runners, race, options = {}) {
       probRange: band.range,
       probTier: band.tier,
       confidenceScore: r.finalScore,
-      betQuality: betQuality(band, probs[i], r.market.score, Number(r.odds || 0)),
+      betQuality: betQuality(band, probs[i], r.market.score, odds),
+      kelly: kelly,
+      features: r.features,
     }
   })
 
