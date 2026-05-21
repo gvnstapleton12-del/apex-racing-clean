@@ -133,6 +133,17 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
     paceScore: options.paceScore || 0,
   }
 
+  if (options.energy) {
+    features.energy = {
+      earlyEnergy: options.energy.earlyEnergy,
+      efficiency: options.energy.efficiency,
+      sustainability: options.energy.sustainability,
+      profile: options.energy.profile,
+      energyAdj: options.energy.energyAdj,
+      factors: options.energy.factors,
+    }
+  }
+
   features.market = {
     odds: odds,
     impliedProb: odds > 1 ? Math.round((1 / odds) * 1000) / 10 : 0,

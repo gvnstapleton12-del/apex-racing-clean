@@ -9,6 +9,7 @@ import { syndicateStake } from './kellyEngine.js'
 import { buildSyndicateFeatures } from './syndicateFeatures.js'
 import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from './raceArchetype.js'
 import { bucketKey, getBucketWeights } from './contextBuckets.js'
+import { estimateEnergyDistribution } from './energyModel.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -88,6 +89,11 @@ export function runApexEngine(runners, race, options = {}) {
 
     const paceScore = paceMatrixScore(runningStyle, paceMap, draw, fieldSize)
 
+    const energy = estimateEnergyDistribution(runner, race, {
+      runningStyle,
+      paceMap,
+    })
+
     const humanAdj = humanIntelligenceLayer(replayNote)
 
     const marketAdj = marketIntelligence(runner, powerScore, { odds: runner.odds })
@@ -99,6 +105,7 @@ export function runApexEngine(runners, race, options = {}) {
       distanceDb,
       runningStyle,
       paceScore,
+      energy,
     })
 
     const paceNorm = ((paceScore + 15) / 30) * 100
@@ -115,7 +122,8 @@ export function runApexEngine(runners, race, options = {}) {
     )
 
     const chaosPenalty = volatility.chaos > 0.6 ? 0.88 : volatility.chaos > 0.45 ? 0.96 : 1.02
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredScore * chaosPenalty)))
+    const layeredWithChaos = layeredScore * chaosPenalty
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj)))
 
     return {
       ...runner,
@@ -129,6 +137,7 @@ export function runApexEngine(runners, race, options = {}) {
         score: paceScore,
         tempo: paceMap.projectedTempo,
       },
+      energy,
       human: {
         score: humanAdj,
         tags: replayNote.tags || [],
