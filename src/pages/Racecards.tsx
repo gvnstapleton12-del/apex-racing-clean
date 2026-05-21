@@ -6,6 +6,7 @@ import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 import { formatOffTime } from '../lib/formatTime'
 
 import RaceModal from '../components/RaceModal'
+import RacePressureGraph from '../components/RacePressureGraph'
 
 export default function Racecards() {
   const [selectedRace, setSelectedRace] = useState(null)
@@ -220,6 +221,8 @@ export default function Racecards() {
                     </div>
                   ))}
               </div>
+
+              <RacePressureGraph race={race} />
             </article>
           )
         })}
