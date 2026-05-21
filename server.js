@@ -26,6 +26,7 @@ import {
   computeCalibrationByGrade,
   computeCalibrationByBetQuality,
 } from './src/lib/calibrationEngine.js'
+import { computeAllSegmentations } from './src/lib/segmentationEngine.js'
 
 dotenv.config()
 
@@ -625,7 +626,13 @@ async function fetchTodayResults() {
         const prediction = findPredictionForRunner(race, runner)
 
         if (prediction) {
-          const calRecord = createCalibrationRecord(prediction, {
+          const calRecord = createCalibrationRecord({
+            ...prediction,
+            going: race.going || '',
+            fieldSize: race.field_size || race.fieldSize || 0,
+            trainer: runner.trainer || '',
+            raceType: race.race_type || race.raceType || '',
+          }, {
             position: Number(runner.position || 0),
             spOdds: resolveOdds(runner),
           })
@@ -639,6 +646,7 @@ async function fetchTodayResults() {
       byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
       byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
       byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
+      segments: computeAllSegmentations(CALIBRATION_DATABASE.records),
       lastUpdated: new Date().toISOString(),
     }
 

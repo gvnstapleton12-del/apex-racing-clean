@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import RoiSegmentation from './RoiSegmentation'
 
 function CalibrationBucket({ bucket }) {
   const isOverconfident = bucket.avgPredicted > bucket.actualRate
@@ -174,7 +175,16 @@ export default function CalibrationDashboard() {
         >
           By Bet Quality
         </button>
+        <button
+          type='button'
+          className={`cal-tab ${activeTab === 'segments' ? 'active' : ''}`}
+          onClick={() => setActiveTab('segments')}
+        >
+          ROI Segmentation
+        </button>
       </div>
+
+      {activeTab === 'segments' && <RoiSegmentation />}
 
       {activeTab === 'probability' && (
         <div className='cal-probability-view'>

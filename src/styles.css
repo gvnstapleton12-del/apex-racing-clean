@@ -2700,3 +2700,138 @@ body::after {
   padding: 40px 20px;
   text-align: center;
 }
+
+.roi-segmentation {
+  padding: 0;
+}
+
+.seg-header {
+  margin-bottom: 20px;
+}
+
+.seg-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.seg-subtitle {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.seg-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.seg-tab {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+}
+
+.seg-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.seg-tab.active {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.seg-table-wrap {
+  overflow-x: auto;
+}
+
+.seg-table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+}
+
+.seg-table thead th {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 2px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 10px 12px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.seg-table tbody td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.seg-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.seg-table td.positive {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.seg-table td.negative {
+  color: #f87171;
+  font-weight: 700;
+}
+
+.seg-table td.hot {
+  color: #34d399;
+  font-weight: 700;
+}
+
+.seg-table td.warm {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.seg-table td.cold {
+  color: #f87171;
+}
+
+.seg-empty {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.seg-loading {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 14px;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.seg-empty-state {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+}
+
+.seg-empty-state h2 {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+}
