@@ -11,27 +11,24 @@ function winProbability(scores) {
   return scaled.map((s) => (total > 0 ? (s / total) * 100 : 0))
 }
 
-function scoreToConfidence(rawScore, volatility) {
-  const chaosPenalty = volatility > 0.6 ? 0.85 : volatility > 0.45 ? 0.95 : 1.0
-  const effective = Math.round(rawScore * chaosPenalty)
-
-  if (effective >= 78) return { label: 'Elite', score: effective }
-  if (effective >= 68) return { label: 'Strong', score: effective }
-  if (effective >= 58) return { label: 'Playable', score: effective }
-  if (effective >= 48) return { label: 'Speculative', score: effective }
-  return { label: 'Avoid', score: effective }
+function probBand(winProb) {
+  if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
+  if (winProb >= 20) return { label: 'Medium-High', range: '20-30%', tier: 2 }
+  if (winProb >= 12) return { label: 'Medium', range: '12-20%', tier: 3 }
+  if (winProb >= 6) return { label: 'Low', range: '6-12%', tier: 4 }
+  return { label: 'Very Low', range: '<6%', tier: 5 }
 }
 
-function betQuality(confidence, winProb, marketAdj, odds) {
-  if (confidence === 'Avoid') return 'NO BET'
-  if (confidence === 'Speculative' && winProb < 10) return 'NO BET'
+function betQuality(probBand, winProb, marketAdj, odds) {
+  if (probBand.tier >= 5) return 'NO BET'
+  if (probBand.tier >= 4 && winProb < 8) return 'NO BET'
 
   const value = winProb * (odds - 1) - (100 - winProb)
 
-  if (value > 20 && confidence !== 'Avoid') return 'STRONG VALUE'
+  if (value > 20 && probBand.tier <= 3) return 'STRONG VALUE'
   if (value > 10) return 'VALUE'
-  if (marketAdj >= 4 && winProb > 15) return 'PLAYABLE'
-  if (marketAdj >= -2 && winProb > 20) return 'PLAYABLE'
+  if (marketAdj >= 4 && winProb > 12) return 'PLAYABLE'
+  if (marketAdj >= -2 && winProb > 15) return 'PLAYABLE'
   return 'SPECULATIVE'
 }
 
@@ -116,13 +113,15 @@ export function runApexEngine(runners, race, options = {}) {
   const probs = winProbability(scores)
 
   const output = sorted.map((r, i) => {
-    const conf = scoreToConfidence(r.finalScore, r.volatility)
+    const band = probBand(probs[i])
     return {
       ...r,
       winProb: Math.round(probs[i] * 10) / 10,
-      confidenceLabel: conf.label,
-      confidenceScore: conf.score,
-      betQuality: betQuality(conf.label, probs[i], r.market.score, Number(r.odds || 0)),
+      probBand: band.label,
+      probRange: band.range,
+      probTier: band.tier,
+      confidenceScore: r.finalScore,
+      betQuality: betQuality(band, probs[i], r.market.score, Number(r.odds || 0)),
     }
   })
 

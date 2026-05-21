@@ -52,7 +52,8 @@ function getHomeSelections(races) {
         course: race.course,
         offTime: formatOffTime(race),
         score: getRunnerScore(runner),
-        confidenceLabel: runner.confidenceLabel || runner.aiProfile?.grade || '',
+        probBand: runner.probBand || runner.confidenceLabel || runner.aiProfile?.grade || '',
+        probRange: runner.probRange || '',
         winProb: runner.winProb || null,
       }))
     )
@@ -60,7 +61,23 @@ function getHomeSelections(races) {
 }
 
 function gradeClass(label) {
-  const map = { 'Elite': 'a-plus', 'Strong': 'a', 'Playable': 'b', 'Speculative': 'c-plus', 'Avoid': 'c', 'A+': 'a-plus', 'A': 'a', 'B': 'b', 'C+': 'c-plus', 'C': 'c' }
+  const map = {
+    'High Probability': 'a-plus',
+    'Medium-High': 'a',
+    'Medium': 'b',
+    'Low': 'c-plus',
+    'Very Low': 'c',
+    'Elite': 'a-plus',
+    'Strong': 'a',
+    'Playable': 'b',
+    'Speculative': 'c-plus',
+    'Avoid': 'c',
+    'A+': 'a-plus',
+    'A': 'a',
+    'B': 'b',
+    'C+': 'c-plus',
+    'C': 'c',
+  }
   return map[label] || 'c'
 }
 
@@ -88,7 +105,8 @@ function PickCard({ selection, rank, result, position }) {
         <div className='pick-card-left'>
           <div className='pick-card-rank-grade'>
             <span className='pick-card-rank'>#{rank}</span>
-            <span className={`pick-card-grade grade-${gradeClass(selection.confidenceLabel)}`}>{selection.confidenceLabel}</span>
+            <span className={`pick-card-grade grade-${gradeClass(selection.probBand)}`}>{selection.probBand}</span>
+            {selection.probRange && <span className='pick-card-prob-range'>{selection.probRange}</span>}
             <span className='pick-card-time'>{selection.offTime}</span>
           </div>
           <button

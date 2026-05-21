@@ -200,16 +200,16 @@ export default function Racecards() {
                             {runner.paceScore ? ` ${runner.paceScore > 0 ? '+' : ''}${runner.paceScore}` : ''}
                           </span>
                         )}
-                        {runner.confidenceLabel && (
-                          <span className={`conf-badge conf-${runner.confidenceLabel.toLowerCase()}`}>
-                            {runner.confidenceLabel}
+                        {runner.probBand && (
+                          <span className={`conf-badge conf-${runner.probBand.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                            {runner.probBand}
                           </span>
                         )}
                       </div>
 
                       <div className='runner-score'>
                         <strong>{runner.score}</strong>
-                        <span className={runner.betQuality === 'NO BET' ? 'text-muted' : 'text-win'}>
+                        <span className='text-win'>
                           {runner.winProb ? `${runner.winProb}%` : ''}
                           {runner.odds ? ` | ${runner.odds}` : '-'}
                         </span>

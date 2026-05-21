@@ -585,27 +585,27 @@ button {
   text-transform: uppercase;
 }
 
-.conf-elite {
+.conf-highprobability {
   background: rgba(251, 191, 36, 0.25);
   color: #fbbf24;
 }
 
-.conf-strong {
+.conf-mediumhigh {
   background: rgba(52, 211, 153, 0.2);
   color: #34d399;
 }
 
-.conf-playable {
+.conf-medium {
   background: rgba(96, 165, 250, 0.18);
   color: #60a5fa;
 }
 
-.conf-speculative {
+.conf-low {
   background: rgba(255, 255, 255, 0.06);
   color: #9ca3af;
 }
 
-.conf-avoid {
+.conf-verylow {
   background: rgba(248, 113, 113, 0.12);
   color: #f87171;
 }
@@ -1749,6 +1749,14 @@ body::after {
   font-weight: 700;
   line-height: 1;
   margin-top: 2px;
+}
+
+.pick-card-prob-range {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-left: 4px;
 }
 
 .rank-1 .pick-card-score {
