@@ -100,6 +100,7 @@ export default function Racecards() {
             (runner: any) => ({
               ...runner,
               score:
+                runner.finalScore ||
                 runner.aiProfile?.confidence ||
                 runner.score ||
                 0,
@@ -122,12 +123,22 @@ export default function Racecards() {
                   <div className='race-meta-row'>
                     <span className='live-badge'>LIVE</span>
                     <span>{race.field_size} runners</span>
+                    {race.paceMap && (
+                      <span className={`pace-tempo pace-${race.paceMap.projectedTempo.toLowerCase()}`}>
+                        {race.paceMap.projectedTempo}
+                        {race.paceMap.collapseRisk === 'HIGH' ? ' ⚡' : ''}
+                      </span>
+                    )}
                   </div>
 
                   <h2>{race.race_name}</h2>
 
                   <p>
                     {race.course} - {formatOffTime(race)}
+                    {' | '}
+                    {race.distance_f || ''}
+                    {race.going ? ` | ${race.going}` : ''}
+                    {race.surface ? ` | ${race.surface}` : ''}
                   </p>
                 </div>
 
@@ -182,11 +193,29 @@ export default function Racecards() {
                         <p>
                           {runner.jockey} - {runner.trainer}
                         </p>
+
+                        {runner.runningStyle && (
+                          <span className={`pace-badge pace-${runner.runningStyle.toLowerCase().replace(' ', '-')}`}>
+                            {runner.runningStyle}
+                            {runner.paceScore ? ` ${runner.paceScore > 0 ? '+' : ''}${runner.paceScore}` : ''}
+                          </span>
+                        )}
+                        {runner.confidenceLabel && (
+                          <span className={`conf-badge conf-${runner.confidenceLabel.toLowerCase()}`}>
+                            {runner.confidenceLabel}
+                          </span>
+                        )}
                       </div>
 
                       <div className='runner-score'>
                         <strong>{runner.score}</strong>
-                        <span>{runner.odds || '-'}</span>
+                        <span className={runner.betQuality === 'NO BET' ? 'text-muted' : 'text-win'}>
+                          {runner.winProb ? `${runner.winProb}%` : ''}
+                          {runner.odds ? ` | ${runner.odds}` : '-'}
+                        </span>
+                        {runner.betQuality && runner.betQuality !== 'NO BET' && (
+                          <span className='bet-quality'>{runner.betQuality}</span>
+                        )}
                       </div>
                     </div>
                   ))}

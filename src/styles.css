@@ -483,6 +483,145 @@ button {
   margin-top: 4px;
 }
 
+.pace-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.pace-front-runner {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+}
+
+.pace-stalker {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.pace-closer {
+  background: rgba(96, 165, 250, 0.18);
+  color: #60a5fa;
+}
+
+.pace-hold-up {
+  background: rgba(251, 191, 36, 0.08);
+  color: #d4a373;
+}
+
+.pace-midfield {
+  background: rgba(255, 255, 255, 0.06);
+  color: #9ca3af;
+}
+
+.pace-tempo {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.pace-fast {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}
+
+.pace-fair {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.pace-even {
+  background: rgba(255, 255, 255, 0.06);
+  color: #9ca3af;
+}
+
+.pace-slow {
+  background: rgba(96, 165, 250, 0.18);
+  color: #60a5fa;
+}
+
+.going-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-left: 4px;
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+}
+
+.dist-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-left: 4px;
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+}
+
+.conf-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-top: 4px;
+  margin-left: 4px;
+  text-transform: uppercase;
+}
+
+.conf-elite {
+  background: rgba(251, 191, 36, 0.25);
+  color: #fbbf24;
+}
+
+.conf-strong {
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+}
+
+.conf-playable {
+  background: rgba(96, 165, 250, 0.18);
+  color: #60a5fa;
+}
+
+.conf-speculative {
+  background: rgba(255, 255, 255, 0.06);
+  color: #9ca3af;
+}
+
+.conf-avoid {
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+}
+
+.bet-quality {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+  color: #facc15;
+}
+
+.text-win {
+  color: #34d399;
+}
+
 .pick-grid {
   display: grid;
   gap: 18px;
@@ -1602,6 +1741,14 @@ body::after {
   font-weight: 900;
   line-height: 1;
   margin-top: 1px;
+}
+
+.pick-card-winprob {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 2px;
 }
 
 .rank-1 .pick-card-score {

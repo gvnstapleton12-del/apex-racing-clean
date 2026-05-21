@@ -222,6 +222,15 @@ export function generateConfidence(runner, race = {}, options = {}) {
   const replayAdj = Number(options.replayAdjustment) || 0
   confidence += Math.max(-10, Math.min(10, replayAdj))
 
+  const paceAdj = Number(options.paceAdj) || 0
+  confidence += Math.max(-3, Math.min(3, paceAdj))
+
+  const goingAdj = Number(options.goingAdj) || 0
+  confidence += Math.max(-8, Math.min(8, goingAdj))
+
+  const distanceAdj = Number(options.distanceAdj) || 0
+  confidence += Math.max(-8, Math.min(8, distanceAdj))
+
   let impliedProbability = 0
   let aiProbability = 0
   let valueEdge = 0
@@ -263,6 +272,10 @@ export function generateConfidence(runner, race = {}, options = {}) {
       clvScore,
       replayAdjustment: replayAdj,
       synergyMultiplier,
+      paceAdj,
+      goingAdj,
+      distanceAdj,
+      runningStyle: options.runningStyle || null,
       or: bestRating,
       rpr,
       odds,

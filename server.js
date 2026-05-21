@@ -10,6 +10,7 @@ import { Server } from 'socket.io'
 import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
 import { analyzeMarketMovement } from './src/lib/marketEngine.js'
+import { runApexEngine } from './src/lib/apexEngine.js'
 
 import {
   analyzeHistoricalPerformance,
@@ -46,6 +47,8 @@ const PREDICTIONS_DB_PATH = path.join(process.cwd(), 'data', 'predictions.json')
 const DAILY_PICKS_PATH = path.join(process.cwd(), 'data', 'daily-picks.json')
 const REPLAY_NOTES_PATH = path.join(process.cwd(), 'data', 'replay-notes.json')
 const NON_RUNNER_PATH = path.join(process.cwd(), 'data', 'non-runners.json')
+const GOING_DB_PATH = path.join(process.cwd(), 'data', 'going-database.json')
+const DISTANCE_DB_PATH = path.join(process.cwd(), 'data', 'distance-database.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -120,6 +123,8 @@ const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
 const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
 const ALERT_DATABASE = loadDatabase(ALERT_DB_PATH)
 const PREDICTIONS_DATABASE = loadDatabase(PREDICTIONS_DB_PATH)
+const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
+const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 
 const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
   ? loadDatabase(LEARNING_DB_PATH)
@@ -351,49 +356,27 @@ async function fetchLiveMeetings() {
       const atrHorseLinks = await fetchAtrHorseLinks(race)
       const runners = race.runners || []
 
-      const scoredRunners = runners.map((runner) => {
+      const apexResult = runApexEngine(runners, race, {
+        goingDb: GOING_DATABASE,
+        distanceDb: DISTANCE_DATABASE,
+        replayDb: REPLAY_NOTES_DATABASE,
+      })
+
+      const scoredRunners = apexResult.racecards.map((runner) => {
         const horseId = runner.horse_id || runner.horse
-        const atrFormUrl =
-          atrHorseLinks[normalizeHorseName(runner.horse)]
+        const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
 
         if (!HORSE_DATABASE[horseId]) {
-          HORSE_DATABASE[horseId] = {
-            horse: runner.horse,
-            runs: 0,
-            bestScore: 0,
-          }
+          HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
         }
 
-        const previousOdds =
-          MARKET_DATABASE[horseId]?.lastOdds || runner.odds
-
-        const weights = LEARNING_DATABASE.weights || {}
-        const replayKey = `${runner.horse}|${race.course}`
-        const replayNote = REPLAY_NOTES_DATABASE[replayKey] || {}
-
-        const nrKey = normalizeHorseName(runner.horse)
-        const nrEntries = NON_RUNNER_DATABASE[nrKey] || []
-        const recentNR = nrEntries.filter((e) => {
-          const daysSince = (new Date() - new Date(e.date + 'T00:00:00')) / 86400000
-          return daysSince <= 90 && daysSince >= 0
-        })
-
-        const aiProfile = generateConfidence({
-          ...runner,
-          horseProfile: HORSE_DATABASE[horseId],
-        }, race, {
-          ...weights,
-          replayAdjustment: replayNote.adjustment || 0,
-          recentNR: recentNR.length,
-        })
-
-        logPrediction(race, runner, aiProfile)
+        const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
 
         const marketMovement = analyzeMarketMovement({
           horse: runner.horse,
           currentOdds: runner.odds,
           previousOdds,
-          aiConfidence: aiProfile.confidence,
+          aiConfidence: runner.finalScore,
         })
 
         MARKET_DATABASE[horseId] = {
@@ -405,35 +388,49 @@ async function fetchLiveMeetings() {
 
         const bettingSignals = generateSignals({
           ...runner,
-          aiProfile,
+          aiProfile: { confidence: runner.finalScore },
           marketMovement,
         })
 
         if (marketMovement.alert) {
-          createAlert(
-            horseId,
-            runner.horse,
-            marketMovement.alert.type,
-            marketMovement.alert.message,
-            marketMovement.alert.severity
-          )
+          createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
         }
+
+        logPrediction(race, runner, {
+          confidence: runner.finalScore,
+          breakdown: {
+            powerScore: runner.power?.total,
+            paceScore: runner.pace?.score,
+            humanAdj: runner.human?.score,
+            marketAdj: runner.market?.score,
+            runningStyle: runner.runningStyle,
+          },
+        })
 
         return {
           ...runner,
           atrFormUrl,
-          aiProfile,
           bettingSignals,
           marketMovement,
+          elimination: runner.elimination,
+          powerScore: runner.power?.total,
+          paceScore: runner.pace?.score,
+          humanScore: runner.human?.score,
+          marketScore: runner.market?.score,
+          finalScore: runner.finalScore,
+          winProb: runner.winProb,
+          confidenceLabel: runner.confidenceLabel,
+          confidenceScore: runner.confidenceScore,
+          betQuality: runner.betQuality,
+          runningStyle: runner.runningStyle,
         }
       })
 
       return {
         ...race,
-        runners: scoredRunners.sort(
-          (a, b) =>
-            b.aiProfile.confidence - a.aiProfile.confidence
-        ),
+        paceMap: apexResult.paceMap,
+        volatility: apexResult.volatility,
+        runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
       }
     }))
 
@@ -481,36 +478,76 @@ async function fetchTodayResults() {
     matchDailyPicksWithResults(resultRaces)
 
     const existingCount = LEARNING_DATABASE.records.length
+    let goingUpdated = false
+    let distanceUpdated = false
 
       resultRaces.forEach((race) => {
       const runners = race.runners || []
+      const raceGoing = race.going || ''
+      const raceSurface = race.surface || ''
+      const raceDist = race.distance_f || ''
 
       runners.forEach((runner) => {
+        const horseId = runner.horse_id || runner.horse
         const position = Number(runner.position || 0)
-        if (position < 1) return
 
-        const alreadyRecorded = LEARNING_DATABASE.records.some(
-          (r) => r.horse === runner.horse && r.timestamp?.startsWith(new Date().toISOString().split('T')[0])
-        )
-        if (alreadyRecorded) return
+        if (position >= 1) {
+          const alreadyRecorded = LEARNING_DATABASE.records.some(
+            (r) => r.horse === runner.horse && r.timestamp?.startsWith(new Date().toISOString().split('T')[0])
+          )
+          if (!alreadyRecorded) {
+            const prediction = findPredictionForRunner(race, runner)
 
-        const prediction = findPredictionForRunner(race, runner)
+            LEARNING_DATABASE.records.push({
+              horse: runner.horse,
+              position,
+              won: position === 1,
+              spOdds: resolveOdds(runner),
+              aiConfidence: prediction?.confidence || 0,
+              signal: 'RESULT_API',
+              marketMovement: 'N/A',
+              timestamp: new Date().toISOString(),
+              resultProcessed: true,
+              breakdown: prediction?.breakdown || null,
+              weights: prediction?.weights || null,
+            })
+          }
+        }
 
-        LEARNING_DATABASE.records.push({
-          horse: runner.horse,
-          position,
-          won: position === 1,
-          spOdds: resolveOdds(runner),
-          aiConfidence: prediction?.confidence || 0,
-          signal: 'RESULT_API',
-          marketMovement: 'N/A',
-          timestamp: new Date().toISOString(),
-          resultProcessed: true,
-          breakdown: prediction?.breakdown || null,
-          weights: prediction?.weights || null,
-        })
+        if (!GOING_DATABASE[horseId]) {
+          GOING_DATABASE[horseId] = { byGoing: {}, bySurface: {} }
+        }
+        const gProf = GOING_DATABASE[horseId]
+        const goingKey = raceGoing || 'Unknown'
+        if (!gProf.byGoing[goingKey]) gProf.byGoing[goingKey] = { runs: 0, wins: 0, places: 0 }
+        gProf.byGoing[goingKey].runs++
+        if (position === 1) gProf.byGoing[goingKey].wins++
+        if (position >= 2 && position <= 4) gProf.byGoing[goingKey].places++
+        goingUpdated = true
+
+        const surfaceKey = raceSurface || 'Unknown'
+        if (!gProf.bySurface[surfaceKey]) gProf.bySurface[surfaceKey] = { runs: 0, wins: 0, places: 0 }
+        gProf.bySurface[surfaceKey].runs++
+        if (position === 1) gProf.bySurface[surfaceKey].wins++
+        if (position >= 2 && position <= 4) gProf.bySurface[surfaceKey].places++
+
+        if (!DISTANCE_DATABASE[horseId]) {
+          DISTANCE_DATABASE[horseId] = { lastDistance: 0, performances: [] }
+        }
+        const dProf = DISTANCE_DATABASE[horseId]
+        const distVal = parseFloat(String(raceDist).replace(/[^0-9.]/g, '')) || 0
+        if (distVal > 0) {
+          dProf.lastDistance = distVal
+          if (position >= 1) {
+            dProf.performances.push({ distance: distVal, won: position === 1, placed: position >= 2 && position <= 4, date: new Date().toISOString() })
+          }
+          distanceUpdated = true
+        }
       })
     })
+
+    if (goingUpdated) saveDatabase(GOING_DB_PATH, GOING_DATABASE)
+    if (distanceUpdated) saveDatabase(DISTANCE_DB_PATH, DISTANCE_DATABASE)
 
     if (LEARNING_DATABASE.records.length > existingCount) {
       LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
@@ -801,14 +838,53 @@ app.post('/api/upload-results', (req, res) => {
       }
     }
 
-    saveDatabase(
-      LEARNING_DB_PATH,
-      LEARNING_DATABASE
-    )
+    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
 
     matchDailyPicksWithResults(races)
 
     const pickDates = Object.keys(DAILY_PICKS_DATABASE)
+    pickDates.forEach((date) => saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE))
+
+    races.forEach((race) => {
+      const runners = race.runners || []
+      const raceGoing = race.going || ''
+      const raceSurface = race.surface || ''
+      const raceDist = race.distance_f || ''
+
+      runners.forEach((runner) => {
+        const horseId = runner.horse_id || runner.horse
+        const position = Number(runner.position || 0)
+        if (!horseId) return
+
+        if (!GOING_DATABASE[horseId]) GOING_DATABASE[horseId] = { byGoing: {}, bySurface: {} }
+        const gProf = GOING_DATABASE[horseId]
+        const goingKey = raceGoing || 'Unknown'
+        if (!gProf.byGoing[goingKey]) gProf.byGoing[goingKey] = { runs: 0, wins: 0, places: 0 }
+        gProf.byGoing[goingKey].runs++
+        if (position === 1) gProf.byGoing[goingKey].wins++
+        if (position >= 2 && position <= 4) gProf.byGoing[goingKey].places++
+
+        const surfaceKey = raceSurface || 'Unknown'
+        if (!gProf.bySurface[surfaceKey]) gProf.bySurface[surfaceKey] = { runs: 0, wins: 0, places: 0 }
+        gProf.bySurface[surfaceKey].runs++
+        if (position === 1) gProf.bySurface[surfaceKey].wins++
+        if (position >= 2 && position <= 4) gProf.bySurface[surfaceKey].places++
+
+        if (!DISTANCE_DATABASE[horseId]) DISTANCE_DATABASE[horseId] = { lastDistance: 0, performances: [] }
+        const dProf = DISTANCE_DATABASE[horseId]
+        const distVal = parseFloat(String(raceDist).replace(/[^0-9.]/g, '')) || 0
+        if (distVal > 0) {
+          dProf.lastDistance = distVal
+          if (position >= 1) {
+            dProf.performances.push({ distance: distVal, won: position === 1, placed: position >= 2 && position <= 4, date: new Date().toISOString() })
+          }
+        }
+      })
+    })
+
+    saveDatabase(GOING_DB_PATH, GOING_DATABASE)
+    saveDatabase(DISTANCE_DB_PATH, DISTANCE_DATABASE)
+
     console.log(`[UPLOAD] Processed ${races.length} races - daily pick dates: [${pickDates.join(', ')}]`)
 
     res.json({

@@ -35,6 +35,7 @@ const tabs = [
 
 function getRunnerScore(runner) {
   return (
+    runner.finalScore ||
     runner.aiProfile?.confidence ||
     runner.score ||
     0
@@ -51,15 +52,16 @@ function getHomeSelections(races) {
         course: race.course,
         offTime: formatOffTime(race),
         score: getRunnerScore(runner),
-        grade: runner.aiProfile?.grade || '',
+        confidenceLabel: runner.confidenceLabel || runner.aiProfile?.grade || '',
+        winProb: runner.winProb || null,
       }))
     )
     .sort((a, b) => (b.score || 0) - (a.score || 0))
 }
 
-function gradeClass(grade) {
-  const map = { 'A+': 'a-plus', 'A': 'a', 'B': 'b', 'C+': 'c-plus', 'C': 'c' }
-  return map[grade] || 'c'
+function gradeClass(label) {
+  const map = { 'Elite': 'a-plus', 'Strong': 'a', 'Playable': 'b', 'Speculative': 'c-plus', 'Avoid': 'c', 'A+': 'a-plus', 'A': 'a', 'B': 'b', 'C+': 'c-plus', 'C': 'c' }
+  return map[label] || 'c'
 }
 
 function resultLabel(result, position) {
@@ -86,7 +88,7 @@ function PickCard({ selection, rank, result, position }) {
         <div className='pick-card-left'>
           <div className='pick-card-rank-grade'>
             <span className='pick-card-rank'>#{rank}</span>
-            <span className={`pick-card-grade grade-${gradeClass(selection.grade)}`}>{selection.grade}</span>
+            <span className={`pick-card-grade grade-${gradeClass(selection.confidenceLabel)}`}>{selection.confidenceLabel}</span>
             <span className='pick-card-time'>{selection.offTime}</span>
           </div>
           <button
@@ -111,6 +113,9 @@ function PickCard({ selection, rank, result, position }) {
           <div className={`pick-card-score-ring rank-${rank}`}>
             <span className='pick-card-score-label'>APEX</span>
             <strong className='pick-card-score'>{selection.score}</strong>
+            {selection.winProb && (
+              <span className='pick-card-winprob'>{selection.winProb}%</span>
+            )}
           </div>
         </div>
       </div>
