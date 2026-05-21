@@ -10,6 +10,7 @@ import { buildSyndicateFeatures } from './syndicateFeatures.js'
 import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from './raceArchetype.js'
 import { bucketKey, getBucketWeights } from './contextBuckets.js'
 import { estimateEnergyDistribution } from './energyModel.js'
+import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -94,6 +95,9 @@ export function runApexEngine(runners, race, options = {}) {
       paceMap,
     })
 
+    const tags = classifyHorseTags(runner, race)
+    const paceCompat = evaluatePaceCompatibility(tags, paceMap, parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0)
+
     const humanAdj = humanIntelligenceLayer(replayNote)
 
     const marketAdj = marketIntelligence(runner, powerScore, { odds: runner.odds })
@@ -106,6 +110,8 @@ export function runApexEngine(runners, race, options = {}) {
       runningStyle,
       paceScore,
       energy,
+      tags,
+      paceCompat,
     })
 
     const paceNorm = ((paceScore + 15) / 30) * 100
@@ -122,8 +128,9 @@ export function runApexEngine(runners, race, options = {}) {
     )
 
     const chaosPenalty = volatility.chaos > 0.6 ? 0.88 : volatility.chaos > 0.45 ? 0.96 : 1.02
+    const paceCompatAdj = (paceCompat.compatibility - 50) * 0.08
     const layeredWithChaos = layeredScore * chaosPenalty
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj)))
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj)))
 
     return {
       ...runner,
@@ -138,6 +145,8 @@ export function runApexEngine(runners, race, options = {}) {
         tempo: paceMap.projectedTempo,
       },
       energy,
+      tags,
+      paceCompat,
       human: {
         score: humanAdj,
         tags: replayNote.tags || [],

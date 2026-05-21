@@ -144,6 +144,17 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
     }
   }
 
+  if (options.tags) {
+    features.tags = options.tags
+  }
+
+  if (options.paceCompat) {
+    features.paceCompat = {
+      compatibility: options.paceCompat.compatibility,
+      collapseRisk: options.paceCompat.collapseRisk,
+    }
+  }
+
   features.market = {
     odds: odds,
     impliedProb: odds > 1 ? Math.round((1 / odds) * 1000) / 10 : 0,
