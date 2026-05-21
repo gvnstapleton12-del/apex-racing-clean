@@ -174,6 +174,16 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
     }
   }
 
+  if (options.uncertainty) {
+    features.uncertainty = {
+      uncertainty: options.uncertainty.uncertainty,
+      label: options.uncertainty.label,
+      range: options.uncertainty.range,
+      bankrollAdvice: options.uncertainty.bankrollAdvice,
+      factors: options.uncertainty.factors,
+    }
+  }
+
   features.market = {
     odds: odds,
     impliedProb: odds > 1 ? Math.round((1 / odds) * 1000) / 10 : 0,

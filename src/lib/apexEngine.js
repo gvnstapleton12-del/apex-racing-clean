@@ -14,6 +14,7 @@ import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
 import { detectFalseFavourite } from './falseFavourite.js'
 import { detectHiddenImprover } from './hiddenImprover.js'
 import { detectStableIntent } from './stableIntent.js'
+import { calculateUncertainty } from './uncertaintyModel.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -148,6 +149,22 @@ export function runApexEngine(runners, race, options = {}) {
     const layeredWithChaos = layeredScore * chaosPenalty
     const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj)))
 
+    const uncertainty = calculateUncertainty({
+      ...runner,
+      finalScore,
+    }, race, {
+      goingDb,
+      distanceDb,
+    })
+
+    features.uncertainty = {
+      uncertainty: uncertainty.uncertainty,
+      label: uncertainty.label,
+      range: uncertainty.range,
+      bankrollAdvice: uncertainty.bankrollAdvice,
+      factors: uncertainty.factors,
+    }
+
     return {
       ...runner,
       runningStyle,
@@ -186,7 +203,7 @@ export function runApexEngine(runners, race, options = {}) {
   const output = sorted.map((r, i) => {
     const band = probBand(probs[i])
     const odds = Number(r.odds || r.price || 0)
-    const kelly = syndicateStake(probs[i], odds, r.probBand, r.volatility, { maxStake: 0.05 })
+    const kelly = syndicateStake(probs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
     return {
       ...r,
       winProb: Math.round(probs[i] * 10) / 10,

@@ -37,7 +37,13 @@ export function syndicateStake(winProb, decimalOdds, confidence, volatility, opt
   const volAdj = volatility > 0.6 ? 0.5 : volatility > 0.45 ? 0.75 : 1.0
   const confAdj = confidence === 'Elite' ? 1.2 : confidence === 'Strong' ? 1.0 : confidence === 'Playable' ? 0.8 : 0.6
 
-  const adjustedStake = kelly.stake * volAdj * confAdj
+  const uncertainty = options.uncertainty || 0
+  let uncAdj = 1.0
+  if (uncertainty >= 25) uncAdj = 0.25
+  else if (uncertainty >= 18) uncAdj = 0.5
+  else if (uncertainty >= 12) uncAdj = 0.75
+
+  const adjustedStake = kelly.stake * volAdj * confAdj * uncAdj
   const cappedStake = Math.min(adjustedStake, options.maxStake || 0.05)
 
   let label = 'MINIMAL'
@@ -50,6 +56,7 @@ export function syndicateStake(winProb, decimalOdds, confidence, volatility, opt
     stake: cappedStake,
     volAdj,
     confAdj,
+    uncAdj,
     label,
   }
 }
