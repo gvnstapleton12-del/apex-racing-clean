@@ -4,7 +4,6 @@ import { classifyRunningStyle, generatePaceMap, paceMatrixScore } from './paceEn
 import { humanIntelligenceLayer } from './humanIntelligence.js'
 import { marketIntelligence, marketAlignment } from './marketIntelligence.js'
 import { volatilityIndex } from './volatilityIndex.js'
-import { bayesianProbabilities } from './bayesianEngine.js'
 import { syndicateStake } from './kellyEngine.js'
 import { buildSyndicateFeatures } from './syndicateFeatures.js'
 import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from './raceArchetype.js'

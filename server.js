@@ -216,6 +216,7 @@ function logPrediction(race, runner, aiProfile) {
     estimatedWinProbability:
       aiProfile.estimatedWinProbability,
     predictedWinProb: aiProfile.estimatedWinProbability || 0,
+    predictedPlaceProb: aiProfile.placeProb || 0,
     impliedProbability:
       aiProfile.impliedProbability,
     valueEdge: aiProfile.valueEdge,
