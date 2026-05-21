@@ -255,6 +255,103 @@ export default function RaceModal({
                     </div>
                   </div>
                 )}
+
+                {runner.simulation && runner.simulation.winRate > 0 && (
+                  <div className='modal-engine-section'>
+                    <div className='modal-engine-header'>
+                      <span className='modal-engine-title'>Engine 2: Race Simulation</span>
+                      <span className={`modal-engine-badge sim-${runner.simulation.raceShape.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                        {runner.simulation.raceShape}
+                      </span>
+                    </div>
+                    <div className='modal-engine-stats'>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Sim Win%</span>
+                        <span className='modal-engine-stat-value'>{runner.simulation.winRate}%</span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Sim Place%</span>
+                        <span className='modal-engine-stat-value'>{runner.simulation.placeRate}%</span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Avg Pos</span>
+                        <span className='modal-engine-stat-value'>{runner.simulation.avgPosition}</span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Collapse%</span>
+                        <span className={`modal-engine-stat-value ${runner.simulation.collapseRate > 15 ? 'negative' : ''}`}>
+                          {runner.simulation.collapseRate}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {runner.valueEngine && runner.valueEngine.edgeLabel && (
+                  <div className='modal-engine-section'>
+                    <div className='modal-engine-header'>
+                      <span className='modal-engine-title'>Engine 4: Value</span>
+                      <span className={`modal-engine-badge val-${runner.valueEngine.valueGrade.toLowerCase().replace('+', 'p')}`}>
+                        {runner.valueEngine.valueGrade}
+                      </span>
+                    </div>
+                    <div className='modal-engine-stats'>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Edge</span>
+                        <span className={`modal-engine-stat-value ${runner.valueEngine.edge >= 0 ? 'positive' : 'negative'}`}>
+                          {runner.valueEngine.edge >= 0 ? '+' : ''}{runner.valueEngine.edge}%
+                        </span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>EV</span>
+                        <span className={`modal-engine-stat-value ${runner.valueEngine.expectedValue >= 0 ? 'positive' : 'negative'}`}>
+                          {runner.valueEngine.expectedValue >= 0 ? '+' : ''}{runner.valueEngine.expectedValue}
+                        </span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>ROI</span>
+                        <span className={`modal-engine-stat-value ${runner.valueEngine.roi >= 0 ? 'positive' : 'negative'}`}>
+                          {runner.valueEngine.roi >= 0 ? '+' : ''}{runner.valueEngine.roi}%
+                        </span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Bettable</span>
+                        <span className={`modal-engine-stat-value ${runner.valueEngine.bettable ? 'positive' : 'negative'}`}>
+                          {runner.valueEngine.bettable ? 'YES' : 'NO'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {runner.bankrollEngine && runner.bankrollEngine.label && (
+                  <div className='modal-engine-section'>
+                    <div className='modal-engine-header'>
+                      <span className='modal-engine-title'>Engine 5: Bankroll</span>
+                      <span className={`modal-engine-badge bank-${runner.bankrollEngine.label.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                        {runner.bankrollEngine.label}
+                      </span>
+                    </div>
+                    <div className='modal-engine-stats'>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Stake</span>
+                        <span className='modal-engine-stat-value'>{runner.bankrollEngine.stake || 0}</span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Units</span>
+                        <span className='modal-engine-stat-value'>{runner.bankrollEngine.units || 0}</span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Kelly</span>
+                        <span className='modal-engine-stat-value'>{runner.bankrollEngine.adjustedKelly || 0}%</span>
+                      </div>
+                      <div className='modal-engine-stat'>
+                        <span className='modal-engine-stat-label'>Reason</span>
+                        <span className='modal-engine-stat-reason'>{runner.bankrollEngine.reason || '-'}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )
           )}

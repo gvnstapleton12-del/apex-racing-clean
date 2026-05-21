@@ -1734,6 +1734,105 @@ button {
   color: #f87171;
 }
 
+.modal-engine-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-engine-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modal-engine-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.modal-engine-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.sim-dominant { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.sim-strongcontender { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+.sim-placethreat { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+.sim-collapserisk { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+.sim-speedtrap { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+.sim-consistentplacer { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
+.sim-standard { background: rgba(255, 255, 255, 0.05); color: #9ca3af; }
+
+.val-ap { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.val-a { background: rgba(52, 211, 153, 0.12); color: #34d399; }
+.val-bp { background: rgba(96, 165, 250, 0.12); color: #60a5fa; }
+.val-b { background: rgba(96, 165, 250, 0.1); color: #60a5fa; }
+.val-cp { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+.val-c { background: rgba(251, 191, 36, 0.08); color: #fbbf24; }
+.val-d { background: rgba(255, 255, 255, 0.05); color: #9ca3af; }
+.val-f { background: rgba(248, 113, 113, 0.05); color: #9ca3af; }
+
+.bank-nobet { background: rgba(255, 255, 255, 0.05); color: #9ca3af; }
+.bank-avoid { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+.bank-consider { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+.bank-bet { background: rgba(52, 211, 153, 0.1); color: #34d399; }
+.bank-strongbet { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+
+.modal-engine-stats {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.modal-engine-stat {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 4px;
+}
+
+.modal-engine-stat-label {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.modal-engine-stat-value {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.modal-engine-stat-value.positive {
+  color: #34d399;
+}
+
+.modal-engine-stat-value.negative {
+  color: #f87171;
+}
+
+.modal-engine-stat-reason {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 500;
+  text-align: center;
+}
+
 .loading-card {
   align-items: center;
   color: #fef3c7;

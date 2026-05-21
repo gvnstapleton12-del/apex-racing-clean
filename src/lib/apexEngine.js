@@ -18,6 +18,10 @@ import { selectionQuality } from './selectionQuality.js'
 import { placeTraits, bayesianPlaceProbabilities, bayesianWinProbabilities } from './placeModel.js'
 import { computeInteractions, applyInteractionAdjustments } from './interactionEngine.js'
 import { computeHorseQuality } from './engine1_horseQuality.js'
+import { runRaceSimulation } from './engine2_raceSimulation.js'
+import { analyzeMarket } from './engine3_marketModel.js'
+import { computeValue } from './engine4_valueEngine.js'
+import { computeBankroll } from './engine5_bankroll.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -223,11 +227,60 @@ export function runApexEngine(runners, race, options = {}) {
   const winProbs = bayesianWinProbabilities(sorted)
   const placeProbs = bayesianPlaceProbabilities(sorted)
 
+  // Engine 2: Race Shape Simulation
+  const simulation = runRaceSimulation(sorted, race, paceMap, {
+    numSimulations: 1000,
+    seed: Date.now(),
+  })
+
+  // Merge simulation results into runners
+  const simMap = {}
+  simulation.runners.forEach((s) => {
+    simMap[s.horse_id] = s
+  })
+
+  // Engine 3: Market Model
+  const marketAnalysis = analyzeMarket(sorted, race)
+  const marketMap = {}
+  marketAnalysis.runners.forEach((m) => {
+    marketMap[m.horse_id] = m
+  })
+
+  // Engine 4: Value Engine
+  const sortedWithModelProb = sorted.map((r, i) => ({
+    ...r,
+    modelProb: winProbs[i],
+  }))
+  const valueAnalysis = computeValue(sortedWithModelProb, race)
+  const valueMap = {}
+  valueAnalysis.runners.forEach((v) => {
+    valueMap[v.horse_id] = v
+  })
+
+  // Engine 5: Bankroll Engine
+  const bankrollAnalysis = computeBankroll(sortedWithModelProb, race, {
+    bankroll: options.bankroll || 100,
+    maxStake: 0.05,
+    kellyFraction: 0.25,
+    minEdge: 2,
+  })
+  const bankrollMap = {}
+  bankrollAnalysis.runners.forEach((b) => {
+    bankrollMap[b.horse_id] = b
+  })
+
   const output = sorted.map((r, i) => {
     const band = probBand(winProbs[i])
     const odds = Number(r.odds || r.price || 0)
     const traits = placeTraits(r)
+    const key = r.horse_id || r.horse
+    const sim = simMap[key] || {}
+    const market = marketMap[key] || {}
+    const value = valueMap[key] || {}
+    const bankroll = bankrollMap[key] || {}
+
     const kelly = syndicateStake(winProbs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
+
     return {
       ...r,
       winProb: Math.round(winProbs[i] * 10) / 10,
@@ -249,6 +302,23 @@ export function runApexEngine(runners, race, options = {}) {
       kelly: kelly,
       features: r.features,
       interactions: r.interactions,
+      simulation: {
+        winRate: sim.winRate || 0,
+        placeRate: sim.placeRate || 0,
+        avgPosition: sim.avgPosition || 0,
+        collapseRate: sim.collapseRate || 0,
+        raceShape: sim.raceShape || 'Unknown',
+      },
+      marketModel: market.marketStrength || {},
+      valueEngine: {
+        edge: value.edge || 0,
+        edgeLabel: value.edgeLabel || 'No Data',
+        bettable: value.bettable || false,
+        expectedValue: value.expectedValue || 0,
+        roi: value.roi || 0,
+        valueGrade: value.valueGrade || 'F',
+      },
+      bankrollEngine: bankroll.stake || {},
     }
   })
 
@@ -267,5 +337,9 @@ export function runApexEngine(runners, race, options = {}) {
     bucket: raceBucket,
     bucketData: bucketDb?.[raceBucket] || null,
     falseFavourite,
+    simulation: simulation.summary,
+    marketModel: marketAnalysis.summary,
+    valueEngine: valueAnalysis.summary,
+    bankrollEngine: bankrollAnalysis.summary,
   }
 }
