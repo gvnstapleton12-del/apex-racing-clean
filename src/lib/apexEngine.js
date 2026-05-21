@@ -8,6 +8,7 @@ import { bayesianProbabilities } from './bayesianEngine.js'
 import { syndicateStake } from './kellyEngine.js'
 import { buildSyndicateFeatures } from './syndicateFeatures.js'
 import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from './raceArchetype.js'
+import { bucketKey, getBucketWeights } from './contextBuckets.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -34,9 +35,17 @@ export function runApexEngine(runners, race, options = {}) {
   const goingDb = options.goingDb || {}
   const distanceDb = options.distanceDb || {}
   const replayDb = options.replayDb || {}
+  const bucketDb = options.bucketDb || {}
 
   const archetype = classifyRaceArchetype(race)
-  const weights = getRaceWeights(archetype.archetype)
+  const archetypeWeights = getRaceWeights(archetype.archetype)
+
+  const raceBucket = bucketKey(race)
+  const bucketWeights = getBucketWeights(bucketDb, raceBucket, archetypeWeights)
+
+  const weights = bucketDb?.[raceBucket]?.predictions >= 20 ? bucketWeights : archetypeWeights
+  const source = bucketDb?.[raceBucket]?.predictions >= 20 ? 'bucket' : 'archetype'
+
   const modifiers = getModifierAdjustments(archetype.modifiers)
 
   const adjustedWeights = {
@@ -162,5 +171,8 @@ export function runApexEngine(runners, race, options = {}) {
     archetype: archetype.archetype,
     archetypeInfo: archetype,
     weights: normalizedWeights,
+    weightSource: source,
+    bucket: raceBucket,
+    bucketData: bucketDb?.[raceBucket] || null,
   }
 }

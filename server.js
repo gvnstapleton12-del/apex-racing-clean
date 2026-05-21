@@ -16,6 +16,7 @@ import {
   analyzeHistoricalPerformance,
   buildLearningRecord,
   learnFromResults,
+  learnFromBuckets,
 } from './src/lib/learningEngine.js'
 
 import { ingestRaceResults } from './src/lib/resultEngine.js'
@@ -49,6 +50,7 @@ const REPLAY_NOTES_PATH = path.join(process.cwd(), 'data', 'replay-notes.json')
 const NON_RUNNER_PATH = path.join(process.cwd(), 'data', 'non-runners.json')
 const GOING_DB_PATH = path.join(process.cwd(), 'data', 'going-database.json')
 const DISTANCE_DB_PATH = path.join(process.cwd(), 'data', 'distance-database.json')
+const BUCKET_DB_PATH = path.join(process.cwd(), 'data', 'context-buckets.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -125,6 +127,7 @@ const ALERT_DATABASE = loadDatabase(ALERT_DB_PATH)
 const PREDICTIONS_DATABASE = loadDatabase(PREDICTIONS_DB_PATH)
 const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
+const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
 
 const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
   ? loadDatabase(LEARNING_DB_PATH)
@@ -360,6 +363,7 @@ async function fetchLiveMeetings() {
         goingDb: GOING_DATABASE,
         distanceDb: DISTANCE_DATABASE,
         replayDb: REPLAY_NOTES_DATABASE,
+        bucketDb: BUCKET_DATABASE,
       })
 
       const scoredRunners = apexResult.racecards.map((runner) => {
@@ -548,6 +552,29 @@ async function fetchTodayResults() {
 
     if (goingUpdated) saveDatabase(GOING_DB_PATH, GOING_DATABASE)
     if (distanceUpdated) saveDatabase(DISTANCE_DB_PATH, DISTANCE_DATABASE)
+
+    const bucketResult = learnFromBuckets(BUCKET_DATABASE, resultRaces.map((race) => {
+      const runners = race.runners || []
+      const predictions = runners.map((runner) => {
+        const pred = findPredictionForRunner(race, runner)
+        return {
+          powerScore: pred?.breakdown?.powerScore || 50,
+          paceScore: pred?.breakdown?.paceScore || 0,
+          humanScore: pred?.breakdown?.humanAdj || 0,
+          marketScore: pred?.breakdown?.marketAdj || 0,
+          trainerRtf: Number(runner.trainer_rtf || 0),
+        }
+      })
+      const results = runners.map((runner) => ({
+        position: Number(runner.position || 0),
+      }))
+      return { race, predictions, results }
+    }))
+
+    if (bucketResult.updated) {
+      saveDatabase(BUCKET_DB_PATH, BUCKET_DATABASE)
+      console.log(`[BUCKETS] Updated ${bucketResult.bucketCount} buckets`)
+    }
 
     if (LEARNING_DATABASE.records.length > existingCount) {
       LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
@@ -884,6 +911,28 @@ app.post('/api/upload-results', (req, res) => {
 
     saveDatabase(GOING_DB_PATH, GOING_DATABASE)
     saveDatabase(DISTANCE_DB_PATH, DISTANCE_DATABASE)
+
+    const bucketResult = learnFromBuckets(BUCKET_DATABASE, races.map((race) => {
+      const runners = race.runners || []
+      const predictions = runners.map((runner) => {
+        const pred = findPredictionForRunner(race, runner)
+        return {
+          powerScore: pred?.breakdown?.powerScore || 50,
+          paceScore: pred?.breakdown?.paceScore || 0,
+          humanScore: pred?.breakdown?.humanAdj || 0,
+          marketScore: pred?.breakdown?.marketAdj || 0,
+          trainerRtf: Number(runner.trainer_rtf || 0),
+        }
+      })
+      const results = runners.map((runner) => ({
+        position: Number(runner.position || 0),
+      }))
+      return { race, predictions, results }
+    }))
+
+    if (bucketResult.updated) {
+      saveDatabase(BUCKET_DB_PATH, BUCKET_DATABASE)
+    }
 
     console.log(`[UPLOAD] Processed ${races.length} races - daily pick dates: [${pickDates.join(', ')}]`)
 

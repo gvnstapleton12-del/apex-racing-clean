@@ -1,3 +1,5 @@
+import { bucketKey, bucketComponents, updateBucketLearning } from './contextBuckets.js'
+
 export function analyzeHistoricalPerformance(records = []) {
   if (!records.length) {
     return {
@@ -316,5 +318,51 @@ export function learnFromResults(records = [], currentWeights = {}) {
     analysis,
     weights: newWeights,
     previousWeights: currentWeights,
+  }
+}
+
+export function learnFromBuckets(bucketDb, racesWithResults) {
+  let updated = false
+
+  racesWithResults.forEach((raceResult) => {
+    const race = raceResult.race
+    const results = raceResult.results || []
+    const predictions = raceResult.predictions || []
+
+    if (!race || results.length === 0 || predictions.length === 0) return
+
+    const key = bucketKey(race)
+    const components = bucketComponents(race)
+
+    const predData = predictions.map((p) => ({
+      powerScore: p.powerScore || p.power?.total || 50,
+      paceScore: p.paceScore || p.pace?.score || 0,
+      humanScore: p.humanScore || p.human?.score || 0,
+      marketAdj: p.marketScore || p.market?.score || 0,
+      trainerRtf: p.trainerRtf || 0,
+    }))
+
+    const resultData = results.map((r) => ({
+      position: Number(r.position || 0),
+    }))
+
+    const before = bucketDb[key]?.predictions || 0
+    updateBucketLearning(bucketDb, key, predData, resultData)
+    const after = bucketDb[key]?.predictions || 0
+
+    if (after > before) updated = true
+  })
+
+  return {
+    updated,
+    bucketCount: Object.keys(bucketDb).length,
+    buckets: Object.entries(bucketDb).map(([key, data]) => ({
+      key,
+      predictions: data.predictions,
+      winners: data.winners,
+      placed: data.placed,
+      weights: data.layerImportance,
+      lastUpdated: data.lastUpdated,
+    })),
   }
 }
