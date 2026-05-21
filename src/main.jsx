@@ -17,6 +17,7 @@ import { openAtTheRacesHorseForm } from './lib/horseLinks'
 import { formatOffTime } from './lib/formatTime'
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
+import CalibrationDashboard from './components/CalibrationDashboard'
 
 const queryClient =
   new QueryClient()
@@ -26,6 +27,7 @@ const tabs = [
   'Racecards',
   'Results',
   'Intelligence',
+  'Calibration',
   'Alerts',
   'Horses',
   'Upload',
@@ -440,6 +442,10 @@ function App() {
 
     if (activeTab === 'Intelligence') {
       return <IntelligenceDashboard />
+    }
+
+    if (activeTab === 'Calibration') {
+      return <CalibrationDashboard />
     }
 
     if (activeTab === 'Replays') {

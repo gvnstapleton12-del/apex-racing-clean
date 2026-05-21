@@ -2292,3 +2292,411 @@ body::after {
     grid-template-columns: 1fr;
   }
 }
+
+.calibration-dashboard {
+  padding: 24px;
+}
+
+.cal-header {
+  margin-bottom: 24px;
+}
+
+.cal-header h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.cal-header-stats {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.cal-stat {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+}
+
+.cal-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.cal-stat-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.cal-reliability-excellent {
+  color: #34d399;
+}
+
+.cal-reliability-good {
+  color: #60a5fa;
+}
+
+.cal-reliability-needscalibration {
+  color: #fbbf24;
+}
+
+.cal-reliability-earlysignals {
+  color: #fbbf24;
+}
+
+.cal-reliability-untested {
+  color: #9ca3af;
+}
+
+.cal-reliability-insufficientdata {
+  color: #9ca3af;
+}
+
+.cal-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.cal-tab {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
+.cal-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cal-tab.active {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+}
+
+.cal-probability-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.cal-bucket {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.cal-bucket-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.cal-bucket-range {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.cal-bucket-count {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cal-bucket-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cal-bar-group {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 70px 1fr 50px;
+}
+
+.cal-bar-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cal-bar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.cal-bar-fill {
+  border-radius: 4px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.cal-bar-predicted {
+  background: #60a5fa;
+}
+
+.cal-bar-actual {
+  background: #34d399;
+}
+
+.cal-bar-actual.over {
+  background: #f87171;
+}
+
+.cal-bar-actual.under {
+  background: #fbbf24;
+}
+
+.cal-bar-value {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.cal-bucket-error {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.cal-error-value {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.cal-error-value.low {
+  color: #34d399;
+}
+
+.cal-error-value.medium {
+  color: #fbbf24;
+}
+
+.cal-error-value.high {
+  color: #f87171;
+}
+
+.cal-error-label {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.cal-grade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cal-grade-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 60px 60px 1fr 80px;
+  padding: 12px 16px;
+}
+
+.cal-grade-name {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.cal-grade-count {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cal-grade-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cal-grade-bar {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 70px 1fr 50px;
+}
+
+.cal-grade-bar-label {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cal-grade-bar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.cal-grade-bar-fill {
+  border-radius: 3px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.cal-grade-bar-fill.predicted {
+  background: #60a5fa;
+}
+
+.cal-grade-bar-fill.actual {
+  background: #34d399;
+}
+
+.cal-grade-bar-fill.over {
+  background: #f87171;
+}
+
+.cal-grade-bar-fill.under {
+  background: #fbbf24;
+}
+
+.cal-grade-bar-value {
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.cal-grade-error {
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.cal-grade-error.low {
+  color: #34d399;
+}
+
+.cal-grade-error.medium {
+  color: #fbbf24;
+}
+
+.cal-grade-error.high {
+  color: #f87171;
+}
+
+.cal-quality-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-quality-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 120px 60px 80px 100px 80px;
+  padding: 12px 16px;
+}
+
+.cal-quality-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.cal-quality-count {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.cal-quality-rate {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cal-quality-roi {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cal-quality-roi.positive {
+  color: #34d399;
+}
+
+.cal-quality-roi.negative {
+  color: #f87171;
+}
+
+.cal-quality-pl {
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.cal-quality-pl.positive {
+  color: #34d399;
+}
+
+.cal-quality-pl.negative {
+  color: #f87171;
+}
+
+.cal-loading {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  font-size: 14px;
+  justify-content: center;
+  min-height: 200px;
+}
+
+.cal-empty {
+  align-items: center;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  min-height: 200px;
+  text-align: center;
+}
+
+.cal-empty h2 {
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cal-empty-state {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 40px 20px;
+  text-align: center;
+}

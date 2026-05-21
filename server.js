@@ -20,6 +20,12 @@ import {
 } from './src/lib/learningEngine.js'
 
 import { ingestRaceResults } from './src/lib/resultEngine.js'
+import {
+  createCalibrationRecord,
+  computeCalibrationBuckets,
+  computeCalibrationByGrade,
+  computeCalibrationByBetQuality,
+} from './src/lib/calibrationEngine.js'
 
 dotenv.config()
 
@@ -51,6 +57,7 @@ const NON_RUNNER_PATH = path.join(process.cwd(), 'data', 'non-runners.json')
 const GOING_DB_PATH = path.join(process.cwd(), 'data', 'going-database.json')
 const DISTANCE_DB_PATH = path.join(process.cwd(), 'data', 'distance-database.json')
 const BUCKET_DB_PATH = path.join(process.cwd(), 'data', 'context-buckets.json')
+const CALIBRATION_DB_PATH = path.join(process.cwd(), 'data', 'calibration.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -140,6 +147,13 @@ const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
       },
     }
 
+const CALIBRATION_DATABASE = loadDatabase(CALIBRATION_DB_PATH)?.records
+  ? loadDatabase(CALIBRATION_DB_PATH)
+  : {
+      records: [],
+      analytics: {},
+    }
+
 // ensure seeded multipliers even if loading existing file with empty weights
 if (!LEARNING_DATABASE.weights?.multiplier?.class) {
   LEARNING_DATABASE.weights = {
@@ -195,11 +209,13 @@ function logPrediction(race, runner, aiProfile) {
     confidence: aiProfile.confidence,
     estimatedWinProbability:
       aiProfile.estimatedWinProbability,
+    predictedWinProb: aiProfile.estimatedWinProbability || 0,
     impliedProbability:
       aiProfile.impliedProbability,
     valueEdge: aiProfile.valueEdge,
     completeness: aiProfile.completeness,
-    grade: aiProfile.grade,
+    grade: aiProfile.grade || '',
+    betQuality: aiProfile.betQuality || '',
     breakdown: aiProfile.breakdown || null,
     timestamp: new Date().toISOString(),
   }
@@ -402,6 +418,9 @@ async function fetchLiveMeetings() {
 
         logPrediction(race, runner, {
           confidence: runner.finalScore,
+          estimatedWinProbability: runner.winProb,
+          grade: runner.selectionQuality?.grade || '',
+          betQuality: runner.selectionQuality?.label || runner.betQuality || '',
           breakdown: {
             powerScore: runner.power?.total,
             paceScore: runner.pace?.score,
@@ -597,7 +616,33 @@ async function fetchTodayResults() {
         }
       }
 
-      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+
+    races.forEach((race) => {
+      const runners = race.runners || []
+
+      runners.forEach((runner) => {
+        const prediction = findPredictionForRunner(race, runner)
+
+        if (prediction) {
+          const calRecord = createCalibrationRecord(prediction, {
+            position: Number(runner.position || 0),
+            spOdds: resolveOdds(runner),
+          })
+
+          CALIBRATION_DATABASE.records.push(calRecord)
+        }
+      })
+    })
+
+    CALIBRATION_DATABASE.analytics = {
+      byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
+      byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
+      byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
+      lastUpdated: new Date().toISOString(),
+    }
+
+    saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
     }
   } catch (error) {
     console.error('Failed to fetch results:', error.message)
@@ -951,6 +996,20 @@ app.post('/api/upload-results', (req, res) => {
       error: 'Failed to process results',
     })
   }
+})
+
+app.get('/api/calibration', (_req, res) => {
+  res.json({
+    records: CALIBRATION_DATABASE.records,
+    analytics: CALIBRATION_DATABASE.analytics,
+  })
+})
+
+app.delete('/api/calibration', (_req, res) => {
+  CALIBRATION_DATABASE.records = []
+  CALIBRATION_DATABASE.analytics = {}
+  saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
+  res.json({ success: true, message: 'Calibration data cleared' })
 })
 
 server.listen(PORT, () => {
