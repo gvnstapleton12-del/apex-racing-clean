@@ -125,6 +125,11 @@ function PickCard({ selection, rank, result, position }) {
             <span>Odds {selection.odds || '-'}</span>
             <span>Form {selection.form || '-'}</span>
             <span>Draw {selection.draw || '-'}</span>
+            {selection.selectionQuality && (
+              <span className={`pick-sel-grade grade-${selection.selectionQuality.grade.replace('+', 'p')}`}>
+                {selection.selectionQuality.grade}
+              </span>
+            )}
           </div>
         </div>
         <div className='pick-card-right'>

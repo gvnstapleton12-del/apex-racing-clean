@@ -15,6 +15,7 @@ import { detectFalseFavourite } from './falseFavourite.js'
 import { detectHiddenImprover } from './hiddenImprover.js'
 import { detectStableIntent } from './stableIntent.js'
 import { calculateUncertainty } from './uncertaintyModel.js'
+import { selectionQuality } from './selectionQuality.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -212,6 +213,14 @@ export function runApexEngine(runners, race, options = {}) {
       probTier: band.tier,
       confidenceScore: r.finalScore,
       betQuality: betQuality(band, probs[i], r.market.score, odds),
+      selectionQuality: selectionQuality(
+        probs[i],
+        odds,
+        r.probBand,
+        r.volatility,
+        r.uncertainty?.uncertainty || 0,
+        r.market.score
+      ),
       kelly: kelly,
       features: r.features,
     }

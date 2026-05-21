@@ -426,6 +426,7 @@ async function fetchLiveMeetings() {
           confidenceLabel: runner.confidenceLabel,
           confidenceScore: runner.confidenceScore,
           betQuality: runner.betQuality,
+          selectionQuality: runner.selectionQuality,
           runningStyle: runner.runningStyle,
         }
       })

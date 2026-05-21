@@ -217,6 +217,11 @@ export default function Racecards() {
                         {runner.betQuality && runner.betQuality !== 'NO BET' && (
                           <span className='bet-quality'>{runner.betQuality}</span>
                         )}
+                        {runner.selectionQuality && runner.selectionQuality.grade && (
+                          <span className={`sel-grade grade-${runner.selectionQuality.grade.replace('+', 'p')}`}>
+                            {runner.selectionQuality.grade}
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -98,6 +98,45 @@ export default function RaceModal({
                     APEX Score
                   </span>
                 </div>
+
+                {runner.selectionQuality && (
+                  <div className='modal-sel-quality'>
+                    <div className='modal-sel-header'>
+                      <span className={`modal-sel-grade grade-${runner.selectionQuality.grade.replace('+', 'p')}`}>
+                        {runner.selectionQuality.grade}
+                      </span>
+                      <span className={`modal-sel-rec rec-${runner.selectionQuality.recommendation.toLowerCase().replace(/[^a-z]/g, '')}`}>
+                        {runner.selectionQuality.recommendation}
+                      </span>
+                    </div>
+                    <div className='modal-sel-stats'>
+                      <div className='modal-sel-stat'>
+                        <span className='modal-sel-stat-label'>Win%</span>
+                        <span className='modal-sel-stat-value'>{runner.winProb}%</span>
+                      </div>
+                      <div className='modal-sel-stat'>
+                        <span className='modal-sel-stat-label'>Fair</span>
+                        <span className='modal-sel-stat-value'>{runner.selectionQuality.fairOdds}</span>
+                      </div>
+                      <div className='modal-sel-stat'>
+                        <span className='modal-sel-stat-label'>Market</span>
+                        <span className='modal-sel-stat-value'>{runner.selectionQuality.marketOdds}</span>
+                      </div>
+                      <div className='modal-sel-stat'>
+                        <span className='modal-sel-stat-label'>Edge</span>
+                        <span className={`modal-sel-stat-value ${runner.selectionQuality.edge > 0 ? 'positive' : 'negative'}`}>
+                          {(runner.selectionQuality.edge * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className='modal-sel-stat'>
+                        <span className='modal-sel-stat-label'>Value</span>
+                        <span className={`modal-sel-stat-value ${runner.selectionQuality.value > 0 ? 'positive' : 'negative'}`}>
+                          {runner.selectionQuality.value > 0 ? '+' : ''}{runner.selectionQuality.value}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )
           )}
