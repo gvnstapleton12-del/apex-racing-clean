@@ -12,6 +12,7 @@ import { bucketKey, getBucketWeights } from './contextBuckets.js'
 import { estimateEnergyDistribution } from './energyModel.js'
 import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
 import { detectFalseFavourite } from './falseFavourite.js'
+import { detectHiddenImprover } from './hiddenImprover.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -99,6 +100,12 @@ export function runApexEngine(runners, race, options = {}) {
     const tags = classifyHorseTags(runner, race)
     const paceCompat = evaluatePaceCompatibility(tags, paceMap, parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0)
 
+    const improver = detectHiddenImprover(runner, race, {
+      goingDb,
+      distanceDb,
+      replayDb,
+    })
+
     const humanAdj = humanIntelligenceLayer(replayNote)
 
     const marketAdj = marketIntelligence(runner, powerScore, { odds: runner.odds })
@@ -113,6 +120,7 @@ export function runApexEngine(runners, race, options = {}) {
       energy,
       tags,
       paceCompat,
+      improver,
     })
 
     const paceNorm = ((paceScore + 15) / 30) * 100
@@ -148,6 +156,7 @@ export function runApexEngine(runners, race, options = {}) {
       energy,
       tags,
       paceCompat,
+      improver,
       human: {
         score: humanAdj,
         tags: replayNote.tags || [],

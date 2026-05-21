@@ -155,6 +155,15 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
     }
   }
 
+  if (options.improver) {
+    features.improver = {
+      score: options.improver.score,
+      label: options.improver.label,
+      flags: options.improver.flags,
+      factors: options.improver.factors,
+    }
+  }
+
   features.market = {
     odds: odds,
     impliedProb: odds > 1 ? Math.round((1 / odds) * 1000) / 10 : 0,
