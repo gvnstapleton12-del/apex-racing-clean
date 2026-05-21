@@ -112,29 +112,29 @@ function PickCard({ selection, rank, result, position }) {
   if (!selection) return null
   const label = resultLabel(result, position)
   return (
-    <article className={`pick-card rank-${rank}${label ? ' has-result' : ''}`}>
+    <article className={`pick-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
       <div className='pick-card-glow' />
       {label && (
-        <div className={`pick-card-result-badge ${label.cls}`}>
+        <div className={`pick-card-result-badge absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold ${label.cls === 'won' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : label.cls === 'placed' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : label.cls === 'nr' ? 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
           {label.text}
         </div>
       )}
-      <div className='pick-card-body'>
-        <div className='pick-card-left'>
-          <div className='pick-card-rank-grade'>
-            <span className='pick-card-rank'>#{rank}</span>
+      <div className='pick-card-body flex justify-between items-start gap-6'>
+        <div className='pick-card-left flex-1 min-w-0'>
+          <div className='pick-card-rank-grade flex items-center gap-2 mb-3'>
+            <span className='pick-card-rank text-zinc-500 text-sm font-bold'>#{rank}</span>
             {selection.confidenceTier && (
-              <span className={`pick-card-tier-badge tier-${selection.confidenceTier.toLowerCase()}`}>
+              <span className={`pick-card-tier-badge px-2 py-1 rounded-md text-xs font-medium ${selection.confidenceTier === 'S' || selection.confidenceTier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
                 T{selection.confidenceTier}
               </span>
             )}
-            <span className={`pick-card-grade grade-${gradeClass(selection.probBand)}`}>{selection.probBand}</span>
-            {selection.probRange && <span className='pick-card-prob-range'>{selection.probRange}</span>}
-            <span className='pick-card-time'>{selection.offTime}</span>
+            <span className={`pick-card-grade px-2 py-1 rounded-md text-xs font-medium ${gradeClass(selection.probBand) === 'a-plus' || gradeClass(selection.probBand) === 'a' ? 'bg-green-500/10 text-green-400' : gradeClass(selection.probBand) === 'b' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>{selection.probBand}</span>
+            {selection.probRange && <span className='pick-card-prob-range text-zinc-500 text-xs'>{selection.probRange}</span>}
+            <span className='pick-card-time text-zinc-500 text-xs'>{selection.offTime}</span>
           </div>
           <button
             type='button'
-            className='pick-card-horse'
+            className='pick-card-horse text-xl font-bold text-left hover:text-amber-300 transition truncate block w-full'
             onClick={() => {
               openAtTheRacesHorseForm(selection, selection.race)
               window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
@@ -142,36 +142,40 @@ function PickCard({ selection, rank, result, position }) {
           >
             {selection.horse}
           </button>
-          <p className='pick-card-meta'>
-            <span className='pick-card-course'>{selection.course}</span>
-            <span className='pick-card-sep'>&middot;</span>
-            <span>{selection.raceName}</span>
+          <p className='pick-card-meta text-zinc-400 text-sm mt-2'>
+            <span className='pick-card-course font-medium'>{selection.course}</span>
+            <span className='pick-card-sep mx-2'>&middot;</span>
+            <span className='truncate'>{selection.raceName}</span>
           </p>
-          <div className='pick-card-tags'>
-            <span>Form {selection.form || '-'}</span>
-            <span>Draw {selection.draw || '-'}</span>
+          <div className='pick-card-tags flex gap-2 mt-4 flex-wrap'>
+            {selection.form && (
+              <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Form {selection.form}</span>
+            )}
+            {selection.draw && (
+              <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Draw {selection.draw}</span>
+            )}
             {selection.valueEdge && selection.valueEdge > 0 ? (
-              <span className='pick-value-edge'>+{selection.valueEdge}% edge</span>
+              <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-medium'>+{selection.valueEdge}% edge</span>
             ) : selection.valueEdge < 0 ? (
-              <span className='pick-value-edge text-red-400'>{selection.valueEdge}% edge</span>
+              <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{selection.valueEdge}% edge</span>
             ) : null}
             {selection.selectionQuality && (
-              <span className={`pick-sel-grade grade-${selection.selectionQuality.grade.replace('+', 'p')}`}>
+              <span className={`pick-sel-grade px-2 py-1 rounded-lg text-xs font-medium ${selection.selectionQuality.grade === 'A+' || selection.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
                 {selection.selectionQuality.grade}
               </span>
             )}
           </div>
         </div>
-        <div className='pick-card-right'>
-          <div className={`pick-card-score-ring rank-${rank}`}>
-            <span className='pick-card-score-label'>APEX</span>
-            <strong className='pick-card-score'>{selection.score}</strong>
-            <div className='pick-card-probs'>
+        <div className='pick-card-right flex-shrink-0'>
+          <div className={`pick-card-score-ring w-28 h-28 rounded-2xl bg-green-500/10 border border-green-500/20 flex flex-col items-center justify-center`}>
+            <span className='pick-card-score-label text-zinc-500 text-xs font-medium uppercase tracking-wider'>APEX</span>
+            <strong className='pick-card-score text-4xl font-black text-green-400'>{selection.score}</strong>
+            <div className='pick-card-probs flex gap-2 mt-1'>
               {selection.winProb && (
-                <span className='pick-card-winprob'>W:{selection.winProb}%</span>
+                <span className='pick-card-winprob px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{selection.winProb}%</span>
               )}
               {selection.placeProb && (
-                <span className='pick-card-placeprob'>P:{selection.placeProb}%</span>
+                <span className='pick-card-placeprob px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{selection.placeProb}%</span>
               )}
             </div>
           </div>
@@ -277,38 +281,37 @@ function Home() {
   }, [picksKey, today])
 
   return (
-    <div className='dashboard-page'>
+    <div className='dashboard-page max-w-7xl mx-auto'>
       <section className='dashboard-hero'>
         <div className='hero-copy'>
-          <span className='eyebrow'>UK &amp; Ireland selections</span>
-          <h1>Today&apos;s best picks</h1>
-          <p>
-            The top-rated runners from today&apos;s UK and Ireland
-            racecards, ranked by APEX confidence score.
+          <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>UK &amp; Ireland selections</span>
+          <h1 className='text-5xl font-black tracking-tight'>Today&apos;s best picks</h1>
+          <p className='text-zinc-400 text-lg mt-3'>
+            The top-rated runners from today&apos;s UK and Ireland racecards, ranked by APEX confidence score.
           </p>
         </div>
 
-        <div className='hero-metrics'>
-          <div>
-            <span>UK/IRE races</span>
-            <strong>{ukIreRaces.length}</strong>
+        <div className='hero-metrics grid grid-cols-2 sm:grid-cols-5 gap-4'>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+            <span className='text-zinc-400 text-sm block'>UK/IRE races</span>
+            <strong className='text-2xl font-bold text-amber-400'>{ukIreRaces.length}</strong>
           </div>
-          <div>
-            <span>Total runners</span>
-            <strong>{totalRunners}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+            <span className='text-zinc-400 text-sm block'>Total runners</span>
+            <strong className='text-2xl font-bold text-amber-400'>{totalRunners}</strong>
           </div>
-          <div>
-            <span>Top score</span>
-            <strong>{topScore || '--'}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+            <span className='text-zinc-400 text-sm block'>Top score</span>
+            <strong className='text-2xl font-bold text-amber-400'>{topScore || '--'}</strong>
           </div>
-          <div>
-            <span>System picks</span>
-            <strong>{picks.length}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+            <span className='text-zinc-400 text-sm block'>System picks</span>
+            <strong className='text-2xl font-bold text-amber-400'>{picks.length}</strong>
           </div>
           {overallRate && (
-            <div>
-              <span>Historical SR</span>
-              <strong className={overallRate >= 30 ? 'rate-good' : overallRate >= 20 ? 'rate-ok' : 'rate-bad'}>
+            <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+              <span className='text-zinc-400 text-sm block'>Historical SR</span>
+              <strong className={`text-2xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
                 {overallRate}%
               </strong>
             </div>
@@ -317,27 +320,39 @@ function Home() {
       </section>
 
       {isLoading ? (
-        <div className='loading-card'>
+        <div className='loading-card bg-white/[0.02] rounded-2xl border border-white/5 p-12 flex items-center gap-4'>
           <div className='pulse-dot' />
-          <span>Finding the strongest system picks...</span>
+          <span className='text-zinc-400'>Finding the strongest system picks...</span>
         </div>
       ) : picks.length === 0 ? (
-        <section className='empty-state'>
-          <h2>No top picks yet</h2>
-          <p>The model hasn&apos;t found any rated runners yet. Racecards may still be loading.</p>
+        <section className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
+          <h2 className='text-2xl font-bold'>No top picks yet</h2>
+          <p className='text-zinc-400 mt-2'>The model hasn&apos;t found any rated runners yet. Racecards may still be loading.</p>
         </section>
       ) : (
-        <section className='home-picks-section'>
+        <section className='home-picks-section space-y-6'>
           {todayStats && todayStats.won + todayStats.placed + todayStats.lost + todayStats.nr > 0 && (
-            <div className={`home-picks-stats-bar ${todayStats.won > 0 ? 'has-wins' : 'no-wins'}`}>
-              <span>Today's results: <strong className='stat-won'>{todayStats.won}W</strong> &middot; <strong className='stat-placed'>{todayStats.placed}P</strong> &middot; <strong className='stat-lost'>{todayStats.lost}L</strong>{todayStats.nr > 0 && <> &middot; <strong className='stat-nr'>{todayStats.nr}NR</strong></>} &middot; <strong className='stat-pend'>{todayStats.pending}PEND</strong>
-                {todayStats.won + todayStats.placed + todayStats.lost > 0 && (
-                  <> &middot; SR <strong>{(todayStats.won / (todayStats.won + todayStats.placed + todayStats.lost) * 100).toFixed(0)}%</strong></>
-                )}
-              </span>
+            <div className={`home-picks-stats-bar flex items-center gap-4 p-4 rounded-xl border ${todayStats.won > 0 ? 'bg-green-500/5 border-green-500/20' : 'bg-white/[0.02] border-white/5'}`}>
+              <span className='text-zinc-400 text-sm'>Today&apos;s results:</span>
+              <strong className='stat-won text-green-400 font-bold'>{todayStats.won}W</strong>
+              <span className='text-zinc-600'>&middot;</span>
+              <strong className='stat-placed text-amber-400 font-bold'>{todayStats.placed}P</strong>
+              <span className='text-zinc-600'>&middot;</span>
+              <strong className='stat-lost text-red-400 font-bold'>{todayStats.lost}L</strong>
+              {todayStats.nr > 0 && (<>
+                <span className='text-zinc-600'>&middot;</span>
+                <strong className='stat-nr text-zinc-400 font-bold'>{todayStats.nr}NR</strong>
+              </>)}
+              <span className='text-zinc-600'>&middot;</span>
+              <strong className='stat-pend text-zinc-500 font-bold'>{todayStats.pending}PEND</strong>
+              {todayStats.won + todayStats.placed + todayStats.lost > 0 && (<>
+                <span className='text-zinc-600'>&middot;</span>
+                <span className='text-zinc-400 text-sm'>SR</span>
+                <strong className='text-amber-400 font-bold'>{(todayStats.won / (todayStats.won + todayStats.placed + todayStats.lost) * 100).toFixed(0)}%</strong>
+              </>)}
             </div>
           )}
-          <div className='home-picks-grid'>
+          <div className='home-picks-grid grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {picks.map((s, i) => {
               const saved = todayResults.find(
                 (r) => r.horse === s.horse && r.course === s.course
@@ -357,36 +372,36 @@ function Home() {
       )}
 
       {pastDays.length > 0 && (
-        <section className='home-track-section'>
+        <section className='home-track-section space-y-4'>
           <div className='home-picks-header'>
-            <span className='eyebrow'>History</span>
-            <h2>Track record</h2>
+            <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>History</span>
+            <h2 className='text-3xl font-black tracking-tight'>Track record</h2>
           </div>
-          <div className='home-track-grid'>
+          <div className='home-track-grid space-y-3'>
             {pastDays.map(([date, day]) => {
               const s = day.stats || { won: 0, placed: 0, lost: 0, nr: 0, pending: 0 }
               const total = s.won + s.placed + s.lost
               const rate = total > 0 ? ((s.won / total) * 100).toFixed(0) : '--'
               return (
-                <details key={date} className='home-track-day'>
-                  <summary className='home-track-summary'>
-                    <span className='home-track-date'>{date}</span>
-                    <span className='home-track-stats'>
-                      <span className='home-track-won'>{s.won}W</span>
-                      <span className='home-track-placed'>{s.placed}P</span>
-                      <span className='home-track-lost'>{s.lost}L</span>
-                      {s.nr > 0 && <span className='home-track-nr'>{s.nr}NR</span>}
-                      {s.pending > 0 && <span className='home-track-pend'>{s.pending}PEND</span>}
-                      <span className='home-track-rate'>{rate !== '--' ? `${rate}%` : '--'}</span>
+                <details key={date} className='home-track-day bg-white/[0.02] rounded-xl border border-white/5'>
+                  <summary className='home-track-summary flex justify-between items-center p-4 cursor-pointer hover:bg-white/[0.02] transition'>
+                    <span className='home-track-date font-bold text-white'>{date}</span>
+                    <span className='home-track-stats flex items-center gap-3'>
+                      <span className='home-track-won text-green-400 font-bold text-sm'>{s.won}W</span>
+                      <span className='home-track-placed text-amber-400 font-bold text-sm'>{s.placed}P</span>
+                      <span className='home-track-lost text-red-400 font-bold text-sm'>{s.lost}L</span>
+                      {s.nr > 0 && <span className='home-track-nr text-zinc-400 font-bold text-sm'>{s.nr}NR</span>}
+                      {s.pending > 0 && <span className='home-track-pend text-zinc-500 font-bold text-sm'>{s.pending}PEND</span>}
+                      <span className='home-track-rate text-amber-400 font-bold text-sm'>{rate !== '--' ? `${rate}%` : '--'}</span>
                     </span>
                   </summary>
-                  <div className='home-track-detail'>
+                  <div className='home-track-detail p-4 pt-0 space-y-2'>
                     {day.picks.map((p, i) => (
-                      <div key={i} className={`home-track-row ${p.result || ''}`}>
-                        <span className='home-track-row-name'>{p.horse}</span>
-                        <span className='home-track-row-course'>{p.course}</span>
-                        <span className='home-track-row-score'>{p.score}</span>
-                        <span className={`home-track-row-result ${p.result || 'pending'}`}>
+                      <div key={i} className={`home-track-row flex justify-between items-center p-3 rounded-lg ${p.result === 'won' ? 'bg-green-500/5' : p.result === 'placed' ? 'bg-amber-500/5' : p.result === 'lost' ? 'bg-red-500/5' : 'bg-white/[0.01]'}`}>
+                        <span className='home-track-row-name font-bold'>{p.horse}</span>
+                        <span className='home-track-row-course text-zinc-400 text-sm'>{p.course}</span>
+                        <span className='home-track-row-score text-amber-400 font-bold'>{p.score}</span>
+                        <span className={`home-track-row-result px-2 py-1 rounded-md text-xs font-bold ${p.result === 'won' ? 'bg-green-500/20 text-green-400' : p.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : p.result === 'nr' ? 'bg-zinc-500/20 text-zinc-400' : p.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-zinc-500'}`}>
                           {p.result === 'won' ? 'WON' : p.result === 'placed' ? 'P' : p.result === 'nr' ? 'NR' : p.result === 'lost' ? 'LOST' : 'PEND'}
                         </span>
                       </div>
@@ -422,6 +437,7 @@ function App() {
   const [uploadedResults, setUploadedResults] =
     useState([])
   const [selectedHorse, setSelectedHorse] = useState(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handler = (e) => {
@@ -505,9 +521,30 @@ function App() {
   }
 
   return (
-    <div className='layout'>
-      <aside className='sidebar'>
+    <div className='layout bg-gradient-to-br from-[#071018] to-[#0b1220]'>
+      <aside className='sidebar bg-[#0a1118] border-r border-white/5'>
         <div className='brand'>
+          <button
+            type='button'
+            className='mobile-menu-btn w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition'
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+              {mobileMenuOpen ? (
+                <>
+                  <line x1='18' y1='6' x2='6' y2='18' />
+                  <line x1='6' y1='6' x2='18' y2='18' />
+                </>
+              ) : (
+                <>
+                  <line x1='3' y1='6' x2='21' y2='6' />
+                  <line x1='3' y1='12' x2='21' y2='12' />
+                  <line x1='3' y1='18' x2='21' y2='18' />
+                </>
+              )}
+            </svg>
+          </button>
+
           <div className='brand-mark'>A</div>
 
           <div>
@@ -516,24 +553,26 @@ function App() {
           </div>
         </div>
 
-        <nav>
+        <nav className={`space-y-1 ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
           {tabs.map((tab) => (
             <button
               key={tab}
               type='button'
-              className={
-                activeTab === tab ? 'active' : ''
-              }
-              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                activeTab === tab
+                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                  : 'text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent'
+              }`}
+              onClick={() => { setActiveTab(tab); setMobileMenuOpen(false); }}
             >
               {tab}
             </button>
           ))}
         </nav>
 
-        <div className='sidebar-panel'>
-          <span>Live Mode</span>
-          <strong>Market scan active</strong>
+        <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5'>
+          <span className='text-zinc-500 text-xs uppercase tracking-wider'>Live Mode</span>
+          <strong className='text-green-400 text-sm'>Market scan active</strong>
         </div>
       </aside>
 

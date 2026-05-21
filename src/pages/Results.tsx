@@ -98,28 +98,34 @@ export function ResultsList({ results }: ResultsListProps) {
   })
 
   return (
-    <div className='dashboard-page'>
+    <div className='dashboard-page max-w-7xl mx-auto'>
       <section className='dashboard-hero'>
         <div className='hero-copy'>
           <span className='eyebrow'>Results</span>
-          <h1>Race results</h1>
-          <p>
+          <h1 className='text-5xl font-black tracking-tight'>Race results</h1>
+          <p className='text-zinc-400 text-lg'>
             Completed UK &amp; Ireland races with positions from ATR and API.
           </p>
         </div>
-        <div className='hero-metrics'>
-          <div><span>Today</span><strong>{todayRaces.length}</strong></div>
-          <div><span>Previous days</span><strong>{previousRaces.length}</strong></div>
+        <div className='hero-metrics grid grid-cols-2 gap-4'>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+            <span className='text-zinc-400 text-sm'>Today</span>
+            <strong className='text-3xl font-bold text-amber-400'>{todayRaces.length}</strong>
+          </div>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+            <span className='text-zinc-400 text-sm'>Previous days</span>
+            <strong className='text-3xl font-bold text-amber-400'>{previousRaces.length}</strong>
+          </div>
         </div>
       </section>
 
-      <div className='flex gap-2 mb-6'>
+      <div className='flex gap-2 mb-8'>
         <button
           type='button'
-          className={`text-sm px-4 py-2 rounded-lg border transition ${
+          className={`text-sm px-5 py-2.5 rounded-xl border transition-all duration-200 font-medium ${
             tab === 'today'
-              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-              : 'border-white/10 text-muted-foreground hover:text-white'
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300 shadow-lg shadow-amber-500/5'
+              : 'border-white/10 text-zinc-400 hover:text-white hover:border-white/20'
           }`}
           onClick={() => setTab('today')}
         >
@@ -127,10 +133,10 @@ export function ResultsList({ results }: ResultsListProps) {
         </button>
         <button
           type='button'
-          className={`text-sm px-4 py-2 rounded-lg border transition ${
+          className={`text-sm px-5 py-2.5 rounded-xl border transition-all duration-200 font-medium ${
             tab === 'previous'
-              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300'
-              : 'border-white/10 text-muted-foreground hover:text-white'
+              ? 'bg-amber-500/10 border-amber-500/30 text-amber-300 shadow-lg shadow-amber-500/5'
+              : 'border-white/10 text-zinc-400 hover:text-white hover:border-white/20'
           }`}
           onClick={() => setTab('previous')}
         >
@@ -140,12 +146,12 @@ export function ResultsList({ results }: ResultsListProps) {
 
       {tab === 'today' && (
         todayRaces.length === 0 ? (
-          <section className='empty-state'>
-            <h2>No results yet today</h2>
-            <p>Completed UK/IRE races will appear here as results are scraped from ATR.</p>
+          <section className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
+            <h2 className='text-2xl font-bold'>No results yet today</h2>
+            <p className='text-zinc-400 mt-2'>Completed UK/IRE races will appear here as results are scraped from ATR.</p>
           </section>
         ) : (
-          <section className='race-grid'>
+          <section className='race-grid space-y-6'>
             {todayRaces.map((race: any, raceIndex: number) => (
               <RaceResultCard key={race.race_id || `today-${raceIndex}`} race={race} />
             ))}
@@ -155,12 +161,12 @@ export function ResultsList({ results }: ResultsListProps) {
 
       {tab === 'previous' && (
         previousRaces.length === 0 ? (
-          <section className='empty-state'>
-            <h2>No previous results</h2>
-            <p>Uploaded results from previous days will appear here.</p>
+          <section className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
+            <h2 className='text-2xl font-bold'>No previous results</h2>
+            <p className='text-zinc-400 mt-2'>Uploaded results from previous days will appear here.</p>
           </section>
         ) : (
-          <section className='race-grid'>
+          <section className='race-grid space-y-6'>
             {previousRaces.map((race: any, raceIndex: number) => (
               <RaceResultCard key={race.race_id || `prev-${raceIndex}`} race={race} />
             ))}
@@ -181,56 +187,67 @@ function RaceResultCard({ race }: { race: any }) {
   }) : (race.runners || [])
 
   return (
-    <article className='race-card'>
-      <div className='race-card-header'>
-        <div>
-          <div className='race-meta-row'>
-            <span className={`live-badge ${hasResults ? '' : 'bg-muted-foreground/20'}`}>{hasResults ? 'RESULT' : 'PENDING'}</span>
-            <span>{hasResults ? `${runners.length}/${race.runners?.length || 0} runners` : `${race.runners?.length || 0} runners`}</span>
-            <span className='text-muted-foreground ml-2 text-xs'>{race.region || ''}</span>
+    <article className='race-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300'>
+      <div className='race-card-header flex justify-between items-start mb-4'>
+        <div className='space-y-2'>
+          <div className='race-meta-row flex items-center gap-3'>
+            <span className={`live-badge px-3 py-1 rounded-lg text-xs font-bold ${hasResults ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'}`}>
+              {hasResults ? 'RESULT' : 'PENDING'}
+            </span>
+            <span className='text-zinc-400 text-sm'>{hasResults ? `${runners.length}/${race.runners?.length || 0} runners` : `${race.runners?.length || 0} runners`}</span>
+            <span className='px-2 py-1 bg-white/5 rounded-md text-xs text-zinc-500 font-medium'>{race.region || ''}</span>
           </div>
-          <h2>{race.race_name}</h2>
-          <p>{race.course} &middot; {formatOffTime(race)}</p>
+          <h2 className='text-xl font-bold text-white'>{race.race_name}</h2>
+          <p className='text-zinc-400 text-sm'>{race.course} &middot; {formatOffTime(race)}</p>
         </div>
       </div>
       {hasResults ? (
-        <div className='runner-list'>
+        <div className='runner-list space-y-3'>
           {sorted.map((runner: any, runnerIndex: number) => {
             const pos = runner.position || runner.pos
+            const isWinner = pos === 1
+            const isPlaced = pos >= 2 && pos <= 4
             return (
-              <div key={runner.horse_id || runnerIndex} className='runner-row'>
-                <div>
-                  <strong className={`result-position ${pos === 1 ? 'text-amber-400' : ''}`}>{pos}</strong>
-                  <span className='result-horse-name'>
-                    <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse || runner.name, race)}>
-                      {runner.horse || runner.name || '-'}
-                    </button>
-                  </span>
-                  <p>{runner.jockey || '-'}</p>
+              <div key={runner.horse_id || runnerIndex} className={`runner-row flex justify-between items-center p-4 rounded-xl border transition-all duration-200 ${isWinner ? 'bg-amber-500/5 border-amber-500/20' : isPlaced ? 'bg-white/[0.02] border-white/5' : 'bg-white/[0.01] border-white/5'} hover:border-white/10`}>
+                <div className='flex items-center gap-4'>
+                  <strong className={`result-position w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isWinner ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : isPlaced ? 'bg-white/5 text-zinc-300 border border-white/10' : 'bg-white/5 text-zinc-500 border border-white/5'}`}>
+                    {pos}
+                  </strong>
+                  <div>
+                    <span className='result-horse-name'>
+                      <button type='button' className='hover:text-amber-300 transition text-left font-bold text-lg' onClick={() => selectHorse(runner.horse || runner.name, race)}>
+                        {runner.horse || runner.name || '-'}
+                      </button>
+                    </span>
+                    <p className='text-zinc-500 text-sm mt-0.5'>{runner.jockey || '-'}</p>
+                  </div>
                 </div>
-                <div className='runner-score'>
-                  <strong>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
-                  <span>SP</span>
+                <div className='runner-score text-right'>
+                  <strong className='text-lg'>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
+                  <span className='text-zinc-500 text-xs block'>SP</span>
                 </div>
               </div>
             )
           })}
         </div>
       ) : (
-        <div className='runner-list'>
+        <div className='runner-list space-y-3'>
           {(race.runners || []).map((runner: any, runnerIndex: number) => (
-            <div key={runner.horse_id || runnerIndex} className='runner-row opacity-50'>
-              <div>
-                <span className='result-horse-name'>
-                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse || runner.name, race)}>
-                    {runner.horse || runner.name || '-'}
-                  </button>
-                </span>
-                <p>{runner.jockey || '-'}</p>
+            <div key={runner.horse_id || runnerIndex} className='runner-row flex justify-between items-center p-4 rounded-xl border border-white/5 bg-white/[0.01] opacity-50'>
+              <div className='flex items-center gap-4'>
+                <div className='w-10 h-10 rounded-xl bg-white/5 border border-white/5' />
+                <div>
+                  <span className='result-horse-name'>
+                    <button type='button' className='hover:text-amber-300 transition text-left font-bold text-lg' onClick={() => selectHorse(runner.horse || runner.name, race)}>
+                      {runner.horse || runner.name || '-'}
+                    </button>
+                  </span>
+                  <p className='text-zinc-500 text-sm mt-0.5'>{runner.jockey || '-'}</p>
+                </div>
               </div>
-              <div className='runner-score'>
-                <strong>{runner.odds || '-'}</strong>
-                <span>Odds</span>
+              <div className='runner-score text-right'>
+                <strong className='text-lg'>{runner.odds || '-'}</strong>
+                <span className='text-zinc-500 text-xs block'>Odds</span>
               </div>
             </div>
           ))}
@@ -275,21 +292,21 @@ export default function UploadResults(props: UploadResultsProps) {
   }
 
   return (
-    <div className='dashboard-page'>
-      <section className='empty-state upload-panel'>
-        <span>Upload</span>
-        <h2>Upload official results</h2>
-        <p>Choose your Racing API results JSON file.</p>
+    <div className='dashboard-page max-w-7xl mx-auto'>
+      <section className='empty-state upload-panel bg-[#0f1720] border border-green-500/10 rounded-2xl p-12 text-center'>
+        <span className='text-zinc-500 text-sm font-medium uppercase tracking-wider'>Upload</span>
+        <h2 className='text-3xl font-black tracking-tight mt-2'>Upload official results</h2>
+        <p className='text-zinc-400 mt-3 mb-8'>Choose your Racing API results JSON file.</p>
         <button
           type='button'
           disabled={loading}
           onClick={() => fileInputRef.current?.click()}
-          className='primary-button upload-button'
+          className='primary-button upload-button bg-amber-500/10 border border-amber-500/30 text-amber-300 px-8 py-3 rounded-xl font-bold hover:bg-amber-500/20 transition-all duration-200'
         >
           {loading ? 'Processing...' : 'Choose Results JSON'}
         </button>
         <input ref={fileInputRef} type='file' accept='.json,application/json' style={{ display: 'none' }} onChange={handleUpload} />
-        {message && <div className='upload-message'>{message}</div>}
+        {message && <div className='upload-message mt-6 text-zinc-300 text-sm'>{message}</div>}
       </section>
     </div>
   )
