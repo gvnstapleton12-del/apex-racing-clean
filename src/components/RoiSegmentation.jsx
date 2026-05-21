@@ -76,6 +76,7 @@ export default function RoiSegmentation() {
     { key: 'going', label: 'By Going' },
     { key: 'oddsRange', label: 'By Odds Range' },
     { key: 'trainer', label: 'By Trainer' },
+    { key: 'interaction', label: 'By Interaction' },
   ]
 
   const courseCols = [
@@ -132,6 +133,15 @@ export default function RoiSegmentation() {
     { key: 'profitLoss', label: 'P/L', format: (v) => `${v >= 0 ? '+' : ''}${v}` },
   ]
 
+  const interactionCols = [
+    { key: 'interaction', label: 'Interaction' },
+    { key: 'runners', label: 'Runs' },
+    { key: 'wins', label: 'Wins' },
+    { key: 'strikeRate', label: 'SR%', format: (v) => `${v}%` },
+    { key: 'roi', label: 'ROI%', format: (v) => `${v >= 0 ? '+' : ''}${v}%` },
+    { key: 'profitLoss', label: 'P/L', format: (v) => `${v >= 0 ? '+' : ''}${v}` },
+  ]
+
   const dataMap = {
     course: { data: segments.byCourse?.courses || [], cols: courseCols, empty: 'No course data yet.' },
     raceType: { data: segments.byRaceType?.raceTypes || [], cols: raceTypeCols, empty: 'No race type data yet.' },
@@ -139,6 +149,7 @@ export default function RoiSegmentation() {
     going: { data: segments.byGoing?.goings || [], cols: goingCols, empty: 'No going data yet.' },
     oddsRange: { data: segments.byOddsRange?.oddsRanges || [], cols: oddsRangeCols, empty: 'No odds range data yet.' },
     trainer: { data: segments.byTrainer?.trainers || [], cols: trainerCols, empty: 'No trainer data yet (min 3 runs).' },
+    interaction: { data: segments.byInteraction?.interactions || [], cols: interactionCols, empty: 'No interaction data yet.' },
   }
 
   const current = dataMap[activeTab]

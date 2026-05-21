@@ -17,6 +17,7 @@ import { detectStableIntent } from './stableIntent.js'
 import { calculateUncertainty } from './uncertaintyModel.js'
 import { selectionQuality } from './selectionQuality.js'
 import { placeTraits, bayesianPlaceProbabilities, bayesianWinProbabilities } from './placeModel.js'
+import { computeInteractions, applyInteractionAdjustments } from './interactionEngine.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -199,7 +200,17 @@ export function runApexEngine(runners, race, options = {}) {
     }
   })
 
-  const sorted = results.sort((a, b) => b.finalScore - a.finalScore)
+  const interactionResults = results.map((r) => {
+    const interactions = computeInteractions(r, race, paceMap)
+    const adjustedScore = applyInteractionAdjustments(r.finalScore, interactions.interactions)
+    return {
+      ...r,
+      finalScore: adjustedScore,
+      interactions,
+    }
+  })
+
+  const sorted = interactionResults.sort((a, b) => b.finalScore - a.finalScore)
   const winProbs = bayesianWinProbabilities(sorted)
   const placeProbs = bayesianPlaceProbabilities(sorted)
 
@@ -228,6 +239,7 @@ export function runApexEngine(runners, race, options = {}) {
       placeTraits: traits,
       kelly: kelly,
       features: r.features,
+      interactions: r.interactions,
     }
   })
 

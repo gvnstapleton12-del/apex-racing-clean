@@ -18,6 +18,8 @@ export function createCalibrationRecord(prediction, result) {
     actualWon: result.position === 1,
     actualPlaced: result.position >= 2 && result.position <= 3,
     actualOdds: result.spOdds || result.odds || 0,
+    interactionAdjustment: prediction.interactions?.totalAdjustment || 0,
+    interactionCount: prediction.interactions?.interactions?.length || 0,
     timestamp: new Date().toISOString(),
   }
 }

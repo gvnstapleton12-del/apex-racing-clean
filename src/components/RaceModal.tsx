@@ -187,6 +187,27 @@ export default function RaceModal({
                     </div>
                   </div>
                 )}
+
+                {runner.interactions && runner.interactions.interactions && runner.interactions.interactions.length > 0 && (
+                  <div className='modal-interactions'>
+                    <div className='modal-interactions-header'>
+                      <span className='modal-interactions-title'>Feature Interactions</span>
+                      <span className={`modal-interactions-total ${runner.interactions.totalAdjustment >= 0 ? 'positive' : 'negative'}`}>
+                        {runner.interactions.totalAdjustment >= 0 ? '+' : ''}{runner.interactions.totalAdjustment}
+                      </span>
+                    </div>
+                    <div className='modal-interactions-list'>
+                      {runner.interactions.interactions.map((interaction, idx) => (
+                        <div key={idx} className={`modal-interaction-row ${interaction.direction}`}>
+                          <span className='modal-interaction-label'>{interaction.label}</span>
+                          <span className='modal-interaction-adjustment'>
+                            {interaction.adjustment >= 0 ? '+' : ''}{interaction.adjustment}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )
           )}

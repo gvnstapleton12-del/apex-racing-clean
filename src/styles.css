@@ -1500,6 +1500,84 @@ button {
   color: #f87171;
 }
 
+.modal-interactions {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-interactions-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modal-interactions-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.modal-interactions-total {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.modal-interactions-total.positive {
+  color: #34d399;
+}
+
+.modal-interactions-total.negative {
+  color: #f87171;
+}
+
+.modal-interactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-interaction-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+}
+
+.modal-interaction-row.positive {
+  border-left: 2px solid #34d399;
+}
+
+.modal-interaction-row.negative {
+  border-left: 2px solid #f87171;
+}
+
+.modal-interaction-label {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.modal-interaction-adjustment {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.modal-interaction-row.positive .modal-interaction-adjustment {
+  color: #34d399;
+}
+
+.modal-interaction-row.negative .modal-interaction-adjustment {
+  color: #f87171;
+}
+
 .loading-card {
   align-items: center;
   color: #fef3c7;

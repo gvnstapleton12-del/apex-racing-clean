@@ -451,6 +451,7 @@ async function fetchLiveMeetings() {
           winProb: runner.winProb,
           placeProb: runner.placeProb,
           placeTraits: runner.placeTraits,
+          interactions: runner.interactions,
           confidenceLabel: runner.confidenceLabel,
           confidenceScore: runner.confidenceScore,
           betQuality: runner.betQuality,

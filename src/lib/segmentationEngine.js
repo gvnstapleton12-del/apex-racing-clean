@@ -332,6 +332,72 @@ export function segmentByTrainer(records = []) {
   return { trainers }
 }
 
+export function segmentByInteraction(records = []) {
+  if (!records.length) return { interactions: [] }
+
+  const interactionMap = {}
+
+  records.forEach((r) => {
+    const adj = r.interactionAdjustment || 0
+    let bucket = 'None'
+
+    if (adj > 5) bucket = 'Strong Positive (+5+)'
+    else if (adj > 2) bucket = 'Moderate Positive (+2 to +5)'
+    else if (adj > 0) bucket = 'Slight Positive (0 to +2)'
+    else if (adj > -2) bucket = 'Slight Negative (0 to -2)'
+    else if (adj > -5) bucket = 'Moderate Negative (-2 to -5)'
+    else if (adj <= -5) bucket = 'Strong Negative (-5-)'
+
+    if (!interactionMap[bucket]) {
+      interactionMap[bucket] = {
+        interaction: bucket,
+        runners: 0,
+        wins: 0,
+        places: 0,
+        totalStake: 0,
+        totalReturn: 0,
+      }
+    }
+
+    interactionMap[bucket].runners += 1
+    interactionMap[bucket].totalStake += 1
+
+    if (Number(r.actualPosition) === 1) {
+      interactionMap[bucket].wins += 1
+      interactionMap[bucket].totalReturn += Number(r.actualOdds) || 0
+    }
+    if (Number(r.actualPosition) >= 2 && Number(r.actualPosition) <= 3) {
+      interactionMap[bucket].places += 1
+    }
+  })
+
+  const order = [
+    'Strong Positive (+5+)',
+    'Moderate Positive (+2 to +5)',
+    'Slight Positive (0 to +2)',
+    'Slight Negative (0 to -2)',
+    'Moderate Negative (-2 to -5)',
+    'Strong Negative (-5-)',
+    'None',
+  ]
+
+  const interactions = Object.values(interactionMap).map((i) => {
+    const roi = i.totalStake > 0 ? ((i.totalReturn - i.totalStake) / i.totalStake) * 100 : 0
+    const strikeRate = i.runners > 0 ? (i.wins / i.runners) * 100 : 0
+    const placeRate = i.runners > 0 ? (i.places / i.runners) * 100 : 0
+
+    return {
+      ...i,
+      strikeRate: Math.round(strikeRate * 10) / 10,
+      placeRate: Math.round(placeRate * 10) / 10,
+      roi: Math.round(roi * 10) / 10,
+      profitLoss: Math.round((i.totalReturn - i.totalStake) * 100) / 100,
+    }
+  }).sort((a, b) => order.indexOf(a.interaction) - order.indexOf(b.interaction))
+
+  return { interactions }
+}
+
 export function computeAllSegmentations(records = []) {
   return {
     byCourse: segmentByCourse(records),
@@ -340,5 +406,6 @@ export function computeAllSegmentations(records = []) {
     byGoing: segmentByGoing(records),
     byOddsRange: segmentByOddsRange(records),
     byTrainer: segmentByTrainer(records),
+    byInteraction: segmentByInteraction(records),
   }
 }
