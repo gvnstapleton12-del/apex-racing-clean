@@ -679,6 +679,11 @@ button {
   color: #34d399;
 }
 
+.text-odds {
+  color: #9ca3af;
+  font-size: 11px;
+}
+
 .pick-grid {
   display: grid;
   gap: 18px;
@@ -1433,6 +1438,68 @@ button {
   color: #f87171;
 }
 
+.modal-place-traits {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-place-traits-header {
+  margin-bottom: 10px;
+}
+
+.modal-place-traits-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.modal-place-traits-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.modal-trait {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 4px;
+}
+
+.modal-trait-label {
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.modal-trait-value {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.modal-trait-value.hot {
+  color: #34d399;
+}
+
+.modal-trait-value.warm {
+  color: #fbbf24;
+}
+
+.modal-trait-value.cold {
+  color: #f87171;
+}
+
 .loading-card {
   align-items: center;
   color: #fef3c7;
@@ -1913,6 +1980,20 @@ body::after {
   font-weight: 700;
   line-height: 1;
   margin-top: 2px;
+}
+
+.pick-card-placeprob {
+  color: rgba(96, 165, 250, 0.6);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.pick-card-probs {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .pick-card-prob-range {

@@ -121,7 +121,7 @@ export default function CalibrationDashboard() {
     )
   }
 
-  const { byProbability, byGrade, byBetQuality } = calibration.analytics
+  const { byProbability, byPlaceProbability, byGrade, byBetQuality } = calibration.analytics
 
   return (
     <div className='calibration-dashboard'>
@@ -159,7 +159,14 @@ export default function CalibrationDashboard() {
           className={`cal-tab ${activeTab === 'probability' ? 'active' : ''}`}
           onClick={() => setActiveTab('probability')}
         >
-          By Probability
+          Win Probability
+        </button>
+        <button
+          type='button'
+          className={`cal-tab ${activeTab === 'place' ? 'active' : ''}`}
+          onClick={() => setActiveTab('place')}
+        >
+          Place Probability
         </button>
         <button
           type='button'
@@ -195,7 +202,22 @@ export default function CalibrationDashboard() {
           </div>
           {byProbability.buckets.length === 0 && (
             <div className='cal-empty-state'>
-              No probability buckets filled yet. Need more predictions.
+              No win probability buckets filled yet. Need more predictions.
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'place' && byPlaceProbability && (
+        <div className='cal-probability-view'>
+          <div className='cal-probability-grid'>
+            {byPlaceProbability.buckets.map((bucket) => (
+              <CalibrationBucket key={bucket.range} bucket={bucket} />
+            ))}
+          </div>
+          {byPlaceProbability.buckets.length === 0 && (
+            <div className='cal-empty-state'>
+              No place probability buckets filled yet. Need more predictions.
             </div>
           )}
         </div>

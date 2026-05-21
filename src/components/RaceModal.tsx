@@ -115,6 +115,10 @@ export default function RaceModal({
                         <span className='modal-sel-stat-value'>{runner.winProb}%</span>
                       </div>
                       <div className='modal-sel-stat'>
+                        <span className='modal-sel-stat-label'>Place%</span>
+                        <span className='modal-sel-stat-value'>{runner.placeProb || '-'}%</span>
+                      </div>
+                      <div className='modal-sel-stat'>
                         <span className='modal-sel-stat-label'>Fair</span>
                         <span className='modal-sel-stat-value'>{runner.selectionQuality.fairOdds}</span>
                       </div>
@@ -132,6 +136,52 @@ export default function RaceModal({
                         <span className='modal-sel-stat-label'>Value</span>
                         <span className={`modal-sel-stat-value ${runner.selectionQuality.value > 0 ? 'positive' : 'negative'}`}>
                           {runner.selectionQuality.value > 0 ? '+' : ''}{runner.selectionQuality.value}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {runner.placeTraits && (
+                  <div className='modal-place-traits'>
+                    <div className='modal-place-traits-header'>
+                      <span className='modal-place-traits-title'>Place Traits</span>
+                    </div>
+                    <div className='modal-place-traits-grid'>
+                      <div className='modal-trait'>
+                        <span className='modal-trait-label'>Consistency</span>
+                        <span className={`modal-trait-value ${runner.placeTraits.consistency >= 65 ? 'hot' : runner.placeTraits.consistency >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.placeTraits.consistency}
+                        </span>
+                      </div>
+                      <div className='modal-trait'>
+                        <span className='modal-trait-label'>Reliability</span>
+                        <span className={`modal-trait-value ${runner.placeTraits.reliability >= 65 ? 'hot' : runner.placeTraits.reliability >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.placeTraits.reliability}
+                        </span>
+                      </div>
+                      <div className='modal-trait'>
+                        <span className='modal-trait-label'>Honesty</span>
+                        <span className={`modal-trait-value ${runner.placeTraits.honesty >= 65 ? 'hot' : runner.placeTraits.honesty >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.placeTraits.honesty}
+                        </span>
+                      </div>
+                      <div className='modal-trait'>
+                        <span className='modal-trait-label'>Finishing Kick</span>
+                        <span className={`modal-trait-value ${runner.placeTraits.finishingKick >= 65 ? 'hot' : runner.placeTraits.finishingKick >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.placeTraits.finishingKick}
+                        </span>
+                      </div>
+                      <div className='modal-trait'>
+                        <span className='modal-trait-label'>Explosive</span>
+                        <span className={`modal-trait-value ${runner.placeTraits.explosiveAbility >= 65 ? 'hot' : runner.placeTraits.explosiveAbility >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.placeTraits.explosiveAbility}
+                        </span>
+                      </div>
+                      <div className='modal-trait'>
+                        <span className='modal-trait-label'>Market</span>
+                        <span className={`modal-trait-value ${runner.placeTraits.marketConfidence >= 65 ? 'hot' : runner.placeTraits.marketConfidence >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.placeTraits.marketConfidence}
                         </span>
                       </div>
                     </div>

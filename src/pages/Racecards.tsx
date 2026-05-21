@@ -211,8 +211,11 @@ export default function Racecards() {
                       <div className='runner-score'>
                         <strong>{runner.score}</strong>
                         <span className='text-win'>
-                          {runner.winProb ? `${runner.winProb}%` : ''}
-                          {runner.odds ? ` | ${runner.odds}` : '-'}
+                          {runner.winProb ? `W:${runner.winProb}%` : ''}
+                          {runner.placeProb ? ` P:${runner.placeProb}%` : ''}
+                        </span>
+                        <span className='text-odds'>
+                          {runner.odds ? `${runner.odds}` : '-'}
                         </span>
                         {runner.betQuality && runner.betQuality !== 'NO BET' && (
                           <span className='bet-quality'>{runner.betQuality}</span>

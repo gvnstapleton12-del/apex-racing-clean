@@ -25,6 +25,7 @@ import {
   computeCalibrationBuckets,
   computeCalibrationByGrade,
   computeCalibrationByBetQuality,
+  computePlaceCalibration,
 } from './src/lib/calibrationEngine.js'
 import { computeAllSegmentations } from './src/lib/segmentationEngine.js'
 
@@ -420,6 +421,7 @@ async function fetchLiveMeetings() {
         logPrediction(race, runner, {
           confidence: runner.finalScore,
           estimatedWinProbability: runner.winProb,
+          placeProb: runner.placeProb,
           grade: runner.selectionQuality?.grade || '',
           betQuality: runner.selectionQuality?.label || runner.betQuality || '',
           breakdown: {
@@ -443,6 +445,8 @@ async function fetchLiveMeetings() {
           marketScore: runner.market?.score,
           finalScore: runner.finalScore,
           winProb: runner.winProb,
+          placeProb: runner.placeProb,
+          placeTraits: runner.placeTraits,
           confidenceLabel: runner.confidenceLabel,
           confidenceScore: runner.confidenceScore,
           betQuality: runner.betQuality,
@@ -645,6 +649,7 @@ async function fetchTodayResults() {
 
     CALIBRATION_DATABASE.analytics = {
       byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
+      byPlaceProbability: computePlaceCalibration(CALIBRATION_DATABASE.records),
       byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
       byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
       segments: computeAllSegmentations(CALIBRATION_DATABASE.records),
@@ -1013,6 +1018,7 @@ app.post('/api/upload-results', (req, res) => {
 
     CALIBRATION_DATABASE.analytics = {
       byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
+      byPlaceProbability: computePlaceCalibration(CALIBRATION_DATABASE.records),
       byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
       byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
       segments: computeAllSegmentations(CALIBRATION_DATABASE.records),

@@ -8,13 +8,15 @@ export function createCalibrationRecord(prediction, result) {
     fieldSize: prediction.fieldSize || 0,
     trainer: prediction.trainer || '',
     raceType: prediction.raceType || '',
-    predictedWinProb: prediction.predictedWinProb || prediction.estimatedWinProbability || 0,
+    predictedWinProb: prediction.predictedWinProb || prediction.estimatedWinProbability || prediction.winProb || 0,
+    predictedPlaceProb: prediction.predictedPlaceProb || prediction.placeProb || 0,
     predictedScore: prediction.confidence || prediction.finalScore || 0,
     predictedGrade: prediction.grade || '',
     predictedBetQuality: prediction.betQuality || prediction.selectionQuality?.label || '',
     predictedOdds: prediction.odds || 0,
     actualPosition: result.position || 0,
     actualWon: result.position === 1,
+    actualPlaced: result.position >= 2 && result.position <= 3,
     actualOdds: result.spOdds || result.odds || 0,
     timestamp: new Date().toISOString(),
   }
@@ -220,4 +222,103 @@ export function computeCalibrationByBetQuality(records = []) {
   })
 
   return { qualities }
+}
+
+export function computePlaceCalibration(records = [], bucketSize = 10) {
+  if (!records.length) {
+    return {
+      buckets: [],
+      totalRecords: 0,
+      overallPlaceRate: 0,
+      brierScore: 0,
+      reliability: 'INSUFFICIENT DATA',
+    }
+  }
+
+  const buckets = {}
+  const bucketKeys = []
+
+  for (let i = 0; i <= 100; i += bucketSize) {
+    const key = `${i}-${i + bucketSize - 1}`
+    buckets[key] = {
+      range: key,
+      midPoint: i + bucketSize / 2,
+      predicted: 0,
+      actual: 0,
+      count: 0,
+      places: 0,
+      expectedPlaces: 0,
+    }
+    bucketKeys.push(key)
+  }
+
+  records.forEach((r) => {
+    const prob = Number(r.predictedPlaceProb) || 0
+    const bucketIndex = Math.min(Math.floor(prob / bucketSize), 9)
+    const key = bucketKeys[bucketIndex]
+
+    if (!buckets[key]) return
+
+    buckets[key].count += 1
+    buckets[key].predicted += prob
+    buckets[key].expectedPlaces += prob / 100
+
+    if (r.actualPlaced || r.actualWon) {
+      buckets[key].places += 1
+      buckets[key].actual += 100
+    }
+
+    buckets[key].runners.push({
+      horse: r.horse,
+      race: r.race,
+      predicted: prob,
+      placed: r.actualPlaced || r.actualWon,
+      position: r.actualPosition,
+    })
+  })
+
+  const filledBuckets = bucketKeys
+    .map((key) => buckets[key])
+    .filter((b) => b.count > 0)
+    .map((b) => ({
+      ...b,
+      avgPredicted: Math.round((b.predicted / b.count) * 10) / 10,
+      actualRate: Math.round((b.places / b.count) * 1000) / 10,
+      calibrationError: Math.abs(b.avgPredicted - b.actualRate),
+    }))
+
+  const totalRecords = records.length
+  const totalPlaces = records.filter((r) => r.actualPlaced || r.actualWon).length
+  const overallPlaceRate = totalRecords > 0 ? Math.round((totalPlaces / totalRecords) * 1000) / 10 : 0
+
+  const brierScore =
+    records.reduce((sum, r) => {
+      const prob = (Number(r.predictedPlaceProb) || 0) / 100
+      const outcome = (r.actualPlaced || r.actualWon) ? 1 : 0
+      return sum + Math.pow(prob - outcome, 2)
+    }, 0) / totalRecords
+
+  const avgCalibrationError =
+    filledBuckets.length > 0
+      ? Math.round((filledBuckets.reduce((sum, b) => sum + b.calibrationError, 0) / filledBuckets.length) * 10) / 10
+      : 0
+
+  let reliability = 'UNTESTED'
+  if (totalRecords >= 500) {
+    reliability = avgCalibrationError <= 5 ? 'EXCELLENT' : avgCalibrationError <= 10 ? 'GOOD' : 'NEEDS CALIBRATION'
+  } else if (totalRecords >= 100) {
+    reliability = avgCalibrationError <= 8 ? 'GOOD' : 'NEEDS CALIBRATION'
+  } else if (totalRecords >= 20) {
+    reliability = 'EARLY SIGNALS'
+  }
+
+  return {
+    buckets: filledBuckets,
+    totalRecords,
+    totalPlaces,
+    overallPlaceRate,
+    brierScore: Math.round(brierScore * 10000) / 10000,
+    avgCalibrationError,
+    reliability,
+  }
 }

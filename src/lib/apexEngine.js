@@ -16,6 +16,7 @@ import { detectHiddenImprover } from './hiddenImprover.js'
 import { detectStableIntent } from './stableIntent.js'
 import { calculateUncertainty } from './uncertaintyModel.js'
 import { selectionQuality } from './selectionQuality.js'
+import { placeTraits, bayesianPlaceProbabilities, bayesianWinProbabilities } from './placeModel.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -199,28 +200,32 @@ export function runApexEngine(runners, race, options = {}) {
   })
 
   const sorted = results.sort((a, b) => b.finalScore - a.finalScore)
-  const probs = bayesianProbabilities(sorted)
+  const winProbs = bayesianWinProbabilities(sorted)
+  const placeProbs = bayesianPlaceProbabilities(sorted)
 
   const output = sorted.map((r, i) => {
-    const band = probBand(probs[i])
+    const band = probBand(winProbs[i])
     const odds = Number(r.odds || r.price || 0)
-    const kelly = syndicateStake(probs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
+    const traits = placeTraits(r)
+    const kelly = syndicateStake(winProbs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
     return {
       ...r,
-      winProb: Math.round(probs[i] * 10) / 10,
+      winProb: Math.round(winProbs[i] * 10) / 10,
+      placeProb: Math.round(placeProbs[i] * 10) / 10,
       probBand: band.label,
       probRange: band.range,
       probTier: band.tier,
       confidenceScore: r.finalScore,
-      betQuality: betQuality(band, probs[i], r.market.score, odds),
+      betQuality: betQuality(band, winProbs[i], r.market.score, odds),
       selectionQuality: selectionQuality(
-        probs[i],
+        winProbs[i],
         odds,
         r.probBand,
         r.volatility,
         r.uncertainty?.uncertainty || 0,
         r.market.score
       ),
+      placeTraits: traits,
       kelly: kelly,
       features: r.features,
     }

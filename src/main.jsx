@@ -138,9 +138,14 @@ function PickCard({ selection, rank, result, position }) {
           <div className={`pick-card-score-ring rank-${rank}`}>
             <span className='pick-card-score-label'>APEX</span>
             <strong className='pick-card-score'>{selection.score}</strong>
-            {selection.winProb && (
-              <span className='pick-card-winprob'>{selection.winProb}%</span>
-            )}
+            <div className='pick-card-probs'>
+              {selection.winProb && (
+                <span className='pick-card-winprob'>W:{selection.winProb}%</span>
+              )}
+              {selection.placeProb && (
+                <span className='pick-card-placeprob'>P:{selection.placeProb}%</span>
+              )}
+            </div>
           </div>
         </div>
       </div>
