@@ -617,9 +617,10 @@ async function fetchTodayResults() {
         }
       }
 
-    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    }
 
-    races.forEach((race) => {
+    resultRaces.forEach((race) => {
       const runners = race.runners || []
 
       runners.forEach((runner) => {
@@ -651,7 +652,6 @@ async function fetchTodayResults() {
     }
 
     saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
-    }
   } catch (error) {
     console.error('Failed to fetch results:', error.message)
   }
@@ -987,6 +987,39 @@ app.post('/api/upload-results', (req, res) => {
     if (bucketResult.updated) {
       saveDatabase(BUCKET_DB_PATH, BUCKET_DATABASE)
     }
+
+    races.forEach((race) => {
+      const runners = race.runners || []
+
+      runners.forEach((runner) => {
+        const prediction = findPredictionForRunner(race, runner)
+
+        if (prediction) {
+          const calRecord = createCalibrationRecord({
+            ...prediction,
+            going: race.going || '',
+            fieldSize: race.field_size || race.fieldSize || 0,
+            trainer: runner.trainer || '',
+            raceType: race.race_type || race.raceType || '',
+          }, {
+            position: Number(runner.position || 0),
+            spOdds: resolveOdds(runner),
+          })
+
+          CALIBRATION_DATABASE.records.push(calRecord)
+        }
+      })
+    })
+
+    CALIBRATION_DATABASE.analytics = {
+      byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
+      byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
+      byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
+      segments: computeAllSegmentations(CALIBRATION_DATABASE.records),
+      lastUpdated: new Date().toISOString(),
+    }
+
+    saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
 
     console.log(`[UPLOAD] Processed ${races.length} races - daily pick dates: [${pickDates.join(', ')}]`)
 
