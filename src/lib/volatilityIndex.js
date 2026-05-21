@@ -18,8 +18,8 @@ export function volatilityIndex(race) {
   const fieldSize = runners.length
   const type = (race.type || race.race_type || '').toLowerCase()
   const going = (race.going || '').toLowerCase()
-  const raceClass = race.race_class || ''
-  const ageBand = race.age_band || ''
+  const raceClass = String(race.race_class || '')
+  const ageBand = String(race.age_band || '')
   const pattern = (race.pattern || '').toLowerCase()
 
   if (type.includes('maiden') || pattern.includes('maiden')) chaos += 0.2

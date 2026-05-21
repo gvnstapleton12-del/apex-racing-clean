@@ -146,6 +146,73 @@ export default function RaceModal({
                   </div>
                 )}
 
+                {runner.components && (
+                  <div className='modal-component-scores'>
+                    <div className='modal-components-header'>
+                      <span className='modal-components-title'>Component Scores</span>
+                      <span className='modal-components-final'>{runner.components.finalScore}</span>
+                    </div>
+                    <div className='modal-components-grid'>
+                      <div className='modal-component'>
+                        <div className='modal-component-bar'>
+                          <div className='modal-component-fill' style={{ width: `${runner.components.ability}%`, backgroundColor: runner.components.ability >= 65 ? '#10b981' : runner.components.ability >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className='modal-component-label'>Ability</span>
+                        <span className='modal-component-value'>{runner.components.ability}</span>
+                      </div>
+                      <div className='modal-component'>
+                        <div className='modal-component-bar'>
+                          <div className='modal-component-fill' style={{ width: `${runner.components.form}%`, backgroundColor: runner.components.form >= 65 ? '#10b981' : runner.components.form >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className='modal-component-label'>Form</span>
+                        <span className='modal-component-value'>{runner.components.form}</span>
+                      </div>
+                      <div className='modal-component'>
+                        <div className='modal-component-bar'>
+                          <div className='modal-component-fill' style={{ width: `${runner.components.suitability}%`, backgroundColor: runner.components.suitability >= 65 ? '#10b981' : runner.components.suitability >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className='modal-component-label'>Suitability</span>
+                        <span className='modal-component-value'>{runner.components.suitability}</span>
+                      </div>
+                      <div className='modal-component'>
+                        <div className='modal-component-bar'>
+                          <div className='modal-component-fill' style={{ width: `${runner.components.pace}%`, backgroundColor: runner.components.pace >= 65 ? '#10b981' : runner.components.pace >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className='modal-component-label'>Pace</span>
+                        <span className='modal-component-value'>{runner.components.pace}</span>
+                      </div>
+                      <div className='modal-component'>
+                        <div className='modal-component-bar'>
+                          <div className='modal-component-fill' style={{ width: `${runner.components.replay}%`, backgroundColor: runner.components.replay >= 65 ? '#10b981' : runner.components.replay >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className='modal-component-label'>Replay</span>
+                        <span className='modal-component-value'>{runner.components.replay}</span>
+                      </div>
+                      <div className='modal-component'>
+                        <div className='modal-component-bar'>
+                          <div className='modal-component-fill' style={{ width: `${runner.components.trainerJockey}%`, backgroundColor: runner.components.trainerJockey >= 65 ? '#10b981' : runner.components.trainerJockey >= 50 ? '#f59e0b' : '#ef4444' }} />
+                        </div>
+                        <span className='modal-component-label'>T/J</span>
+                        <span className='modal-component-value'>{runner.components.trainerJockey}</span>
+                      </div>
+                    </div>
+                    {(runner.components.weightEffect !== 0 || runner.components.conditionMatch !== 0) && (
+                      <div className='modal-component-adjustments'>
+                        {runner.components.weightEffect !== 0 && (
+                          <span className={`modal-component-adj ${runner.components.weightEffect > 0 ? 'positive' : 'negative'}`}>
+                            Weight: {runner.components.weightEffect > 0 ? '+' : ''}{runner.components.weightEffect}
+                          </span>
+                        )}
+                        {runner.components.conditionMatch !== 0 && (
+                          <span className={`modal-component-adj ${runner.components.conditionMatch > 0 ? 'positive' : 'negative'}`}>
+                            Conditions: {runner.components.conditionMatch > 0 ? '+' : ''}{runner.components.conditionMatch}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {runner.selectionQuality && (
                   <div className='modal-sel-quality'>
                     <div className='modal-sel-header'>

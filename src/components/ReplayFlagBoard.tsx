@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { formatOffTime } from '../lib/formatTime'
-import { QUICK_REPLAY_TAGS, ALL_REPLAY_TAGS, REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, computeCategoryScores } from '../lib/replayTagLibrary'
+import { QUICK_REPLAY_TAGS, ALL_REPLAY_TAGS, REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, computeCategoryScores, extractTagsFromNotes } from '../lib/replayTagLibrary'
 
 function selectHorse(runner, race) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: runner.horse, course: race.course, offTime: race.off_time } }))
@@ -33,6 +33,7 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
   const [draftAdj, setDraftAdj] = useState(0)
   const [saving, setSaving] = useState(false)
   const [tab, setTab] = useState<'today' | 'review' | 'reviewed'>('today')
+  const [showAutoTags, setShowAutoTags] = useState(false)
 
   useEffect(() => {
     fetch('/api/replay-notes')
@@ -63,6 +64,7 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
     setDraftTags(existing?.tags || uniqueTags)
     setDraftNotes(existing?.notes || '')
     setDraftAdj(existing?.adjustment || 0)
+    setShowAutoTags(false)
   }
 
   function closeTagPanel() {
@@ -70,6 +72,7 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
     setDraftTags([])
     setDraftNotes('')
     setDraftAdj(0)
+    setShowAutoTags(false)
   }
 
   function toggleTag(tag: string) {
@@ -343,7 +346,38 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
                       </div>
                     </div>
 
-                    <textarea className='replay-notes-input w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm resize-none' rows={2} placeholder='Notes about this run...' value={draftNotes} onChange={(e) => setDraftNotes(e.target.value)} />
+                    <textarea className='replay-notes-input w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-sm resize-none' rows={2} placeholder='Notes about this run...' value={draftNotes} onChange={(e) => {
+                      const text = e.target.value
+                      setDraftNotes(text)
+                      const extracted = extractTagsFromNotes(text)
+                      if (extracted.length > 0) {
+                        setDraftTags((prev) => {
+                          const merged = new Set(prev)
+                          extracted.forEach((t) => merged.add(t))
+                          return Array.from(merged)
+                        })
+                      }
+                    }} />
+
+                    {draftNotes && draftTags.length > 0 && (
+                      <div className='mt-3'>
+                        <button type='button' className='text-xs text-muted-foreground hover:text-white transition flex items-center gap-1' onClick={() => setShowAutoTags(!showAutoTags)}>
+                          {showAutoTags ? '▾' : '▸'} {draftTags.length} tag{draftTags.length > 1 ? 's' : ''} picked from notes
+                        </button>
+                        {showAutoTags && (
+                          <div className='flex gap-1.5 flex-wrap mt-2'>
+                            {draftTags.map((tag) => {
+                              const def = getTagDef(tag)
+                              return (
+                                <button key={tag} type='button' className={`text-xs px-2.5 py-1 rounded-lg border transition ${def?.score >= 3 ? 'border-green-500/40 bg-green-500/15 text-green-400' : def?.score <= -3 ? 'border-red-500/40 bg-red-500/15 text-red-400' : 'border-cyan-500/40 bg-cyan-500/15 text-cyan-300'}`} onClick={() => toggleTag(tag)}>
+                                  {def?.label || tag.replace(/_/g, ' ')}{def?.score ? <small className='ml-1 opacity-50'>{def.score > 0 ? `+${def.score}` : def.score}</small> : null}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className='replay-adjust-row flex items-center gap-3 my-4'>
                       <span className='text-xs text-muted-foreground'>Adj:</span>

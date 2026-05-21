@@ -16,7 +16,7 @@ export function calculateFieldStrength(runners, race = {}) {
   const topQuartile = ors.filter((o) => o >= avgOr + orStd * 0.5).length
   const depthIndex = ors.length > 0 ? topQuartile / ors.length : 0
 
-  const raceClass = (race.race_class || '').toLowerCase()
+  const raceClass = String(race.race_class || '').toLowerCase()
   const pattern = (race.pattern || '').toLowerCase()
   const going = (race.going || '').toLowerCase()
 
@@ -79,7 +79,7 @@ export function getRaceQualityScore(race) {
   const ageBand = (race.age_band || '').toLowerCase()
   const ageFactor = ageBand.includes('2yo') ? 0.7 : ageBand.includes('3yo') ? 0.85 : 1.0
 
-  const raceClass = (race.race_class || '').toLowerCase()
+  const raceClass = String(race.race_class || '').toLowerCase()
   const classFactor = raceClass.includes('1') ? 1.0 : raceClass.includes('2') ? 0.85 : raceClass.includes('3') ? 0.7 : 0.6
 
   const quality = (field.strength * 0.5 + distanceFactor * 0.2 + ageFactor * 0.15 + classFactor * 0.15)

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { fetchRacecards } from '../lib/racingApi'
+import { fetchRacecards, fetchResults } from '../lib/racingApi'
 import { formatOffTime } from '../lib/formatTime'
 
 function selectHorse(horse, race) {
@@ -21,7 +21,7 @@ export function ResultsList({ results }: ResultsListProps) {
 
   const { data: storedRaces = [] } = useQuery<any[]>({
     queryKey: ['stored-results'],
-    queryFn: () => fetch('/api/results').then((r) => r.json()),
+    queryFn: fetchResults,
     refetchInterval: 60000,
   })
 
@@ -34,42 +34,63 @@ export function ResultsList({ results }: ResultsListProps) {
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
 
-  const allStored = [...storedRaces, ...results].filter(
-    (r, i, arr) => arr.findIndex((x) => x.race_id === r.race_id || (x.course === r.course && x.off_time === r.off_time)) === i
+  const allStored = [...results, ...storedRaces].filter(
+    (r, i, arr) => arr.findIndex((x) => {
+      const ridMatch = x.race_id && r.race_id && x.race_id === r.race_id
+      const courseMatch = x.course === r.course
+      const timeA = x.off_time || x.off || ''
+      const timeB = r.off_time || r.off || ''
+      const timeMatch = courseMatch && timeA && timeB && timeA === timeB
+      return ridMatch || timeMatch
+    }) === i
   )
 
   const liveCompleted = liveRaces.filter((race: any) => {
     if (race.region !== 'GB' && race.region !== 'IRE' && race.region !== 'gb' && race.region !== 'ire') return false
-    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
+    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : todayStr)
     if (raceDate !== todayStr) return false
     if (race.off_dt && new Date(race.off_dt) > now) return false
-    const hasResults = (race.runners || []).some((r: any) => r.position || r.pos)
-    return hasResults
+    return true
   })
 
   const todayStored = allStored.filter((race: any) => {
     if (race.region !== 'GB' && race.region !== 'IRE' && race.region !== 'gb' && race.region !== 'ire') return false
-    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
+    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : todayStr)
     if (raceDate !== todayStr) return false
     const hasResults = (race.runners || []).some((r: any) => r.position || r.pos)
     return hasResults
   })
 
   const todayIds = new Set([
-    ...liveCompleted.map((r: any) => r.race_id),
-    ...todayStored.map((r: any) => r.race_id),
+    ...liveCompleted.map((r: any) => r.race_id || `${r.course}-${r.off_time}`),
+    ...todayStored.map((r: any) => r.race_id || `${r.course}-${r.off_time}`),
   ])
 
-  const todayRaces = [...liveCompleted, ...todayStored].filter(
-    (r, i, arr) => i === arr.findIndex((x) => x.race_id === r.race_id)
-  ).sort((a: any, b: any) => {
+  const liveWithoutResults = liveCompleted.filter((r: any) =>
+    !(r.runners || []).some((rn: any) => rn.position || rn.pos)
+  )
+
+  const storedIds = new Set(todayStored.map((r: any) => r.race_id || `${r.course}-${r.off_time}`))
+
+  const liveNotInStored = liveWithoutResults.filter((r: any) =>
+    !storedIds.has(r.race_id || `${r.course}-${r.off_time}`)
+  )
+
+  const todayRaces = [...liveNotInStored, ...todayStored].sort((a: any, b: any) => {
     const aDt = a.off_dt || ''
     const bDt = b.off_dt || ''
     return aDt.localeCompare(bDt)
   })
 
   const previousRaces = allStored.filter(
-    (r: any) => !todayIds.has(r.race_id)
+    (r: any) => {
+      const region = (r.region || '').toLowerCase()
+      if (region !== 'gb' && region !== 'ire') return false
+      if (todayIds.has(r.race_id)) return false
+      const raceDate = r.date || (r.off_dt ? r.off_dt.slice(0, 10) : null)
+      if (raceDate === todayStr) return false
+      return true
+    }
   ).sort((a: any, b: any) => {
     const bDt = b.off_dt || b.date || ''
     const aDt = a.off_dt || a.date || ''
@@ -152,32 +173,54 @@ export function ResultsList({ results }: ResultsListProps) {
 
 function RaceResultCard({ race }: { race: any }) {
   const runners = (race.runners || []).filter((r: any) => r.position || r.pos)
-  const sorted = [...runners].sort((a: any, b: any) => {
+  const hasResults = runners.length > 0
+  const sorted = hasResults ? [...runners].sort((a: any, b: any) => {
     const aPos = Number(a.position || a.pos || 999)
     const bPos = Number(b.position || b.pos || 999)
     return aPos - bPos
-  })
+  }) : (race.runners || [])
 
   return (
     <article className='race-card'>
       <div className='race-card-header'>
         <div>
           <div className='race-meta-row'>
-            <span className='live-badge'>RESULT</span>
-            <span>{runners.length}/{race.runners?.length || 0} runners</span>
+            <span className={`live-badge ${hasResults ? '' : 'bg-muted-foreground/20'}`}>{hasResults ? 'RESULT' : 'PENDING'}</span>
+            <span>{hasResults ? `${runners.length}/${race.runners?.length || 0} runners` : `${race.runners?.length || 0} runners`}</span>
             <span className='text-muted-foreground ml-2 text-xs'>{race.region || ''}</span>
           </div>
           <h2>{race.race_name}</h2>
           <p>{race.course} &middot; {formatOffTime(race)}</p>
         </div>
       </div>
-      <div className='runner-list'>
-        {sorted.map((runner: any, runnerIndex: number) => {
-          const pos = runner.position || runner.pos
-          return (
-            <div key={runner.horse_id || runnerIndex} className='runner-row'>
+      {hasResults ? (
+        <div className='runner-list'>
+          {sorted.map((runner: any, runnerIndex: number) => {
+            const pos = runner.position || runner.pos
+            return (
+              <div key={runner.horse_id || runnerIndex} className='runner-row'>
+                <div>
+                  <strong className={`result-position ${pos === 1 ? 'text-amber-400' : ''}`}>{pos}</strong>
+                  <span className='result-horse-name'>
+                    <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse || runner.name, race)}>
+                      {runner.horse || runner.name || '-'}
+                    </button>
+                  </span>
+                  <p>{runner.jockey || '-'}</p>
+                </div>
+                <div className='runner-score'>
+                  <strong>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
+                  <span>SP</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      ) : (
+        <div className='runner-list'>
+          {(race.runners || []).map((runner: any, runnerIndex: number) => (
+            <div key={runner.horse_id || runnerIndex} className='runner-row opacity-50'>
               <div>
-                <strong className={`result-position ${pos === 1 ? 'text-amber-400' : ''}`}>{pos}</strong>
                 <span className='result-horse-name'>
                   <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse || runner.name, race)}>
                     {runner.horse || runner.name || '-'}
@@ -186,18 +229,19 @@ function RaceResultCard({ race }: { race: any }) {
                 <p>{runner.jockey || '-'}</p>
               </div>
               <div className='runner-score'>
-                <strong>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
-                <span>SP</span>
+                <strong>{runner.odds || '-'}</strong>
+                <span>Odds</span>
               </div>
             </div>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </article>
   )
 }
 
 export default function UploadResults(props: UploadResultsProps) {
+  const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
@@ -218,7 +262,8 @@ export default function UploadResults(props: UploadResultsProps) {
       })
       const data = await response.json()
       if (!response.ok) throw new Error(data.error || 'Upload failed')
-      const races = json.results || json.racecards || json.races || json.data || []
+      const races = Array.isArray(json) ? json : (json.results || json.racecards || json.races || json.data || [])
+      queryClient.invalidateQueries({ queryKey: ['stored-results'] })
       props.onResultsLoaded?.(races)
       setMessage(`Successfully processed ${data.processedRaces || races.length || 0} races.`)
     } catch (error: any) {

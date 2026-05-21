@@ -1,45 +1,75 @@
-const TAG_VALUES = {
-  strong_finish: 5,
-  blocked_run: 4,
-  wrong_trip: 6,
-  hung_badly: -4,
-  stopped_quickly: -7,
-  green: -2,
-  ran_green: -2,
-  flew_up_hill: 3,
-  idled: -2,
-  needs_further: 3,
-  drops_in_trip: 3,
-  ran_flat: -5,
-  keen: -2,
-  outpaced: -3,
-  stayed_on: 4,
-  finished_well: 5,
-  slowly_away: -3,
-  missed_break: -3,
-  hampered: 3,
-  no_room: 3,
-  looked_winner: 5,
-  found_little: -6,
-  one_paced: -4,
-  never_placed: -5,
-  head_way: 3,
-  rallied: 2,
-  weakened: -4,
+import { REPLAY_TAG_LIBRARY } from './replayTagLibrary.js'
+import { computeTrackCompatibility } from './courseProfiles.js'
+
+const WATCHLIST_PRIORITY_SCORES = {
+  HIGH: 5,
+  MEDIUM: 3,
+  LOW: 0,
 }
 
-export function humanIntelligenceLayer(replayNote = {}) {
+export function humanIntelligenceLayer(replayNote = {}, raceCourse = '') {
   const tags = replayNote.tags || []
   const manualAdj = Number(replayNote.adjustment) || 0
   let tagScore = 0
 
-  tags.forEach((tag) => {
+  for (const tag of tags) {
     const key = tag.toLowerCase().replace(/\s+/g, '_')
-    tagScore += TAG_VALUES[key] || 0
-  })
+    const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[key])
+    tagScore += def ? def.score : 0
+  }
 
-  const total = tagScore + manualAdj
-  return Math.max(-12, Math.min(12, total))
+  const catScores = replayNote.category_scores || {}
+  let catAdj = 0
+  for (const [, score] of Object.entries(catScores)) {
+    if (score > 0) catAdj += score * 0.3
+    else if (score < 0) catAdj += score * 0.2
+  }
+
+  const wlPriority = replayNote.watchlist_priority || 'LOW'
+  const wlAdj = WATCHLIST_PRIORITY_SCORES[wlPriority] || 0
+
+  const trackCompat = computeTrackCompatibility(replayNote.course, raceCourse)
+  const trackAdj = (tagScore + catAdj + wlAdj) * (trackCompat - 1)
+
+  const total = (tagScore + manualAdj + catAdj + wlAdj + trackAdj) * trackCompat
+  return Math.max(-15, Math.min(15, Math.round(total * 10) / 10))
 }
 
-export { TAG_VALUES }
+export function getHumanInsights(replayNote = {}) {
+  const insights = []
+  if (replayNote.positive_tags && replayNote.positive_tags.length > 0) {
+    insights.push({
+      type: 'positive',
+      tags: replayNote.positive_tags,
+      message: `Positive replay signals: ${replayNote.positive_tags.map((t) => t.tag).join(', ')}`,
+    })
+  }
+  if (replayNote.negative_tags && replayNote.negative_tags.length > 0) {
+    insights.push({
+      type: 'negative',
+      tags: replayNote.negative_tags,
+      message: `Negative replay signals: ${replayNote.negative_tags.map((t) => t.tag).join(', ')}`,
+    })
+  }
+  if (replayNote.recommended_conditions && replayNote.recommended_conditions.length > 0) {
+    insights.push({
+      type: 'conditions',
+      conditions: replayNote.recommended_conditions,
+      message: `Best conditions: ${replayNote.recommended_conditions.map((c) => c.replace(/_/g, ' ')).join(', ')}`,
+    })
+  }
+  if (replayNote.watchlist_priority && replayNote.watchlist_priority !== 'LOW') {
+    insights.push({
+      type: 'watchlist',
+      priority: replayNote.watchlist_priority,
+      message: `${replayNote.watchlist_priority} priority watchlist`,
+    })
+  }
+  if (replayNote.summary) {
+    insights.push({
+      type: 'summary',
+      message: replayNote.summary,
+    })
+  }
+  return insights
+}

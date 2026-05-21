@@ -1564,6 +1564,95 @@ button {
   color: #f87171;
 }
 
+.modal-component-scores {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.modal-components-header {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modal-components-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.modal-components-final {
+  font-size: 18px;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.modal-components-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.modal-component {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-component-bar {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  height: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.modal-component-fill {
+  border-radius: 3px;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.modal-component-label {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.modal-component-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-component-adjustments {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.modal-component-adj {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.modal-component-adj.positive {
+  color: #10b981;
+}
+
+.modal-component-adj.negative {
+  color: #ef4444;
+}
+
 .modal-sel-quality {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--line);
@@ -2208,6 +2297,8 @@ button {
   color: #fff7ed;
   font-size: 18px;
   font-weight: 850;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .pulse-dot {
@@ -3978,6 +4069,18 @@ body::after {
   .race-card-header,
   .runner-row {
     flex-wrap: wrap;
+  }
+
+  .runner-row > div:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .result-horse-name button {
+    display: inline;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .runner-score {

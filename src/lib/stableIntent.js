@@ -42,7 +42,7 @@ export function detectStableIntent(runner, race, options = {}) {
   const age = Number(runner.age || 0)
   const or = Number(runner.ofr || runner.official_rating || runner.or || 0)
   const distanceF = parseFurlongs(race.distance_f || '')
-  const raceClass = (race.race_class || '').toLowerCase()
+  const raceClass = String(race.race_class || '').toLowerCase()
   const pattern = (race.pattern || '').toLowerCase()
   const going = (race.going || '').toLowerCase()
 

@@ -24,7 +24,7 @@ function goingCategory(going) {
 
 function raceType(pattern, raceClass, ageBand) {
   const p = (pattern || '').toLowerCase()
-  const c = (raceClass || '').toLowerCase()
+  const c = String(raceClass || '').toLowerCase()
   const a = (ageBand || '').toLowerCase()
 
   if (p.includes('maiden') || p.includes('novice') || a.includes('2yo')) return 'maiden_novice'

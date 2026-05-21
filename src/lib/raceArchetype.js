@@ -7,7 +7,7 @@ export function classifyRaceArchetype(race) {
   const distanceF = parseFurlongs(race.distance_f || '')
   const pattern = (race.pattern || '').toLowerCase()
   const raceType = (race.type || race.race_type || '').toLowerCase()
-  const raceClass = (race.race_class || '').toLowerCase()
+  const raceClass = String(race.race_class || '').toLowerCase()
   const ageBand = (race.age_band || '').toLowerCase()
   const going = (race.going || '').toLowerCase()
   const surface = (race.surface || '').toLowerCase()

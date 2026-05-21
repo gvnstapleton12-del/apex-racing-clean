@@ -80,7 +80,7 @@ export function detectHiddenImprover(runner, race, options = {}) {
   }
 
   const replayKey = `${runner.horse}|${race.course}`
-  const replayNote = replayDb[replayKey] || {}
+  const replayNote = replayDb[replayKey] || Object.entries(replayDb || {}).find(([key]) => key.startsWith(`${runner.horse}|`))?.[1] || {}
   const replayTags = replayNote.tags || []
   const replayAdj = Number(replayNote.adjustment) || 0
 

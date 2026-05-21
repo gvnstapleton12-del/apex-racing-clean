@@ -11,7 +11,9 @@ import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
 import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 import { runApexEngine } from './src/lib/apexEngine.js'
-import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags } from './src/lib/replayTagLibrary.js'
+import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
+import { getCourseProfile } from './src/lib/courseProfiles.js'
+import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
 
 import {
   analyzeHistoricalPerformance,
@@ -718,6 +720,8 @@ async function fetchLiveMeetings() {
         distanceDb: DISTANCE_DATABASE,
         replayDb: REPLAY_NOTES_DATABASE,
         bucketDb: BUCKET_DATABASE,
+        horseProfiles: HORSE_DATABASE,
+        races: LEARNING_DATABASE.races || [],
       })
 
       const scoredRunners = apexResult.racecards.map((runner) => {
@@ -726,6 +730,14 @@ async function fetchLiveMeetings() {
 
         if (!HORSE_DATABASE[horseId]) {
           HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
+        }
+
+        const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
+        const profileAdj = computeProfileAdjustment(horseProfile, race)
+
+        if (horseProfile) {
+          HORSE_DATABASE[horseId].profile = horseProfile
+          HORSE_DATABASE[horseId].profile_adjustment = profileAdj
         }
 
         const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
@@ -825,7 +837,7 @@ async function fetchLiveMeetings() {
       `Tracked predictions: ${Object.keys(PREDICTIONS_DATABASE).length}`
     )
 
-    scrapeFinishedRaceResults()
+    // scrapeFinishedRaceResults() // DISABLED FOR TESTING
   } catch (error) {
     console.error(error)
   }
@@ -1202,7 +1214,7 @@ app.post('/api/replay-notes', (req, res) => {
   const key = `${horse}|${course || ''}`
   const existing = REPLAY_NOTES_DATABASE[key]
 
-  const allTags = tags || []
+  const allTags = tags && tags.length > 0 ? tags : extractTagsFromNotes(notes || '')
   const posTags = allTags.filter((t) => {
     const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
     return def && def.score > 0
@@ -1222,10 +1234,12 @@ app.post('/api/replay-notes', (req, res) => {
   })
 
   const summary = notes || generateAutoSummary(allTags)
+  const courseProfile = getCourseProfile(course)
 
   REPLAY_NOTES_DATABASE[key] = {
     horse,
     course: course || '',
+    course_profile: courseProfile,
     tags: allTags,
     positive_tags: posTags.map((t) => {
       const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
@@ -1308,7 +1322,9 @@ app.post('/api/upload-results', (req, res) => {
       })
     })
 
-    LEARNING_DATABASE.races = races
+    const existingIds = new Set((LEARNING_DATABASE.races || []).map(r => r.race_id || `${r.course}-${r.off_time || r.off}`))
+    const newRaces = races.filter(r => !existingIds.has(r.race_id || `${r.course}-${r.off_time || r.off}`))
+    LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), ...newRaces]
 
     LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
       LEARNING_DATABASE.records

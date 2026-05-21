@@ -27,6 +27,7 @@ import { generateExplanation } from './explainability.js'
 import { detectScenarioFlags } from './scenarioFlags.js'
 import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
+import { computeAllComponents } from './componentScores.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -93,7 +94,7 @@ export function runApexEngine(runners, race, options = {}) {
     const fieldSize = runners.length
     const horseId = runner.horse_id || runner.horse
     const replayKey = `${runner.horse}|${race.course}`
-    const replayNote = replayDb[replayKey] || {}
+    const replayNote = replayDb[replayKey] || Object.entries(replayDb || {}).find(([key]) => key.startsWith(`${runner.horse}|`))?.[1] || {}
 
     const elimination = eliminationGate(runner, race, { distanceDb })
 
@@ -125,7 +126,8 @@ export function runApexEngine(runners, race, options = {}) {
       distanceDb,
     })
 
-    const humanAdj = humanIntelligenceLayer(replayNote)
+    const humanAdj = humanIntelligenceLayer(replayNote, race.course)
+    const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
 
     const marketAdj = marketIntelligence(runner, powerScore, { odds: runner.odds })
 
@@ -143,25 +145,43 @@ export function runApexEngine(runners, race, options = {}) {
       stableIntent,
     })
 
+    // Component Scores Engine - separate Ability, Form, Suitability, Pace, Replay, Trainer/Jockey
+    const profile = options.horseProfiles?.[horseId]?.profile || null
+    const components = computeAllComponents(runner, race, {
+      profile,
+      replayNote,
+      paceMap,
+      races: options.races || [],
+    })
+
     // Engine 1: Horse Quality Model — pure racing merit, ignores odds
     const horseQuality = computeHorseQuality(runner, race, paceMap)
 
+    // Blend component score with legacy layered score
     const paceNorm = ((paceScore + 15) / 30) * 100
     const humanNorm = ((humanAdj + 12) / 24) * 100
     const marketNorm = ((marketAdj + 10) / 20) * 100
     const trainerNorm = (trainerScore / 10) * 100
+    const profileNorm = ((profileAdj + 10) / 20) * 100
 
-    const layeredScore = Math.round(
+    const legacyLayeredScore = Math.round(
       powerScore * normalizedWeights.power +
       paceNorm * normalizedWeights.pace +
       humanNorm * normalizedWeights.human +
       marketNorm * normalizedWeights.market +
-      trainerNorm * normalizedWeights.trainer
+      trainerNorm * normalizedWeights.trainer +
+      profileNorm * 0.05
+    )
+
+    // Use component score as primary, legacy as fallback
+    const componentBlend = Math.round(
+      components.finalScore * 0.65 +
+      legacyLayeredScore * 0.35
     )
 
     const chaosPenalty = volatility.chaos > 0.6 ? 0.88 : volatility.chaos > 0.45 ? 0.96 : 1.02
     const paceCompatAdj = (paceCompat.compatibility - 50) * 0.08
-    const layeredWithChaos = layeredScore * chaosPenalty
+    const layeredWithChaos = componentBlend * chaosPenalty
     const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj)))
 
     const qualityAdjustedScore = Math.round(
@@ -202,6 +222,7 @@ export function runApexEngine(runners, race, options = {}) {
       paceCompat,
       improver,
       stableIntent,
+      components,
       human: {
         score: humanAdj,
         tags: replayNote.tags || [],

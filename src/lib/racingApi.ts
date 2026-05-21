@@ -16,3 +16,22 @@ export async function fetchRacecards() {
     return []
   }
 }
+
+export async function fetchResults() {
+  try {
+    const response = await fetch(
+      '/api/results'
+    )
+
+    const data = await response.json()
+
+    return Array.isArray(data) ? data : []
+  } catch (error) {
+    console.error(
+      'Failed to fetch results:',
+      error
+    )
+
+    return []
+  }
+}

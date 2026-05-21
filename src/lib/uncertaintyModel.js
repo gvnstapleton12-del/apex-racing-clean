@@ -30,7 +30,7 @@ export function calculateUncertainty(runner, race, options = {}) {
   const surface = (race.surface || '').toLowerCase()
   const fieldSize = (race.runners || []).length
   const pattern = (race.pattern || '').toLowerCase()
-  const raceClass = (race.race_class || '').toLowerCase()
+  const raceClass = String(race.race_class || '').toLowerCase()
 
   const distanceDb = options.distanceDb || {}
   const goingDb = options.goingDb || {}
