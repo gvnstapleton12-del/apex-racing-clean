@@ -17,6 +17,7 @@ import { calculateUncertainty } from './uncertaintyModel.js'
 import { selectionQuality } from './selectionQuality.js'
 import { placeTraits, bayesianPlaceProbabilities, bayesianWinProbabilities } from './placeModel.js'
 import { computeInteractions, applyInteractionAdjustments } from './interactionEngine.js'
+import { computeHorseQuality } from './engine1_horseQuality.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -133,6 +134,9 @@ export function runApexEngine(runners, race, options = {}) {
       stableIntent,
     })
 
+    // Engine 1: Horse Quality Model — pure racing merit, ignores odds
+    const horseQuality = computeHorseQuality(runner, race, paceMap)
+
     const paceNorm = ((paceScore + 15) / 30) * 100
     const humanNorm = ((humanAdj + 12) / 24) * 100
     const marketNorm = ((marketAdj + 10) / 20) * 100
@@ -151,9 +155,14 @@ export function runApexEngine(runners, race, options = {}) {
     const layeredWithChaos = layeredScore * chaosPenalty
     const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj)))
 
+    const qualityAdjustedScore = Math.round(
+      horseQuality.finalScore * 0.70 +
+      finalScore * 0.30
+    )
+
     const uncertainty = calculateUncertainty({
       ...runner,
-      finalScore,
+      finalScore: qualityAdjustedScore,
     }, race, {
       goingDb,
       distanceDb,
@@ -194,7 +203,8 @@ export function runApexEngine(runners, race, options = {}) {
       },
       trainerScore,
       volatility: volatility.chaos,
-      finalScore,
+      finalScore: qualityAdjustedScore,
+      horseQuality,
       features,
     }
   })

@@ -201,6 +201,11 @@ export default function Racecards() {
                             {runner.paceScore ? ` ${runner.paceScore > 0 ? '+' : ''}${runner.paceScore}` : ''}
                           </span>
                         )}
+                        {runner.horseQuality && (
+                          <span className={`hq-badge hq-${runner.horseQuality.label.toLowerCase()}`}>
+                            {runner.horseQuality.label}
+                          </span>
+                        )}
                         {runner.probBand && (
                           <span className={`conf-badge conf-${runner.probBand.toLowerCase().replace(/[^a-z]/g, '')}`}>
                             {runner.probBand}

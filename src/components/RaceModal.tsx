@@ -99,6 +99,53 @@ export default function RaceModal({
                   </span>
                 </div>
 
+                {runner.horseQuality && (
+                  <div className='modal-horse-quality'>
+                    <div className='modal-hq-header'>
+                      <span className='modal-hq-title'>Engine 1: Horse Quality</span>
+                      <span className={`modal-hq-label hq-${runner.horseQuality.label.toLowerCase()}`}>
+                        {runner.horseQuality.label}
+                      </span>
+                    </div>
+                    <div className='modal-hq-score'>
+                      <span className='modal-hq-value'>{runner.horseQuality.finalScore}</span>
+                      <span className='modal-hq-sub'>Quality Score</span>
+                    </div>
+                    <div className='modal-hq-grid'>
+                      <div className='modal-hq-item'>
+                        <span className='modal-hq-item-label'>Power</span>
+                        <span className={`modal-hq-item-value ${runner.horseQuality.power >= 65 ? 'hot' : runner.horseQuality.power >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.horseQuality.power}
+                        </span>
+                      </div>
+                      <div className='modal-hq-item'>
+                        <span className='modal-hq-item-label'>Suitability</span>
+                        <span className={`modal-hq-item-value ${runner.horseQuality.suitability >= 65 ? 'hot' : runner.horseQuality.suitability >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.horseQuality.suitability}
+                        </span>
+                      </div>
+                      <div className='modal-hq-item'>
+                        <span className='modal-hq-item-label'>Consistency</span>
+                        <span className={`modal-hq-item-value ${runner.horseQuality.consistency >= 65 ? 'hot' : runner.horseQuality.consistency >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.horseQuality.consistency}
+                        </span>
+                      </div>
+                      <div className='modal-hq-item'>
+                        <span className='modal-hq-item-label'>Pace Fit</span>
+                        <span className={`modal-hq-item-value ${runner.horseQuality.paceCompat >= 65 ? 'hot' : runner.horseQuality.paceCompat >= 50 ? 'warm' : 'cold'}`}>
+                          {runner.horseQuality.paceCompat}
+                        </span>
+                      </div>
+                      <div className='modal-hq-item'>
+                        <span className='modal-hq-item-label'>Volatility</span>
+                        <span className={`modal-hq-item-value ${runner.horseQuality.volatility <= 35 ? 'hot' : runner.horseQuality.volatility <= 50 ? 'warm' : 'cold'}`}>
+                          {runner.horseQuality.volatility}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {runner.selectionQuality && (
                   <div className='modal-sel-quality'>
                     <div className='modal-sel-header'>
