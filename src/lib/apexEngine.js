@@ -4,12 +4,7 @@ import { classifyRunningStyle, generatePaceMap, paceMatrixScore } from './paceEn
 import { humanIntelligenceLayer } from './humanIntelligence.js'
 import { marketIntelligence, marketAlignment } from './marketIntelligence.js'
 import { volatilityIndex } from './volatilityIndex.js'
-
-function winProbability(scores) {
-  const scaled = scores.map((s) => Math.exp(Math.max(0, s) / 16))
-  const total = scaled.reduce((a, b) => a + b, 0)
-  return scaled.map((s) => (total > 0 ? (s / total) * 100 : 0))
-}
+import { bayesianProbabilities } from './bayesianEngine.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -109,8 +104,7 @@ export function runApexEngine(runners, race, options = {}) {
   })
 
   const sorted = results.sort((a, b) => b.finalScore - a.finalScore)
-  const scores = sorted.map((r) => r.finalScore)
-  const probs = winProbability(scores)
+  const probs = bayesianProbabilities(sorted)
 
   const output = sorted.map((r, i) => {
     const band = probBand(probs[i])
