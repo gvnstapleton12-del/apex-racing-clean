@@ -11,6 +11,7 @@ import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from '.
 import { bucketKey, getBucketWeights } from './contextBuckets.js'
 import { estimateEnergyDistribution } from './energyModel.js'
 import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
+import { detectFalseFavourite } from './falseFavourite.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -182,6 +183,10 @@ export function runApexEngine(runners, race, options = {}) {
     }
   })
 
+  const falseFavourite = detectFalseFavourite(output, race, {
+    distanceDb: options.distanceDb || {},
+  })
+
   return {
     racecards: output,
     paceMap,
@@ -192,5 +197,6 @@ export function runApexEngine(runners, race, options = {}) {
     weightSource: source,
     bucket: raceBucket,
     bucketData: bucketDb?.[raceBucket] || null,
+    falseFavourite,
   }
 }
