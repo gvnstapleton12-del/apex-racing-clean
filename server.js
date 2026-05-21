@@ -473,6 +473,7 @@ async function fetchLiveMeetings() {
         ...race,
         paceMap: apexResult.paceMap,
         volatility: apexResult.volatility,
+        betFilter: apexResult.betFilter,
         runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
       }
     }))

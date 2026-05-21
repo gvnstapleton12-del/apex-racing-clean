@@ -46,20 +46,46 @@ function getRunnerScore(runner) {
 
 function getHomeSelections(races) {
   return races
-    .flatMap((race) =>
-      (race.runners || []).map((runner) => ({
-        ...runner,
-        race,
-        raceName: race.race_name,
-        course: race.course,
-        offTime: formatOffTime(race),
-        score: getRunnerScore(runner),
-        probBand: runner.probBand || runner.confidenceLabel || runner.aiProfile?.grade || '',
-        probRange: runner.probRange || '',
-        winProb: runner.winProb || null,
-      }))
-    )
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
+    .flatMap((race) => {
+      const betFilter = race.betFilter || {}
+      const isSkipped = betFilter.verdict === 'AUTO SKIP' || betFilter.verdict === 'HIGH RISK'
+
+      return (race.runners || [])
+        .filter((runner) => {
+          if (isSkipped) return false
+          const tier = runner.confidenceTier?.tier
+          if (tier === 'D') return false
+          const valueEdge = runner.valueEngine?.edge || 0
+          const bankrollLabel = runner.bankrollEngine?.label || ''
+          if (bankrollLabel === 'NO BET' || bankrollLabel === 'AVOID') return false
+          if (valueEdge < 0) return false
+          return true
+        })
+        .map((runner) => ({
+          ...runner,
+          race,
+          raceName: race.race_name,
+          course: race.course,
+          offTime: formatOffTime(race),
+          score: runner.finalScore || runner.aiProfile?.confidence || runner.score || 0,
+          probBand: runner.probBand || runner.confidenceLabel || runner.aiProfile?.grade || '',
+          probRange: runner.probRange || '',
+          winProb: runner.winProb || null,
+          placeProb: runner.placeProb || null,
+          valueEdge: runner.valueEngine?.edge || 0,
+          confidenceTier: runner.confidenceTier?.tier || 'D',
+          betFilterVerdict: betFilter.verdict || 'BETTABLE',
+          selectionQuality: runner.selectionQuality,
+        }))
+    })
+    .sort((a, b) => {
+      const tierOrder = { S: 5, A: 4, B: 3, C: 2, D: 1 }
+      const tierDiff = (tierOrder[b.confidenceTier] || 0) - (tierOrder[a.confidenceTier] || 0)
+      if (tierDiff !== 0) return tierDiff
+      const edgeDiff = (b.valueEdge || 0) - (a.valueEdge || 0)
+      if (Math.abs(edgeDiff) > 0.5) return edgeDiff
+      return (b.score || 0) - (a.score || 0)
+    })
 }
 
 function gradeClass(label) {
@@ -107,6 +133,11 @@ function PickCard({ selection, rank, result, position }) {
         <div className='pick-card-left'>
           <div className='pick-card-rank-grade'>
             <span className='pick-card-rank'>#{rank}</span>
+            {selection.confidenceTier && (
+              <span className={`pick-card-tier-badge tier-${selection.confidenceTier.toLowerCase()}`}>
+                T{selection.confidenceTier}
+              </span>
+            )}
             <span className={`pick-card-grade grade-${gradeClass(selection.probBand)}`}>{selection.probBand}</span>
             {selection.probRange && <span className='pick-card-prob-range'>{selection.probRange}</span>}
             <span className='pick-card-time'>{selection.offTime}</span>
@@ -127,6 +158,9 @@ function PickCard({ selection, rank, result, position }) {
             <span>Odds {selection.odds || '-'}</span>
             <span>Form {selection.form || '-'}</span>
             <span>Draw {selection.draw || '-'}</span>
+            {selection.valueEdge && selection.valueEdge > 0 && (
+              <span className='pick-value-edge'>+{selection.valueEdge}% edge</span>
+            )}
             {selection.selectionQuality && (
               <span className={`pick-sel-grade grade-${selection.selectionQuality.grade.replace('+', 'p')}`}>
                 {selection.selectionQuality.grade}
@@ -215,6 +249,8 @@ function Home() {
           odds: p.odds,
           form: p.form,
           draw: p.draw,
+          valueEdge: p.valueEdge,
+          confidenceTier: p.confidenceTier,
         })),
       }),
     })
@@ -234,6 +270,8 @@ function Home() {
                 odds: p.odds,
                 form: p.form,
                 draw: p.draw,
+                valueEdge: p.valueEdge,
+                confidenceTier: p.confidenceTier,
                 result: null,
               })),
               stats: { won: 0, placed: 0, lost: 0, pending: picks.length },
