@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import RoiSegmentation from './RoiSegmentation'
+import AntiOverfitDashboard from './AntiOverfitDashboard'
 
 function CalibrationBucket({ bucket }) {
   const isOverconfident = bucket.avgPredicted > bucket.actualRate
@@ -189,7 +190,16 @@ export default function CalibrationDashboard() {
         >
           ROI Segmentation
         </button>
+        <button
+          type='button'
+          className={`cal-tab ${activeTab === 'overfit' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overfit')}
+        >
+          Anti-Overfit
+        </button>
       </div>
+
+      {activeTab === 'overfit' && <AntiOverfitDashboard />}
 
       {activeTab === 'segments' && <RoiSegmentation />}
 

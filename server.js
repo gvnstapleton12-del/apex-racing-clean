@@ -28,6 +28,10 @@ import {
   computePlaceCalibration,
 } from './src/lib/calibrationEngine.js'
 import { computeAllSegmentations } from './src/lib/segmentationEngine.js'
+import {
+  computeAntiOverfitReport,
+  applyProtectedAdjustment,
+} from './src/lib/antiOverfit.js'
 
 dotenv.config()
 
@@ -606,18 +610,38 @@ async function fetchTodayResults() {
         LEARNING_DATABASE.records
       )
 
-      const learningResult = learnFromResults(
+      const rawLearningResult = learnFromResults(
         LEARNING_DATABASE.records,
         LEARNING_DATABASE.weights || {}
       )
 
-      if (learningResult.adjusted) {
-        LEARNING_DATABASE.weights = learningResult.weights
-        LEARNING_DATABASE.lastLearningRun = {
-          date: new Date().toISOString(),
-          totalRecords: learningResult.totalRecords,
-          winners: learningResult.winners,
-          analysis: learningResult.analysis,
+      if (rawLearningResult.adjusted) {
+        const protectedResult = applyProtectedAdjustment(
+          LEARNING_DATABASE.weights || {},
+          rawLearningResult.weights.multiplier || {},
+          LEARNING_DATABASE.records
+        )
+
+        if (protectedResult.adjusted) {
+          LEARNING_DATABASE.weights = { multiplier: protectedResult.weights }
+          LEARNING_DATABASE.lastLearningRun = {
+            date: new Date().toISOString(),
+            totalRecords: rawLearningResult.totalRecords,
+            winners: rawLearningResult.winners,
+            analysis: rawLearningResult.analysis,
+            protected: true,
+            learningRate: protectedResult.learningRate,
+            outliersSuppressed: protectedResult.outliersSuppressed,
+          }
+        } else {
+          LEARNING_DATABASE.lastLearningRun = {
+            date: new Date().toISOString(),
+            totalRecords: rawLearningResult.totalRecords,
+            winners: rawLearningResult.winners,
+            analysis: rawLearningResult.analysis,
+            protected: false,
+            blockedReason: protectedResult.reason,
+          }
         }
       }
 
@@ -909,18 +933,38 @@ app.post('/api/upload-results', (req, res) => {
     )
 
     const existingWeights = LEARNING_DATABASE.weights || {}
-    const learningResult = learnFromResults(
+    const rawLearningResult = learnFromResults(
       LEARNING_DATABASE.records,
       existingWeights
     )
 
-    if (learningResult.adjusted) {
-      LEARNING_DATABASE.weights = learningResult.weights
-      LEARNING_DATABASE.lastLearningRun = {
-        date: new Date().toISOString(),
-        totalRecords: learningResult.totalRecords,
-        winners: learningResult.winners,
-        analysis: learningResult.analysis,
+    if (rawLearningResult.adjusted) {
+      const protectedResult = applyProtectedAdjustment(
+        existingWeights.multiplier || {},
+        rawLearningResult.weights.multiplier || {},
+        LEARNING_DATABASE.records
+      )
+
+      if (protectedResult.adjusted) {
+        LEARNING_DATABASE.weights = { multiplier: protectedResult.weights }
+        LEARNING_DATABASE.lastLearningRun = {
+          date: new Date().toISOString(),
+          totalRecords: rawLearningResult.totalRecords,
+          winners: rawLearningResult.winners,
+          analysis: rawLearningResult.analysis,
+          protected: true,
+          learningRate: protectedResult.learningRate,
+          outliersSuppressed: protectedResult.outliersSuppressed,
+        }
+      } else {
+        LEARNING_DATABASE.lastLearningRun = {
+          date: new Date().toISOString(),
+          totalRecords: rawLearningResult.totalRecords,
+          winners: rawLearningResult.winners,
+          analysis: rawLearningResult.analysis,
+          protected: false,
+          blockedReason: protectedResult.reason,
+        }
       }
     }
 
@@ -1034,7 +1078,7 @@ app.post('/api/upload-results', (req, res) => {
       processedRaces: races.length,
       totalRecords: LEARNING_DATABASE.records.length,
       analytics: LEARNING_DATABASE.analytics,
-      learning: learningResult,
+      learning: rawLearningResult,
     })
   } catch (error) {
     console.error(error)
@@ -1057,6 +1101,14 @@ app.delete('/api/calibration', (_req, res) => {
   CALIBRATION_DATABASE.analytics = {}
   saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
   res.json({ success: true, message: 'Calibration data cleared' })
+})
+
+app.get('/api/anti-overfit', (_req, res) => {
+  const report = computeAntiOverfitReport(
+    LEARNING_DATABASE.records,
+    LEARNING_DATABASE.weights?.multiplier || {}
+  )
+  res.json(report)
 })
 
 server.listen(PORT, () => {
