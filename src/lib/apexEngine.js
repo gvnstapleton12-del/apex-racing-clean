@@ -7,6 +7,7 @@ import { volatilityIndex } from './volatilityIndex.js'
 import { bayesianProbabilities } from './bayesianEngine.js'
 import { syndicateStake } from './kellyEngine.js'
 import { buildSyndicateFeatures } from './syndicateFeatures.js'
+import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from './raceArchetype.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -33,6 +34,27 @@ export function runApexEngine(runners, race, options = {}) {
   const goingDb = options.goingDb || {}
   const distanceDb = options.distanceDb || {}
   const replayDb = options.replayDb || {}
+
+  const archetype = classifyRaceArchetype(race)
+  const weights = getRaceWeights(archetype.archetype)
+  const modifiers = getModifierAdjustments(archetype.modifiers)
+
+  const adjustedWeights = {
+    power: weights.power + (modifiers.paceAdj || 0),
+    pace: weights.pace + (modifiers.paceAdj || 0),
+    human: weights.human,
+    market: weights.market + (modifiers.marketAdj || 0),
+    trainer: weights.trainer + (modifiers.trainerAdj || 0) + (modifiers.drawAdj || 0),
+  }
+
+  const totalWeight = adjustedWeights.power + adjustedWeights.pace + adjustedWeights.human + adjustedWeights.market + adjustedWeights.trainer
+  const normalizedWeights = {
+    power: adjustedWeights.power / totalWeight,
+    pace: adjustedWeights.pace / totalWeight,
+    human: adjustedWeights.human / totalWeight,
+    market: adjustedWeights.market / totalWeight,
+    trainer: adjustedWeights.trainer / totalWeight,
+  }
 
   const volatility = volatilityIndex(race)
   const styles = runners.map((r) => classifyRunningStyle(r))
@@ -76,11 +98,11 @@ export function runApexEngine(runners, race, options = {}) {
     const trainerNorm = (trainerScore / 10) * 100
 
     const layeredScore = Math.round(
-      powerScore * 0.60 +
-      paceNorm * 0.15 +
-      humanNorm * 0.10 +
-      marketNorm * 0.05 +
-      trainerNorm * 0.10
+      powerScore * normalizedWeights.power +
+      paceNorm * normalizedWeights.pace +
+      humanNorm * normalizedWeights.human +
+      marketNorm * normalizedWeights.market +
+      trainerNorm * normalizedWeights.trainer
     )
 
     const chaosPenalty = volatility.chaos > 0.6 ? 0.88 : volatility.chaos > 0.45 ? 0.96 : 1.02
@@ -137,5 +159,8 @@ export function runApexEngine(runners, race, options = {}) {
     racecards: output,
     paceMap,
     volatility,
+    archetype: archetype.archetype,
+    archetypeInfo: archetype,
+    weights: normalizedWeights,
   }
 }
