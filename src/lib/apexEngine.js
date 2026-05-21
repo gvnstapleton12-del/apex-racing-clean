@@ -66,7 +66,7 @@ export function runApexEngine(runners, race, options = {}) {
   }
 
   const volatility = volatilityIndex(race)
-  const styles = runners.map((r) => classifyRunningStyle(r))
+  const styles = runners.map((r) => classifyRunningStyle(r, race))
   const paceMap = generatePaceMap(runners.map((r, i) => ({ ...r, runningStyle: styles[i] })))
 
   const results = runners.map((runner, idx) => {

@@ -1,3 +1,5 @@
+import { calculateFieldStrength, normalizePosition } from './fieldStrength.js'
+
 function parseFormPositions(form = '') {
   const positions = []
   const segments = form.split(/[\/-]/)
@@ -10,15 +12,22 @@ function parseFormPositions(form = '') {
   return positions.filter((p) => p > 0)
 }
 
-export function classifyRunningStyle(runner) {
+export function classifyRunningStyle(runner, race = null) {
   const form = runner.form || ''
-  const positions = parseFormPositions(form)
-  if (positions.length < 2) return 'Midfield'
+  const rawPositions = parseFormPositions(form)
+  if (rawPositions.length < 2) return 'Midfield'
+
+  let positions = rawPositions
+  if (race && race.runners) {
+    const fieldSize = race.runners.length
+    const fieldStrength = calculateFieldStrength(race.runners, race)
+    positions = rawPositions.map((p) => normalizePosition(p, fieldStrength.strength, fieldSize))
+  }
 
   const recent = positions.slice(0, 3)
   const avgPos = recent.reduce((a, b) => a + b, 0) / recent.length
-  const winRate = positions.filter((p) => p === 1).length / positions.length
-  const top3Rate = positions.filter((p) => p <= 3).length / positions.length
+  const winRate = positions.filter((p) => p <= 1.5).length / positions.length
+  const top3Rate = positions.filter((p) => p <= 3.5).length / positions.length
   const improved = recent[recent.length - 1] < recent[0]
 
   if (winRate >= 0.3) return 'Front Runner'

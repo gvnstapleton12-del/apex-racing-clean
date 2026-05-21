@@ -1,3 +1,5 @@
+import { calculateFieldStrength, normalizePosition, getRaceQualityScore } from './fieldStrength.js'
+
 function parseFormPositions(form = '') {
   const positions = []
   const segments = form.split(/[\/-]/)
@@ -42,6 +44,9 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
 
   const features = {}
 
+  const fieldStrength = calculateFieldStrength(runners, race)
+  const raceQuality = getRaceQualityScore(race)
+
   features.ability = {
     or: or,
     rpr: rpr,
@@ -51,10 +56,13 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
     ratingConfidence: or > 0 ? 'OFFICIAL' : rpr > 0 ? 'ESTIMATED' : 'UNKNOWN',
   }
 
+  const rawPositions = parseFormPositions(formString)
+  const normalizedPositions = rawPositions.map((p) => normalizePosition(p, fieldStrength.strength, fieldSize))
+
   const decayWeights = [1.0, 0.7, 0.5, 0.3, 0.2]
   let weightedSum = 0
   let weightTotal = 0
-  positions.slice(0, 5).forEach((pos, i) => {
+  normalizedPositions.slice(0, 5).forEach((pos, i) => {
     const w = decayWeights[i] || 0.1
     weightedSum += Math.max(1, Math.min(20, pos)) * w
     weightTotal += w
@@ -62,14 +70,31 @@ export function buildSyndicateFeatures(runner, race, options = {}) {
   const weightedAvgPos = weightTotal > 0 ? weightedSum / weightTotal : 99
 
   features.form = {
-    positions,
-    runCount: positions.length,
+    rawPositions,
+    normalizedPositions,
+    runCount: normalizedPositions.length,
     weightedAvgPos: Math.round(weightedAvgPos * 10) / 10,
-    winRate: positions.length > 0 ? Math.round((positions.filter((p) => p === 1).length / positions.length) * 100) : 0,
-    top3Rate: positions.length > 0 ? Math.round((positions.filter((p) => p <= 3).length / positions.length) * 100) : 0,
-    lastRunPos: positions[0] || 0,
-    trend: positions.length >= 3 ? (positions[0] < positions[positions.length - 1] ? 'IMPROVING' : 'DECLINING') : 'UNKNOWN',
-    consistency: positions.length >= 3 ? Math.round((1 - (Math.max(...positions) - Math.min(...positions)) / 20) * 100) : 0,
+    winRate: normalizedPositions.length > 0 ? Math.round((normalizedPositions.filter((p) => p <= 1.5).length / normalizedPositions.length) * 100) : 0,
+    top3Rate: normalizedPositions.length > 0 ? Math.round((normalizedPositions.filter((p) => p <= 3.5).length / normalizedPositions.length) * 100) : 0,
+    lastRunPos: normalizedPositions[0] || 0,
+    trend: normalizedPositions.length >= 3 ? (normalizedPositions[0] < normalizedPositions[normalizedPositions.length - 1] ? 'IMPROVING' : 'DECLINING') : 'UNKNOWN',
+    consistency: normalizedPositions.length >= 3 ? Math.round((1 - (Math.max(...normalizedPositions) - Math.min(...normalizedPositions)) / 20) * 100) : 0,
+  }
+
+  features.field = {
+    strength: fieldStrength.strength,
+    depth: fieldStrength.depth,
+    quality: raceQuality.score,
+    qualityLabel: raceQuality.label,
+    avgOr: fieldStrength.avgOr,
+    maxOr: fieldStrength.maxOr,
+    minOr: fieldStrength.minOr,
+    orStd: fieldStrength.orStd,
+    fieldSize: fieldStrength.fieldSize,
+    topQuartileCount: fieldStrength.topQuartileCount,
+    classBonus: fieldStrength.classBonus,
+    goingPenalty: fieldStrength.goingPenalty,
+    label: fieldStrength.label,
   }
 
   const goingProfile = goingDb[horseId]?.byGoing || {}

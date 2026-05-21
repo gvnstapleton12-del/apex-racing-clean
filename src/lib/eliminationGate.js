@@ -1,3 +1,5 @@
+import { calculateFieldStrength, normalizePosition } from './fieldStrength.js'
+
 function parseFormPositions(form = '') {
   const positions = []
   const segments = form.split(/[\/-]/)
@@ -19,10 +21,13 @@ export function eliminationGate(runner, race, options = {}) {
   const todayDist = parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0
 
   const runners = race.runners || []
+  const fieldSize = runners.length
+  const fieldStrength = calculateFieldStrength(runners, race)
   const ratings = runners.map((r) => Math.max(Number(r.ofr || 0), Number(r.rpr || 0))).filter(Boolean)
   const topRating = ratings.length ? Math.max(...ratings) : 0
   const avgRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0
-  const positions = parseFormPositions(formString)
+  const rawPositions = parseFormPositions(formString)
+  const positions = rawPositions.map((p) => normalizePosition(p, fieldStrength.strength, fieldSize))
 
   let maxScore = 100
   const reasons = []

@@ -1,3 +1,5 @@
+import { calculateFieldStrength } from './fieldStrength.js'
+
 function parseFormPositions(form = '') {
   const positions = []
   const segments = form.split(/[\/-]/)

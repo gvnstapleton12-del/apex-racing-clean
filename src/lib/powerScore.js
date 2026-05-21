@@ -1,3 +1,5 @@
+import { calculateFieldStrength, normalizePosition } from './fieldStrength.js'
+
 function parseFormPositions(form = '') {
   const positions = []
   const segments = form.split(/[\/-]/)
@@ -16,13 +18,17 @@ export function corePowerScore(runner, race, options = {}) {
   const bestRating = Math.max(or, rpr)
   const runners = race.runners || []
   const formString = String(runner.form || '')
+  const fieldSize = runners.length
+
+  const fieldStrength = calculateFieldStrength(runners, race)
 
   const ors = runners.map((r) => Number(r.ofr || r.official_rating || r.or || 0)).filter(Boolean)
   const maxOr = ors.length ? Math.max(...ors) : 0
   const avgOr = ors.length ? ors.reduce((a, b) => a + b, 0) / ors.length : 0
   const minOr = ors.length ? Math.min(...ors) : 0
 
-  const positions = parseFormPositions(formString)
+  const rawPositions = parseFormPositions(formString)
+  const positions = rawPositions.map((p) => normalizePosition(p, fieldStrength.strength, fieldSize))
 
   const weights = runners.map((r) => Number(r.lbs || r.weight_lbs || r.weight || 0)).filter((w) => w > 0)
   const avgWeight = weights.length ? weights.reduce((a, b) => a + b, 0) / weights.length : 0
