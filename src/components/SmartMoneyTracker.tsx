@@ -1,19 +1,12 @@
 import { formatOffTime } from '../lib/formatTime'
+import { parseOdds } from '../lib/parseOdds'
+
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
 
 interface SmartMoneyTrackerProps {
   races: any[]
-}
-
-function parseOdds(odds?: string) {
-  if (!odds) return null
-
-  if (odds.includes('/')) {
-    const [a, b] = odds.split('/').map(Number)
-    return a / b + 1
-  }
-
-  const n = parseFloat(odds)
-  return isNaN(n) ? null : n
 }
 
 export default function SmartMoneyTracker({ races }: SmartMoneyTrackerProps) {
@@ -35,6 +28,7 @@ export default function SmartMoneyTracker({ races }: SmartMoneyTrackerProps) {
         race: race.race_name,
         course: race.course,
         time: formatOffTime(race),
+        off_time: race.off_time,
         triggers: runner.replayTriggers || [],
       }))
   )
@@ -76,7 +70,9 @@ export default function SmartMoneyTracker({ races }: SmartMoneyTrackerProps) {
                 </div>
 
                 <h3 className='font-bold text-lg'>
-                  {runner.horse}
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                    {runner.horse}
+                  </button>
                 </h3>
 
                 <p className='text-sm text-muted-foreground'>

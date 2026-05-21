@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { parseOdds } from '../lib/parseOdds'
 
 interface BettingSlipProps {
   selections?: any[]
@@ -8,18 +9,6 @@ export default function BettingSlip({
   selections = [],
 }: BettingSlipProps) {
   const [stake, setStake] = useState(10)
-
-  function parseOdds(odds?: string) {
-    if (!odds) return 1
-
-    if (odds.includes('/')) {
-      const [a, b] = odds.split('/').map(Number)
-      return a / b + 1
-    }
-
-    const n = parseFloat(odds)
-    return isNaN(n) ? 1 : n
-  }
 
   const totalOdds = selections.reduce((acc: number, selection: any) => {
     return acc * parseOdds(selection.odds)

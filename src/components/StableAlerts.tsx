@@ -1,5 +1,9 @@
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface StableAlertsProps {
   races: any[]
 }
@@ -21,6 +25,7 @@ export default function StableAlerts({ races }: StableAlertsProps) {
         race: race.race_name,
         course: race.course,
         time: formatOffTime(race),
+        off_time: race.off_time,
         triggers: runner.replayTriggers || [],
       }))
   )
@@ -89,7 +94,9 @@ export default function StableAlerts({ races }: StableAlertsProps) {
                   >
                     <div>
                       <p className='font-semibold'>
-                        {runner.horse}
+                        <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                          {runner.horse}
+                        </button>
                       </p>
 
                       <p className='text-sm text-muted-foreground'>

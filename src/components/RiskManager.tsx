@@ -1,20 +1,9 @@
 import { useMemo } from 'react'
+import { parseOdds } from '../lib/parseOdds'
 
 interface RiskManagerProps {
   selections?: any[]
   bankroll?: number
-}
-
-function parseOdds(odds?: string) {
-  if (!odds) return 1
-
-  if (odds.includes('/')) {
-    const [a, b] = odds.split('/').map(Number)
-    return a / b + 1
-  }
-
-  const n = parseFloat(odds)
-  return isNaN(n) ? 1 : n
 }
 
 export default function RiskManager({

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import { fetchRacecards } from '../lib/racingApi'
@@ -10,6 +10,25 @@ import RacePressureGraph from '../components/RacePressureGraph'
 
 export default function Racecards() {
   const [selectedRace, setSelectedRace] = useState(null)
+  const scrollTarget = useRef(null)
+
+  useEffect(() => {
+    const handler = (e) => {
+      const { course, offTime } = e.detail || {}
+      if (!course) return
+      const id = `race-${course.replace(/\s+/g, '-')}-${(offTime || '').replace(':', '')}`
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        el.classList.add('ring-2', 'ring-amber-500/50', 'transition-all', 'duration-1000')
+        setTimeout(() => {
+          el.classList.remove('ring-2', 'ring-amber-500/50')
+        }, 3000)
+      }
+    }
+    window.addEventListener('select-horse', handler)
+    return () => window.removeEventListener('select-horse', handler)
+  }, [])
 
   const { data: races = [], isLoading } = useQuery<any[]>({
     queryKey: ['racecards'],
@@ -117,6 +136,7 @@ export default function Racecards() {
           return (
             <article
               key={race.race_id || index}
+              id={`race-${race.course ? race.course.replace(/\s+/g, '-') : ''}-${(race.off_time || '').replace(':', '')}`}
               className='race-card'
             >
               <div className='race-card-header'>

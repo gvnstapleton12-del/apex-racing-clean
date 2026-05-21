@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { parseOdds } from '../lib/parseOdds'
 
 interface BetRecord {
   horse: string
@@ -17,18 +18,6 @@ export default function ROITracker() {
       setBets(JSON.parse(saved))
     }
   }, [])
-
-  function parseOdds(odds?: string) {
-    if (!odds) return 1
-
-    if (odds.includes('/')) {
-      const [a, b] = odds.split('/').map(Number)
-      return a / b + 1
-    }
-
-    const n = parseFloat(odds)
-    return isNaN(n) ? 1 : n
-  }
 
   const totalStake = bets.reduce(
     (acc, bet) => acc + bet.stake,

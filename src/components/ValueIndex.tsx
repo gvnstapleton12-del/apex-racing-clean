@@ -1,19 +1,12 @@
 import { formatOffTime } from '../lib/formatTime'
+import { parseOdds } from '../lib/parseOdds'
+
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
 
 interface ValueIndexProps {
   races: any[]
-}
-
-function parseOdds(odds?: string) {
-  if (!odds) return 1
-
-  if (odds.includes('/')) {
-    const [a, b] = odds.split('/').map(Number)
-    return a / b + 1
-  }
-
-  const n = parseFloat(odds)
-  return isNaN(n) ? 1 : n
 }
 
 export default function ValueIndex({ races }: ValueIndexProps) {
@@ -29,6 +22,7 @@ export default function ValueIndex({ races }: ValueIndexProps) {
         race: race.race_name,
         course: race.course,
         time: formatOffTime(race),
+        off_time: race.off_time,
         odds: runner.odds,
         score,
         valueIndex,
@@ -62,7 +56,9 @@ export default function ValueIndex({ races }: ValueIndexProps) {
               </p>
 
               <h3 className='font-bold text-lg mt-1'>
-                {runner.horse}
+                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                  {runner.horse}
+                </button>
               </h3>
 
               <p className='text-sm text-muted-foreground'>

@@ -1,5 +1,9 @@
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface ConfidenceHeatmapProps {
   races: any[]
 }
@@ -40,6 +44,7 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
       race: race.race_name,
       course: race.course,
       time: formatOffTime(race),
+      off_time: race.off_time,
     }))
   )
 
@@ -72,7 +77,9 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
                 </p>
 
                 <h3 className='font-semibold text-lg mt-1'>
-                  {runner.horse}
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                    {runner.horse}
+                  </button>
                 </h3>
 
                 <p className='text-sm text-muted-foreground'>

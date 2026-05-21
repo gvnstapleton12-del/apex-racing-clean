@@ -1,5 +1,9 @@
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface TopRatedBoardProps {
   races: any[]
 }
@@ -18,6 +22,7 @@ export default function TopRatedBoard({
           race: race.race_name,
           course: race.course,
           time: formatOffTime(race),
+          off_time: race.off_time,
           horse: top.horse,
 
           score:
@@ -107,7 +112,9 @@ export default function TopRatedBoard({
                 </div>
 
                 <h3 className='font-bold text-lg mt-2'>
-                  {selection.horse}
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(selection.horse, selection)}>
+                    {selection.horse}
+                  </button>
                 </h3>
 
                 <p className='text-muted-foreground text-sm'>

@@ -1,25 +1,15 @@
 import { formatOffTime } from '../lib/formatTime'
+import { parseOdds } from '../lib/parseOdds'
 
 interface MarketMoverBoardProps {
   races: any[]
-}
-
-function parseOdds(odds?: string) {
-  if (!odds) return 999
-
-  if (odds.includes('/')) {
-    const [a, b] = odds.split('/').map(Number)
-    return a / b + 1
-  }
-
-  const num = parseFloat(odds)
-  return isNaN(num) ? 999 : num
 }
 
 export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
   const movers = races.flatMap((race: any) =>
     (race.runners || [])
       .filter((runner: any) => {
+        if (!runner.odds) return false
         const odds = parseOdds(runner.odds)
         return odds <= 5
       })

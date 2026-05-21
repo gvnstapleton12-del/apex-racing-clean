@@ -26,6 +26,7 @@ import { computeBetFilter } from './engine6_betFilter.js'
 import { generateExplanation } from './explainability.js'
 import { detectScenarioFlags } from './scenarioFlags.js'
 import { computeConfidenceTier } from './confidenceTiers.js'
+import { computeReplayFlags } from './replayFlagEngine.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -291,6 +292,9 @@ export function runApexEngine(runners, race, options = {}) {
     // Scenario Flags
     const scenarioFlags = detectScenarioFlags(r, sorted, race, paceMap)
 
+    // Replay Intelligence Flags
+    const replayFlags = computeReplayFlags(r, race, { paceMap, runners: sorted })
+
     // Explainability
     const explanation = generateExplanation(r, race, paceMap, sim, value, r.uncertainty)
 
@@ -338,6 +342,8 @@ export function runApexEngine(runners, race, options = {}) {
       scenarioFlags,
       explanation,
       confidenceTier,
+      replayFlags,
+      replayTriggers: replayFlags,
     }
   })
 

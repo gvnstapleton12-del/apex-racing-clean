@@ -1,5 +1,9 @@
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface AIInsightFeedProps {
   races: any[]
 }
@@ -30,6 +34,7 @@ export default function AIInsightFeed({ races }: AIInsightFeedProps) {
         race: race.race_name,
         course: race.course,
         time: formatOffTime(race),
+        off_time: race.off_time,
         score: runner.score,
         insight: generateInsight(runner),
       }))
@@ -58,7 +63,9 @@ export default function AIInsightFeed({ races }: AIInsightFeedProps) {
                 </p>
 
                 <h3 className='text-xl font-bold mt-1'>
-                  {item.horse}
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(item.horse, item)}>
+                    {item.horse}
+                  </button>
                 </h3>
               </div>
 

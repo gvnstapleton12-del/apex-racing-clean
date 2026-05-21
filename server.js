@@ -11,6 +11,7 @@ import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
 import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 import { runApexEngine } from './src/lib/apexEngine.js'
+import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags } from './src/lib/replayTagLibrary.js'
 
 import {
   analyzeHistoricalPerformance,
@@ -74,16 +75,43 @@ function normalizeHorseName(name = '') {
 }
 
 function resolveOdds(runner = {}) {
-  return (
-    runner.spOdds ||
-    runner.sp ||
-    runner.price ||
-    runner.odds ||
-    runner.industry_sp ||
-    runner.starting_price ||
-    runner.returned ||
-    0
-  )
+  const fields = [
+    runner.odds,
+    runner.price,
+    runner.sp,
+    runner.spOdds,
+    runner.sp_odds,
+    runner.starting_price,
+    runner.industry_sp,
+    runner.returned,
+    runner.bf_odds,
+    runner.betfair_odds,
+    runner.bf,
+    runner.best_odds,
+    runner.best_odds_value,
+    runner.forecast_price,
+    runner.early_price,
+    runner.ep,
+    runner.bp,
+    runner.bookmaker_price,
+  ]
+
+  for (const val of fields) {
+    const num = Number(val)
+    if (num > 1 && Number.isFinite(num)) return num
+  }
+
+  if (runner.oddsDecimal) {
+    const num = Number(runner.oddsDecimal)
+    if (num > 1 && Number.isFinite(num)) return num
+  }
+
+  if (runner.spDecimal) {
+    const num = Number(runner.spDecimal)
+    if (num > 1 && Number.isFinite(num)) return num
+  }
+
+  return 0
 }
 
 function shouldTrackBet(aiProfile, marketMovement) {
@@ -279,55 +307,344 @@ function toAtrPopupUrl(href = '') {
     .replace('/form/horse/', '/form-popup/horse/')
 }
 
-async function fetchAtrHorseLinks(race = {}) {
-  const racecardUrl = buildAtrRacecardUrl(race)
+const ATR_HEADERS = {
+  accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'accept-language': 'en-GB,en;q=0.9',
+  'user-agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
+  'cache-control': 'no-cache',
+  'sec-fetch-dest': 'document',
+  'sec-fetch-mode': 'navigate',
+  'sec-fetch-site': 'none',
+  'sec-fetch-user': '?1',
+  'upgrade-insecure-requests': '1',
+}
 
-  if (!racecardUrl) {
-    return {}
+async function fetchAtrPageText(url) {
+  try {
+    const response = await fetch(url, {
+      headers: ATR_HEADERS,
+      referrerPolicy: 'no-referrer-when-downgrade',
+    })
+    if (!response.ok) {
+      return null
+    }
+    return await response.text()
+  } catch {
+    return null
+  }
+}
+
+function extractHorseLinks(html) {
+  const links = {}
+  for (const match of html.matchAll(/href="([^"]*\/form\/horse\/([^"]+))"/g)) {
+    const href = match[1]
+    const parts = href.split('?')[0].split('/')
+    const horseSlug = parts[parts.indexOf('horse') + 1]
+    const horseName = horseSlug.replace(/-/g, ' ')
+    const normalized = normalizeHorseName(horseName)
+    if (normalized && !links[normalized]) {
+      links[normalized] = toAtrPopupUrl(href)
+    }
+  }
+  return links
+}
+
+function extractBestOdds(html) {
+  const odds = {}
+
+  for (const match of html.matchAll(/<div[^>]*id="row-(\d+)"[^>]*data-bestprice="([\d.]+)"[^>]*>/g)) {
+    const price = parseFloat(match[2])
+    if (price <= 1) continue
+
+    const rowStart = match.index
+    const rowEnd = Math.min(rowStart + 2000, html.length)
+    const rowHtml = html.substring(rowStart, rowEnd)
+    const cellMatch = rowHtml.match(/id="([A-Z][A-Za-z0-9]+)-\d+"/)
+    if (cellMatch) {
+      const normalized = normalizeHorseName(cellMatch[1])
+      if (!odds[normalized]) {
+        odds[normalized] = price
+      }
+    }
   }
 
-  const cached = ATR_LINK_CACHE.get(racecardUrl)
+  if (Object.keys(odds).length === 0) {
+    for (const match of html.matchAll(/id="([A-Z][A-Za-z0-9]+)-\d+"[^>]*data-dp="([\d.]+)"/g)) {
+      const price = parseFloat(match[2])
+      const normalized = normalizeHorseName(match[1])
+      if (price > 1 && !odds[normalized]) {
+        odds[normalized] = price
+      }
+    }
+  }
+
+  return odds
+}
+
+async function fetchAtrRacecardData(race = {}) {
+  const mobileUrl = buildAtrRacecardUrl(race)
+
+  if (!mobileUrl) {
+    return { links: {}, odds: {} }
+  }
+
+  const cached = ATR_LINK_CACHE.get(mobileUrl)
 
   if (cached) {
     return cached
   }
 
-  try {
-    const response = await fetch(racecardUrl, {
-      headers: {
-        accept: 'text/html',
-        'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
-      },
-    })
+  const links = {}
+  const odds = {}
 
-    if (!response.ok) {
-      return {}
+  try {
+    const mobileHtml = await fetchAtrPageText(mobileUrl)
+
+    if (mobileHtml) {
+      Object.assign(links, extractHorseLinks(mobileHtml))
     }
 
-    const html = await response.text()
-    const links = {}
+    const desktopUrl = mobileUrl.replace('m.attheraces.com', 'www.attheraces.com')
+    const desktopHtml = await fetchAtrPageText(desktopUrl)
 
-    for (const match of html.matchAll(
-      /href="([^"]*\/form\/horse\/([^"]+))"/g
-    )) {
-      const href = match[1]
-      const parts = href.split('?')[0].split('/')
-      const horseSlug = parts[parts.indexOf('horse') + 1]
-      const horseName = horseSlug.replace(/-/g, ' ')
-      const normalized = normalizeHorseName(horseName)
+    if (desktopHtml) {
+      Object.assign(odds, extractBestOdds(desktopHtml))
 
-      if (normalized && !links[normalized]) {
-        links[normalized] = toAtrPopupUrl(href)
+      if (Object.keys(links).length === 0) {
+        Object.assign(links, extractHorseLinks(desktopHtml))
       }
     }
 
-    ATR_LINK_CACHE.set(racecardUrl, links)
+    if (Object.keys(odds).length > 0) {
+      console.log(`[ATR ODDS] ${Object.keys(odds).length} odds found for ${mobileUrl}`)
+    } else if (desktopHtml) {
+      console.log(`[ATR ODDS] No odds extracted from desktop HTML (${desktopHtml.length} bytes) for ${mobileUrl}`)
+    } else {
+      console.log(`[ATR ODDS] Desktop fetch returned null for ${mobileUrl}`)
+    }
 
-    return links
+    const result = { links, odds }
+    ATR_LINK_CACHE.set(mobileUrl, result)
+
+    return result
   } catch (error) {
-    console.error('Failed to fetch ATR links:', error.message)
-    return {}
+    console.error('Failed to fetch ATR racecard data:', error.message)
+    return { links: {}, odds: {} }
+  }
+}
+
+async function fetchAtrHorseLinks(race = {}) {
+  const data = await fetchAtrRacecardData(race)
+  return data.links
+}
+
+function buildAtrResultsUrl(race = {}) {
+  const url = buildAtrRacecardUrl(race)
+  if (!url) return null
+  return url.replace('/racecard/', '/race/')
+}
+
+function extractRacePositionsFromHtml(html, race) {
+  const knownNames = new Map()
+  ;(race.runners || []).forEach((r) => {
+    const n = normalizeHorseName(r.horse)
+    if (n) knownNames.set(n, r.horse)
+  })
+
+  const seen = new Set()
+  const ordered = []
+
+  for (const match of html.matchAll(/href="([^"]*\/form\/horse\/([^"]+))"/g)) {
+    const name = decodeURIComponent(match[2].replace(/-/g, ' '))
+    const normalized = normalizeHorseName(name)
+    if (!normalized || seen.has(normalized)) continue
+    if (!knownNames.has(normalized)) continue
+    seen.add(normalized)
+
+    const ctxStart = Math.max(0, match.index - 100)
+    const ctxEnd = Math.min(html.length, match.index + 100)
+    const ctx = html.substring(ctxStart, ctxEnd)
+    let sp = 0
+    const spMatch = ctx.match(/(\d+)\/(\d+)/)
+    if (spMatch) sp = parseInt(spMatch[1], 10) / parseInt(spMatch[2], 10) + 1
+
+    ordered.push({ normalized, name: knownNames.get(normalized), sp })
+  }
+
+  return ordered.map((r, i) => ({ ...r, position: i + 1 }))
+}
+
+async function scrapeAtrResultForRace(race) {
+  const url = buildAtrResultsUrl(race)
+  if (!url) return null
+
+  try {
+    const html = await fetchAtrPageText(url)
+    if (!html || html.length < 1000) return null
+    const positions = extractRacePositionsFromHtml(html, race)
+    if (positions.length === 0) {
+      const desktopUrl = url.replace('m.attheraces.com', 'www.attheraces.com')
+      const desktopHtml = await fetchAtrPageText(desktopUrl)
+      if (desktopHtml && desktopHtml.length >= 1000) {
+        const desktopPositions = extractRacePositionsFromHtml(desktopHtml, race)
+        return desktopPositions.length > 0 ? desktopPositions : null
+      }
+      return null
+    }
+    return positions
+  } catch {
+    return null
+  }
+}
+
+async function scrapeFinishedRaceResults() {
+  const races = LIVE_STATE.racecards || []
+  const now = new Date()
+
+  const finished = races.filter((race) => {
+    const offDt = race.off_dt || ''
+    if (!offDt) return false
+    const raceTime = new Date(offDt)
+    if (isNaN(raceTime.getTime())) return false
+    return raceTime < now
+  })
+
+  if (finished.length === 0) return
+
+  let scrapedCount = 0
+  const resultRaces = []
+
+  for (const race of finished) {
+    const alreadyStored = (LEARNING_DATABASE.races || []).some(
+      (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
+    )
+    if (alreadyStored) continue
+
+    const raceAlreadyRecorded = LEARNING_DATABASE.records.some(
+      (r) =>
+        r.signal === 'ATR_SCRAPE' &&
+        r.timestamp?.startsWith(new Date().toISOString().split('T')[0]) &&
+        r.course === race.course
+    )
+    if (raceAlreadyRecorded) continue
+
+    const positions = await scrapeAtrResultForRace(race)
+    if (!positions) continue
+
+    const sortedRunners = [...(race.runners || [])]
+    const resultRunners = sortedRunners.map((runner) => {
+      const normalized = normalizeHorseName(runner.horse)
+      const found = positions.find((p) => p.normalized === normalized)
+      return { ...runner, position: found ? found.position : 0, sp: found?.sp || runner.odds || 0 }
+    })
+
+    const winningOdds = positions.find((p) => p.position === 1)?.sp || 0
+    console.log(`[ATR RESULTS] ${race.course} ${race.off_time} — ${positions.length} positions, SP ${winningOdds.toFixed(2)}`)
+
+    resultRaces.push({ ...race, runners: resultRunners })
+    scrapedCount++
+  }
+
+  if (resultRaces.length === 0) return
+  await processScrapedResults(resultRaces)
+}
+
+async function processScrapedResults(resultRaces) {
+  const existingCount = LEARNING_DATABASE.records.length
+
+  resultRaces.forEach((race) => {
+    const runners = race.runners || []
+    runners.forEach((runner) => {
+      const pos = Number(runner.position || 0)
+      if (pos < 1) return
+      const prediction = findPredictionForRunner(race, runner)
+      LEARNING_DATABASE.records.push({
+        horse: runner.horse,
+        course: race.course,
+        offTime: race.off_time,
+        position: pos,
+        won: pos === 1,
+        spOdds: resolveOdds(runner),
+        aiConfidence: prediction?.confidence || runner.finalScore || 0,
+        signal: 'ATR_SCRAPE',
+        marketMovement: 'N/A',
+        timestamp: new Date().toISOString(),
+        resultProcessed: true,
+        breakdown: prediction?.breakdown || null,
+        weights: prediction?.weights || null,
+      })
+    })
+  })
+
+  LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), ...resultRaces]
+
+  if (LEARNING_DATABASE.records.length > existingCount) {
+    LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(LEARNING_DATABASE.records)
+
+    const rawLearning = learnFromResults(LEARNING_DATABASE.records, LEARNING_DATABASE.weights || {})
+    if (rawLearning.adjusted) {
+      const protectedResult = applyProtectedAdjustment(
+        LEARNING_DATABASE.weights?.multiplier || {},
+        rawLearning.weights.multiplier || {},
+        LEARNING_DATABASE.records
+      )
+      if (protectedResult.adjusted) {
+        LEARNING_DATABASE.weights = { multiplier: protectedResult.weights }
+        LEARNING_DATABASE.lastLearningRun = {
+          date: new Date().toISOString(),
+          totalRecords: rawLearning.totalRecords,
+          winners: rawLearning.winners,
+          analysis: rawLearning.analysis,
+          protected: true,
+          learningRate: protectedResult.learningRate,
+          outliersSuppressed: protectedResult.outliersSuppressed,
+        }
+      }
+    }
+
+    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    matchDailyPicksWithResults(resultRaces)
+    saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+
+    resultRaces.forEach((race) => {
+      const runners = race.runners || []
+      const raceGoing = race.going || ''
+      const raceSurface = race.surface || ''
+      const raceDist = race.distance_f || ''
+      runners.forEach((runner) => {
+        const horseId = runner.horse_id || runner.horse
+        const position = Number(runner.position || 0)
+        if (!horseId || position < 1) return
+
+        if (!GOING_DATABASE[horseId]) GOING_DATABASE[horseId] = { byGoing: {}, bySurface: {} }
+        const gProf = GOING_DATABASE[horseId]
+        const goingKey = raceGoing || 'Unknown'
+        if (!gProf.byGoing[goingKey]) gProf.byGoing[goingKey] = { runs: 0, wins: 0, places: 0 }
+        gProf.byGoing[goingKey].runs++
+        if (position === 1) gProf.byGoing[goingKey].wins++
+        if (position >= 2 && position <= 4) gProf.byGoing[goingKey].places++
+
+        const surfaceKey = raceSurface || 'Unknown'
+        if (!gProf.bySurface[surfaceKey]) gProf.bySurface[surfaceKey] = { runs: 0, wins: 0, places: 0 }
+        gProf.bySurface[surfaceKey].runs++
+        if (position === 1) gProf.bySurface[surfaceKey].wins++
+        if (position >= 2 && position <= 4) gProf.bySurface[surfaceKey].places++
+
+        if (!DISTANCE_DATABASE[horseId]) DISTANCE_DATABASE[horseId] = { lastDistance: 0, performances: [] }
+        const dProf = DISTANCE_DATABASE[horseId]
+        const distVal = parseFloat(String(raceDist).replace(/[^0-9.]/g, '')) || 0
+        if (distVal > 0) {
+          dProf.lastDistance = distVal
+          dProf.performances.push({ distance: distVal, won: position === 1, placed: position >= 2 && position <= 4, date: new Date().toISOString() })
+        }
+      })
+    })
+
+    saveDatabase(GOING_DB_PATH, GOING_DATABASE)
+    saveDatabase(DISTANCE_DB_PATH, DISTANCE_DATABASE)
+
+    console.log(`[ATR RESULTS] Stored ${resultRaces.length} races (${LEARNING_DATABASE.records.length - existingCount} records)`)
   }
 }
 
@@ -379,8 +696,22 @@ async function fetchLiveMeetings() {
     const racecards = data.racecards || []
 
     const processed = await Promise.all(racecards.map(async (race) => {
-      const atrHorseLinks = await fetchAtrHorseLinks(race)
-      const runners = race.runners || []
+      const atrData = await fetchAtrRacecardData(race)
+      const atrHorseLinks = atrData.links
+      const atrOdds = atrData.odds
+
+      const runners = (race.runners || []).map((r) => {
+        const normalized = normalizeHorseName(r.horse)
+        const atrPrice = atrOdds[normalized]
+        if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
+          return { ...r, odds: atrPrice }
+        }
+        return r
+      })
+      const oddsAttached = runners.filter((r) => Number(r.odds || 0) > 1).length
+      if (oddsAttached > 0 && oddsAttached !== (race.runners || []).length) {
+        console.log(`[ATR ODDS] Attached odds to ${oddsAttached}/${runners.length} runners for ${race.course} ${race.off_time}`)
+      }
 
       const apexResult = runApexEngine(runners, race, {
         goingDb: GOING_DATABASE,
@@ -463,6 +794,7 @@ async function fetchLiveMeetings() {
           confidenceTier: runner.confidenceTier,
           confidenceLabel: runner.confidenceLabel,
           confidenceScore: runner.confidenceScore,
+          score: runner.finalScore,
           betQuality: runner.betQuality,
           selectionQuality: runner.selectionQuality,
           runningStyle: runner.runningStyle,
@@ -492,6 +824,8 @@ async function fetchLiveMeetings() {
     console.log(
       `Tracked predictions: ${Object.keys(PREDICTIONS_DATABASE).length}`
     )
+
+    scrapeFinishedRaceResults()
   } catch (error) {
     console.error(error)
   }
@@ -615,6 +949,8 @@ async function fetchTodayResults() {
       saveDatabase(BUCKET_DB_PATH, BUCKET_DATABASE)
       console.log(`[BUCKETS] Updated ${bucketResult.bucketCount} buckets`)
     }
+
+    LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), ...resultRaces]
 
     if (LEARNING_DATABASE.records.length > existingCount) {
       LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(
@@ -858,7 +1194,7 @@ app.get('/api/replay-notes', (_req, res) => {
 })
 
 app.post('/api/replay-notes', (req, res) => {
-  const { horse, course, tags, notes, adjustment } = req.body
+  const { horse, course, tags, notes, adjustment, confidence } = req.body
   if (!horse) {
     return res.status(400).json({ error: 'Horse name required' })
   }
@@ -866,11 +1202,46 @@ app.post('/api/replay-notes', (req, res) => {
   const key = `${horse}|${course || ''}`
   const existing = REPLAY_NOTES_DATABASE[key]
 
+  const allTags = tags || []
+  const posTags = allTags.filter((t) => {
+    const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
+    return def && def.score > 0
+  })
+  const negTags = allTags.filter((t) => {
+    const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
+    return def && def.score < 0
+  })
+
+  const categoryScores = { finishing_energy: 0, pace_suitability: 0, trip_efficiency: 0, mental_professionalism: 0 }
+  allTags.forEach((t) => {
+    const cat = TAG_TO_CATEGORY[t]
+    if (cat && categoryScores[cat] !== undefined) {
+      const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
+      categoryScores[cat] += def ? def.score : 0
+    }
+  })
+
+  const summary = notes || generateAutoSummary(allTags)
+
   REPLAY_NOTES_DATABASE[key] = {
     horse,
     course: course || '',
-    tags: tags || [],
+    tags: allTags,
+    positive_tags: posTags.map((t) => {
+      const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
+      return { tag: t, score: def ? def.score : 0 }
+    }),
+    negative_tags: negTags.map((t) => {
+      const def = Object.values(REPLAY_TAG_LIBRARY).find((lib) => lib[t])
+      return { tag: t, score: def ? def.score : 0 }
+    }),
+    category_scores: categoryScores,
     notes: notes || '',
+    summary,
+    recommended_conditions: getRecommendedConditions(allTags),
+    avoid_tags: getAvoidTags(allTags),
+    watchlist_priority: computeWatchlistPriority(allTags),
+    confidence: confidence != null ? confidence : null,
     adjustment: Math.max(-10, Math.min(10, Number(adjustment) || 0)),
     reviewedAt: new Date().toISOString(),
     reviewCount: (existing?.reviewCount || 0) + 1,

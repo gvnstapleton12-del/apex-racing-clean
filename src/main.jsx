@@ -17,6 +17,7 @@ import { openAtTheRacesHorseForm } from './lib/horseLinks'
 import { formatOffTime } from './lib/formatTime'
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
+import Analytics from './pages/Analytics'
 import CalibrationDashboard from './components/CalibrationDashboard'
 
 const queryClient =
@@ -35,30 +36,19 @@ const tabs = [
   'Analytics',
 ]
 
-function getRunnerScore(runner) {
-  return (
-    runner.finalScore ||
-    runner.aiProfile?.confidence ||
-    runner.score ||
-    0
-  )
-}
-
 function getHomeSelections(races) {
   return races
     .flatMap((race) => {
       const betFilter = race.betFilter || {}
-      const isSkipped = betFilter.verdict === 'AUTO SKIP' || betFilter.verdict === 'HIGH RISK'
+      const isSkipped = betFilter.verdict === 'AUTO SKIP'
 
       return (race.runners || [])
         .filter((runner) => {
           if (isSkipped) return false
           const tier = runner.confidenceTier?.tier
-          if (tier === 'D') return false
-          const valueEdge = runner.valueEngine?.edge || 0
+          if (tier === 'D' && runner.valueEngine?.edge > 0) return false
           const bankrollLabel = runner.bankrollEngine?.label || ''
-          if (bankrollLabel === 'NO BET' || bankrollLabel === 'AVOID') return false
-          if (valueEdge < 0) return false
+          if (bankrollLabel === 'AVOID') return false
           return true
         })
         .map((runner) => ({
@@ -73,7 +63,7 @@ function getHomeSelections(races) {
           winProb: runner.winProb || null,
           placeProb: runner.placeProb || null,
           valueEdge: runner.valueEngine?.edge || 0,
-          confidenceTier: runner.confidenceTier?.tier || 'D',
+          confidenceTier: runner.confidenceTier?.tier || 'B',
           betFilterVerdict: betFilter.verdict || 'BETTABLE',
           selectionQuality: runner.selectionQuality,
         }))
@@ -145,7 +135,10 @@ function PickCard({ selection, rank, result, position }) {
           <button
             type='button'
             className='pick-card-horse'
-            onClick={() => openAtTheRacesHorseForm(selection, selection.race)}
+            onClick={() => {
+              openAtTheRacesHorseForm(selection, selection.race)
+              window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
+            }}
           >
             {selection.horse}
           </button>
@@ -155,12 +148,13 @@ function PickCard({ selection, rank, result, position }) {
             <span>{selection.raceName}</span>
           </p>
           <div className='pick-card-tags'>
-            <span>Odds {selection.odds || '-'}</span>
             <span>Form {selection.form || '-'}</span>
             <span>Draw {selection.draw || '-'}</span>
-            {selection.valueEdge && selection.valueEdge > 0 && (
+            {selection.valueEdge && selection.valueEdge > 0 ? (
               <span className='pick-value-edge'>+{selection.valueEdge}% edge</span>
-            )}
+            ) : selection.valueEdge < 0 ? (
+              <span className='pick-value-edge text-red-400'>{selection.valueEdge}% edge</span>
+            ) : null}
             {selection.selectionQuality && (
               <span className={`pick-sel-grade grade-${selection.selectionQuality.grade.replace('+', 'p')}`}>
                 {selection.selectionQuality.grade}
@@ -210,7 +204,7 @@ function Home() {
     (r) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
   )
   const allSelections = getHomeSelections(ukIreRaces)
-  const picks = allSelections.filter((s) => s.score >= 50).slice(0, 8)
+  const picks = allSelections.filter((s) => s.score >= 40).slice(0, 8)
   const topScore = picks[0]?.score || allSelections[0]?.score || 0
   const totalRunners = allSelections.length
 
@@ -427,6 +421,16 @@ function App() {
     useState('Home')
   const [uploadedResults, setUploadedResults] =
     useState([])
+  const [selectedHorse, setSelectedHorse] = useState(null)
+
+  useEffect(() => {
+    const handler = (e) => {
+      setSelectedHorse(e.detail)
+      setActiveTab('Racecards')
+    }
+    window.addEventListener('select-horse', handler)
+    return () => window.removeEventListener('select-horse', handler)
+  }, [])
 
   useEffect(() => {
     async function loadSavedResults() {
@@ -464,7 +468,7 @@ function App() {
 
   const renderPage = () => {
     if (activeTab === 'Racecards') {
-      return <Racecards />
+      return <Racecards key={selectedHorse?.horse + selectedHorse?.course} />
     }
 
     if (activeTab === 'Results') {
@@ -495,7 +499,9 @@ function App() {
       return <Replays />
     }
 
-    return <PlaceholderPage title={activeTab} />
+    if (activeTab === 'Analytics') {
+      return <Analytics />
+    }
   }
 
   return (

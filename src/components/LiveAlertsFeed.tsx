@@ -1,6 +1,10 @@
 import { useMemo } from 'react'
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface LiveAlertsFeedProps {
   races: any[]
 }
@@ -20,6 +24,7 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
           race: race.race_name,
           course: race.course,
           time: formatOffTime(race),
+          off_time: race.off_time,
           score: runner.score,
           odds: runner.odds,
           triggers: runner.replayTriggers || [],
@@ -69,7 +74,9 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
                 </div>
 
                 <h3 className='font-bold text-lg'>
-                  {alert.horse}
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(alert.horse, alert)}>
+                    {alert.horse}
+                  </button>
                 </h3>
 
                 <p className='text-sm text-muted-foreground'>

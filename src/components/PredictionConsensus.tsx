@@ -1,5 +1,9 @@
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface PredictionConsensusProps {
   races: any[]
 }
@@ -15,6 +19,7 @@ export default function PredictionConsensus({ races }: PredictionConsensusProps)
       race: race.race_name,
       course: race.course,
       time: formatOffTime(race),
+      off_time: race.off_time,
       score: runner.score,
       odds: runner.odds,
       rank: index + 1,
@@ -59,7 +64,9 @@ export default function PredictionConsensus({ races }: PredictionConsensusProps)
               </p>
 
               <h3 className='font-bold text-lg mt-1'>
-                {pick.horse}
+                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(pick.horse, pick)}>
+                  {pick.horse}
+                </button>
               </h3>
 
               <p className='text-sm text-muted-foreground'>

@@ -3939,3 +3939,120 @@ body::after {
 .aof-weight-diff.negative {
   color: #f87171;
 }
+
+@media (max-width: 768px) {
+  .main {
+    padding: 12px;
+  }
+
+  .p-6 {
+    padding: 16px;
+  }
+
+  .text-5xl {
+    font-size: 2rem;
+  }
+
+  .text-4xl {
+    font-size: 1.75rem;
+  }
+
+  .text-3xl {
+    font-size: 1.5rem;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+
+  .runner-row,
+  .rounded-xl {
+    padding: 12px;
+  }
+
+  .replay-card,
+  .replay-flag-card {
+    padding: 12px;
+  }
+
+  .race-card-header,
+  .runner-row {
+    flex-wrap: wrap;
+  }
+
+  .runner-score {
+    min-width: 60px;
+  }
+
+  .runner-score strong {
+    font-size: 18px;
+  }
+
+  .pick-card-body {
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .pick-card-score-ring {
+    align-self: flex-start;
+  }
+
+  .replay-tags {
+    gap: 6px;
+  }
+
+  .replay-tag {
+    min-height: 36px;
+  }
+
+  .replay-btn,
+  .replay-btn-save,
+  .replay-btn-cancel {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .hero-metrics {
+    gap: 12px;
+  }
+
+  .hero-metrics > div {
+    padding: 12px;
+  }
+
+  .flex.gap-2.mb-6 button {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  .race-card-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .result-horse-name button,
+  .pick-card-horse,
+  .replay-card-horse button,
+  h3 button {
+    min-height: 36px;
+    display: inline-block;
+    padding: 4px 0;
+  }
+
+  .space-y-3 > * + * {
+    margin-top: 10px;
+  }
+
+  .space-y-4 > * + * {
+    margin-top: 14px;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 18px;
+  }
+
+  .grid.gap-3 > * + * {
+    margin-top: 10px;
+  }
+}
+

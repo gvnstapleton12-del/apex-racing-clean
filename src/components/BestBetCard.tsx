@@ -1,5 +1,9 @@
 import { formatOffTime } from '../lib/formatTime'
 
+function selectHorse(horse, race) {
+  window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
+}
+
 interface BestBetCardProps {
   races: any[]
 }
@@ -37,7 +41,9 @@ export default function BestBetCard({ races }: BestBetCardProps) {
       <div className='space-y-3'>
         <div>
           <h2 className='text-4xl font-bold'>
-            {best.horse}
+            <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(best.horse, { course: best.course, off_time: best.offTime })}>
+              {best.horse}
+            </button>
           </h2>
 
           <p className='text-muted-foreground mt-1'>
