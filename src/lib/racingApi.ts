@@ -1,9 +1,13 @@
 import type { Race } from './types'
 import { validateRaces } from './validate'
 
+import type { Race } from './types'
+import { validateRaces } from './validate'
+import { apiUrl } from './api'
+
 export async function fetchRacecards(): Promise<Race[]> {
   try {
-    const response = await fetch('/api/live-state')
+    const response = await fetch(apiUrl('/api/live-state'))
     const data = await response.json()
     const raw = data.racecards || []
     const { valid } = validateRaces(raw)
@@ -16,7 +20,7 @@ export async function fetchRacecards(): Promise<Race[]> {
 
 export async function fetchResults(): Promise<Race[]> {
   try {
-    const response = await fetch('/api/results')
+    const response = await fetch(apiUrl('/api/results'))
     const data = await response.json()
     const raw = Array.isArray(data) ? data : []
     const { valid } = validateRaces(raw)
