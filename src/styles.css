@@ -2571,6 +2571,12 @@ body::after {
   overflow: visible;
   transition: transform 0.2s;
   padding-right: 130px;
+  display: block;
+  background: transparent;
+  min-height: auto;
+  gap: 0;
+  padding: 24px;
+  padding-right: 130px;
 }
 
 .pick-card:hover {
@@ -2599,25 +2605,24 @@ body::after {
 }
 
 .pick-card-score-ring {
-  position: absolute !important;
-  top: 24px !important;
-  right: 24px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 112px !important;
-  height: 112px !important;
-  border-radius: 16px !important;
-  background: rgba(52, 211, 153, 0.15) !important;
-  border: 2px solid rgba(52, 211, 153, 0.4) !important;
-  flex-shrink: 0 !important;
-  z-index: 10 !important;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 112px;
+  border-radius: 16px;
+  background: #0a1a14;
+  border: 2px solid #34d399;
+  z-index: 10;
 }
 
 .rank-1 .pick-card-score-ring {
-  background: rgba(245, 158, 11, 0.15) !important;
-  border-color: rgba(245, 158, 11, 0.4) !important;
+  background: #1a1410;
+  border-color: #f59e0b;
 }
 
 .pick-card-rank-grade {
@@ -2776,7 +2781,7 @@ body::after {
 }
 
 .pick-card-score-label {
-  color: rgba(255, 255, 255, 0.4);
+  color: #9ca3af;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -2795,18 +2800,26 @@ body::after {
   color: #fbbf24;
 }
 
-.pick-card-probs {
-  display: flex;
-  gap: 6px;
-  margin-top: 4px;
-}
-
-.pick-card-winprob,
-.pick-card-placeprob {
+.pick-card-winprob {
+  color: #34d399;
   font-size: 10px;
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+.pick-card-placeprob {
+  color: #60a5fa;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.pick-card-probs {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .pick-card-prob-range {
@@ -2815,11 +2828,6 @@ body::after {
   font-weight: 600;
   letter-spacing: 0.5px;
   margin-left: 4px;
-}
-
-.rank-1 .pick-card-score {
-  color: #f59e0b;
-  font-size: 30px;
 }
 
 .race-modal-backdrop {
