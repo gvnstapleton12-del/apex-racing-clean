@@ -185,6 +185,20 @@ export default function RacePage({ race, onBack }: RacePageProps) {
                     </div>
                   )}
 
+                  {runner.placeTraits && (
+                    <div className='mt-5 pt-5 border-t border-white/5'>
+                      <SectionHeader title='Place Traits' />
+                      <div className='grid grid-cols-6 gap-3'>
+                        <StatCard label='Consistency' value={runner.placeTraits.consistency} color={runner.placeTraits.consistency >= 65 ? 'text-green-400' : runner.placeTraits.consistency >= 50 ? 'text-amber-400' : 'text-red-400'} />
+                        <StatCard label='Reliability' value={runner.placeTraits.reliability} color={runner.placeTraits.reliability >= 65 ? 'text-green-400' : runner.placeTraits.reliability >= 50 ? 'text-amber-400' : 'text-red-400'} />
+                        <StatCard label='Honesty' value={runner.placeTraits.honesty} color={runner.placeTraits.honesty >= 65 ? 'text-green-400' : runner.placeTraits.honesty >= 50 ? 'text-amber-400' : 'text-red-400'} />
+                        <StatCard label='Fin. Kick' value={runner.placeTraits.finishingKick} color={runner.placeTraits.finishingKick >= 65 ? 'text-green-400' : runner.placeTraits.finishingKick >= 50 ? 'text-amber-400' : 'text-red-400'} />
+                        <StatCard label='Explosive' value={runner.placeTraits.explosiveAbility} color={runner.placeTraits.explosiveAbility >= 65 ? 'text-green-400' : runner.placeTraits.explosiveAbility >= 50 ? 'text-amber-400' : 'text-red-400'} />
+                        <StatCard label='Market' value={runner.placeTraits.marketConfidence} color={runner.placeTraits.marketConfidence >= 65 ? 'text-green-400' : runner.placeTraits.marketConfidence >= 50 ? 'text-amber-400' : 'text-red-400'} />
+                      </div>
+                    </div>
+                  )}
+
                   {runner.components && (
                     <div className='mt-5 pt-5 border-t border-white/5'>
                       <SectionHeader title='Component Scores' badge={`${runner.components.finalScore}`} badgeColor='bg-amber-500/10 text-amber-400' />
