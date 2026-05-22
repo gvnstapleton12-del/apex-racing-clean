@@ -1,19 +1,20 @@
 import { formatOffTime } from '../lib/formatTime'
 import { parseOdds } from '../lib/parseOdds'
+import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 interface MarketMoverBoardProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
-  const movers = races.flatMap((race: any) =>
+  const movers = races.flatMap((race: Race) =>
     (race.runners || [])
-      .filter((runner: any) => {
+      .filter((runner: Runner) => {
         if (!runner.odds) return false
         const odds = parseOdds(runner.odds)
         return odds <= 5
       })
-      .map((runner: any) => ({
+      .map((runner: Runner) => ({
         horse: runner.horse,
         odds: runner.odds,
         score: runner.score,
@@ -25,7 +26,7 @@ export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
   )
 
   const sorted = movers.sort(
-    (a: any, b: any) => (b.score || 0) - (a.score || 0)
+    (a, b) => (b.score || 0) - (a.score || 0)
   )
 
   return (
@@ -39,7 +40,7 @@ export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
       </div>
 
       <div className='space-y-3'>
-        {sorted.map((runner: any, index: number) => (
+        {sorted.map((runner, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'
@@ -64,7 +65,7 @@ export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
               </p>
 
               <div className='flex gap-2 mt-2 flex-wrap'>
-                {runner.triggers.map((trigger: any) => (
+                {runner.triggers.map((trigger: ReplayTrigger) => (
                   <span
                     key={trigger.key}
                     className='text-xs px-2 py-1 rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300'

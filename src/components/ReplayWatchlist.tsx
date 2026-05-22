@@ -1,31 +1,32 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface ReplayWatchlistProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function ReplayWatchlist({ races }: ReplayWatchlistProps) {
-  const flagged = races.flatMap((race: any) =>
+  const flagged = races.flatMap((race: Race) =>
     (race.runners || [])
-      .filter((runner: any) =>
+      .filter((runner: Runner) =>
         runner.replayTriggers && runner.replayTriggers.length > 0
       )
-      .map((runner: any) => ({
+      .map((runner: Runner) => ({
         horse: runner.horse,
         race: race.race_name,
         course: race.course,
         time: formatOffTime(race),
         off_time: race.off_time,
-        triggers: runner.replayTriggers,
-        highSeverity: runner.replayTriggers.some((t: any) => t.severity === 'high'),
+        triggers: runner.replayTriggers!,
+        highSeverity: runner.replayTriggers!.some((t: ReplayTrigger) => t.severity === 'high'),
       }))
   )
 
-  const sorted = flagged.sort((a: any, b: any) => {
+  const sorted = flagged.sort((a, b) => {
     if (a.highSeverity && !b.highSeverity) return -1
     if (!a.highSeverity && b.highSeverity) return 1
     return 0
@@ -45,7 +46,7 @@ export default function ReplayWatchlist({ races }: ReplayWatchlistProps) {
             No replay triggers detected.
           </div>
         ) : (
-          flagged.map((item: any, index: number) => (
+          flagged.map((item, index: number) => (
             <div
               key={index}
               className={`rounded-xl border p-4 ${item.highSeverity ? 'border-red-500/30' : ''}`}
@@ -59,13 +60,13 @@ export default function ReplayWatchlist({ races }: ReplayWatchlistProps) {
                 </p>
               </div>
               <h3 className='font-bold text-lg'>
-                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(item.horse, item)}>
+                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(item.horse!, item)}>
                   {item.horse}
                 </button>
               </h3>
               <p className='text-sm text-muted-foreground mb-2'>{item.race}</p>
               <div className='flex gap-2 flex-wrap'>
-                {item.triggers.map((trigger: any) => (
+                {item.triggers.map((trigger: ReplayTrigger) => (
                   <span
                     key={trigger.key}
                     className={`text-xs px-2 py-1 rounded-lg border ${

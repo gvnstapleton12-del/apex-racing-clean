@@ -1,11 +1,12 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface ConfidenceHeatmapProps {
-  races: any[]
+  races: Race[]
 }
 
 function getConfidence(score: number) {
@@ -37,8 +38,8 @@ function getConfidence(score: number) {
 }
 
 export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
-  const runners = races.flatMap((race: any) =>
-    (race.runners || []).map((runner: any) => ({
+  const runners = races.flatMap((race: Race) =>
+    (race.runners || []).map((runner: Runner) => ({
       horse: runner.horse,
       score: runner.score || 0,
       race: race.race_name,
@@ -49,7 +50,7 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
   )
 
   const sorted = runners
-    .sort((a: any, b: any) => b.score - a.score)
+    .sort((a, b) => b.score - a.score)
     .slice(0, 20)
 
   return (
@@ -63,7 +64,7 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
       </div>
 
       <div className='grid gap-3'>
-        {sorted.map((runner: any, index: number) => {
+        {sorted.map((runner, index: number) => {
           const confidence = getConfidence(runner.score)
 
           return (
@@ -77,7 +78,7 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
                 </p>
 
                 <h3 className='font-semibold text-lg mt-1'>
-                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse!, runner)}>
                     {runner.horse}
                   </button>
                 </h3>

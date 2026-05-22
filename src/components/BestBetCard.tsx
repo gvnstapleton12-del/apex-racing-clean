@@ -1,16 +1,17 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface BestBetCardProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function BestBetCard({ races }: BestBetCardProps) {
-  const selections = races.flatMap((race: any) =>
-    (race.runners || []).map((runner: any) => ({
+  const selections = races.flatMap((race: Race) =>
+    (race.runners || []).map((runner: Runner) => ({
       ...runner,
       raceName: race.race_name,
       course: race.course,
@@ -19,7 +20,7 @@ export default function BestBetCard({ races }: BestBetCardProps) {
   )
 
   const best = selections.sort(
-    (a: any, b: any) => (b.score || 0) - (a.score || 0)
+    (a: Runner & { raceName?: string; course?: string; offTime?: string }, b: Runner & { raceName?: string; course?: string; offTime?: string }) => (b.score || 0) - (a.score || 0)
   )[0]
 
   if (!best) {
@@ -41,7 +42,7 @@ export default function BestBetCard({ races }: BestBetCardProps) {
       <div className='space-y-3'>
         <div>
           <h2 className='text-4xl font-bold'>
-            <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(best.horse, { course: best.course, off_time: best.offTime })}>
+            <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(best.horse!, { course: best.course, off_time: best.offTime })}>
               {best.horse}
             </button>
           </h2>
@@ -87,7 +88,7 @@ export default function BestBetCard({ races }: BestBetCardProps) {
             </p>
 
             <div className='flex gap-2 flex-wrap'>
-              {best.replayTriggers.map((trigger: any) => (
+              {best.replayTriggers.map((trigger) => (
                 <span
                   key={trigger.key}
                   className='text-xs px-2 py-1 rounded-lg border border-red-500/20 bg-red-500/10 text-red-300'

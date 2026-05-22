@@ -1,20 +1,21 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface PredictionConsensusProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function PredictionConsensus({ races }: PredictionConsensusProps) {
-  const consensus = races.flatMap((race: any) => {
+  const consensus = races.flatMap((race: Race) => {
     const sorted = [...(race.runners || [])]
-      .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+      .sort((a: Runner, b: Runner) => (b.score || 0) - (a.score || 0))
       .slice(0, 3)
 
-    return sorted.map((runner: any, index: number) => ({
+    return sorted.map((runner: Runner, index: number) => ({
       horse: runner.horse,
       race: race.race_name,
       course: race.course,
@@ -43,7 +44,7 @@ export default function PredictionConsensus({ races }: PredictionConsensusProps)
       </div>
 
       <div className='space-y-3'>
-        {consensus.map((pick: any, index: number) => (
+        {consensus.map((pick, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'
@@ -64,7 +65,7 @@ export default function PredictionConsensus({ races }: PredictionConsensusProps)
               </p>
 
               <h3 className='font-bold text-lg mt-1'>
-                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(pick.horse, pick)}>
+                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(pick.horse!, pick)}>
                   {pick.horse}
                 </button>
               </h3>

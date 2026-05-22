@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { parseOdds } from '../lib/parseOdds'
+import type { Race } from '../lib/types'
 
 interface BetRecord {
   horse: string

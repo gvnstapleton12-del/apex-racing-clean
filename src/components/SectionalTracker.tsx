@@ -1,8 +1,10 @@
+import type { Race, Runner } from '../lib/types'
+
 interface SectionalTrackerProps {
-  race: any
+  race: Race
 }
 
-function classifySectional(runner: any) {
+function classifySectional(runner: Runner) {
   const score = runner.score || 0
   const triggers = runner.replayTriggers || []
 
@@ -35,11 +37,11 @@ function classifySectional(runner: any) {
 
 export default function SectionalTracker({ race }: SectionalTrackerProps) {
   const runners = (race.runners || [])
-    .map((runner: any) => ({
+    .map((runner: Runner) => ({
       ...runner,
       sectional: classifySectional(runner),
     }))
-    .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
 
   return (
     <div className='rounded-2xl border bg-card p-6'>
@@ -52,7 +54,7 @@ export default function SectionalTracker({ race }: SectionalTrackerProps) {
       </div>
 
       <div className='space-y-3'>
-        {runners.map((runner: any, index: number) => (
+        {runners.map((runner, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'

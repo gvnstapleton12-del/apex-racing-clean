@@ -1,8 +1,10 @@
+import type { Race, Runner } from '../lib/types'
+
 interface TrainerFormBoardProps {
-  races: any[]
+  races: Race[]
 }
 
-function calculateTrainerScores(races: any[]) {
+function calculateTrainerScores(races: Race[]) {
   const trainers: Record<string, {
     trainer: string
     runners: number
@@ -10,8 +12,8 @@ function calculateTrainerScores(races: any[]) {
     avgScore: number
   }> = {}
 
-  races.forEach((race: any) => {
-    ;(race.runners || []).forEach((runner: any) => {
+  races.forEach((race: Race) => {
+    ;(race.runners || []).forEach((runner: Runner) => {
       const trainer = runner.trainer || 'Unknown'
 
       if (!trainers[trainer]) {

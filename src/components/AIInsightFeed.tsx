@@ -1,14 +1,15 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface AIInsightFeedProps {
-  races: any[]
+  races: Race[]
 }
 
-function generateInsight(runner: any) {
+function generateInsight(runner: Runner) {
   if ((runner.score || 0) >= 90) {
     return 'Elite confidence profile detected with strong model alignment.'
   }
@@ -25,11 +26,11 @@ function generateInsight(runner: any) {
 }
 
 export default function AIInsightFeed({ races }: AIInsightFeedProps) {
-  const insights = races.flatMap((race: any) =>
+  const insights = races.flatMap((race: Race) =>
     (race.runners || [])
-      .filter((runner: any) => (runner.score || 0) >= 70)
+      .filter((runner: Runner) => (runner.score || 0) >= 70)
       .slice(0, 3)
-      .map((runner: any) => ({
+      .map((runner: Runner) => ({
         horse: runner.horse,
         race: race.race_name,
         course: race.course,
@@ -51,7 +52,7 @@ export default function AIInsightFeed({ races }: AIInsightFeedProps) {
       </div>
 
       <div className='space-y-4'>
-        {insights.map((item: any, index: number) => (
+        {insights.map((item, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-5 bg-gradient-to-br from-zinc-900 to-black'
@@ -63,7 +64,7 @@ export default function AIInsightFeed({ races }: AIInsightFeedProps) {
                 </p>
 
                 <h3 className='text-xl font-bold mt-1'>
-                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(item.horse, item)}>
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(item.horse!, item)}>
                     {item.horse}
                   </button>
                 </h3>

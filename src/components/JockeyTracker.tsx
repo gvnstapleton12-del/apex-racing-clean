@@ -1,8 +1,10 @@
+import type { Race, Runner } from '../lib/types'
+
 interface JockeyTrackerProps {
-  races: any[]
+  races: Race[]
 }
 
-function calculateJockeyMetrics(races: any[]) {
+function calculateJockeyMetrics(races: Race[]) {
   const jockeys: Record<string, {
     jockey: string
     rides: number
@@ -11,8 +13,8 @@ function calculateJockeyMetrics(races: any[]) {
     eliteRides: number
   }> = {}
 
-  races.forEach((race: any) => {
-    ;(race.runners || []).forEach((runner: any) => {
+  races.forEach((race: Race) => {
+    ;(race.runners || []).forEach((runner: Runner) => {
       const jockey = runner.jockey || 'Unknown'
 
       if (!jockeys[jockey]) {

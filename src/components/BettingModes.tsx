@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
 interface BettingModesProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function BettingModes({ races }: BettingModesProps) {
   const [mode, setMode] = useState('balanced')
 
-  const runners = races.flatMap((race: any) =>
-    (race.runners || []).map((runner: any) => ({
+  const runners = races.flatMap((race: Race) =>
+    (race.runners || []).map((runner: Runner) => ({
       ...runner,
       race: race.race_name,
       course: race.course,
@@ -17,7 +18,7 @@ export default function BettingModes({ races }: BettingModesProps) {
     }))
   )
 
-  const filtered = runners.filter((runner: any) => {
+  const filtered = runners.filter((runner: Runner & { race?: string; course?: string; time?: string }) => {
     const score = runner.score || 0
 
     if (mode === 'safe') {
@@ -32,7 +33,7 @@ export default function BettingModes({ races }: BettingModesProps) {
   })
 
   const sorted = filtered
-    .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
     .slice(0, 10)
 
   return (
@@ -64,7 +65,7 @@ export default function BettingModes({ races }: BettingModesProps) {
       </div>
 
       <div className='space-y-3'>
-        {sorted.map((runner: any, index: number) => (
+        {sorted.map((runner, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'

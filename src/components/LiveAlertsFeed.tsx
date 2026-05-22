@@ -1,25 +1,26 @@
 import { useMemo } from 'react'
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface LiveAlertsFeedProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
   const alerts = useMemo(() => {
-    return races.flatMap((race: any) =>
+    return races.flatMap((race: Race) =>
       (race.runners || [])
-        .filter((runner: any) => {
+        .filter((runner: Runner) => {
           const score = runner.score || 0
           const triggers = runner.replayTriggers || []
 
           return score >= 85 || triggers.length >= 2
         })
-        .map((runner: any) => ({
+        .map((runner: Runner) => ({
           horse: runner.horse,
           race: race.race_name,
           course: race.course,
@@ -30,7 +31,7 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
           triggers: runner.replayTriggers || [],
         }))
     )
-      .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
       .slice(0, 15)
   }, [races])
 
@@ -57,7 +58,7 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
             No live alerts detected.
           </div>
         ) : (
-          alerts.map((alert: any, index: number) => (
+          alerts.map((alert, index: number) => (
             <div
               key={index}
               className='rounded-xl border p-4 flex items-center justify-between bg-gradient-to-r from-zinc-950 to-black'
@@ -74,7 +75,7 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
                 </div>
 
                 <h3 className='font-bold text-lg'>
-                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(alert.horse, alert)}>
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(alert.horse!, alert)}>
                     {alert.horse}
                   </button>
                 </h3>
@@ -84,7 +85,7 @@ export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
                 </p>
 
                 <div className='flex gap-2 mt-2 flex-wrap'>
-                  {alert.triggers.map((trigger: any) => (
+                  {alert.triggers.map((trigger: ReplayTrigger) => (
                     <span
                       key={trigger.key}
                       className='text-xs px-2 py-1 rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300'

@@ -1,23 +1,24 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface StableAlertsProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function StableAlerts({ races }: StableAlertsProps) {
-  const alerts = races.flatMap((race: any) =>
+  const alerts = races.flatMap((race: Race) =>
     (race.runners || [])
-      .filter((runner: any) => {
+      .filter((runner: Runner) => {
         const score = runner.score || 0
         const triggers = runner.replayTriggers || []
 
         return score >= 80 || triggers.length >= 2
       })
-      .map((runner: any) => ({
+      .map((runner: Runner) => ({
         horse: runner.horse,
         trainer: runner.trainer,
         score: runner.score,
@@ -30,7 +31,7 @@ export default function StableAlerts({ races }: StableAlertsProps) {
       }))
   )
 
-  const grouped = alerts.reduce((acc: any, runner: any) => {
+  const grouped = alerts.reduce((acc: Record<string, typeof alerts>, runner) => {
     const trainer = runner.trainer || 'Unknown'
 
     if (!acc[trainer]) {
@@ -40,11 +41,11 @@ export default function StableAlerts({ races }: StableAlertsProps) {
     acc[trainer].push(runner)
 
     return acc
-  }, {})
+  }, {} as Record<string, typeof alerts>)
 
   const trainerAlerts = Object.entries(grouped)
-    .filter(([_, runners]: any) => runners.length >= 2)
-    .map(([trainer, runners]: any) => ({
+    .filter(([_, runners]) => runners.length >= 2)
+    .map(([trainer, runners]) => ({
       trainer,
       runners,
     }))
@@ -65,7 +66,7 @@ export default function StableAlerts({ races }: StableAlertsProps) {
             No major stable alerts detected.
           </div>
         ) : (
-          trainerAlerts.map((stable: any, index: number) => (
+          trainerAlerts.map((stable, index: number) => (
             <div
               key={index}
               className='rounded-xl border p-5'
@@ -87,14 +88,14 @@ export default function StableAlerts({ races }: StableAlertsProps) {
               </div>
 
               <div className='space-y-3'>
-                {stable.runners.map((runner: any, runnerIndex: number) => (
+                {stable.runners.map((runner, runnerIndex: number) => (
                   <div
                     key={runnerIndex}
                     className='rounded-lg border p-4 flex items-center justify-between'
                   >
                     <div>
                       <p className='font-semibold'>
-                        <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                        <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse!, runner)}>
                           {runner.horse}
                         </button>
                       </p>

@@ -1,8 +1,9 @@
 import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
 interface RaceModalProps {
-  race: any
+  race: Race
   onClose: () => void
 }
 
@@ -41,7 +42,7 @@ export default function RaceModal({
         <div className='modal-runner-list'>
           {(race.runners || []).map(
             (
-              runner: any,
+              runner: Runner,
               index: number
             ) => (
               <div

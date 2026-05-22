@@ -1,18 +1,19 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface TopRatedBoardProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function TopRatedBoard({
   races,
 }: TopRatedBoardProps) {
   const topSelections = races
-    .flatMap((race: any) => {
+    .flatMap((race: Race) => {
       const top = race.runners?.[0]
 
       if (!top) return []
@@ -112,7 +113,7 @@ export default function TopRatedBoard({
                 </div>
 
                 <h3 className='font-bold text-lg mt-2'>
-                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(selection.horse, selection)}>
+                  <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(selection.horse!, selection)}>
                     {selection.horse}
                   </button>
                 </h3>

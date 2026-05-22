@@ -1,13 +1,14 @@
 import { formatOffTime } from '../lib/formatTime'
+import type { Race, Runner } from '../lib/types'
 
 interface VolatilityGaugeProps {
-  races: any[]
+  races: Race[]
 }
 
-function calculateVolatility(runners: any[]) {
+function calculateVolatility(runners: Runner[]) {
   if (!runners || runners.length === 0) return 0
 
-  const scores = runners.map((r: any) => r.score || 0)
+  const scores = runners.map((r: Runner) => r.score || 0)
 
   const avg = scores.reduce((a: number, b: number) => a + b, 0) / scores.length
 
@@ -19,7 +20,7 @@ function calculateVolatility(runners: any[]) {
 }
 
 export default function VolatilityGauge({ races }: VolatilityGaugeProps) {
-  const raceVolatility = races.map((race: any) => {
+  const raceVolatility = races.map((race: Race) => {
     const volatility = calculateVolatility(race.runners || [])
 
     let label = 'Stable'
@@ -54,7 +55,7 @@ export default function VolatilityGauge({ races }: VolatilityGaugeProps) {
       </div>
 
       <div className='space-y-3'>
-        {raceVolatility.map((race: any, index: number) => (
+        {raceVolatility.map((race, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'

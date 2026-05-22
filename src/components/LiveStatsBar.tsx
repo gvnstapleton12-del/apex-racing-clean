@@ -1,21 +1,23 @@
+import type { Race, Runner } from '../lib/types'
+
 interface LiveStatsBarProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function LiveStatsBar({ races }: LiveStatsBarProps) {
   const totalRaces = races.length
 
   const totalRunners = races.reduce(
-    (acc: number, race: any) => acc + (race.runners?.length || 0),
+    (acc: number, race: Race) => acc + (race.runners?.length || 0),
     0
   )
 
   const replayFlags = races.reduce(
-    (acc: number, race: any) => {
+    (acc: number, race: Race) => {
       return (
         acc +
         (race.runners || []).filter(
-          (runner: any) =>
+          (runner: Runner) =>
             runner.replayTriggers &&
             runner.replayTriggers.length > 0
         ).length

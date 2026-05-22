@@ -1,17 +1,18 @@
 import { formatOffTime } from '../lib/formatTime'
 import { parseOdds } from '../lib/parseOdds'
+import type { Race, Runner } from '../lib/types'
 
-function selectHorse(horse, race) {
+function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
   window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse, course: race.course, offTime: race.off_time } }))
 }
 
 interface ValueIndexProps {
-  races: any[]
+  races: Race[]
 }
 
 export default function ValueIndex({ races }: ValueIndexProps) {
-  const valueRunners = races.flatMap((race: any) =>
-    (race.runners || []).map((runner: any) => {
+  const valueRunners = races.flatMap((race: Race) =>
+    (race.runners || []).map((runner: Runner) => {
       const odds = parseOdds(runner.odds)
       const score = runner.score || 0
 
@@ -31,7 +32,7 @@ export default function ValueIndex({ races }: ValueIndexProps) {
   )
 
   const sorted = valueRunners
-    .sort((a: any, b: any) => b.valueIndex - a.valueIndex)
+    .sort((a, b) => b.valueIndex - a.valueIndex)
     .slice(0, 15)
 
   return (
@@ -45,7 +46,7 @@ export default function ValueIndex({ races }: ValueIndexProps) {
       </div>
 
       <div className='space-y-3'>
-        {sorted.map((runner: any, index: number) => (
+        {sorted.map((runner, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'
@@ -56,7 +57,7 @@ export default function ValueIndex({ races }: ValueIndexProps) {
               </p>
 
               <h3 className='font-bold text-lg mt-1'>
-                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse, runner)}>
+                <button type='button' className='hover:text-amber-300 transition text-left' onClick={() => selectHorse(runner.horse!, runner)}>
                   {runner.horse}
                 </button>
               </h3>

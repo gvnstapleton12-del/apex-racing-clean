@@ -1,8 +1,10 @@
+import type { Race, Runner } from '../lib/types'
+
 interface PaceMapProps {
-  race: any
+  race: Race
 }
 
-function detectRunStyle(runner: any) {
+function detectRunStyle(runner: Runner) {
   const score = runner.score || 0
 
   if (score >= 90) return 'Leader'
@@ -20,7 +22,7 @@ const styleConfig: Record<string, string> = {
 }
 
 export default function PaceMap({ race }: PaceMapProps) {
-  const runners = (race.runners || []).map((runner: any) => ({
+  const runners = (race.runners || []).map((runner: Runner) => ({
     ...runner,
     style: detectRunStyle(runner),
   }))
@@ -36,7 +38,7 @@ export default function PaceMap({ race }: PaceMapProps) {
       </div>
 
       <div className='space-y-3'>
-        {runners.map((runner: any, index: number) => (
+        {runners.map((runner, index: number) => (
           <div
             key={index}
             className='rounded-xl border p-4 flex items-center justify-between'
