@@ -333,27 +333,30 @@ button {
 .hero-metrics {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .hero-metrics div {
-  background: rgba(8, 9, 11, 0.64);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
   padding: 16px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .hero-metrics span {
   color: var(--muted);
   display: block;
-  font-size: 12px;
-  margin-bottom: 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
 .hero-metrics strong {
-  color: #fff;
+  color: #fbbf24;
   display: block;
-  font-size: clamp(24px, 3vw, 38px);
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .race-grid {
