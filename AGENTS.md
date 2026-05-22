@@ -63,9 +63,30 @@ Three-layer separation:
 - **Race filtering**: Use `filterGBIRE()`, `filterToday()`, `sortByOffTime()` from engine
 - **Commits**: `npm run build` before every commit; build must pass
 
-## Running
+## Build & Deploy
 
 ```bash
-npm run dev    # Frontend :5173 + Backend :3000
-npm run build  # Production build
+npm run dev              # Frontend :5173 + Backend :3000
+npm run build            # Production build (dist/)
+npm run apk              # Build + sync Capacitor + open Android Studio (APK)
+npm run desktop          # Build Windows portable .exe (via Electron)
+npm run electron:dev     # Test Electron app locally
 ```
+
+## Mobile APK (Android)
+
+```bash
+npm run apk
+```
+Requires Android Studio installed. The APK will be at `android/app/build/outputs/apk/debug/`.
+
+## Desktop App (Windows)
+
+```bash
+npm run desktop
+```
+The `.exe` will be in `dist/` folder. No dependencies needed to run it.
+
+### Requirements
+- **APK**: Android Studio (free, download from developer.android.com)
+- **Desktop (.exe)**: No extra tools required
