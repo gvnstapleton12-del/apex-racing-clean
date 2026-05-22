@@ -4,6 +4,7 @@ import type { Race } from '../lib/types'
 import { fetchRacecards } from '../lib/racingApi'
 import { filterGBIRE } from '../lib/engine'
 
+import ErrorBoundary from '../components/ErrorBoundary'
 import LiveStatsBar from '@/components/LiveStatsBar'
 import BestBetCard from '@/components/BestBetCard'
 import TopRatedBoard from '@/components/TopRatedBoard'
@@ -76,36 +77,36 @@ export default function IntelligenceDashboard() {
         </div>
       </div>
 
-      <LiveStatsBar races={filteredRaces} />
+      <ErrorBoundary name='LiveStatsBar'><LiveStatsBar races={filteredRaces} /></ErrorBoundary>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <BestBetCard races={filteredRaces} />
-        <LiveAlertsFeed races={filteredRaces} />
+        <ErrorBoundary name='BestBetCard'><BestBetCard races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='LiveAlertsFeed'><LiveAlertsFeed races={filteredRaces} /></ErrorBoundary>
       </div>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <TopRatedBoard races={filteredRaces} />
-        <PredictionConsensus races={filteredRaces} />
+        <ErrorBoundary name='TopRatedBoard'><TopRatedBoard races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='PredictionConsensus'><PredictionConsensus races={filteredRaces} /></ErrorBoundary>
       </div>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ReplayWatchlist races={filteredRaces} />
-        <HiddenValueBoard races={filteredRaces} />
+        <ErrorBoundary name='ReplayWatchlist'><ReplayWatchlist races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='HiddenValueBoard'><HiddenValueBoard races={filteredRaces} /></ErrorBoundary>
       </div>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <SmartMoneyTracker races={filteredRaces} />
-        <VolatilityGauge races={filteredRaces} />
+        <ErrorBoundary name='SmartMoneyTracker'><SmartMoneyTracker races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='VolatilityGauge'><VolatilityGauge races={filteredRaces} /></ErrorBoundary>
       </div>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ConfidenceHeatmap races={filteredRaces} />
-        <ValueIndex races={filteredRaces} />
+        <ErrorBoundary name='ConfidenceHeatmap'><ConfidenceHeatmap races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='ValueIndex'><ValueIndex races={filteredRaces} /></ErrorBoundary>
       </div>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <TrainerFormBoard races={filteredRaces} />
-        <JockeyTracker races={filteredRaces} />
+        <ErrorBoundary name='TrainerFormBoard'><TrainerFormBoard races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='JockeyTracker'><JockeyTracker races={filteredRaces} /></ErrorBoundary>
       </div>
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <StableAlerts races={filteredRaces} />
-        <AIInsightFeed races={filteredRaces} />
+        <ErrorBoundary name='StableAlerts'><StableAlerts races={filteredRaces} /></ErrorBoundary>
+        <ErrorBoundary name='AIInsightFeed'><AIInsightFeed races={filteredRaces} /></ErrorBoundary>
       </div>
-      <ROITracker />
+      <ErrorBoundary name='ROITracker'><ROITracker /></ErrorBoundary>
     </div>
   )
 }
