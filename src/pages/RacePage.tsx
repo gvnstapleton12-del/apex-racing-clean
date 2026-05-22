@@ -25,7 +25,7 @@ export default function RacePage({ race, onBack }: RacePageProps) {
         ← Back to Racecards
       </button>
 
-      <div style={{ border: '1px solid rgba(52, 211, 153, 0.1)', borderRadius: '16px', overflow: 'hidden' }}>
+      <div style={{ border: '1px solid rgba(52, 211, 153, 0.1)', borderRadius: '16px', overflow: 'hidden', background: 'rgba(15, 23, 32, 0.5)', backdropFilter: 'blur(20px)' }}>
         <div style={{ padding: '32px 32px 24px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
             <span style={{ background: 'rgba(52, 211, 153, 0.1)', color: '#34d399', padding: '4px 12px', borderRadius: '8px', fontSize: '12px', fontWeight: 700 }}>LIVE</span>
