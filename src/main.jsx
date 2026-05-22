@@ -437,7 +437,6 @@ function App() {
   const [uploadedResults, setUploadedResults] =
     useState([])
   const [selectedHorse, setSelectedHorse] = useState(null)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     const handler = (e) => {
@@ -524,27 +523,6 @@ function App() {
     <div className='layout bg-gradient-to-br from-[#071018] to-[#0b1220]'>
       <aside className='sidebar bg-[#0a1118] border-r border-white/5'>
         <div className='brand'>
-          <button
-            type='button'
-            className='mobile-menu-btn w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white transition'
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <svg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-              {mobileMenuOpen ? (
-                <>
-                  <line x1='18' y1='6' x2='6' y2='18' />
-                  <line x1='6' y1='6' x2='18' y2='18' />
-                </>
-              ) : (
-                <>
-                  <line x1='3' y1='6' x2='21' y2='6' />
-                  <line x1='3' y1='12' x2='21' y2='12' />
-                  <line x1='3' y1='18' x2='21' y2='18' />
-                </>
-              )}
-            </svg>
-          </button>
-
           <div className='brand-mark'>A</div>
 
           <div>
@@ -553,7 +531,7 @@ function App() {
           </div>
         </div>
 
-        <nav className={`space-y-1 ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
+        <nav className='space-y-1'>
           {tabs.map((tab) => (
             <button
               key={tab}
@@ -563,7 +541,7 @@ function App() {
                   ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                   : 'text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent'
               }`}
-              onClick={() => { setActiveTab(tab); setMobileMenuOpen(false); }}
+              onClick={() => setActiveTab(tab)}
             >
               {tab}
             </button>
