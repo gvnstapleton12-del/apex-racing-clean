@@ -2565,7 +2565,7 @@ body::after {
 .pick-card {
   border-radius: 14px;
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   transition: transform 0.2s;
   padding-right: 130px;
 }
@@ -2588,8 +2588,9 @@ body::after {
 }
 
 .pick-card-left {
-  width: 100%;
+  width: calc(100% - 130px);
   min-width: 0;
+  max-width: 100%;
 }
 
 .pick-card-score-ring {
