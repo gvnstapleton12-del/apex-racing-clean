@@ -2565,7 +2565,7 @@ body::after {
 .pick-card {
   border-radius: 14px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.2s;
 }
 
@@ -2591,7 +2591,6 @@ body::after {
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-  position: relative;
 }
 
 .pick-card-left {
@@ -2601,6 +2600,7 @@ body::after {
 
 .pick-card-right {
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .pick-card-score-ring {
@@ -2613,6 +2613,7 @@ body::after {
   border-radius: 16px;
   background: rgba(52, 211, 153, 0.08);
   border: 1px solid rgba(52, 211, 153, 0.2);
+  flex-shrink: 0;
 }
 
 .rank-1 .pick-card-score-ring {

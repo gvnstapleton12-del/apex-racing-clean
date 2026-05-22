@@ -112,7 +112,7 @@ function PickCard({ selection, rank, result, position }) {
   if (!selection) return null
   const label = resultLabel(result, position)
   return (
-    <article className={`pick-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
+    <article className={`pick-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 relative${label ? ' has-result' : ''}`}>
       <div className='pick-card-glow' />
       {label && (
         <div className={`pick-card-result-badge absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold ${label.cls === 'won' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : label.cls === 'placed' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : label.cls === 'nr' ? 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
