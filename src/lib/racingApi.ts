@@ -1,10 +1,13 @@
-import type { Race, Runner } from './types'
+import type { Race } from './types'
+import { validateRaces } from './validate'
 
 export async function fetchRacecards(): Promise<Race[]> {
   try {
     const response = await fetch('/api/live-state')
     const data = await response.json()
-    return data.racecards || []
+    const raw = data.racecards || []
+    const { valid } = validateRaces(raw)
+    return valid
   } catch (error) {
     console.error('Failed to fetch racecards:', error)
     return []
@@ -15,7 +18,9 @@ export async function fetchResults(): Promise<Race[]> {
   try {
     const response = await fetch('/api/results')
     const data = await response.json()
-    return Array.isArray(data) ? data : []
+    const raw = Array.isArray(data) ? data : []
+    const { valid } = validateRaces(raw)
+    return valid
   } catch (error) {
     console.error('Failed to fetch results:', error)
     return []
