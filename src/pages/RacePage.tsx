@@ -10,14 +10,14 @@ function ScoreGauge({ value, label }: { value: number; label: string }) {
   const color = value >= 65 ? '#10b981' : value >= 50 ? '#f59e0b' : '#ef4444'
   return (
     <div className='flex flex-col items-center'>
-      <div className='relative w-16 h-16'>
-        <svg className='w-16 h-16 -rotate-90' viewBox='0 0 64 64'>
-          <circle cx='32' cy='32' r='28' fill='none' stroke='rgba(255,255,255,0.05)' strokeWidth='6' />
-          <circle cx='32' cy='32' r='28' fill='none' stroke={color} strokeWidth='6' strokeDasharray={`${(value / 100) * 175.9} 175.9`} strokeLinecap='round' />
+      <div className='relative w-14 h-14'>
+        <svg className='w-14 h-14 -rotate-90' viewBox='0 0 56 56'>
+          <circle cx='28' cy='28' r='24' fill='none' stroke='rgba(255,255,255,0.05)' strokeWidth='5' />
+          <circle cx='28' cy='28' r='24' fill='none' stroke={color} strokeWidth='5' strokeDasharray={`${(value / 100) * 150.8} 150.8`} strokeLinecap='round' />
         </svg>
-        <span className='absolute inset-0 flex items-center justify-center text-sm font-bold' style={{ color }}>{value}</span>
+        <span className='absolute inset-0 flex items-center justify-center text-xs font-bold' style={{ color }}>{value}</span>
       </div>
-      <span className='text-zinc-500 text-xs mt-1'>{label}</span>
+      <span className='text-zinc-500 text-xs mt-1 text-center'>{label}</span>
     </div>
   )
 }
@@ -175,7 +175,7 @@ export default function RacePage({ race, onBack }: RacePageProps) {
                   {runner.horseQuality && (
                     <div className='mt-5 pt-5 border-t border-white/5'>
                       <SectionHeader title='Horse Quality Engine' badge={runner.horseQuality.label} badgeColor={runner.horseQuality.label === 'Elite' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'} />
-                      <div className='flex justify-around'>
+                      <div className='grid grid-cols-5 gap-4'>
                         <ScoreGauge value={runner.horseQuality.power} label='Power' />
                         <ScoreGauge value={runner.horseQuality.suitability} label='Suit' />
                         <ScoreGauge value={runner.horseQuality.consistency} label='Consist' />
@@ -188,7 +188,7 @@ export default function RacePage({ race, onBack }: RacePageProps) {
                   {runner.placeTraits && (
                     <div className='mt-5 pt-5 border-t border-white/5'>
                       <SectionHeader title='Place Traits' />
-                      <div className='grid grid-cols-6 gap-3'>
+                      <div className='grid grid-cols-3 sm:grid-cols-6 gap-3'>
                         <StatCard label='Consistency' value={runner.placeTraits.consistency} color={runner.placeTraits.consistency >= 65 ? 'text-green-400' : runner.placeTraits.consistency >= 50 ? 'text-amber-400' : 'text-red-400'} />
                         <StatCard label='Reliability' value={runner.placeTraits.reliability} color={runner.placeTraits.reliability >= 65 ? 'text-green-400' : runner.placeTraits.reliability >= 50 ? 'text-amber-400' : 'text-red-400'} />
                         <StatCard label='Honesty' value={runner.placeTraits.honesty} color={runner.placeTraits.honesty >= 65 ? 'text-green-400' : runner.placeTraits.honesty >= 50 ? 'text-amber-400' : 'text-red-400'} />
