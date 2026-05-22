@@ -2567,7 +2567,7 @@ body::after {
   position: relative;
   overflow: visible;
   transition: transform 0.2s;
-  padding-right: 140px !important;
+  padding-right: 130px;
 }
 
 .pick-card:hover {
@@ -2711,16 +2711,27 @@ body::after {
   color: var(--muted);
   font-size: 13px;
   margin: 0 0 8px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pick-card-course {
   color: #fef3c7;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .pick-card-sep {
   color: rgba(255, 255, 255, 0.15);
   margin: 0 6px;
+  flex-shrink: 0;
+}
+
+.pick-card-meta .truncate {
+  flex: 1;
+  min-width: 0;
 }
 
 .pick-card-tags {
