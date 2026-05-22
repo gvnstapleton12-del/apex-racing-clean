@@ -2587,20 +2587,19 @@ body::after {
 }
 
 .pick-card-body {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 24px;
+  align-items: start;
 }
 
 .pick-card-left {
-  flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .pick-card-right {
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .pick-card-score-ring {

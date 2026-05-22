@@ -119,7 +119,7 @@ function PickCard({ selection, rank, result, position }) {
           {label.text}
         </div>
       )}
-      <div className='pick-card-body flex justify-between items-start gap-6'>
+      <div className='pick-card-body'>
         <div className='pick-card-left flex-1 min-w-0'>
           <div className='pick-card-rank-grade flex items-center gap-2 mb-3'>
             <span className='pick-card-rank text-zinc-500 text-sm font-bold'>#{rank}</span>
