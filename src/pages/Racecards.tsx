@@ -5,7 +5,7 @@ import { fetchRacecards } from '../lib/racingApi'
 import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 import { formatOffTime } from '../lib/formatTime'
 
-import RaceModal from '../components/RaceModal'
+import RacePage from './RacePage'
 import RacePressureGraph from '../components/RacePressureGraph'
 
 export default function Racecards() {
@@ -74,6 +74,14 @@ export default function Racecards() {
   )
 
   const nextRace = todayRaces[0]
+
+  if (selectedRace) {
+    return (
+      <div className='p-6'>
+        <RacePage race={selectedRace} onBack={() => setSelectedRace(null)} />
+      </div>
+    )
+  }
 
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
@@ -268,12 +276,6 @@ export default function Racecards() {
         })}
       </section>
 
-      {selectedRace && (
-        <RaceModal
-          race={selectedRace}
-          onClose={() => setSelectedRace(null)}
-        />
-      )}
     </div>
   )
 }
