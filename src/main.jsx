@@ -119,66 +119,62 @@ function PickCard({ selection, rank, result, position }) {
           {label.text}
         </div>
       )}
-      <div className='pick-card-body'>
-        <div className='pick-card-left flex-1 min-w-0'>
-          <div className='pick-card-rank-grade flex items-center gap-2 mb-3'>
-            <span className='pick-card-rank text-zinc-500 text-sm font-bold'>#{rank}</span>
-            {selection.confidenceTier && (
-              <span className={`pick-card-tier-badge px-2 py-1 rounded-md text-xs font-medium ${selection.confidenceTier === 'S' || selection.confidenceTier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                T{selection.confidenceTier}
-              </span>
-            )}
-            <span className={`pick-card-grade px-2 py-1 rounded-md text-xs font-medium ${gradeClass(selection.probBand) === 'a-plus' || gradeClass(selection.probBand) === 'a' ? 'bg-green-500/10 text-green-400' : gradeClass(selection.probBand) === 'b' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>{selection.probBand}</span>
-            {selection.probRange && <span className='pick-card-prob-range text-zinc-500 text-xs'>{selection.probRange}</span>}
-            <span className='pick-card-time text-zinc-500 text-xs'>{selection.offTime}</span>
-          </div>
-          <button
-            type='button'
-            className='pick-card-horse text-xl font-bold text-left hover:text-amber-300 transition truncate block w-full'
-            onClick={() => {
-              openAtTheRacesHorseForm(selection, selection.race)
-              window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
-            }}
-          >
-            {selection.horse}
-          </button>
-          <p className='pick-card-meta text-zinc-400 text-sm mt-2'>
-            <span className='pick-card-course font-medium'>{selection.course}</span>
-            <span className='pick-card-sep mx-2'>&middot;</span>
-            <span className='truncate'>{selection.raceName}</span>
-          </p>
-          <div className='pick-card-tags flex gap-2 mt-4 flex-wrap'>
-            {selection.form && (
-              <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Form {selection.form}</span>
-            )}
-            {selection.draw && (
-              <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Draw {selection.draw}</span>
-            )}
-            {selection.valueEdge && selection.valueEdge > 0 ? (
-              <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-medium'>+{selection.valueEdge}% edge</span>
-            ) : selection.valueEdge < 0 ? (
-              <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{selection.valueEdge}% edge</span>
-            ) : null}
-            {selection.selectionQuality && (
-              <span className={`pick-sel-grade px-2 py-1 rounded-lg text-xs font-medium ${selection.selectionQuality.grade === 'A+' || selection.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
-                {selection.selectionQuality.grade}
-              </span>
-            )}
-          </div>
+      <div className='pick-card-score-ring'>
+        <span className='pick-card-score-label'>APEX</span>
+        <strong className='pick-card-score'>{selection.score}</strong>
+        <div className='pick-card-probs'>
+          {selection.winProb && (
+            <span className='pick-card-winprob'>W:{selection.winProb}%</span>
+          )}
+          {selection.placeProb && (
+            <span className='pick-card-placeprob'>P:{selection.placeProb}%</span>
+          )}
         </div>
-        <div className='pick-card-right flex-shrink-0'>
-          <div className={`pick-card-score-ring w-28 h-28 rounded-2xl bg-green-500/10 border border-green-500/20 flex flex-col items-center justify-center`}>
-            <span className='pick-card-score-label text-zinc-500 text-xs font-medium uppercase tracking-wider'>APEX</span>
-            <strong className='pick-card-score text-4xl font-black text-green-400'>{selection.score}</strong>
-            <div className='pick-card-probs flex gap-2 mt-1'>
-              {selection.winProb && (
-                <span className='pick-card-winprob px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{selection.winProb}%</span>
-              )}
-              {selection.placeProb && (
-                <span className='pick-card-placeprob px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{selection.placeProb}%</span>
-              )}
-            </div>
-          </div>
+      </div>
+      <div className='pick-card-left'>
+        <div className='pick-card-rank-grade flex items-center gap-2 mb-3'>
+          <span className='pick-card-rank text-zinc-500 text-sm font-bold'>#{rank}</span>
+          {selection.confidenceTier && (
+            <span className={`pick-card-tier-badge px-2 py-1 rounded-md text-xs font-medium ${selection.confidenceTier === 'S' || selection.confidenceTier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
+              T{selection.confidenceTier}
+            </span>
+          )}
+          <span className={`pick-card-grade px-2 py-1 rounded-md text-xs font-medium ${gradeClass(selection.probBand) === 'a-plus' || gradeClass(selection.probBand) === 'a' ? 'bg-green-500/10 text-green-400' : gradeClass(selection.probBand) === 'b' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>{selection.probBand}</span>
+          {selection.probRange && <span className='pick-card-prob-range text-zinc-500 text-xs'>{selection.probRange}</span>}
+          <span className='pick-card-time text-zinc-500 text-xs'>{selection.offTime}</span>
+        </div>
+        <button
+          type='button'
+          className='pick-card-horse text-xl font-bold text-left hover:text-amber-300 transition truncate block w-full'
+          onClick={() => {
+            openAtTheRacesHorseForm(selection, selection.race)
+            window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
+          }}
+        >
+          {selection.horse}
+        </button>
+        <p className='pick-card-meta text-zinc-400 text-sm mt-2'>
+          <span className='pick-card-course font-medium'>{selection.course}</span>
+          <span className='pick-card-sep mx-2'>&middot;</span>
+          <span className='truncate'>{selection.raceName}</span>
+        </p>
+        <div className='pick-card-tags flex gap-2 mt-4 flex-wrap'>
+          {selection.form && (
+            <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Form {selection.form}</span>
+          )}
+          {selection.draw && (
+            <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Draw {selection.draw}</span>
+          )}
+          {selection.valueEdge && selection.valueEdge > 0 ? (
+            <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-medium'>+{selection.valueEdge}% edge</span>
+          ) : selection.valueEdge < 0 ? (
+            <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{selection.valueEdge}% edge</span>
+          ) : null}
+          {selection.selectionQuality && (
+            <span className={`pick-sel-grade px-2 py-1 rounded-lg text-xs font-medium ${selection.selectionQuality.grade === 'A+' || selection.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
+              {selection.selectionQuality.grade}
+            </span>
+          )}
         </div>
       </div>
     </article>

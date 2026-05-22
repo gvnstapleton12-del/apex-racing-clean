@@ -2567,6 +2567,7 @@ body::after {
   position: relative;
   overflow: visible;
   transition: transform 0.2s;
+  padding-right: 140px !important;
 }
 
 .pick-card:hover {
@@ -2586,43 +2587,31 @@ body::after {
     linear-gradient(to bottom, rgba(245, 158, 11, 0.04), transparent 40%);
 }
 
-.pick-card-body {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  justify-content: space-between !important;
-  align-items: flex-start !important;
-  gap: 24px !important;
-}
-
 .pick-card-left {
-  flex: 1 1 0% !important;
-  min-width: 0 !important;
-  max-width: calc(100% - 140px) !important;
-}
-
-.pick-card-right {
-  flex: 0 0 112px !important;
-  flex-shrink: 0 !important;
-  margin-left: auto !important;
+  width: 100%;
+  min-width: 0;
 }
 
 .pick-card-score-ring {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 112px !important;
-  height: 112px !important;
-  border-radius: 16px !important;
-  background: rgba(52, 211, 153, 0.08) !important;
-  border: 1px solid rgba(52, 211, 153, 0.2) !important;
-  flex-shrink: 0 !important;
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  height: 112px;
+  border-radius: 16px;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  flex-shrink: 0;
+  z-index: 2;
 }
 
 .rank-1 .pick-card-score-ring {
-  background: rgba(245, 158, 11, 0.1) !important;
-  border-color: rgba(245, 158, 11, 0.3) !important;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .pick-card-rank-grade {
