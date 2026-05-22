@@ -1,4 +1,5 @@
 import type { Race, Runner } from './types'
+import { formatOffTime } from './formatTime'
 
 export function getScore(runner: Runner): number {
   return runner.score ?? runner.finalScore ?? runner.aiProfile?.confidence ?? 0
@@ -127,7 +128,7 @@ export function formatSelection(race: Race, runner: Runner) {
     race,
     raceName: race.race_name,
     course: race.course,
-    offTime: race.off_time,
+    offTime: formatOffTime(race),
     score: getScore(runner),
     probBand: runner.probBand || runner.confidenceTier?.label || runner.aiProfile?.grade || '',
     probRange: runner.probRange || '',
