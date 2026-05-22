@@ -15,6 +15,7 @@ import UploadResults, {
 import { fetchRacecards } from './lib/racingApi'
 import { openAtTheRacesHorseForm } from './lib/horseLinks'
 import { formatOffTime } from './lib/formatTime'
+import { getScore, sortByScore, filterGBIRE, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections } from './lib/engine'
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
 import Analytics from './pages/Analytics'
@@ -35,78 +36,6 @@ const tabs = [
   'Replays',
   'Analytics',
 ]
-
-function getHomeSelections(races) {
-  return races
-    .flatMap((race) => {
-      const betFilter = race.betFilter || {}
-      const isSkipped = betFilter.verdict === 'AUTO SKIP'
-
-      return (race.runners || [])
-        .filter((runner) => {
-          if (isSkipped) return false
-          const tier = runner.confidenceTier?.tier
-          if (tier === 'D' && runner.valueEngine?.edge > 0) return false
-          const bankrollLabel = runner.bankrollEngine?.label || ''
-          if (bankrollLabel === 'AVOID') return false
-          return true
-        })
-        .map((runner) => ({
-          ...runner,
-          race,
-          raceName: race.race_name,
-          course: race.course,
-          offTime: formatOffTime(race),
-          score: runner.finalScore || runner.aiProfile?.confidence || runner.score || 0,
-          probBand: runner.probBand || runner.confidenceLabel || runner.aiProfile?.grade || '',
-          probRange: runner.probRange || '',
-          winProb: runner.winProb || null,
-          placeProb: runner.placeProb || null,
-          valueEdge: runner.valueEngine?.edge || 0,
-          confidenceTier: runner.confidenceTier?.tier || 'B',
-          betFilterVerdict: betFilter.verdict || 'BETTABLE',
-          selectionQuality: runner.selectionQuality,
-        }))
-    })
-    .sort((a, b) => {
-      const tierOrder = { S: 5, A: 4, B: 3, C: 2, D: 1 }
-      const tierDiff = (tierOrder[b.confidenceTier] || 0) - (tierOrder[a.confidenceTier] || 0)
-      if (tierDiff !== 0) return tierDiff
-      const edgeDiff = (b.valueEdge || 0) - (a.valueEdge || 0)
-      if (Math.abs(edgeDiff) > 0.5) return edgeDiff
-      return (b.score || 0) - (a.score || 0)
-    })
-}
-
-function gradeClass(label) {
-  const map = {
-    'High Probability': 'a-plus',
-    'Medium-High': 'a',
-    'Medium': 'b',
-    'Low': 'c-plus',
-    'Very Low': 'c',
-    'Elite': 'a-plus',
-    'Strong': 'a',
-    'Playable': 'b',
-    'Speculative': 'c-plus',
-    'Avoid': 'c',
-    'A+': 'a-plus',
-    'A': 'a',
-    'B': 'b',
-    'C+': 'c-plus',
-    'C': 'c',
-  }
-  return map[label] || 'c'
-}
-
-function resultLabel(result, position) {
-  if (!result) return null
-  if (result === 'won') return { text: 'WON', cls: 'won' }
-  if (result === 'placed') return { text: 'P', cls: 'placed' }
-  if (result === 'nr') return { text: 'NR', cls: 'nr' }
-  if (result === 'lost') return { text: 'LOST', cls: 'lost' }
-  return null
-}
 
 function PickCard({ selection, rank, result, position }) {
   if (!selection) return null

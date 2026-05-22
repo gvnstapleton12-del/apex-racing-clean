@@ -1,20 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-
+import type { Race, Runner } from '../lib/types'
 import { fetchRacecards } from '../lib/racingApi'
 import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 import { formatOffTime } from '../lib/formatTime'
-
+import { filterGBIRE, filterToday, sortByOffTime, sortByScore, getScore, scoreRunners, countRunners } from '../lib/engine'
 import RacePage from './RacePage'
 import RacePressureGraph from '../components/RacePressureGraph'
 
 export default function Racecards() {
-  const [selectedRace, setSelectedRace] = useState(null)
-  const scrollTarget = useRef(null)
+  const [selectedRace, setSelectedRace] = useState<Race | null>(null)
+  const scrollTarget = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const handler = (e) => {
-      const { course, offTime } = e.detail || {}
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail || {}
+      const { course, offTime } = detail
       if (!course) return
       const id = `race-${course.replace(/\s+/g, '-')}-${(offTime || '').replace(':', '')}`
       const el = document.getElementById(id)
@@ -30,7 +31,7 @@ export default function Racecards() {
     return () => window.removeEventListener('select-horse', handler)
   }, [])
 
-  const { data: races = [], isLoading } = useQuery<any[]>({
+  const { data: races = [], isLoading } = useQuery<Race[]>({
     queryKey: ['racecards'],
     queryFn: fetchRacecards,
     refetchInterval: 60000,
@@ -47,32 +48,9 @@ export default function Racecards() {
     )
   }
 
-  const ukIre = races.filter(
-    (r: any) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
-  )
-
-  const now = new Date()
-  const todayStr = now.toISOString().slice(0, 10)
-
-  const sortedRaces = [...ukIre].sort((a: any, b: any) => {
-    const aTime = a.off_dt || a.off_time || ''
-    const bTime = b.off_dt || b.off_time || ''
-    return aTime < bTime ? -1 : aTime > bTime ? 1 : 0
-  })
-
-  const todayRaces = sortedRaces.filter((race: any) => {
-    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
-    if (raceDate !== todayStr) return false
-    if (race.off_dt) return new Date(race.off_dt) > now
-    return true
-  })
-
-  const totalRunners = todayRaces.reduce(
-    (total: number, race: any) =>
-      total + (race.runners?.length || 0),
-    0
-  )
-
+  const ukIreRaces = sortByOffTime(filterGBIRE(races))
+  const todayRaces = filterToday(ukIreRaces)
+  const totalRunners = countRunners(todayRaces)
   const nextRace = todayRaces[0]
 
   if (selectedRace) {
@@ -118,23 +96,9 @@ export default function Racecards() {
       )}
 
       <section className='race-grid space-y-6'>
-        {todayRaces.map((race: any, index: number) => {
-          const scoredRunners = (race.runners || []).map(
-            (runner: any) => ({
-              ...runner,
-              score:
-                runner.finalScore ||
-                runner.aiProfile?.confidence ||
-                runner.score ||
-                0,
-              replayTriggers: [],
-            })
-          )
-
-          const topRated = [...scoredRunners].sort(
-            (a: any, b: any) =>
-              (b.score || 0) - (a.score || 0)
-          )[0]
+        {todayRaces.map((race, index) => {
+          const runners = scoreRunners(race.runners || [])
+          const topRated = sortByScore(runners)[0]
 
           return (
             <article
@@ -161,7 +125,6 @@ export default function Racecards() {
                   </div>
 
                   <h2 className='text-xl font-bold text-white'>{race.race_name}</h2>
-
                   <p className='text-zinc-400 text-sm'>
                     {race.course} &middot; {formatOffTime(race)}
                     {race.distance_f && <span> &middot; {race.distance_f}</span>}
@@ -192,82 +155,80 @@ export default function Racecards() {
                     >
                       {topRated.horse}
                     </button>
-                    <strong className='text-2xl font-black text-amber-400'>{topRated.score}</strong>
+                    <strong className='text-2xl font-black text-amber-400'>{getScore(topRated)}</strong>
                   </div>
                 </div>
               )}
 
               <div className='runner-list space-y-3'>
-                {scoredRunners
-                  .slice(0, 5)
-                  .map((runner: any, runnerIndex: number) => (
-                    <div
-                      key={runnerIndex}
-                      className='runner-row flex justify-between items-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:border-white/10 transition-all duration-200'
-                    >
-                      <div className='flex items-center gap-4 flex-1 min-w-0'>
-                        <button
-                          type='button'
-                          onClick={() =>
-                            openAtTheRacesHorseForm(runner, race)
-                          }
-                          className='runner-name-button text-lg font-bold hover:text-amber-300 transition truncate'
-                        >
-                          {runner.horse}
-                        </button>
-                        <div className='flex gap-2 flex-shrink-0'>
-                          {runner.runningStyle && (
-                            <span className={`pace-badge px-2 py-1 rounded-md text-xs font-medium ${runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
-                              {runner.runningStyle}
-                              {runner.paceScore ? ` ${runner.paceScore > 0 ? '+' : ''}${runner.paceScore}` : ''}
-                            </span>
+                {runners.slice(0, 5).map((runner, runnerIndex) => (
+                  <div
+                    key={runnerIndex}
+                    className='runner-row flex justify-between items-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:border-white/10 transition-all duration-200'
+                  >
+                    <div className='flex items-center gap-4 flex-1 min-w-0'>
+                      <button
+                        type='button'
+                        onClick={() =>
+                          openAtTheRacesHorseForm(runner, race)
+                        }
+                        className='runner-name-button text-lg font-bold hover:text-amber-300 transition truncate'
+                      >
+                        {runner.horse}
+                      </button>
+                      <div className='flex gap-2 flex-shrink-0'>
+                        {runner.runningStyle && (
+                          <span className={`pace-badge px-2 py-1 rounded-md text-xs font-medium ${runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
+                            {runner.runningStyle}
+                            {runner.paceScore ? ` ${runner.paceScore > 0 ? '+' : ''}${runner.paceScore}` : ''}
+                          </span>
+                        )}
+                        {runner.horseQuality && (
+                          <span className={`hq-badge px-2 py-1 rounded-md text-xs font-medium ${runner.horseQuality.label === 'Elite' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
+                            {runner.horseQuality.label}
+                          </span>
+                        )}
+                        {runner.probBand && (
+                          <span className={`conf-badge px-2 py-1 rounded-md text-xs font-medium ${runner.probBand === 'A+' || runner.probBand === 'A' ? 'bg-green-500/10 text-green-400' : runner.probBand === 'B' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
+                            {runner.probBand}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className='runner-score flex items-center gap-4 flex-shrink-0'>
+                      <div className='text-right'>
+                        <strong className='text-xl font-black text-amber-400'>{getScore(runner)}</strong>
+                        <div className='flex gap-2 mt-1'>
+                          {runner.winProb && (
+                            <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{runner.winProb}%</span>
                           )}
-                          {runner.horseQuality && (
-                            <span className={`hq-badge px-2 py-1 rounded-md text-xs font-medium ${runner.horseQuality.label === 'Elite' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                              {runner.horseQuality.label}
-                            </span>
-                          )}
-                          {runner.probBand && (
-                            <span className={`conf-badge px-2 py-1 rounded-md text-xs font-medium ${runner.probBand === 'A+' || runner.probBand === 'A' ? 'bg-green-500/10 text-green-400' : runner.probBand === 'B' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                              {runner.probBand}
-                            </span>
+                          {runner.placeProb && (
+                            <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{runner.placeProb}%</span>
                           )}
                         </div>
                       </div>
-
-                      <div className='runner-score flex items-center gap-4 flex-shrink-0'>
-                        <div className='text-right'>
-                          <strong className='text-xl font-black text-amber-400'>{runner.score}</strong>
-                          <div className='flex gap-2 mt-1'>
-                            {runner.winProb && (
-                              <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{runner.winProb}%</span>
-                            )}
-                            {runner.placeProb && (
-                              <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{runner.placeProb}%</span>
-                            )}
-                          </div>
-                        </div>
-                        <div className='text-right'>
-                          <span className='text-lg font-bold'>{runner.odds ? `${runner.odds}` : '-'}</span>
-                          <div className='flex gap-1 mt-1 flex-wrap justify-end'>
-                            {runner.betQuality && runner.betQuality !== 'NO BET' && (
-                              <span className='bet-quality px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md text-xs font-medium'>{runner.betQuality}</span>
-                            )}
-                            {runner.selectionQuality && runner.selectionQuality.grade && (
-                              <span className={`sel-grade px-2 py-0.5 rounded-md text-xs font-medium ${runner.selectionQuality.grade === 'A+' || runner.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
-                                {runner.selectionQuality.grade}
-                              </span>
-                            )}
-                            {runner.confidenceTier && (
-                              <span className={`tier-badge px-2 py-0.5 rounded-md text-xs font-medium ${runner.confidenceTier.tier === 'S' || runner.confidenceTier.tier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                                T{runner.confidenceTier.tier}
-                              </span>
-                            )}
-                          </div>
+                      <div className='text-right'>
+                        <span className='text-lg font-bold'>{runner.odds ? `${runner.odds}` : '-'}</span>
+                        <div className='flex gap-1 mt-1 flex-wrap justify-end'>
+                          {runner.betQuality && runner.betQuality !== 'NO BET' && (
+                            <span className='bet-quality px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md text-xs font-medium'>{runner.betQuality}</span>
+                          )}
+                          {runner.selectionQuality && runner.selectionQuality.grade && (
+                            <span className={`sel-grade px-2 py-0.5 rounded-md text-xs font-medium ${runner.selectionQuality.grade === 'A+' || runner.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
+                              {runner.selectionQuality.grade}
+                            </span>
+                          )}
+                          {runner.confidenceTier && (
+                            <span className={`tier-badge px-2 py-0.5 rounded-md text-xs font-medium ${runner.confidenceTier.tier === 'S' || runner.confidenceTier.tier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
+                              T{runner.confidenceTier.tier}
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
 
               <RacePressureGraph race={race} />
@@ -275,7 +236,6 @@ export default function Racecards() {
           )
         })}
       </section>
-
     </div>
   )
 }

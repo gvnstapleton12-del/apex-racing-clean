@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-
-import { fetchRacecards } from '@/lib/racingApi'
+import type { Race } from '../lib/types'
+import { fetchRacecards } from '../lib/racingApi'
+import { filterGBIRE } from '../lib/engine'
 
 import LiveStatsBar from '@/components/LiveStatsBar'
 import BestBetCard from '@/components/BestBetCard'
@@ -23,17 +24,15 @@ import ROITracker from '@/components/ROITracker'
 export default function IntelligenceDashboard() {
   const [selectedRace, setSelectedRace] = useState<string | 'all'>('all')
 
-  const { data: allRaces = [], isLoading } = useQuery({
+  const { data: allRaces = [], isLoading } = useQuery<Race[]>({
     queryKey: ['apex-dashboard'],
     queryFn: fetchRacecards,
     refetchInterval: 60000,
   })
 
-  const gbIreRaces = allRaces.filter(
-    (r) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
-  )
+  const gbIreRaces = filterGBIRE(allRaces)
 
-  const filteredRaces = selectedRace === 'all'
+  const filteredRaces: Race[] = selectedRace === 'all'
     ? gbIreRaces
     : gbIreRaces.filter((r) => r.race_id === selectedRace)
 
@@ -54,7 +53,6 @@ export default function IntelligenceDashboard() {
           <h1 className='text-5xl font-black tracking-tight'>
             APEX Intelligence
           </h1>
-
           <p className='text-muted-foreground mt-2'>
             Live race intelligence operating system
           </p>
@@ -79,42 +77,34 @@ export default function IntelligenceDashboard() {
       </div>
 
       <LiveStatsBar races={filteredRaces} />
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <BestBetCard races={filteredRaces} />
         <LiveAlertsFeed races={filteredRaces} />
       </div>
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <TopRatedBoard races={filteredRaces} />
         <PredictionConsensus races={filteredRaces} />
       </div>
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <ReplayWatchlist races={filteredRaces} />
         <HiddenValueBoard races={filteredRaces} />
       </div>
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <SmartMoneyTracker races={filteredRaces} />
         <VolatilityGauge races={filteredRaces} />
       </div>
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <ConfidenceHeatmap races={filteredRaces} />
         <ValueIndex races={filteredRaces} />
       </div>
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <TrainerFormBoard races={filteredRaces} />
         <JockeyTracker races={filteredRaces} />
       </div>
-
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
         <StableAlerts races={filteredRaces} />
         <AIInsightFeed races={filteredRaces} />
       </div>
-
       <ROITracker />
     </div>
   )
