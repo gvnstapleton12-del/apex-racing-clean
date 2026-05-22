@@ -2599,25 +2599,25 @@ body::after {
 }
 
 .pick-card-score-ring {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 112px;
-  height: 112px;
-  border-radius: 16px;
-  background: rgba(52, 211, 153, 0.08);
-  border: 1px solid rgba(52, 211, 153, 0.2);
-  flex-shrink: 0;
-  z-index: 2;
+  position: absolute !important;
+  top: 24px !important;
+  right: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 112px !important;
+  height: 112px !important;
+  border-radius: 16px !important;
+  background: rgba(52, 211, 153, 0.15) !important;
+  border: 2px solid rgba(52, 211, 153, 0.4) !important;
+  flex-shrink: 0 !important;
+  z-index: 10 !important;
 }
 
 .rank-1 .pick-card-score-ring {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
 }
 
 .pick-card-rank-grade {
