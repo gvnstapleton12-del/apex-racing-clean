@@ -950,10 +950,10 @@ button {
   letter-spacing: 0.5px;
   padding: 4px 14px;
   position: absolute;
-  right: 0;
+  right: 130px;
   text-transform: uppercase;
   top: 0;
-  z-index: 2;
+  z-index: 3;
 }
 
 .pick-card-result-badge.won {
@@ -2568,7 +2568,7 @@ body::after {
 .pick-card {
   border-radius: 14px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.2s;
   padding-right: 130px;
 }
@@ -2582,6 +2582,8 @@ body::after {
     linear-gradient(135deg, rgba(245, 158, 11, 0.08), transparent 60%);
   inset: 0;
   position: absolute;
+  border-radius: 14px;
+  pointer-events: none;
 }
 
 .rank-1 .pick-card-glow {
