@@ -1,8 +1,5 @@
 import type { Race } from './types'
 import { validateRaces } from './validate'
-
-import type { Race } from './types'
-import { validateRaces } from './validate'
 import { apiUrl } from './api'
 
 export async function fetchRacecards(): Promise<Race[]> {
