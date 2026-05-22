@@ -41,15 +41,15 @@ function PickCard({ selection, rank, result, position }) {
   if (!selection) return null
   const label = resultLabel(result, position)
   return (
-    <article className={`bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 relative${label ? ' has-result' : ''}`}>
+    <article className={`bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
       <div className='pick-card-glow' />
       {label && (
-        <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold ${label.cls === 'won' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : label.cls === 'placed' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : label.cls === 'nr' ? 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+        <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold z-10 ${label.cls === 'won' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : label.cls === 'placed' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : label.cls === 'nr' ? 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
           {label.text}
         </div>
       )}
-      <div className='flex gap-6 items-start'>
-        <div className='flex-1 min-w-0'>
+      <div className='flex gap-6 items-start w-full overflow-hidden'>
+        <div className='flex-1 min-w-0 overflow-hidden'>
           <div className='flex items-center gap-2 mb-3'>
             <span className='text-zinc-500 text-sm font-bold'>#{rank}</span>
             {selection.confidenceTier && (
