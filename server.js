@@ -676,8 +676,122 @@ function createAlert(
   io.emit('new-alert', alert)
 }
 
+function extractRacecards(html) {
+  const races = []
+  const today = new Date().toISOString().slice(0, 10)
+
+  const meetingBlocks = html.matchAll(/<div[^>]*class="[^"]*meeting[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>/gis)
+  for (const block of meetingBlocks) {
+    try {
+      const text = block[0]
+      const courseMatch = text.match(/<h[23][^>]*>([^<]+)</i)
+      if (!courseMatch) continue
+      const course = courseMatch[1].trim()
+      const timeMatch = text.match(/(\d{2}:\d{2})/)
+      if (!timeMatch) continue
+      const offTime = timeMatch[1]
+      const horses = [...text.matchAll(/<a[^>]*href="[^"]*form\/horse\/[^"]*"[^>]*>([^<]+)<\/a>/gi)]
+        .map(m => m[1].trim())
+        .filter(h => h.length > 1)
+      if (horses.length === 0) continue
+      const runners = [...new Set(horses)].map(h => ({ horse: h, odds: '', position: 0 }))
+      races.push({
+        race_id: `${course}-${offTime}`.replace(/\s+/g, '-'),
+        race_name: `${course} ${offTime}`,
+        course, off_time: offTime, date: today, region: 'GB', runners,
+      })
+    } catch (e) { /* skip */ }
+  }
+  return races
+}
+
+async function scrapeAtrRacecards() {
+  const urls = ['https://m.attheraces.com/racecards', 'https://www.attheraces.com/racecards']
+  for (const url of urls) {
+    try {
+      const html = await fetchAtrPageText(url)
+      if (html && html.length > 1000) {
+        const races = extractRacecards(html)
+        if (races.length > 0) { console.log(`ATR: ${races.length} races from ${url}`); return races }
+      }
+    } catch (e) { console.log(`ATR scrape failed: ${e.message}`) }
+  }
+  return []
+}
+
 async function fetchLiveMeetings() {
   try {
+    // Try ATR scraper first
+    const atrRaces = await scrapeAtrRacecards()
+    if (atrRaces.length > 0) {
+      console.log(`Using ATR scraper: ${atrRaces.length} races`)
+      const processed = await Promise.all(atrRaces.map(async (race) => {
+        const atrData = await fetchAtrRacecardData(race)
+        const atrHorseLinks = atrData.links
+        const atrOdds = atrData.odds
+
+        const runners = (race.runners || []).map((r) => {
+          const normalized = normalizeHorseName(r.horse)
+          const atrPrice = atrOdds[normalized]
+          if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
+            return { ...r, odds: atrPrice }
+          }
+          return r
+        })
+
+        const apexResult = runApexEngine(runners, race, {
+          goingDb: GOING_DATABASE,
+          distanceDb: DISTANCE_DATABASE,
+          replayDb: REPLAY_NOTES_DATABASE,
+          bucketDb: BUCKET_DATABASE,
+          horseProfiles: HORSE_DATABASE,
+          races: LEARNING_DATABASE.races || [],
+        })
+
+        const scoredRunners = apexResult.racecards.map((runner) => {
+          const horseId = runner.horse_id || runner.horse
+          const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
+          if (!HORSE_DATABASE[horseId]) {
+            HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
+          }
+          const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
+          const profileAdj = computeProfileAdjustment(horseProfile, race)
+          if (horseProfile) {
+            HORSE_DATABASE[horseId].profile = horseProfile
+            HORSE_DATABASE[horseId].profile_adjustment = profileAdj
+          }
+          const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
+          const marketMovement = analyzeMarketMovement({ horse: runner.horse, currentOdds: runner.odds, previousOdds, aiConfidence: runner.finalScore })
+          MARKET_DATABASE[horseId] = { horse: runner.horse, lastOdds: runner.odds, movement: marketMovement.movement, updatedAt: new Date().toISOString() }
+          const bettingSignals = generateSignals({ ...runner, aiProfile: { confidence: runner.finalScore }, marketMovement })
+          if (marketMovement.alert) {
+            createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
+          }
+          logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: runner.winProb, placeProb: runner.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
+          return { ...runner, atrFormUrl, bettingSignals, marketMovement, elimination: runner.elimination, powerScore: runner.power?.total, paceScore: runner.pace?.score, humanScore: runner.human?.score, marketScore: runner.market?.score, finalScore: runner.finalScore, winProb: runner.winProb, placeProb: runner.placeProb, placeTraits: runner.placeTraits, interactions: runner.interactions, horseQuality: runner.horseQuality, simulation: runner.simulation, marketModel: runner.marketModel, valueEngine: runner.valueEngine, bankrollEngine: runner.bankrollEngine, scenarioFlags: runner.scenarioFlags, explanation: runner.explanation, confidenceTier: runner.confidenceTier, confidenceLabel: runner.confidenceLabel, confidenceScore: runner.confidenceScore, score: runner.finalScore, betQuality: runner.betQuality, selectionQuality: runner.selectionQuality, runningStyle: runner.runningStyle }
+        })
+
+        return {
+          ...race,
+          paceMap: apexResult.paceMap,
+          volatility: apexResult.volatility,
+          betFilter: apexResult.betFilter,
+          runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
+        }
+      }))
+
+      LIVE_STATE.racecards = processed
+      LIVE_STATE.updatedAt = new Date().toISOString()
+      LIVE_STATE.loading = false
+      saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
+      saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
+      saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
+      io.emit('live-update', LIVE_STATE)
+      console.log(`Broadcasted ${processed.length} races from ATR`)
+      return
+    }
+
+    // Fall back to Racing API
     console.log('Refreshing live meetings...')
 
     const response = await fetch(
