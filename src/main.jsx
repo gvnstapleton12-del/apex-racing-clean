@@ -19,6 +19,7 @@ import { getScore, sortByScore, filterGBIRE, countRunners, getGrade, gradeClass,
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
 import Analytics from './pages/Analytics'
+import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
 
 const queryClient =
@@ -29,6 +30,7 @@ const tabs = [
   'Racecards',
   'Results',
   'Intelligence',
+  'Proof',
   'Calibration',
   'Alerts',
   'Horses',
@@ -444,6 +446,10 @@ function App() {
 
     if (activeTab === 'Analytics') {
       return <Analytics />
+    }
+
+    if (activeTab === 'Proof') {
+      return <Proof />
     }
   }
 
