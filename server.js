@@ -951,7 +951,7 @@ async function fetchLiveMeetings() {
       `Tracked predictions: ${Object.keys(PREDICTIONS_DATABASE).length}`
     )
 
-    // scrapeFinishedRaceResults() // DISABLED FOR TESTING
+    scrapeFinishedRaceResults()
   } catch (error) {
     console.error(error)
   }
