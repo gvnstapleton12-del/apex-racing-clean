@@ -131,7 +131,20 @@ export function runApexEngine(runners, race, options = {}) {
 
     const marketAdj = marketIntelligence(runner, powerScore, { odds: runner.odds })
 
+    // Market movement weighting — steamers boost, drifters suppress
+    const marketMovement = runner.marketMovement || 'UNKNOWN'
+    const movementMultiplier = marketMovement === 'STRONG STEAM' ? 1.12 :
+      marketMovement === 'STEAM' ? 1.06 :
+      marketMovement === 'DRIFT' ? 0.94 :
+      marketMovement === 'STRONG DRIFT' ? 0.88 : 1.0
+
     const trainerScore = options.trainerScores?.[horseId] || 0
+
+    // Trainer/jockey form tracking
+    const trainerForm = options.trainerForm?.[runner.trainer] || { winRate: 0, runs: 0 }
+    const jockeyForm = options.jockeyForm?.[runner.jockey] || { winRate: 0, runs: 0 }
+    const trainerAdj = trainerForm.runs >= 5 ? (trainerForm.winRate - 15) * 0.3 : 0
+    const jockeyAdj = jockeyForm.runs >= 5 ? (jockeyForm.winRate - 15) * 0.2 : 0
 
     const features = buildSyndicateFeatures(runner, race, {
       goingDb,
@@ -179,10 +192,20 @@ export function runApexEngine(runners, race, options = {}) {
       legacyLayeredScore * 0.35
     )
 
-    const chaosPenalty = volatility.chaos > 0.6 ? 0.88 : volatility.chaos > 0.45 ? 0.96 : 1.02
+    // Apply market movement multiplier
+    const withMovement = componentBlend * movementMultiplier
+
+    // Chaotic race suppression — high volatility fields cap max confidence
+    const chaosSuppression = volatility.chaos > 0.7 ? 0.75 :
+      volatility.chaos > 0.55 ? 0.88 :
+      volatility.chaos > 0.4 ? 0.95 : 1.0
     const paceCompatAdj = (paceCompat.compatibility - 50) * 0.08
-    const layeredWithChaos = componentBlend * chaosPenalty
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj)))
+
+    // Blend trainer/jockey form into score
+    const formAdj = trainerAdj + jockeyAdj
+
+    const layeredWithChaos = withMovement * chaosSuppression
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj)))
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.70 +

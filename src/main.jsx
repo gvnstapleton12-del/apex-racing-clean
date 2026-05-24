@@ -142,6 +142,16 @@ function Home() {
   const topScore = picks[0]?.score || allSelections[0]?.score || 0
   const totalRunners = allSelections.length
 
+  const noBetReason = picks.length === 0 && ukIreRaces.length > 0 ? (() => {
+    const highChaos = ukIreRaces.filter(r => r.volatility?.chaos > 0.5).length
+    const autoSkipped = ukIreRaces.filter(r => r.betFilter?.verdict === 'AUTO SKIP').length
+    const highRisk = ukIreRaces.filter(r => r.betFilter?.verdict === 'HIGH RISK').length
+    if (highChaos > ukIreRaces.length * 0.5) return 'Most races are highly volatile — too chaotic for confident picks'
+    if (autoSkipped > ukIreRaces.length * 0.5) return 'Most races have weak data or poor conditions — system skipping'
+    if (highRisk > ukIreRaces.length * 0.5) return 'Most races flagged as high risk — no value edges detected'
+    return 'No runners met the minimum confidence threshold today'
+  })() : null
+
   const todaySaved = dailyPicksDb[today]
   const todayResults = todaySaved?.picks || []
   const todayStats = todaySaved?.stats || null
@@ -256,8 +266,21 @@ function Home() {
         </div>
       ) : picks.length === 0 ? (
         <section className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
-          <h2 className='text-2xl font-bold'>No top picks yet</h2>
-          <p className='text-zinc-400 mt-2'>The model hasn&apos;t found any rated runners yet. Racecards may still be loading.</p>
+          {noBetReason ? (
+            <>
+              <div className='flex items-center gap-3 mb-4'>
+                <span className='px-3 py-1 rounded-lg text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30'>NO BET</span>
+                <h2 className='text-2xl font-bold'>No picks today</h2>
+              </div>
+              <p className='text-zinc-400 mt-2'>{noBetReason}</p>
+              <p className='text-zinc-500 text-sm mt-4'>Sometimes the smartest prediction is knowing when not to bet. {ukIreRaces.length} UK/IRE races scanned, none met APEX confidence threshold.</p>
+            </>
+          ) : (
+            <>
+              <h2 className='text-2xl font-bold'>No top picks yet</h2>
+              <p className='text-zinc-400 mt-2'>The model hasn&apos;t found any rated runners yet. Racecards may still be loading.</p>
+            </>
+          )}
         </section>
       ) : (
         <section className='home-picks-section space-y-6'>
