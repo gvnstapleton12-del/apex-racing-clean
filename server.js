@@ -67,6 +67,8 @@ const GOING_DB_PATH = path.join(process.cwd(), 'data', 'going-database.json')
 const DISTANCE_DB_PATH = path.join(process.cwd(), 'data', 'distance-database.json')
 const BUCKET_DB_PATH = path.join(process.cwd(), 'data', 'context-buckets.json')
 const CALIBRATION_DB_PATH = path.join(process.cwd(), 'data', 'calibration.json')
+const TRAINER_FORM_PATH = path.join(process.cwd(), 'data', 'trainer-form.json')
+const JOCKEY_FORM_PATH = path.join(process.cwd(), 'data', 'jockey-form.json')
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -200,6 +202,9 @@ if (!LEARNING_DATABASE.weights?.multiplier?.class) {
 const DAILY_PICKS_DATABASE = loadDatabase(DAILY_PICKS_PATH)
 const REPLAY_NOTES_DATABASE = loadDatabase(REPLAY_NOTES_PATH)
 const NON_RUNNER_DATABASE = loadDatabase(NON_RUNNER_PATH)
+
+const TRAINER_FORM_DATABASE = loadDatabase(TRAINER_FORM_PATH) || {}
+const JOCKEY_FORM_DATABASE = loadDatabase(JOCKEY_FORM_PATH) || {}
 
 const LIVE_STATE = {
   racecards: [],
@@ -636,6 +641,41 @@ async function processScrapedResults(resultRaces) {
     matchDailyPicksWithResults(resultRaces)
     saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
 
+    // Update trainer/jockey form tracking
+    resultRaces.forEach((race) => {
+      const runners = race.runners || []
+      runners.forEach((runner) => {
+        const pos = Number(runner.position || 0)
+        if (pos < 1) return
+
+        const trainer = runner.trainer || race.trainer
+        const jockey = runner.jockey
+
+        if (trainer) {
+          if (!TRAINER_FORM_DATABASE[trainer]) TRAINER_FORM_DATABASE[trainer] = { runs: 0, wins: 0, places: 0, last10: [] }
+          const tf = TRAINER_FORM_DATABASE[trainer]
+          tf.runs++
+          if (pos === 1) tf.wins++
+          if (pos >= 2 && pos <= 4) tf.places++
+          tf.last10.push(pos === 1 ? 1 : 0)
+          if (tf.last10.length > 20) tf.last10.shift()
+        }
+
+        if (jockey) {
+          if (!JOCKEY_FORM_DATABASE[jockey]) JOCKEY_FORM_DATABASE[jockey] = { runs: 0, wins: 0, places: 0, last10: [] }
+          const jf = JOCKEY_FORM_DATABASE[jockey]
+          jf.runs++
+          if (pos === 1) jf.wins++
+          if (pos >= 2 && pos <= 4) jf.places++
+          jf.last10.push(pos === 1 ? 1 : 0)
+          if (jf.last10.length > 20) jf.last10.shift()
+        }
+      })
+    })
+
+    saveDatabase(TRAINER_FORM_PATH, TRAINER_FORM_DATABASE)
+    saveDatabase(JOCKEY_FORM_PATH, JOCKEY_FORM_DATABASE)
+
     resultRaces.forEach((race) => {
       const runners = race.runners || []
       const raceGoing = race.going || ''
@@ -977,6 +1017,8 @@ async function processRace(race) {
     bucketDb: BUCKET_DATABASE,
     horseProfiles: HORSE_DATABASE,
     races: LEARNING_DATABASE.races || [],
+    trainerForm: TRAINER_FORM_DATABASE,
+    jockeyForm: JOCKEY_FORM_DATABASE,
   })
 
   const scoredRunners = apexResult.racecards.map((runner) => {
