@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiUrl } from '../lib/api'
 
 function StatCard({ label, value, subtitle, color }: { label: string; value: string; subtitle?: string; color?: string }) {
   return (
@@ -16,8 +17,8 @@ export default function Proof() {
   const [tab, setTab] = useState<'overview' | 'samples' | 'calibration'>('overview')
 
   useEffect(() => {
-    fetch('/api/learning-stats').then(r => r.json()).then(setStats).catch(() => {})
-    fetch('/api/predictions').then(r => r.json()).then(setPreds).catch(() => {})
+    fetch(apiUrl('/api/learning-stats')).then(r => r.json()).then(setStats).catch(() => {})
+    fetch(apiUrl('/api/predictions')).then(r => r.json()).then(setPreds).catch(() => {})
   }, [])
 
   const recentPreds = preds ? Object.entries(preds).slice(-20).flatMap(([, v]: any) => v).slice(0, 50) : []
