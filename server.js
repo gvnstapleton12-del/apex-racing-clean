@@ -928,53 +928,6 @@ async function backfillPreviousDaysResults(daysBack = 7) {
     console.log(`[TIMEFORM BACKFILL] Stored ${totalNew} races from previous ${daysBack} days`)
   }
 }
-    } catch (e) { console.log(`ATR backfill scrape failed for ${dateStr}: ${e.message}`) }
-  }
-  return []
-}
-
-function extractRacecards(html, dateOverride) {
-  const races = []
-  const today = dateOverride || new Date().toISOString().slice(0, 10)
-
-  const meetingBlocks = html.matchAll(/<div[^>]*class="[^"]*meeting[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>/gis)
-  for (const block of meetingBlocks) {
-    try {
-      const text = block[0]
-      const courseMatch = text.match(/<h[23][^>]*>([^<]+)</i)
-      if (!courseMatch) continue
-      const course = courseMatch[1].trim()
-      const timeMatch = text.match(/(\d{2}:\d{2})/)
-      if (!timeMatch) continue
-      const offTime = timeMatch[1]
-      const horses = [...text.matchAll(/<a[^>]*href="[^"]*form\/horse\/[^"]*"[^>]*>([^<]+)<\/a>/gi)]
-        .map(m => m[1].trim())
-        .filter(h => h.length > 1)
-      if (horses.length === 0) continue
-      const runners = [...new Set(horses)].map(h => ({ horse: h, odds: '', position: 0 }))
-      races.push({
-        race_id: `${course}-${offTime}`.replace(/\s+/g, '-'),
-        race_name: `${course} ${offTime}`,
-        course, off_time: offTime, date: today, region: 'GB', runners,
-      })
-    } catch (e) { /* skip */ }
-  }
-  return races
-}
-
-async function scrapeAtrRacecards() {
-  const urls = ['https://m.attheraces.com/racecards', 'https://www.attheraces.com/racecards']
-  for (const url of urls) {
-    try {
-      const html = await fetchAtrPageText(url)
-      if (html && html.length > 1000) {
-        const races = extractRacecards(html)
-        if (races.length > 0) { console.log(`ATR: ${races.length} races from ${url}`); return races }
-      }
-    } catch (e) { console.log(`ATR scrape failed: ${e.message}`) }
-  }
-  return []
-}
 
 async function processRace(race) {
   const atrData = await fetchAtrRacecardData(race)
@@ -1033,38 +986,6 @@ async function processRace(race) {
 
 async function fetchLiveMeetings() {
   try {
-    const today = new Date().toISOString().slice(0, 10)
-
-    const timeformRaces = await scrapeTimeformRacecards(today)
-    if (timeformRaces.length > 0) {
-      console.log(`Using Timeform scraper: ${timeformRaces.length} races`)
-
-      const racesWithRunners = []
-      for (const race of timeformRaces) {
-        await new Promise(r => setTimeout(r, 1000))
-        const runners = await scrapeTimeformRaceDetails(race)
-        if (runners && runners.length > 0) {
-          racesWithRunners.push({ ...race, runners })
-        }
-      }
-
-      if (racesWithRunners.length === 0) {
-        console.log('Timeform returned races but no runners, falling back to Racing API')
-      } else {
-        const processed = await Promise.all(racesWithRunners.map(processRace))
-        LIVE_STATE.racecards = processed
-        LIVE_STATE.updatedAt = new Date().toISOString()
-        LIVE_STATE.loading = false
-        saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
-        saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
-        saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
-        io.emit('live-update', LIVE_STATE)
-        console.log(`Broadcasted ${processed.length} races from Timeform`)
-        scrapeFinishedRaceResults()
-        return
-      }
-    }
-
     console.log('Refreshing live meetings from Racing API...')
     const response = await fetch(
       'https://api.theracingapi.com/v1/racecards/free',
@@ -1301,13 +1222,6 @@ async function fetchTodayResults() {
 
 fetchLiveMeetings()
 setInterval(fetchLiveMeetings, 60000)
-
-setTimeout(() => {
-  backfillPreviousDaysResults(7)
-}, 5000)
-setInterval(() => {
-  backfillPreviousDaysResults(3)
-}, 3600000)
 
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
