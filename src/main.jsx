@@ -138,7 +138,9 @@ function Home() {
     (r) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
   )
   const allSelections = getHomeSelections(ukIreRaces)
-  const picks = allSelections.filter((s) => s.score >= 40).slice(0, 8)
+  const picks = allSelections
+    .filter((s) => s.score >= 50 && (s.valueEdge || 0) > 0)
+    .slice(0, 3)
   const topScore = picks[0]?.score || allSelections[0]?.score || 0
   const totalRunners = allSelections.length
 
