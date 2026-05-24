@@ -29,28 +29,30 @@ export function computeAbilityScore(runner, race) {
 
   if (or > 0) {
     const orNorm = Math.min(100, (or / 150) * 100)
-    score += (orNorm - 50) * 0.35
+    score += (orNorm - 50) * 0.6
   }
 
   if (rpr > 0) {
     const rprNorm = Math.min(100, (rpr / 150) * 100)
-    score += (rprNorm - 50) * 0.25
+    score += (rprNorm - 50) * 0.4
   }
 
   if (bestRpr > rpr) {
     const peakGap = bestRpr - rpr
-    if (peakGap <= 5) score += 3
-    else if (peakGap <= 10) score += 1
-    else if (peakGap > 20) score -= 2
+    if (peakGap <= 5) score += 5
+    else if (peakGap <= 10) score += 2
+    else if (peakGap > 20) score -= 5
   }
 
   if (formPositions.length >= 3) {
     const recent = formPositions.slice(0, 3)
     const avgPos = recent.reduce((a, b) => a + b, 0) / recent.length
     const fieldNorm = avgPos / Math.max(fieldSize, 1)
-    if (fieldNorm < 0.25) score += 5
-    else if (fieldNorm < 0.4) score += 2
-    else if (fieldNorm > 0.7) score -= 3
+    if (fieldNorm < 0.2) score += 12
+    else if (fieldNorm < 0.35) score += 6
+    else if (fieldNorm < 0.5) score += 2
+    else if (fieldNorm > 0.75) score -= 8
+    else score -= 3
   }
 
   if (formPositions.length >= 2) {
@@ -60,8 +62,9 @@ export function computeAbilityScore(runner, race) {
       if (positions[i] < positions[i - 1]) improving++
     }
     const improvementRate = improving / (positions.length - 1)
-    if (improvementRate > 0.6) score += 4
-    else if (improvementRate < 0.3) score -= 2
+    if (improvementRate > 0.7) score += 8
+    else if (improvementRate > 0.5) score += 4
+    else if (improvementRate < 0.2) score -= 5
   }
 
   return Math.max(1, Math.min(99, Math.round(score)))
@@ -88,19 +91,22 @@ export function computeFormScore(runner, race, races = []) {
     const avgWeighted = weightedPos / weightSum
     const fieldNorm = avgWeighted / Math.max(fieldSize, 1)
 
-    if (fieldNorm < 0.2) score += 15
-    else if (fieldNorm < 0.35) score += 8
+    if (fieldNorm < 0.15) score += 25
+    else if (fieldNorm < 0.25) score += 15
+    else if (fieldNorm < 0.4) score += 8
     else if (fieldNorm < 0.5) score += 3
-    else if (fieldNorm > 0.7) score -= 8
-    else score -= 4
+    else if (fieldNorm > 0.75) score -= 15
+    else score -= 6
   }
 
   if (lastRun > 0) {
-    if (lastRun <= 21) score += 5
+    if (lastRun <= 14) score += 8
+    else if (lastRun <= 21) score += 5
     else if (lastRun <= 35) score += 3
     else if (lastRun <= 60) score += 1
-    else if (lastRun > 120) score -= 5
-    else if (lastRun > 90) score -= 3
+    else if (lastRun > 150) score -= 10
+    else if (lastRun > 120) score -= 7
+    else if (lastRun > 90) score -= 4
   }
 
   const horseRaces = races.filter((r) =>
@@ -120,8 +126,10 @@ export function computeFormScore(runner, race, races = []) {
       }
     })
     const avgClassEdge = classEdge / recentRaces.length
-    if (avgClassEdge < -1) score += 4
-    else if (avgClassEdge > 1) score -= 3
+    if (avgClassEdge < -2) score += 8
+    else if (avgClassEdge < -1) score += 4
+    else if (avgClassEdge > 2) score -= 8
+    else if (avgClassEdge > 1) score -= 4
   }
 
   return Math.max(1, Math.min(99, Math.round(score)))
@@ -140,13 +148,16 @@ export function computeSuitabilityScore(runner, race, profile = null) {
     const distKey = `${Math.round(distanceF)}f`
     if (profile?.by_distance?.[distKey]) {
       const rec = profile.by_distance[distKey]
-      if (rec.runs >= 2) {
+      if (rec.runs >= 3) {
         const rate = rec.wins / rec.runs
-        if (rate > 0.3) score += 12
-        else if (rate > 0.15) score += 6
-        else if (rate < 0.05) score -= 8
+        if (rate > 0.35) score += 18
+        else if (rate > 0.2) score += 10
+        else if (rate > 0.1) score += 5
+        else if (rate < 0.05) score -= 12
+      } else if (rec.runs === 2) {
+        if (rec.wins >= 1) score += 8
       } else if (rec.runs === 1) {
-        if (rec.wins > 0) score += 4
+        if (rec.wins > 0) score += 5
       }
     }
 
@@ -155,9 +166,9 @@ export function computeSuitabilityScore(runner, race, profile = null) {
       const prefF = parseFurlongs(runnerDistPref)
       if (prefF > 0) {
         const diff = Math.abs(distanceF - prefF)
-        if (diff <= 1) score += 5
-        else if (diff <= 2) score += 2
-        else if (diff > 4) score -= 5
+        if (diff <= 1) score += 8
+        else if (diff <= 2) score += 4
+        else if (diff > 4) score -= 8
       }
     }
   }
@@ -166,34 +177,37 @@ export function computeSuitabilityScore(runner, race, profile = null) {
     const goingKey = going.includes('soft') || going.includes('heavy') ? 'soft' : going.includes('firm') || going.includes('fast') ? 'firm' : 'good'
     if (profile?.by_going?.[goingKey]) {
       const rec = profile.by_going[goingKey]
-      if (rec.runs >= 2) {
+      if (rec.runs >= 3) {
         const rate = rec.wins / rec.runs
-        if (rate > 0.3) score += 12
-        else if (rate > 0.15) score += 6
-        else if (rate < 0.05) score -= 8
+        if (rate > 0.35) score += 18
+        else if (rate > 0.2) score += 10
+        else if (rate > 0.1) score += 5
+        else if (rate < 0.05) score -= 12
+      } else if (rec.runs === 2) {
+        if (rec.wins >= 1) score += 8
       } else if (rec.runs === 1) {
-        if (rec.wins > 0) score += 4
+        if (rec.wins > 0) score += 5
       }
     }
 
     const runnerGoingPref = runner.preferred_going || runner.going_preference
     if (runnerGoingPref) {
       const prefKey = runnerGoingPref.toLowerCase()
-      if (prefKey === goingKey) score += 5
-      else if (prefKey === 'soft' && (going.includes('heavy') || going.includes('soft'))) score += 3
-      else if (prefKey === 'firm' && (going.includes('firm') || going.includes('fast'))) score += 3
-      else score -= 3
+      if (prefKey === goingKey) score += 8
+      else if (prefKey === 'soft' && (going.includes('heavy') || going.includes('soft'))) score += 5
+      else if (prefKey === 'firm' && (going.includes('firm') || going.includes('fast'))) score += 5
+      else score -= 5
     }
   }
 
   if (courseProfile.handed !== 'unknown') {
     if (profile?.by_track_handed?.[courseProfile.handed]) {
       const rec = profile.by_track_handed[courseProfile.handed]
-      if (rec.runs >= 2) {
+      if (rec.runs >= 3) {
         const rate = rec.wins / rec.runs
-        if (rate > 0.25) score += 8
-        else if (rate > 0.1) score += 4
-        else if (rate < 0.05) score -= 6
+        if (rate > 0.3) score += 12
+        else if (rate > 0.15) score += 6
+        else if (rate < 0.05) score -= 10
       }
     }
   }
@@ -201,10 +215,10 @@ export function computeSuitabilityScore(runner, race, profile = null) {
   if (courseProfile.type !== 'unknown') {
     if (profile?.by_track_type?.[courseProfile.type]) {
       const rec = profile.by_track_type[courseProfile.type]
-      if (rec.runs >= 2) {
+      if (rec.runs >= 3) {
         const rate = rec.wins / rec.runs
-        if (rate > 0.25) score += 5
-        else if (rate < 0.05) score -= 3
+        if (rate > 0.3) score += 8
+        else if (rate < 0.05) score -= 5
       }
     }
   }
@@ -213,16 +227,17 @@ export function computeSuitabilityScore(runner, race, profile = null) {
     const uphillKey = 'true'
     if (profile?.by_uphill?.[uphillKey]) {
       const rec = profile.by_uphill[uphillKey]
-      if (rec.runs >= 2) {
+      if (rec.runs >= 3) {
         const rate = rec.wins / rec.runs
-        if (rate > 0.2) score += 5
-        else if (rate < 0.05) score -= 4
+        if (rate > 0.25) score += 8
+        else if (rate < 0.05) score -= 6
       }
     }
   }
 
-  if (fieldSize >= 14) score -= 2
-  else if (fieldSize <= 6) score += 2
+  if (fieldSize >= 16) score -= 4
+  else if (fieldSize >= 14) score -= 2
+  else if (fieldSize <= 6) score += 4
 
   return Math.max(1, Math.min(99, Math.round(score)))
 }
@@ -237,47 +252,57 @@ export function computePaceCompatibility(runner, race, paceMap = {}) {
   let score = 50
 
   if (runningStyle === 'FRONT_RUNNER') {
-    if (frontRunners <= 2) score += 10
-    else if (frontRunners >= 5) score -= 8
+    if (frontRunners <= 1) score += 15
+    else if (frontRunners <= 2) score += 8
+    else if (frontRunners >= 5) score -= 15
+    else if (frontRunners >= 4) score -= 8
 
-    if (projectedTempo === 'SLOW') score += 8
-    else if (projectedTempo === 'FAST') score -= 5
+    if (projectedTempo === 'SLOW') score += 12
+    else if (projectedTempo === 'EVEN') score += 4
+    else if (projectedTempo === 'FAST') score -= 10
 
-    if (draw <= 3 && fieldSize >= 8) score += 4
-    else if (draw >= fieldSize - 2 && fieldSize >= 8) score -= 3
+    if (draw <= 2 && fieldSize >= 8) score += 6
+    else if (draw >= fieldSize - 1 && fieldSize >= 8) score -= 5
   }
 
   if (runningStyle === 'PRESSER') {
-    if (frontRunners >= 3) score += 8
-    else if (frontRunners <= 1) score -= 4
+    if (frontRunners >= 3) score += 12
+    else if (frontRunners >= 2) score += 6
+    else if (frontRunners <= 1) score -= 8
 
-    if (projectedTempo === 'EVEN' || projectedTempo === 'FAST') score += 5
-    else if (projectedTempo === 'SLOW') score -= 3
+    if (projectedTempo === 'EVEN' || projectedTempo === 'FAST') score += 8
+    else if (projectedTempo === 'SLOW') score -= 6
   }
 
   if (runningStyle === 'MID_PACK') {
-    if (frontRunners >= 4) score += 6
-    else if (frontRunners <= 2) score -= 2
+    if (frontRunners >= 4) score += 10
+    else if (frontRunners >= 3) score += 5
+    else if (frontRunners <= 1) score -= 5
 
-    if (projectedTempo === 'FAST') score += 5
-    else if (projectedTempo === 'SLOW') score -= 2
+    if (projectedTempo === 'FAST') score += 8
+    else if (projectedTempo === 'EVEN') score += 3
+    else if (projectedTempo === 'SLOW') score -= 5
   }
 
   if (runningStyle === 'CLOSER' || runningStyle === 'HOLD_UP') {
-    if (frontRunners >= 4) score += 10
-    else if (frontRunners <= 2) score -= 6
+    if (frontRunners >= 5) score += 18
+    else if (frontRunners >= 4) score += 12
+    else if (frontRunners >= 3) score += 6
+    else if (frontRunners <= 1) score -= 12
 
-    if (projectedTempo === 'FAST') score += 12
-    else if (projectedTempo === 'SLOW') score -= 8
+    if (projectedTempo === 'FAST') score += 18
+    else if (projectedTempo === 'EVEN') score += 5
+    else if (projectedTempo === 'SLOW') score -= 15
 
-    if (fieldSize >= 10) score += 4
-    else if (fieldSize <= 6) score -= 4
+    if (fieldSize >= 12) score += 6
+    else if (fieldSize >= 10) score += 3
+    else if (fieldSize <= 6) score -= 8
   }
 
   const distanceF = parseFurlongs(race.distance_f || '')
   if (distanceF > 0 && distanceF <= 6) {
-    if (runningStyle === 'FRONT_RUNNER') score += 5
-    else if (runningStyle === 'CLOSER' || runningStyle === 'HOLD_UP') score -= 3
+    if (runningStyle === 'FRONT_RUNNER') score += 8
+    else if (runningStyle === 'CLOSER' || runningStyle === 'HOLD_UP') score -= 6
   }
 
   return Math.max(1, Math.min(99, Math.round(score)))
@@ -344,18 +369,20 @@ export function computeTrainerJockeyScore(runner) {
   const jockeyRtf = Number(runner.jockey_rtf || runner.jockey_win_rate || 0)
 
   if (trainerRtf > 0) {
-    if (trainerRtf >= 30) score += 10
+    if (trainerRtf >= 35) score += 15
+    else if (trainerRtf >= 30) score += 10
     else if (trainerRtf >= 25) score += 7
     else if (trainerRtf >= 20) score += 4
     else if (trainerRtf >= 15) score += 2
-    else if (trainerRtf < 10) score -= 3
+    else if (trainerRtf < 8) score -= 5
   }
 
   if (jockeyRtf > 0) {
-    if (jockeyRtf >= 25) score += 8
+    if (jockeyRtf >= 30) score += 12
+    else if (jockeyRtf >= 25) score += 8
     else if (jockeyRtf >= 20) score += 5
     else if (jockeyRtf >= 15) score += 3
-    else if (jockeyRtf < 8) score -= 2
+    else if (jockeyRtf < 8) score -= 4
   }
 
   const trainer = (runner.trainer || '').toLowerCase()
@@ -364,13 +391,14 @@ export function computeTrainerJockeyScore(runner) {
   const eliteTrainers = ['obrien', 'mullins', 'henderson', 'nicholls', 'gosden', 'haggas', 'stoute', 'appleby', 'varian', 'skelton']
   const eliteJockeys = ['moore', 'townend', 'blackmore', 'de boinville', 'cobden', 'doyle', 'johnson', 'skelton', 'bryan', 'bass']
 
-  if (eliteTrainers.some((t) => trainer.includes(t))) score += 5
-  if (eliteJockeys.some((j) => jockey.includes(j))) score += 4
+  if (eliteTrainers.some((t) => trainer.includes(t))) score += 8
+  if (eliteJockeys.some((j) => jockey.includes(j))) score += 6
 
   const comboKey = `${trainer}_${jockey}`
   const comboRtf = Number(runner.trainer_jockey_rtf || 0)
   if (comboRtf > 0) {
-    if (comboRtf >= 25) score += 6
+    if (comboRtf >= 30) score += 10
+    else if (comboRtf >= 25) score += 6
     else if (comboRtf >= 20) score += 4
   }
 
