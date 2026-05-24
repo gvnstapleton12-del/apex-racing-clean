@@ -20,6 +20,10 @@ export function filterGBIRE(races: Race[]): Race[] {
   })
 }
 
+export function filterMinRunners(races: Race[], min = 5): Race[] {
+  return races.filter((r) => (r.runners?.length || 0) >= min)
+}
+
 export function filterToday(races: Race[]): Race[] {
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)

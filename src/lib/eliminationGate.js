@@ -22,6 +22,17 @@ export function eliminationGate(runner, race, options = {}) {
 
   const runners = race.runners || []
   const fieldSize = runners.length
+
+  // Auto-eliminate all runners in small fields (< 5)
+  if (fieldSize < 5) {
+    return {
+      eliminated: true,
+      isContender: false,
+      maxScore: 0,
+      reasons: ['small_field'],
+    }
+  }
+
   const fieldStrength = calculateFieldStrength(runners, race)
   const ratings = runners.map((r) => Math.max(Number(r.ofr || 0), Number(r.rpr || 0))).filter(Boolean)
   const topRating = ratings.length ? Math.max(...ratings) : 0
