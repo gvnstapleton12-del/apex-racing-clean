@@ -996,154 +996,6 @@ async function backfillPreviousDaysResults(daysBack = 7) {
   }
 }
 
-async function scrapeSportingLifeResults(dateStr) {
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-GB,en;q=0.9',
-  }
-  const url = `https://www.sportinglife.com/racing/results/${dateStr}`
-
-  try {
-    const res = await fetch(url, { headers, timeout: 30000, redirect: 'follow' })
-    if (!res.ok) return []
-    const html = await res.text()
-    if (html.length < 5000) return []
-
-    const races = []
-    const courseRegex = /<h[23][^>]*class="[^"]*course[^"]*"[^>]*>([^<]+)<\/h[23]>/gi
-    let courseMatch
-    let currentCourse = ''
-    let currentGoing = ''
-
-    const goingRegex = /Going:\s*([^<\n]+)/gi
-    let goingMatch
-
-    const raceRegex = /<a[^>]*href="([^"]*\/racing\/results\/[^"]*\/(\d{2}):(\d{2})[^"]*)"[^>]*>([^<]+)<\/a>/gi
-    let raceMatch
-
-    const lines = html.split('\n')
-    for (const line of lines) {
-      const cm = line.match(/<h[23][^>]*class="[^"]*course[^"]*"[^>]*>([^<]+)<\/h[23]>/i)
-      if (cm) {
-        currentCourse = cm[1].trim()
-        const gm = line.match(/Going:\s*([^<\n]+)/i)
-        if (gm) currentGoing = gm[1].trim()
-        continue
-      }
-
-      const rm = line.match(/<a[^>]*href="([^"]*\/racing\/results\/[^"]*\/(\d{2}):(\d{2})[^"]*)"[^>]*>([^<]+)<\/a>/i)
-      if (rm && currentCourse) {
-        const raceUrl = rm[1]
-        const raceTime = `${rm[2]}:${rm[3]}`
-        const raceName = rm[4].trim()
-
-        const runnerMatch = line.match(/(\d+)\s*Runners/i)
-        const runners = runnerMatch ? parseInt(runnerMatch[1], 10) : 0
-
-        if (runners >= 5) {
-          races.push({
-            race_id: `${currentCourse}-${raceTime}`,
-            race_name: raceName,
-            course: currentCourse,
-            off_time: raceTime,
-            date: dateStr,
-            region: 'GB',
-            going: currentGoing,
-            _slUrl: `https://www.sportinglife.com${raceUrl}`,
-            runners: [],
-          })
-        }
-      }
-    }
-
-    return races
-  } catch (e) {
-    console.log(`[SPORTING LIFE] Failed to scrape results for ${dateStr}: ${e.message}`)
-    return []
-  }
-}
-
-async function scrapeSportingLifeRaceResults(race) {
-  if (!race._slUrl) return null
-
-  const headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-GB,en;q=0.9',
-  }
-
-  try {
-    const res = await fetch(race._slUrl, { headers, timeout: 30000, redirect: 'follow' })
-    if (!res.ok) return null
-    const html = await res.text()
-    if (html.length < 5000) return null
-
-    const positions = []
-    const horseRegex = /<td[^>]*class="[^"]*horse[^"]*"[^>]*>.*?<a[^>]*>([^<]+)<\/a>.*?<\/td>/gis
-    let match
-
-    const runnerRows = [...html.matchAll(/<tr[^>]*class="[^"]*result[^"]*"[^>]*>([\s\S]*?)<\/tr>/gi)]
-    for (const row of runnerRows) {
-      const posMatch = row[1].match(/<td[^>]*class="[^"]*pos[^"]*"[^>]*>(\d+)<\/td>/i)
-      const horseMatch = row[1].match(/<a[^>]*>([^<]+)<\/a>/i)
-      if (posMatch && horseMatch) {
-        const pos = parseInt(posMatch[1], 10)
-        const name = horseMatch[1].trim()
-        const normalized = normalizeHorseName(name)
-        positions.push({ normalized, name, position: pos })
-      }
-    }
-
-    return positions.length > 0 ? positions : null
-  } catch (e) {
-    console.log(`[SPORTING LIFE] Failed to scrape race results for ${race.course} ${race.off_time}: ${e.message}`)
-    return null
-  }
-}
-
-async function backfillSportingLifeResults(daysBack = 7) {
-  const now = new Date()
-  let totalNew = 0
-
-  for (let i = 1; i <= daysBack; i++) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - i)
-    const dateStr = d.toISOString().slice(0, 10)
-
-    await new Promise(r => setTimeout(r, 3000))
-    const races = await scrapeSportingLifeResults(dateStr)
-    if (races.length === 0) continue
-
-    console.log(`[SPORTING LIFE BACKFILL] ${dateStr}: ${races.length} races found`)
-
-    for (const race of races) {
-      const alreadyStored = (LEARNING_DATABASE.races || []).some(
-        (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
-      )
-      if (alreadyStored) continue
-
-      await new Promise(r => setTimeout(r, 3000))
-      const positions = await scrapeSportingLifeRaceResults(race)
-      if (!positions) continue
-
-      const resultRunners = positions.map((p) => ({
-        horse: p.name,
-        horse_id: p.normalized,
-        position: p.position,
-      }))
-
-      console.log(`[SPORTING LIFE BACKFILL] ${dateStr} ${race.course} ${race.off_time} — ${positions.length} positions`)
-      await processScrapedResults([{ ...race, runners: resultRunners }])
-      totalNew++
-    }
-  }
-
-  if (totalNew > 0) {
-    console.log(`[SPORTING LIFE BACKFILL] Stored ${totalNew} races from previous ${daysBack} days`)
-  }
-}
-
 async function processRace(race) {
   const atrData = await fetchAtrRacecardData(race)
   const atrHorseLinks = atrData.links
@@ -1440,10 +1292,6 @@ async function fetchTodayResults() {
 fetchLiveMeetings()
 setInterval(fetchLiveMeetings, 300000)
 
-setTimeout(() => {
-  backfillSportingLifeResults(7)
-}, 10000)
-
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
 
@@ -1681,12 +1529,7 @@ app.get('/api/results', (_req, res) => {
 })
 
 app.post('/api/backfill', async (_req, res) => {
-  try {
-    await backfillSportingLifeResults(7)
-    res.json({ ok: true, dates: [...new Set((LEARNING_DATABASE.races || []).map(r => r.date || (r.off_dt ? r.off_dt.slice(0, 10) : null)).filter(Boolean))].sort().reverse() })
-  } catch (e) {
-    res.status(500).json({ error: e.message })
-  }
+  res.json({ ok: true, message: 'ATR backfill will run automatically once IP unblocks. Currently blocked — check logs for status.', dates: [...new Set((LEARNING_DATABASE.races || []).map(r => r.date || (r.off_dt ? r.off_dt.slice(0, 10) : null)).filter(Boolean))].sort().reverse() })
 })
 
 app.post('/api/upload-results', (req, res) => {
