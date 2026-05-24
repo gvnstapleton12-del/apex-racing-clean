@@ -323,6 +323,26 @@ const ATR_HEADERS = {
 }
 
 async function fetchAtrPageText(url) {
+  const scraperApiKey = process.env.SCRAPER_API_KEY
+  const scraperUrl = scraperApiKey
+    ? `http://api.scraperapi.com?api_key=${scraperApiKey}&url=${encodeURIComponent(url)}&render=true`
+    : null
+
+  if (scraperUrl) {
+    try {
+      const response = await fetch(scraperUrl, {
+        headers: { 'accept-encoding': 'gzip, deflate' },
+        timeout: 30000,
+      })
+      if (response.ok) {
+        const text = await response.text()
+        if (text.length > 1000) return text
+      }
+    } catch (e) {
+      console.log(`[SCRAPERAPI] Failed for ${url}: ${e.message}`)
+    }
+  }
+
   try {
     const response = await fetch(url, {
       headers: ATR_HEADERS,
