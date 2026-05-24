@@ -97,6 +97,16 @@ export function ResultsList({ results }: ResultsListProps) {
     return bDt.localeCompare(aDt)
   })
 
+  const previousByDate: Record<string, typeof previousRaces> = {}
+  previousRaces.forEach((r: any) => {
+    const d = r.date || (r.off_dt ? r.off_dt.slice(0, 10) : '')
+    if (!d) return
+    if (!previousByDate[d]) previousByDate[d] = []
+    previousByDate[d].push(r)
+  })
+  const dateKeys = Object.keys(previousByDate).sort((a, b) => b.localeCompare(a))
+  const [selectedDate, setSelectedDate] = useState(dateKeys[0] || '')
+
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
       <section className='dashboard-hero'>
@@ -166,10 +176,25 @@ export function ResultsList({ results }: ResultsListProps) {
             <p className='text-zinc-400 mt-2'>Uploaded results from previous days will appear here.</p>
           </section>
         ) : (
-          <section className='race-grid space-y-6'>
-            {previousRaces.map((race: any, raceIndex: number) => (
-              <RaceResultCard key={race.race_id || `prev-${raceIndex}`} race={race} />
-            ))}
+          <section className='space-y-6'>
+            <select
+              value={selectedDate || dateKeys[0] || ''}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className='w-full bg-[#0f1720] border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:border-amber-500/50'
+            >
+              {dateKeys.map((d) => {
+                const dt = new Date(d + 'T00:00:00')
+                const label = dt.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+                return (
+                  <option key={d} value={d}>{label} ({previousByDate[d].length} races)</option>
+                )
+              })}
+            </select>
+            <div className='race-grid space-y-6'>
+              {(previousByDate[selectedDate || dateKeys[0]] || []).map((race: any, raceIndex: number) => (
+                <RaceResultCard key={race.race_id || `prev-${raceIndex}`} race={race} />
+              ))}
+            </div>
           </section>
         )
       )}
