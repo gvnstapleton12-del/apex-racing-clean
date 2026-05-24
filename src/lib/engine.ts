@@ -115,14 +115,24 @@ export function resultLabel(result: string | null | undefined, position?: number
   return null
 }
 
+function parseField(val: any) {
+  if (typeof val === 'string') {
+    try { return JSON.parse(val) } catch { return null }
+  }
+  return val
+}
+
 export function formatSelection(race: Race, runner: Runner) {
   const betFilter = race.betFilter || {}
   const isSkipped = betFilter.verdict === 'AUTO SKIP'
   if (isSkipped) return null
-  const tier = runner.confidenceTier?.tier
+  const ct = parseField(runner.confidenceTier) || {}
+  const tier = ct.tier
   if (tier === 'D' && (runner.valueEngine?.edge ?? 0) > 0) return null
-  const bankrollLabel = runner.bankrollEngine?.label || ''
+  const be = parseField(runner.bankrollEngine) || {}
+  const bankrollLabel = be.label || ''
   if (bankrollLabel === 'AVOID') return null
+  const ve = parseField(runner.valueEngine) || {}
   return {
     ...runner,
     race,
@@ -130,12 +140,12 @@ export function formatSelection(race: Race, runner: Runner) {
     course: race.course,
     offTime: formatOffTime(race),
     score: getScore(runner),
-    probBand: runner.probBand || runner.confidenceTier?.label || runner.aiProfile?.grade || '',
+    probBand: runner.probBand || ct.label || runner.aiProfile?.grade || '',
     probRange: runner.probRange || '',
     winProb: runner.winProb || null,
     placeProb: runner.placeProb || null,
-    valueEdge: runner.valueEngine?.edge || 0,
-    confidenceTier: runner.confidenceTier?.tier || 'B',
+    valueEdge: ve.edge || 0,
+    confidenceTier: ct.tier || 'B',
     betFilterVerdict: betFilter.verdict || 'BETTABLE',
     selectionQuality: runner.selectionQuality,
   } as const
