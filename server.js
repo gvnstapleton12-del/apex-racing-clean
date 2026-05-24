@@ -323,26 +323,6 @@ const ATR_HEADERS = {
 }
 
 async function fetchAtrPageText(url) {
-  const scraperApiKey = process.env.SCRAPER_API_KEY
-  const scraperUrl = scraperApiKey
-    ? `http://api.scraperapi.com?api_key=${scraperApiKey}&url=${encodeURIComponent(url)}&render=true`
-    : null
-
-  if (scraperUrl) {
-    try {
-      const response = await fetch(scraperUrl, {
-        headers: { 'accept-encoding': 'gzip, deflate' },
-        timeout: 30000,
-      })
-      if (response.ok) {
-        const text = await response.text()
-        if (text.length > 1000) return text
-      }
-    } catch (e) {
-      console.log(`[SCRAPERAPI] Failed for ${url}: ${e.message}`)
-    }
-  }
-
   try {
     const response = await fetch(url, {
       headers: ATR_HEADERS,
@@ -572,55 +552,6 @@ async function scrapeFinishedRaceResults() {
   await processScrapedResults(resultRaces)
 }
 
-async function backfillPreviousDaysResults(daysBack = 7) {
-  const now = new Date()
-  let totalNew = 0
-
-  for (let i = 1; i <= daysBack; i++) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - i)
-    const dateStr = d.toISOString().slice(0, 10)
-
-    const races = await scrapeAtrRacecardsForDate(dateStr)
-    if (races.length === 0) continue
-
-    const finished = races.filter((race) => {
-      const offDt = race.off_dt || `${dateStr}T${race.off_time || '00:00'}:00`
-      const raceTime = new Date(offDt)
-      return !isNaN(raceTime.getTime()) && raceTime < now
-    })
-
-    const resultRaces = []
-    for (const race of finished) {
-      const alreadyStored = (LEARNING_DATABASE.races || []).some(
-        (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
-      )
-      if (alreadyStored) continue
-
-      const positions = await scrapeAtrResultForRace(race)
-      if (!positions) continue
-
-      const resultRunners = (race.runners || []).map((runner) => {
-        const normalized = normalizeHorseName(runner.horse)
-        const found = positions.find((p) => p.normalized === normalized)
-        return { ...runner, position: found ? found.position : 0, sp: found?.sp || runner.odds || 0 }
-      })
-
-      console.log(`[ATR BACKFILL] ${dateStr} ${race.course} ${race.off_time} — ${positions.length} positions`)
-      resultRaces.push({ ...race, runners: resultRunners })
-    }
-
-    if (resultRaces.length > 0) {
-      await processScrapedResults(resultRaces)
-      totalNew += resultRaces.length
-    }
-  }
-
-  if (totalNew > 0) {
-    console.log(`[ATR BACKFILL] Stored ${totalNew} races from previous ${daysBack} days`)
-  }
-}
-
 async function processScrapedResults(resultRaces) {
   const existingCount = LEARNING_DATABASE.records.length
 
@@ -745,18 +676,258 @@ function createAlert(
   io.emit('new-alert', alert)
 }
 
-async function scrapeAtrRacecardsForDate(dateStr) {
-  const urls = [
-    `https://m.attheraces.com/racecards/${dateStr}`,
-    `https://www.attheraces.com/racecards/${dateStr}`,
-  ]
-  for (const url of urls) {
-    try {
-      const html = await fetchAtrPageText(url)
-      if (html && html.length > 1000) {
-        const races = extractRacecards(html, dateStr)
-        if (races.length > 0) { console.log(`ATR BACKFILL: ${races.length} races from ${url}`); return races }
+async function scrapeTimeformRacecards(dateStr) {
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-GB,en;q=0.9',
+  }
+  const url = `https://www.timeform.com/horse-racing/racecards?meetingDate=${dateStr}`
+
+  try {
+    const res = await fetch(url, { headers, timeout: 30000, redirect: 'follow' })
+    if (!res.ok) return []
+    const html = await res.text()
+    if (html.length < 5000) return []
+
+    const races = []
+    const meetingHeaders = [...html.matchAll(/<div[^>]*class="w-racecard-grid-meeting-header[^"]*"[^>]*data-course-id="(\d+)"[^>]*>/gi)]
+
+    for (const header of meetingHeaders) {
+      const courseId = header[1]
+      const blockStart = header.index
+      const blockEnd = Math.min(html.length, blockStart + 50000)
+      const block = html.substring(blockStart, blockEnd)
+
+      const courseMatch = block.match(/<h[23][^>]*>([^<]+)<\/h[23]>/i)
+      if (!courseMatch) continue
+      const course = courseMatch[1].trim()
+
+      const goingMatch = block.match(/<i>Going<\/i><b>([^<]+)<\/b>/i)
+      const going = goingMatch ? goingMatch[1].trim() : ''
+
+      const raceLinks = [...block.matchAll(/href="\/horse-racing\/racecards\/([^"]*\/(\d{4})-(\d{2})-(\d{2})\/(\d{4})\/(\d+)\/(\d+)\/[^"]*)"[^>]*>([^<]+)<\/a>/gi)]
+
+      for (const rl of raceLinks) {
+        const raceUrl = rl[1]
+        const raceTime = rl[5]
+        const raceId = rl[7]
+        const raceName = rl[8].trim()
+
+        const formattedTime = `${raceTime.slice(0, 2)}:${raceTime.slice(2)}`
+        const raceDate = `${rl[2]}-${rl[3]}-${rl[4]}`
+
+        races.push({
+          race_id: `${course}-${formattedTime}-${raceId}`,
+          race_name: `${course} ${formattedTime}`,
+          course,
+          off_time: formattedTime,
+          date: raceDate,
+          region: course.toLowerCase().includes('(ire)') ? 'IRE' : 'GB',
+          going,
+          _timeformUrl: `https://www.timeform.com/horse-racing/racecards/${raceUrl}`,
+          runners: [],
+        })
       }
+    }
+
+    return races
+  } catch (e) {
+    console.log(`[TIMEFORM] Failed to scrape racecards for ${dateStr}: ${e.message}`)
+    return []
+  }
+}
+
+async function scrapeTimeformRaceDetails(race) {
+  if (!race._timeformUrl) return null
+
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-GB,en;q=0.9',
+  }
+
+  try {
+    const res = await fetch(race._timeformUrl, { headers, timeout: 30000, redirect: 'follow' })
+    if (!res.ok) return null
+    const html = await res.text()
+    if (html.length < 5000) return null
+
+    const horseRegex = /href="\/horse-racing\/horse\/form\/([^"]*)"[^>]*>([^<]+)<\/a>/gi
+    const seen = new Set()
+    const runners = []
+    let match
+
+    while ((match = horseRegex.exec(html)) !== null) {
+      const slug = match[1]
+      const name = match[2].trim()
+      if (!name || seen.has(name)) continue
+      seen.add(name)
+
+      const idMatch = slug.match(/\/(\d{12,})\//)
+      const horseId = idMatch ? idMatch[1] : name
+
+      runners.push({
+        horse: name,
+        horse_id: horseId,
+        odds: '',
+        position: 0,
+        _timeformSlug: slug,
+      })
+    }
+
+    return runners
+  } catch (e) {
+    console.log(`[TIMEFORM] Failed to scrape race details for ${race.course} ${race.off_time}: ${e.message}`)
+    return null
+  }
+}
+
+async function scrapeTimeformResults(dateStr) {
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-GB,en;q=0.9',
+  }
+  const url = `https://www.timeform.com/horse-racing/results?meetingDate=${dateStr}`
+
+  try {
+    const res = await fetch(url, { headers, timeout: 30000, redirect: 'follow' })
+    if (!res.ok) return []
+    const html = await res.text()
+    if (html.length < 5000) return []
+
+    const races = []
+    const meetingHeaders = [...html.matchAll(/<div[^>]*class="w-racecard-grid-meeting-header[^"]*"[^>]*data-course-id="(\d+)"[^>]*>/gi)]
+
+    for (const header of meetingHeaders) {
+      const blockStart = header.index
+      const blockEnd = Math.min(html.length, blockStart + 50000)
+      const block = html.substring(blockStart, blockEnd)
+
+      const courseMatch = block.match(/<h[23][^>]*>([^<]+)<\/h[23]>/i)
+      if (!courseMatch) continue
+      const course = courseMatch[1].trim()
+
+      const raceLinks = [...block.matchAll(/href="\/horse-racing\/results\/([^"]*\/(\d{4})-(\d{2})-(\d{2})\/(\d{4})\/(\d+)\/(\d+)\/[^"]*)"[^>]*>([^<]+)<\/a>/gi)]
+
+      for (const rl of raceLinks) {
+        const raceUrl = rl[1]
+        const raceTime = rl[5]
+        const raceId = rl[7]
+        const raceName = rl[8].trim()
+
+        const formattedTime = `${raceTime.slice(0, 2)}:${raceTime.slice(2)}`
+        const raceDate = `${rl[2]}-${rl[3]}-${rl[4]}`
+
+        races.push({
+          race_id: `${course}-${formattedTime}-${raceId}`,
+          race_name: `${course} ${formattedTime}`,
+          course,
+          off_time: formattedTime,
+          date: raceDate,
+          region: course.toLowerCase().includes('(ire)') ? 'IRE' : 'GB',
+          _timeformUrl: `https://www.timeform.com/horse-racing/results/${raceUrl}`,
+          runners: [],
+        })
+      }
+    }
+
+    return races
+  } catch (e) {
+    console.log(`[TIMEFORM] Failed to scrape results for ${dateStr}: ${e.message}`)
+    return []
+  }
+}
+
+async function scrapeTimeformRaceResults(race) {
+  if (!race._timeformUrl) return null
+
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-GB,en;q=0.9',
+  }
+
+  try {
+    const res = await fetch(race._timeformUrl, { headers, timeout: 30000, redirect: 'follow' })
+    if (!res.ok) return null
+    const html = await res.text()
+    if (html.length < 5000) return null
+
+    const positions = []
+    const horseRegex = /href="\/horse-racing\/horse\/form\/([^"]*)"[^>]*>([^<]+)<\/a>/gi
+    const seen = new Set()
+    let pos = 0
+    let match
+
+    while ((match = horseRegex.exec(html)) !== null) {
+      const name = match[2].trim()
+      if (!name || seen.has(name)) continue
+      seen.add(name)
+      pos++
+
+      const normalized = normalizeHorseName(name)
+      positions.push({ normalized, name, position: pos })
+    }
+
+    return positions.length > 0 ? positions : null
+  } catch (e) {
+    console.log(`[TIMEFORM] Failed to scrape results for ${race.course} ${race.off_time}: ${e.message}`)
+    return null
+  }
+}
+
+async function backfillPreviousDaysResults(daysBack = 7) {
+  const now = new Date()
+  let totalNew = 0
+
+  for (let i = 1; i <= daysBack; i++) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - i)
+    const dateStr = d.toISOString().slice(0, 10)
+
+    await new Promise(r => setTimeout(r, 2000))
+    const races = await scrapeTimeformResults(dateStr)
+    if (races.length === 0) continue
+
+    console.log(`[TIMEFORM BACKFILL] ${dateStr}: ${races.length} races found`)
+
+    const resultRaces = []
+    for (const race of races) {
+      const alreadyStored = (LEARNING_DATABASE.races || []).some(
+        (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
+      )
+      if (alreadyStored) continue
+
+      await new Promise(r => setTimeout(r, 2000))
+      const positions = await scrapeTimeformRaceResults(race)
+      if (!positions) continue
+
+      const racecardRaces = await scrapeTimeformRacecards(dateStr)
+      const matchingRace = racecardRaces.find(r => r.course === race.course && r.off_time === race.off_time)
+      const runners = matchingRace ? (await scrapeTimeformRaceDetails(matchingRace)) || [] : []
+
+      const resultRunners = runners.map((runner) => {
+        const normalized = normalizeHorseName(runner.horse)
+        const found = positions.find((p) => p.normalized === normalized)
+        return { ...runner, position: found ? found.position : 0 }
+      })
+
+      console.log(`[TIMEFORM BACKFILL] ${dateStr} ${race.course} ${race.off_time} — ${positions.length} positions, ${resultRunners.length} runners`)
+      resultRaces.push({ ...race, runners: resultRunners })
+    }
+
+    if (resultRaces.length > 0) {
+      await processScrapedResults(resultRaces)
+      totalNew += resultRaces.length
+    }
+  }
+
+  if (totalNew > 0) {
+    console.log(`[TIMEFORM BACKFILL] Stored ${totalNew} races from previous ${daysBack} days`)
+  }
+}
     } catch (e) { console.log(`ATR backfill scrape failed for ${dateStr}: ${e.message}`) }
   }
   return []
@@ -805,81 +976,96 @@ async function scrapeAtrRacecards() {
   return []
 }
 
+async function processRace(race) {
+  const atrData = await fetchAtrRacecardData(race)
+  const atrHorseLinks = atrData.links
+  const atrOdds = atrData.odds
+
+  const runners = (race.runners || []).map((r) => {
+    const normalized = normalizeHorseName(r.horse)
+    const atrPrice = atrOdds[normalized]
+    if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
+      return { ...r, odds: atrPrice }
+    }
+    return r
+  })
+
+  const apexResult = runApexEngine(runners, race, {
+    goingDb: GOING_DATABASE,
+    distanceDb: DISTANCE_DATABASE,
+    replayDb: REPLAY_NOTES_DATABASE,
+    bucketDb: BUCKET_DATABASE,
+    horseProfiles: HORSE_DATABASE,
+    races: LEARNING_DATABASE.races || [],
+  })
+
+  const scoredRunners = apexResult.racecards.map((runner) => {
+    const horseId = runner.horse_id || runner.horse
+    const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
+    if (!HORSE_DATABASE[horseId]) {
+      HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
+    }
+    const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
+    const profileAdj = computeProfileAdjustment(horseProfile, race)
+    if (horseProfile) {
+      HORSE_DATABASE[horseId].profile = horseProfile
+      HORSE_DATABASE[horseId].profile_adjustment = profileAdj
+    }
+    const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
+    const marketMovement = analyzeMarketMovement({ horse: runner.horse, currentOdds: runner.odds, previousOdds, aiConfidence: runner.finalScore })
+    MARKET_DATABASE[horseId] = { horse: runner.horse, lastOdds: runner.odds, movement: marketMovement.movement, updatedAt: new Date().toISOString() }
+    const bettingSignals = generateSignals({ ...runner, aiProfile: { confidence: runner.finalScore }, marketMovement })
+    if (marketMovement.alert) {
+      createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
+    }
+    logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: runner.winProb, placeProb: runner.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
+    return { ...runner, atrFormUrl, bettingSignals, marketMovement, elimination: runner.elimination, powerScore: runner.power?.total, paceScore: runner.pace?.score, humanScore: runner.human?.score, marketScore: runner.market?.score, finalScore: runner.finalScore, winProb: runner.winProb, placeProb: runner.placeProb, placeTraits: runner.placeTraits, interactions: runner.interactions, horseQuality: runner.horseQuality, simulation: runner.simulation, marketModel: runner.marketModel, valueEngine: runner.valueEngine, bankrollEngine: runner.bankrollEngine, scenarioFlags: runner.scenarioFlags, explanation: runner.explanation, confidenceTier: runner.confidenceTier, confidenceLabel: runner.confidenceLabel, confidenceScore: runner.confidenceScore, score: runner.finalScore, betQuality: runner.betQuality, selectionQuality: runner.selectionQuality, runningStyle: runner.runningStyle }
+  })
+
+  return {
+    ...race,
+    paceMap: apexResult.paceMap,
+    volatility: apexResult.volatility,
+    betFilter: apexResult.betFilter,
+    runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
+  }
+}
+
 async function fetchLiveMeetings() {
   try {
-    // Try ATR scraper first
-    const atrRaces = await scrapeAtrRacecards()
-    if (atrRaces.length > 0) {
-      console.log(`Using ATR scraper: ${atrRaces.length} races`)
-      const processed = await Promise.all(atrRaces.map(async (race) => {
-        const atrData = await fetchAtrRacecardData(race)
-        const atrHorseLinks = atrData.links
-        const atrOdds = atrData.odds
+    const today = new Date().toISOString().slice(0, 10)
 
-        const runners = (race.runners || []).map((r) => {
-          const normalized = normalizeHorseName(r.horse)
-          const atrPrice = atrOdds[normalized]
-          if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
-            return { ...r, odds: atrPrice }
-          }
-          return r
-        })
+    const timeformRaces = await scrapeTimeformRacecards(today)
+    if (timeformRaces.length > 0) {
+      console.log(`Using Timeform scraper: ${timeformRaces.length} races`)
 
-        const apexResult = runApexEngine(runners, race, {
-          goingDb: GOING_DATABASE,
-          distanceDb: DISTANCE_DATABASE,
-          replayDb: REPLAY_NOTES_DATABASE,
-          bucketDb: BUCKET_DATABASE,
-          horseProfiles: HORSE_DATABASE,
-          races: LEARNING_DATABASE.races || [],
-        })
-
-        const scoredRunners = apexResult.racecards.map((runner) => {
-          const horseId = runner.horse_id || runner.horse
-          const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
-          if (!HORSE_DATABASE[horseId]) {
-            HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
-          }
-          const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
-          const profileAdj = computeProfileAdjustment(horseProfile, race)
-          if (horseProfile) {
-            HORSE_DATABASE[horseId].profile = horseProfile
-            HORSE_DATABASE[horseId].profile_adjustment = profileAdj
-          }
-          const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
-          const marketMovement = analyzeMarketMovement({ horse: runner.horse, currentOdds: runner.odds, previousOdds, aiConfidence: runner.finalScore })
-          MARKET_DATABASE[horseId] = { horse: runner.horse, lastOdds: runner.odds, movement: marketMovement.movement, updatedAt: new Date().toISOString() }
-          const bettingSignals = generateSignals({ ...runner, aiProfile: { confidence: runner.finalScore }, marketMovement })
-          if (marketMovement.alert) {
-            createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
-          }
-          logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: runner.winProb, placeProb: runner.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
-          return { ...runner, atrFormUrl, bettingSignals, marketMovement, elimination: runner.elimination, powerScore: runner.power?.total, paceScore: runner.pace?.score, humanScore: runner.human?.score, marketScore: runner.market?.score, finalScore: runner.finalScore, winProb: runner.winProb, placeProb: runner.placeProb, placeTraits: runner.placeTraits, interactions: runner.interactions, horseQuality: runner.horseQuality, simulation: runner.simulation, marketModel: runner.marketModel, valueEngine: runner.valueEngine, bankrollEngine: runner.bankrollEngine, scenarioFlags: runner.scenarioFlags, explanation: runner.explanation, confidenceTier: runner.confidenceTier, confidenceLabel: runner.confidenceLabel, confidenceScore: runner.confidenceScore, score: runner.finalScore, betQuality: runner.betQuality, selectionQuality: runner.selectionQuality, runningStyle: runner.runningStyle }
-        })
-
-        return {
-          ...race,
-          paceMap: apexResult.paceMap,
-          volatility: apexResult.volatility,
-          betFilter: apexResult.betFilter,
-          runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
+      const racesWithRunners = []
+      for (const race of timeformRaces) {
+        await new Promise(r => setTimeout(r, 1000))
+        const runners = await scrapeTimeformRaceDetails(race)
+        if (runners && runners.length > 0) {
+          racesWithRunners.push({ ...race, runners })
         }
-      }))
+      }
 
-      LIVE_STATE.racecards = processed
-      LIVE_STATE.updatedAt = new Date().toISOString()
-      LIVE_STATE.loading = false
-      saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
-      saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
-      saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
-      io.emit('live-update', LIVE_STATE)
-      console.log(`Broadcasted ${processed.length} races from ATR`)
-      return
+      if (racesWithRunners.length === 0) {
+        console.log('Timeform returned races but no runners, falling back to Racing API')
+      } else {
+        const processed = await Promise.all(racesWithRunners.map(processRace))
+        LIVE_STATE.racecards = processed
+        LIVE_STATE.updatedAt = new Date().toISOString()
+        LIVE_STATE.loading = false
+        saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
+        saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
+        saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
+        io.emit('live-update', LIVE_STATE)
+        console.log(`Broadcasted ${processed.length} races from Timeform`)
+        scrapeFinishedRaceResults()
+        return
+      }
     }
 
-    // Fall back to Racing API
-    console.log('Refreshing live meetings...')
-
+    console.log('Refreshing live meetings from Racing API...')
     const response = await fetch(
       'https://api.theracingapi.com/v1/racecards/free',
       {
@@ -894,149 +1080,17 @@ async function fetchLiveMeetings() {
     )
 
     const data = await response.json()
-
     const racecards = data.racecards || []
-
-    const processed = await Promise.all(racecards.map(async (race) => {
-      const atrData = await fetchAtrRacecardData(race)
-      const atrHorseLinks = atrData.links
-      const atrOdds = atrData.odds
-
-      const runners = (race.runners || []).map((r) => {
-        const normalized = normalizeHorseName(r.horse)
-        const atrPrice = atrOdds[normalized]
-        if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
-          return { ...r, odds: atrPrice }
-        }
-        return r
-      })
-      const oddsAttached = runners.filter((r) => Number(r.odds || 0) > 1).length
-      if (oddsAttached > 0 && oddsAttached !== (race.runners || []).length) {
-        console.log(`[ATR ODDS] Attached odds to ${oddsAttached}/${runners.length} runners for ${race.course} ${race.off_time}`)
-      }
-
-      const apexResult = runApexEngine(runners, race, {
-        goingDb: GOING_DATABASE,
-        distanceDb: DISTANCE_DATABASE,
-        replayDb: REPLAY_NOTES_DATABASE,
-        bucketDb: BUCKET_DATABASE,
-        horseProfiles: HORSE_DATABASE,
-        races: LEARNING_DATABASE.races || [],
-      })
-
-      const scoredRunners = apexResult.racecards.map((runner) => {
-        const horseId = runner.horse_id || runner.horse
-        const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
-
-        if (!HORSE_DATABASE[horseId]) {
-          HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
-        }
-
-        const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
-        const profileAdj = computeProfileAdjustment(horseProfile, race)
-
-        if (horseProfile) {
-          HORSE_DATABASE[horseId].profile = horseProfile
-          HORSE_DATABASE[horseId].profile_adjustment = profileAdj
-        }
-
-        const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
-
-        const marketMovement = analyzeMarketMovement({
-          horse: runner.horse,
-          currentOdds: runner.odds,
-          previousOdds,
-          aiConfidence: runner.finalScore,
-        })
-
-        MARKET_DATABASE[horseId] = {
-          horse: runner.horse,
-          lastOdds: runner.odds,
-          movement: marketMovement.movement,
-          updatedAt: new Date().toISOString(),
-        }
-
-        const bettingSignals = generateSignals({
-          ...runner,
-          aiProfile: { confidence: runner.finalScore },
-          marketMovement,
-        })
-
-        if (marketMovement.alert) {
-          createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
-        }
-
-        logPrediction(race, runner, {
-          confidence: runner.finalScore,
-          estimatedWinProbability: runner.winProb,
-          placeProb: runner.placeProb,
-          grade: runner.selectionQuality?.grade || '',
-          betQuality: runner.selectionQuality?.label || runner.betQuality || '',
-          breakdown: {
-            powerScore: runner.power?.total,
-            paceScore: runner.pace?.score,
-            humanAdj: runner.human?.score,
-            marketAdj: runner.market?.score,
-            runningStyle: runner.runningStyle,
-          },
-        })
-
-        return {
-          ...runner,
-          atrFormUrl,
-          bettingSignals,
-          marketMovement,
-          elimination: runner.elimination,
-          powerScore: runner.power?.total,
-          paceScore: runner.pace?.score,
-          humanScore: runner.human?.score,
-          marketScore: runner.market?.score,
-          finalScore: runner.finalScore,
-          winProb: runner.winProb,
-          placeProb: runner.placeProb,
-          placeTraits: runner.placeTraits,
-          interactions: runner.interactions,
-          horseQuality: runner.horseQuality,
-          simulation: runner.simulation,
-          marketModel: runner.marketModel,
-          valueEngine: runner.valueEngine,
-          bankrollEngine: runner.bankrollEngine,
-          scenarioFlags: runner.scenarioFlags,
-          explanation: runner.explanation,
-          confidenceTier: runner.confidenceTier,
-          confidenceLabel: runner.confidenceLabel,
-          confidenceScore: runner.confidenceScore,
-          score: runner.finalScore,
-          betQuality: runner.betQuality,
-          selectionQuality: runner.selectionQuality,
-          runningStyle: runner.runningStyle,
-        }
-      })
-
-      return {
-        ...race,
-        paceMap: apexResult.paceMap,
-        volatility: apexResult.volatility,
-        betFilter: apexResult.betFilter,
-        runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
-      }
-    }))
+    const processed = await Promise.all(racecards.map(processRace))
 
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
-
     saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
     saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
     saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
-
     io.emit('live-update', LIVE_STATE)
-
-    console.log(`Broadcasted ${processed.length} races`)
-    console.log(
-      `Tracked predictions: ${Object.keys(PREDICTIONS_DATABASE).length}`
-    )
-
+    console.log(`Broadcasted ${processed.length} races from Racing API`)
     scrapeFinishedRaceResults()
   } catch (error) {
     console.error(error)
