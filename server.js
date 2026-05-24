@@ -208,6 +208,33 @@ const LIVE_STATE = {
 }
 
 const ATR_LINK_CACHE = new Map()
+const ATR_REQUEST_QUEUE = []
+let ATR_PROCESSING = false
+const ATR_REQUEST_DELAY = 2000
+
+function queueAtrRequest(fn) {
+  return new Promise((resolve) => {
+    ATR_REQUEST_QUEUE.push({ fn, resolve })
+    if (!ATR_PROCESSING) processAtrQueue()
+  })
+}
+
+async function processAtrQueue() {
+  if (ATR_REQUEST_QUEUE.length === 0) {
+    ATR_PROCESSING = false
+    return
+  }
+  ATR_PROCESSING = true
+  const { fn, resolve } = ATR_REQUEST_QUEUE.shift()
+  try {
+    const result = await fn()
+    resolve(result)
+  } catch (e) {
+    resolve(null)
+  }
+  await new Promise(r => setTimeout(r, ATR_REQUEST_DELAY))
+  processAtrQueue()
+}
 
 function findPredictionForRunner(race, runner) {
   const course = String(race.course || '').trim()
@@ -385,6 +412,11 @@ function extractBestOdds(html) {
 }
 
 async function fetchAtrRacecardData(race = {}) {
+  const region = (race.region || '').toUpperCase()
+  if (region !== 'GB' && region !== 'IRE') {
+    return { links: {}, odds: {} }
+  }
+
   const mobileUrl = buildAtrRacecardUrl(race)
 
   if (!mobileUrl) {
@@ -397,43 +429,41 @@ async function fetchAtrRacecardData(race = {}) {
     return cached
   }
 
-  const links = {}
-  const odds = {}
+  return queueAtrRequest(async () => {
+    const links = {}
+    const odds = {}
 
-  try {
-    const mobileHtml = await fetchAtrPageText(mobileUrl)
+    try {
+      const mobileHtml = await fetchAtrPageText(mobileUrl)
 
-    if (mobileHtml) {
-      Object.assign(links, extractHorseLinks(mobileHtml))
-    }
-
-    const desktopUrl = mobileUrl.replace('m.attheraces.com', 'www.attheraces.com')
-    const desktopHtml = await fetchAtrPageText(desktopUrl)
-
-    if (desktopHtml) {
-      Object.assign(odds, extractBestOdds(desktopHtml))
-
-      if (Object.keys(links).length === 0) {
-        Object.assign(links, extractHorseLinks(desktopHtml))
+      if (mobileHtml) {
+        Object.assign(links, extractHorseLinks(mobileHtml))
       }
+
+      const desktopUrl = mobileUrl.replace('m.attheraces.com', 'www.attheraces.com')
+      const desktopHtml = await fetchAtrPageText(desktopUrl)
+
+      if (desktopHtml) {
+        Object.assign(odds, extractBestOdds(desktopHtml))
+
+        if (Object.keys(links).length === 0) {
+          Object.assign(links, extractHorseLinks(desktopHtml))
+        }
+      }
+
+      if (Object.keys(odds).length > 0) {
+        console.log(`[ATR ODDS] ${Object.keys(odds).length} odds found for ${mobileUrl}`)
+      }
+
+      const result = { links, odds }
+      ATR_LINK_CACHE.set(mobileUrl, result)
+
+      return result
+    } catch (error) {
+      console.error('Failed to fetch ATR racecard data:', error.message)
+      return { links: {}, odds: {} }
     }
-
-    if (Object.keys(odds).length > 0) {
-      console.log(`[ATR ODDS] ${Object.keys(odds).length} odds found for ${mobileUrl}`)
-    } else if (desktopHtml) {
-      console.log(`[ATR ODDS] No odds extracted from desktop HTML (${desktopHtml.length} bytes) for ${mobileUrl}`)
-    } else {
-      console.log(`[ATR ODDS] Desktop fetch returned null for ${mobileUrl}`)
-    }
-
-    const result = { links, odds }
-    ATR_LINK_CACHE.set(mobileUrl, result)
-
-    return result
-  } catch (error) {
-    console.error('Failed to fetch ATR racecard data:', error.message)
-    return { links: {}, odds: {} }
-  }
+  })
 }
 
 async function fetchAtrHorseLinks(race = {}) {
@@ -481,23 +511,25 @@ async function scrapeAtrResultForRace(race) {
   const url = buildAtrResultsUrl(race)
   if (!url) return null
 
-  try {
-    const html = await fetchAtrPageText(url)
-    if (!html || html.length < 1000) return null
-    const positions = extractRacePositionsFromHtml(html, race)
-    if (positions.length === 0) {
-      const desktopUrl = url.replace('m.attheraces.com', 'www.attheraces.com')
-      const desktopHtml = await fetchAtrPageText(desktopUrl)
-      if (desktopHtml && desktopHtml.length >= 1000) {
-        const desktopPositions = extractRacePositionsFromHtml(desktopHtml, race)
-        return desktopPositions.length > 0 ? desktopPositions : null
+  return queueAtrRequest(async () => {
+    try {
+      const html = await fetchAtrPageText(url)
+      if (!html || html.length < 1000) return null
+      const positions = extractRacePositionsFromHtml(html, race)
+      if (positions.length === 0) {
+        const desktopUrl = url.replace('m.attheraces.com', 'www.attheraces.com')
+        const desktopHtml = await fetchAtrPageText(desktopUrl)
+        if (desktopHtml && desktopHtml.length >= 1000) {
+          const desktopPositions = extractRacePositionsFromHtml(desktopHtml, race)
+          return desktopPositions.length > 0 ? desktopPositions : null
+        }
+        return null
       }
+      return positions
+    } catch {
       return null
     }
-    return positions
-  } catch {
-    return null
-  }
+  })
 }
 
 async function scrapeFinishedRaceResults() {
@@ -505,6 +537,8 @@ async function scrapeFinishedRaceResults() {
   const now = new Date()
 
   const finished = races.filter((race) => {
+    const region = (race.region || '').toUpperCase()
+    if (region !== 'GB' && region !== 'IRE') return false
     const offDt = race.off_dt || ''
     if (!offDt) return false
     const raceTime = new Date(offDt)
@@ -523,14 +557,7 @@ async function scrapeFinishedRaceResults() {
     )
     if (alreadyStored) continue
 
-    const raceAlreadyRecorded = LEARNING_DATABASE.records.some(
-      (r) =>
-        r.signal === 'ATR_SCRAPE' &&
-        r.timestamp?.startsWith(new Date().toISOString().split('T')[0]) &&
-        r.course === race.course
-    )
-    if (raceAlreadyRecorded) continue
-
+    await new Promise(r => setTimeout(r, ATR_REQUEST_DELAY))
     const positions = await scrapeAtrResultForRace(race)
     if (!positions) continue
 
@@ -1221,7 +1248,7 @@ async function fetchTodayResults() {
 }
 
 fetchLiveMeetings()
-setInterval(fetchLiveMeetings, 60000)
+setInterval(fetchLiveMeetings, 300000)
 
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
