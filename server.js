@@ -552,6 +552,55 @@ async function scrapeFinishedRaceResults() {
   await processScrapedResults(resultRaces)
 }
 
+async function backfillPreviousDaysResults(daysBack = 7) {
+  const now = new Date()
+  let totalNew = 0
+
+  for (let i = 1; i <= daysBack; i++) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - i)
+    const dateStr = d.toISOString().slice(0, 10)
+
+    const races = await scrapeAtrRacecardsForDate(dateStr)
+    if (races.length === 0) continue
+
+    const finished = races.filter((race) => {
+      const offDt = race.off_dt || `${dateStr}T${race.off_time || '00:00'}:00`
+      const raceTime = new Date(offDt)
+      return !isNaN(raceTime.getTime()) && raceTime < now
+    })
+
+    const resultRaces = []
+    for (const race of finished) {
+      const alreadyStored = (LEARNING_DATABASE.races || []).some(
+        (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
+      )
+      if (alreadyStored) continue
+
+      const positions = await scrapeAtrResultForRace(race)
+      if (!positions) continue
+
+      const resultRunners = (race.runners || []).map((runner) => {
+        const normalized = normalizeHorseName(runner.horse)
+        const found = positions.find((p) => p.normalized === normalized)
+        return { ...runner, position: found ? found.position : 0, sp: found?.sp || runner.odds || 0 }
+      })
+
+      console.log(`[ATR BACKFILL] ${dateStr} ${race.course} ${race.off_time} — ${positions.length} positions`)
+      resultRaces.push({ ...race, runners: resultRunners })
+    }
+
+    if (resultRaces.length > 0) {
+      await processScrapedResults(resultRaces)
+      totalNew += resultRaces.length
+    }
+  }
+
+  if (totalNew > 0) {
+    console.log(`[ATR BACKFILL] Stored ${totalNew} races from previous ${daysBack} days`)
+  }
+}
+
 async function processScrapedResults(resultRaces) {
   const existingCount = LEARNING_DATABASE.records.length
 
@@ -676,9 +725,26 @@ function createAlert(
   io.emit('new-alert', alert)
 }
 
-function extractRacecards(html) {
+async function scrapeAtrRacecardsForDate(dateStr) {
+  const urls = [
+    `https://m.attheraces.com/racecards/${dateStr}`,
+    `https://www.attheraces.com/racecards/${dateStr}`,
+  ]
+  for (const url of urls) {
+    try {
+      const html = await fetchAtrPageText(url)
+      if (html && html.length > 1000) {
+        const races = extractRacecards(html, dateStr)
+        if (races.length > 0) { console.log(`ATR BACKFILL: ${races.length} races from ${url}`); return races }
+      }
+    } catch (e) { console.log(`ATR backfill scrape failed for ${dateStr}: ${e.message}`) }
+  }
+  return []
+}
+
+function extractRacecards(html, dateOverride) {
   const races = []
-  const today = new Date().toISOString().slice(0, 10)
+  const today = dateOverride || new Date().toISOString().slice(0, 10)
 
   const meetingBlocks = html.matchAll(/<div[^>]*class="[^"]*meeting[^"]*"[^>]*>.*?<\/div>\s*<\/div>\s*<\/div>/gis)
   for (const block of meetingBlocks) {
@@ -1162,6 +1228,13 @@ async function fetchTodayResults() {
 fetchLiveMeetings()
 setInterval(fetchLiveMeetings, 60000)
 
+setTimeout(() => {
+  backfillPreviousDaysResults(7)
+}, 5000)
+setInterval(() => {
+  backfillPreviousDaysResults(3)
+}, 3600000)
+
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
 
@@ -1396,6 +1469,15 @@ app.get('/api/learning-stats', (_req, res) => {
 
 app.get('/api/results', (_req, res) => {
   res.json(LEARNING_DATABASE.races || [])
+})
+
+app.post('/api/backfill', async (_req, res) => {
+  try {
+    await backfillPreviousDaysResults(7)
+    res.json({ ok: true, dates: [...new Set((LEARNING_DATABASE.races || []).map(r => r.date || (r.off_dt ? r.off_dt.slice(0, 10) : null)).filter(Boolean))].sort().reverse() })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
 })
 
 app.post('/api/upload-results', (req, res) => {
