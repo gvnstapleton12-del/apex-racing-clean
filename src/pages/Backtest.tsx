@@ -26,42 +26,103 @@ export default function Backtest() {
     const lines = csv.trim().split('\n')
     if (lines.length < 2) return []
 
-    const header = lines[0].toLowerCase().split(',').map(h => h.trim())
+    const firstLine = lines[0].toLowerCase()
+    const isRacingPost = firstLine.includes('race_id') || firstLine.includes('raceno') || /^\d{8},/.test(firstLine)
+
     const races: Record<string, any> = {}
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(v => v.trim())
-      const row: Record<string, string> = {}
-      header.forEach((h, idx) => { row[h] = values[idx] || '' })
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (!line) continue
 
-      const raceKey = `${row.course || row.venue || ''}-${row.off_time || row.time || ''}-${row.date || ''}`
+      const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''))
+
+      let course, offTime, date, horse, odds, position, jockey, trainer, going, distance, form
+
+      if (isRacingPost) {
+        course = values[1] || ''
+        date = values[2] || ''
+        offTime = values[3] || ''
+        const posVal = Number(values[17] || values[18] || 0)
+        horse = values[19] || values[20] || ''
+        position = posVal
+        trainer = values[30] || values[31] || ''
+        jockey = values[31] || values[32] || ''
+        going = values[12] || values[13] || ''
+        distance = values[10] || values[11] || ''
+        const oddsStr = values[38] || values[39] || ''
+        if (oddsStr.includes('/')) {
+          const [num, den] = oddsStr.split('/')
+          odds = Number(num) / Number(den) + 1
+        } else {
+          odds = Number(oddsStr) || 0
+        }
+        const formParts = []
+        for (let f = 21; f <= 27; f++) {
+          if (values[f] && /^\d+$/.test(values[f])) formParts.push(values[f])
+        }
+        form = formParts.join('-')
+      } else {
+        const row: Record<string, string> = {}
+        const header = lines[0].toLowerCase().split(',').map(h => h.trim())
+        header.forEach((h, idx) => { row[h] = values[idx] || '' })
+        course = row.course || row.venue || ''
+        offTime = row.off_time || row.time || ''
+        date = row.date || ''
+        horse = row.horse || row.horse_name || row.runner || ''
+        odds = Number(row.odds || row.price || row.sp || 0)
+        position = Number(row.position || row.pos || row['finishing_position'] || 0)
+        jockey = row.jockey || ''
+        trainer = row.trainer || ''
+        going = row.going || ''
+        distance = row.distance || row.dist || ''
+        form = row.form || ''
+        i++
+      }
+
+      if (!course || !horse) continue
+
+      const normalizedDate = normalizeDate(date)
+      const raceKey = `${course}-${offTime}-${normalizedDate}`
       if (!races[raceKey]) {
         races[raceKey] = {
-          course: row.course || row.venue || '',
-          off_time: row.off_time || row.time || '',
-          date: row.date || '',
+          course,
+          off_time: offTime,
+          date: normalizedDate,
           region: 'GB',
-          going: row.going || '',
-          distance_f: row.distance || row.dist || '',
+          going,
+          distance_f: distance,
           runners: [],
         }
       }
 
-      const horse = row.horse || row.horse_name || row.runner || ''
-      if (!horse) continue
-
       races[raceKey].runners.push({
         horse,
-        odds: Number(row.odds || row.price || row.sp || 0),
-          position: Number(row.position || row.pos || row['finishing_position'] || 0),
-        jockey: row.jockey || '',
-        trainer: row.trainer || '',
-        draw: Number(row.draw || 0),
-        form: row.form || '',
+        odds: odds || 0,
+        position: position || 0,
+        jockey,
+        trainer,
+        draw: 0,
+        form,
       })
     }
 
-    return Object.values(races)
+    return Object.values(races).filter((r: any) => r.runners.length >= 5)
+  }
+
+  function normalizeDate(dateStr: string): string {
+    if (!dateStr) return ''
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr
+    const months: Record<string, string> = { jan: '01', feb: '02', mar: '03', apr: '04', may: '05', jun: '06', jul: '07', aug: '08', sep: '09', oct: '10', nov: '11', dec: '12' }
+    const match = dateStr.match(/(\d{1,2})-([a-zA-Z]{3})-(\d{2,4})/)
+    if (match) {
+      const day = match[1].padStart(2, '0')
+      const month = months[match[2].toLowerCase()] || '01'
+      let year = match[3]
+      if (year.length === 2) year = '20' + year
+      return `${year}-${month}-${day}`
+    }
+    return dateStr
   }
 
   async function handleImport() {
