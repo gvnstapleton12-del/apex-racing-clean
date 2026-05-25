@@ -201,12 +201,28 @@ function ValueEngineSection({ ve }: { ve: NonNullable<Runner['valueEngine']> }) 
 function BankrollEngineSection({ be }: { be: NonNullable<Runner['bankrollEngine']> }) {
   return (
     <Section>
-      <SectionHeader title='Bankroll Engine' badge={be.label} badgeClass={be.label === 'STRONG BET' || be.label === 'BET' ? 'bg-green-500/10 text-green-400' : ''} />
-      <div className='grid grid-cols-4 gap-3'>
-        <StatCard label='Stake' value={be.stake || 0} />
-        <StatCard label='Units' value={be.units || 0} />
-        <StatCard label='Kelly' value={`${be.adjustedKelly || 0}%`} />
-        <StatCard label='Reason' value={be.reason || '-'} />
+      <SectionHeader title='Bankroll Engine' badge={be.label} badgeClass={
+        be.label === 'STRONG BET' || be.label === 'BET' ? 'bg-green-500/10 text-green-400' :
+        be.label === 'MICRO BET' || be.label === 'CONSIDER' ? 'bg-amber-500/10 text-amber-400' :
+        be.label === 'AVOID' ? 'bg-red-500/10 text-red-400' : ''
+      } />
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Stake</span>
+          <strong className='text-2xl font-bold text-white'>{be.stake || 0}</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Units</span>
+          <strong className='text-2xl font-bold text-white'>{be.units || 0}</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Kelly</span>
+          <strong className='text-2xl font-bold text-white'>{be.adjustedKelly || 0}%</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Reason</span>
+          <strong className='text-sm font-bold text-zinc-300'>{be.reason || '-'}</strong>
+        </div>
       </div>
     </Section>
   )
