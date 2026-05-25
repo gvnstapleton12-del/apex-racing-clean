@@ -1757,6 +1757,89 @@ app.get('/api/anti-overfit', (_req, res) => {
   res.json(report)
 })
 
+app.post('/api/backtest', async (req, res) => {
+  try {
+    const { runBacktest } = await import('./src/lib/backtestEngine.js')
+    const { runApexEngine } = await import('./src/lib/apexEngine.js')
+    const historicalRaces = req.body.races || []
+    const options = req.body.options || {}
+
+    if (!Array.isArray(historicalRaces) || historicalRaces.length === 0) {
+      return res.status(400).json({ error: 'Provide races array' })
+    }
+
+    const report = runBacktest(historicalRaces, {
+      ...options,
+      goingDb: GOING_DATABASE,
+      distanceDb: DISTANCE_DATABASE,
+      replayDb: REPLAY_NOTES_DATABASE,
+      bucketDb: BUCKET_DATABASE,
+      horseProfiles: HORSE_DATABASE,
+      races: LEARNING_DATABASE.races || [],
+      trainerForm: TRAINER_FORM_DATABASE,
+      jockeyForm: JOCKEY_FORM_DATABASE,
+    })
+
+    res.json(report)
+  } catch (e) {
+    console.error('Backtest error:', e.message)
+    res.status(500).json({ error: e.message })
+  }
+})
+
+app.post('/api/import-historical', (req, res) => {
+  try {
+    const races = req.body.races || []
+    if (!Array.isArray(races) || races.length === 0) {
+      return res.status(400).json({ error: 'Provide races array' })
+    }
+
+    let imported = 0
+    races.forEach((race) => {
+      if (!race.runners || race.runners.length < 5) return
+
+      const alreadyStored = (LEARNING_DATABASE.races || []).some(
+        (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
+      )
+      if (alreadyStored) return
+
+      const hasResults = (race.runners || []).some(r => r.position > 0)
+
+      if (hasResults) {
+        race.runners.forEach((runner) => {
+          const pos = Number(runner.position || 0)
+          if (pos < 1) return
+
+          LEARNING_DATABASE.records.push({
+            horse: runner.horse,
+            course: race.course,
+            offTime: race.off_time,
+            position: pos,
+            won: pos === 1,
+            spOdds: Number(runner.odds || runner.sp || 0),
+            aiConfidence: runner.finalScore || runner.aiConfidence || 0,
+            signal: 'HISTORICAL_IMPORT',
+            timestamp: new Date().toISOString(),
+            resultProcessed: true,
+          })
+        })
+
+        LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), race]
+        imported++
+      }
+    })
+
+    if (imported > 0) {
+      LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(LEARNING_DATABASE.records)
+      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    }
+
+    res.json({ ok: true, imported, totalRecords: LEARNING_DATABASE.records.length })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
 server.listen(PORT, () => {
   console.log(`APEX websocket engine running on ${PORT}`)
 })

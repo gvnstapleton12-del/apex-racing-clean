@@ -20,6 +20,7 @@ import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
 import Analytics from './pages/Analytics'
 import Proof from './pages/Proof'
+import Backtest from './pages/Backtest'
 import CalibrationDashboard from './components/CalibrationDashboard'
 
 const queryClient =
@@ -31,6 +32,7 @@ const tabs = [
   'Results',
   'Intelligence',
   'Proof',
+  'Backtest',
   'Calibration',
   'Alerts',
   'Horses',
@@ -475,6 +477,10 @@ function App() {
 
     if (activeTab === 'Proof') {
       return <Proof />
+    }
+
+    if (activeTab === 'Backtest') {
+      return <Backtest />
     }
   }
 
