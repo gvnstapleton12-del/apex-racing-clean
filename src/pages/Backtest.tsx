@@ -22,20 +22,38 @@ export default function Backtest() {
     queryFn: () => fetch(apiUrl('/api/learning-stats')).then(r => r.json()),
   })
 
+  function parseCsvLine(line: string): string[] {
+    const result = []
+    let current = ''
+    let inQuotes = false
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      if (ch === '"') { inQuotes = !inQuotes; continue }
+      if (ch === ',' && !inQuotes) { result.push(current.trim()); current = ''; continue }
+      current += ch
+    }
+    result.push(current.trim())
+    return result
+  }
+
   function parseCsvToRaces(csv: string) {
     const lines = csv.trim().split('\n')
     if (lines.length < 2) return []
 
-    const firstLine = lines[0].toLowerCase()
-    const isRacingPost = firstLine.includes('race_id') || firstLine.includes('raceno') || /^\d{8},/.test(firstLine)
+    const firstLine = lines[0]
+    const firstValues = parseCsvLine(firstLine)
+    const isRacingPost = /^\d{5,}$/.test(firstValues[0])
 
     const races: Record<string, any> = {}
+    let raceCount = 0
 
-    for (let i = 0; i < lines.length; i++) {
+    const startIdx = isRacingPost ? 0 : 1
+
+    for (let i = startIdx; i < lines.length; i++) {
       const line = lines[i].trim()
       if (!line) continue
 
-      const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''))
+      const values = parseCsvLine(line)
 
       let course, offTime, date, horse, odds, position, jockey, trainer, going, distance, form
 
@@ -43,17 +61,16 @@ export default function Backtest() {
         course = values[1] || ''
         date = values[2] || ''
         offTime = values[3] || ''
-        const posVal = Number(values[17] || values[18] || 0)
-        horse = values[19] || values[20] || ''
-        position = posVal
-        trainer = values[30] || values[31] || ''
-        jockey = values[31] || values[32] || ''
-        going = values[12] || values[13] || ''
-        distance = values[10] || values[11] || ''
-        const oddsStr = values[38] || values[39] || ''
+        position = Number(values[17] || 0)
+        horse = values[19] || ''
+        trainer = values[30] || ''
+        jockey = values[31] || ''
+        going = values[12] || ''
+        distance = values[10] || ''
+        const oddsStr = values[38] || ''
         if (oddsStr.includes('/')) {
-          const [num, den] = oddsStr.split('/')
-          odds = Number(num) / Number(den) + 1
+          const parts = oddsStr.split('/')
+          odds = Number(parts[0]) / Number(parts[1]) + 1
         } else {
           odds = Number(oddsStr) || 0
         }
@@ -63,21 +80,20 @@ export default function Backtest() {
         }
         form = formParts.join('-')
       } else {
+        const header = parseCsvLine(lines[0]).map(h => h.toLowerCase())
         const row: Record<string, string> = {}
-        const header = lines[0].toLowerCase().split(',').map(h => h.trim())
         header.forEach((h, idx) => { row[h] = values[idx] || '' })
         course = row.course || row.venue || ''
         offTime = row.off_time || row.time || ''
         date = row.date || ''
         horse = row.horse || row.horse_name || row.runner || ''
         odds = Number(row.odds || row.price || row.sp || 0)
-        position = Number(row.position || row.pos || row['finishing_position'] || 0)
+        position = Number(row.position || row.pos || 0)
         jockey = row.jockey || ''
         trainer = row.trainer || ''
         going = row.going || ''
         distance = row.distance || row.dist || ''
         form = row.form || ''
-        i++
       }
 
       if (!course || !horse) continue
@@ -94,6 +110,7 @@ export default function Backtest() {
           distance_f: distance,
           runners: [],
         }
+        raceCount++
       }
 
       races[raceKey].runners.push({
@@ -107,7 +124,8 @@ export default function Backtest() {
       })
     }
 
-    return Object.values(races).filter((r: any) => r.runners.length >= 5)
+    const filtered = Object.values(races).filter((r: any) => r.runners.length >= 5)
+    return filtered
   }
 
   function normalizeDate(dateStr: string): string {
@@ -147,9 +165,13 @@ export default function Backtest() {
 
   async function handleBacktest() {
     const races = parseCsvToRaces(csvText)
-    if (races.length === 0) return
+    if (races.length === 0) {
+      setBacktestResult({ error: 'No valid races found. Check CSV format.' })
+      return
+    }
 
     setLoading(true)
+    setBacktestResult(null)
     try {
       const res = await fetch(apiUrl('/api/backtest'), {
         method: 'POST',
@@ -160,9 +182,13 @@ export default function Backtest() {
         }),
       })
       const data = await res.json()
-      setBacktestResult(data)
-    } catch (e) {
-      setBacktestResult({ error: 'Backtest failed' })
+      if (data.error) {
+        setBacktestResult({ error: data.error })
+      } else {
+        setBacktestResult(data)
+      }
+    } catch (e: any) {
+      setBacktestResult({ error: e.message || 'Backtest failed' })
     } finally {
       setLoading(false)
     }
