@@ -39,17 +39,6 @@ function computeStake(modelProb, marketOdds, options = {}) {
 
   const edge = modelProb - (1 / marketOdds) * 100
 
-  if (edge < minEdge) {
-    return {
-      stake: 0,
-      units: 0,
-      label: 'NO BET',
-      reason: `Edge ${edge.toFixed(1)}% below minimum ${minEdge}%`,
-      kelly: 0,
-      adjustedKelly: 0,
-    }
-  }
-
   const fullKelly = computeKellyFraction(modelProb, marketOdds)
   const fractionalKelly = fullKelly * kellyFraction
 
@@ -77,9 +66,12 @@ function computeStake(modelProb, marketOdds, options = {}) {
   let label = 'NO BET'
   let reason = ''
 
-  if (cappedKelly < 0.005) {
+  if (edge < minEdge) {
     label = 'NO BET'
-    reason = 'Stake too small after adjustments'
+    reason = `Edge ${edge.toFixed(1)}% below minimum ${minEdge}%`
+  } else if (cappedKelly < 0.005 && edge >= minEdge) {
+    label = 'MICRO BET'
+    reason = `Tiny stake (${(cappedKelly * 100).toFixed(2)}% Kelly) but edge exists`
   } else if (volatility > 0.7) {
     label = 'AVOID'
     reason = 'High volatility race'
