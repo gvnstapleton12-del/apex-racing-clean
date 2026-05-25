@@ -137,7 +137,11 @@ function Home() {
 
   const today = new Date().toISOString().split('T')[0]
   const ukIreRaces = races.filter(
-    (r) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire'
+    (r) => {
+      if (r.region !== 'GB' && r.region !== 'IRE' && r.region !== 'gb' && r.region !== 'ire') return false
+      if ((r.runners?.length || 0) < 5) return false
+      return true
+    }
   )
   const allSelections = getHomeSelections(ukIreRaces)
   const picks = allSelections
@@ -150,6 +154,8 @@ function Home() {
     const highChaos = ukIreRaces.filter(r => r.volatility?.chaos > 0.5).length
     const autoSkipped = ukIreRaces.filter(r => r.betFilter?.verdict === 'AUTO SKIP').length
     const highRisk = ukIreRaces.filter(r => r.betFilter?.verdict === 'HIGH RISK').length
+    const smallFields = races.filter(r => (r.region === 'GB' || r.region === 'IRE') && (r.runners?.length || 0) < 5).length
+    if (smallFields > races.filter(r => r.region === 'GB' || r.region === 'IRE').length * 0.5) return 'Most races have fewer than 5 runners — too small for reliable analysis'
     if (highChaos > ukIreRaces.length * 0.5) return 'Most races are highly volatile — too chaotic for confident picks'
     if (autoSkipped > ukIreRaces.length * 0.5) return 'Most races have weak data or poor conditions — system skipping'
     if (highRisk > ukIreRaces.length * 0.5) return 'Most races flagged as high risk — no value edges detected'

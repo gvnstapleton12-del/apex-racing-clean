@@ -997,6 +997,18 @@ async function backfillPreviousDaysResults(daysBack = 7) {
 }
 
 async function processRace(race) {
+  const runners = race.runners || []
+
+  if (runners.length < 5) {
+    return {
+      ...race,
+      runners: [],
+      betFilter: { verdict: 'AUTO SKIP', reason: 'Small field (<5 runners)' },
+      paceMap: {},
+      volatility: { chaos: 0, label: 'N/A' },
+    }
+  }
+
   const atrData = await fetchAtrRacecardData(race)
   const atrHorseLinks = atrData.links
   const atrOdds = atrData.odds
