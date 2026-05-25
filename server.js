@@ -1013,7 +1013,7 @@ async function processRace(race) {
   const atrHorseLinks = atrData.links
   const atrOdds = atrData.odds
 
-  const runners = (race.runners || []).map((r) => {
+  const enrichedRunners = (race.runners || []).map((r) => {
     const normalized = normalizeHorseName(r.horse)
     const atrPrice = atrOdds[normalized]
     if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
@@ -1022,7 +1022,7 @@ async function processRace(race) {
     return r
   })
 
-  const apexResult = runApexEngine(runners, race, {
+  const apexResult = runApexEngine(enrichedRunners, race, {
     goingDb: GOING_DATABASE,
     distanceDb: DISTANCE_DATABASE,
     replayDb: REPLAY_NOTES_DATABASE,
