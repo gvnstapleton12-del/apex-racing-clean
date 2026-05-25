@@ -32,16 +32,16 @@ function HorseQualitySection({ hq }: { hq: NonNullable<Runner['horseQuality']> }
   return (
     <Section>
       <SectionHeader title='Horse Quality' badge={hq.label} badgeClass={hq.label === 'Elite' ? 'bg-amber-500/10 text-amber-400' : ''} />
-      <div className='grid grid-cols-5 gap-4'>
+      <div className='grid grid-cols-2 sm:grid-cols-5 gap-3'>
         {[
           { label: 'Power', value: hq.power },
-          { label: 'Suit', value: hq.suitability },
-          { label: 'Consist', value: hq.consistency },
-          { label: 'Pace', value: hq.paceCompat },
-          { label: 'Vol', value: hq.volatility },
+          { label: 'Suitability', value: hq.suitability },
+          { label: 'Consistency', value: hq.consistency },
+          { label: 'Pace Compat', value: hq.paceCompat },
+          { label: 'Volatility', value: hq.volatility },
         ].map((item) => (
           <div key={item.label} className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
-            <div className='h-1.5 bg-white/5 rounded-full mb-2 overflow-hidden'>
+            <div className='w-full h-1.5 bg-white/5 rounded-full mb-3 overflow-hidden'>
               <div className='h-full rounded-full' style={{ width: `${item.value}%`, background: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }} />
             </div>
             <span className='text-zinc-500 text-xs block'>{item.label}</span>
@@ -54,40 +54,57 @@ function HorseQualitySection({ hq }: { hq: NonNullable<Runner['horseQuality']> }
 }
 
 function PlaceTraitsSection({ traits }: { traits: NonNullable<Runner['placeTraits']> }) {
+  const items = [
+    { label: 'Consistency', value: traits.consistency },
+    { label: 'Reliability', value: traits.reliability },
+    { label: 'Honesty', value: traits.honesty },
+    { label: 'Kick', value: traits.finishingKick },
+    { label: 'Explosive', value: traits.explosiveAbility },
+    { label: 'Market', value: traits.marketConfidence },
+  ]
   return (
     <Section>
       <SectionHeader title='Place Traits' />
-      <div className='grid grid-cols-3 sm:grid-cols-6 gap-3'>
-        <StatCard label='Consist' value={traits.consistency} color={getScoreColor(traits.consistency)} />
-        <StatCard label='Reliab' value={traits.reliability} color={getScoreColor(traits.reliability)} />
-        <StatCard label='Honest' value={traits.honesty} color={getScoreColor(traits.honesty)} />
-        <StatCard label='Kick' value={traits.finishingKick} color={getScoreColor(traits.finishingKick)} />
-        <StatCard label='Explode' value={traits.explosiveAbility} color={getScoreColor(traits.explosiveAbility)} />
-        <StatCard label='Market' value={traits.marketConfidence} color={getScoreColor(traits.marketConfidence)} />
+      <div className='grid grid-cols-2 sm:grid-cols-3 gap-3'>
+        {items.map((item) => (
+          <div key={item.label} className='bg-white/[0.03] border border-white/5 rounded-xl p-4 flex items-center gap-3'>
+            <div className='w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0'
+              style={{ background: item.value >= 65 ? 'rgba(16,185,129,0.15)' : item.value >= 50 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)', color: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }}>
+              {item.value}
+            </div>
+            <div>
+              <span className='text-zinc-400 text-xs block'>{item.label}</span>
+              <div className='w-16 h-1.5 bg-white/5 rounded-full mt-1 overflow-hidden'>
+                <div className='h-full rounded-full' style={{ width: `${item.value}%`, background: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }} />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </Section>
   )
 }
 
 function ComponentsSection({ components }: { components: NonNullable<Runner['components']> }) {
+  const items = [
+    { label: 'Ability', value: components.ability, icon: '💪' },
+    { label: 'Form', value: components.form, icon: '📈' },
+    { label: 'Suitability', value: components.suitability, icon: '🎯' },
+    { label: 'Pace', value: components.pace, icon: '⚡' },
+    { label: 'Replay', value: components.replay, icon: '🎬' },
+    { label: 'Trainer/Jockey', value: components.trainerJockey, icon: '👤' },
+  ]
   return (
     <Section>
       <SectionHeader title='Component Scores' badge={`${components.finalScore}`} badgeClass='bg-amber-500/10 text-amber-400' />
-      <div className='grid grid-cols-6 gap-3'>
-        {[
-          { label: 'Ability', value: components.ability },
-          { label: 'Form', value: components.form },
-          { label: 'Suit', value: components.suitability },
-          { label: 'Pace', value: components.pace },
-          { label: 'Replay', value: components.replay },
-          { label: 'T/J', value: components.trainerJockey },
-        ].map((item) => (
-          <div key={item.label} className='text-center'>
-            <div className='h-1.5 bg-white/5 rounded-full mb-2 overflow-hidden'>
-              <div className='h-full rounded-full' style={{ width: `${item.value}%`, background: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }} />
+      <div className='space-y-2'>
+        {items.map((item) => (
+          <div key={item.label} className='flex items-center gap-3'>
+            <span className='text-zinc-500 text-xs w-24 shrink-0'>{item.label}</span>
+            <div className='flex-1 h-2 bg-white/5 rounded-full overflow-hidden'>
+              <div className='h-full rounded-full transition-all duration-500' style={{ width: `${item.value}%`, background: item.value >= 65 ? 'linear-gradient(90deg, #10b981, #34d399)' : item.value >= 50 ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' : 'linear-gradient(90deg, #ef4444, #f87171)' }} />
             </div>
-            <span className='text-zinc-500 text-xs'>{item.label}</span>
-            <span className='block text-sm font-bold mt-0.5'>{item.value}</span>
+            <span className={`text-sm font-bold w-8 text-right ${item.value >= 65 ? 'text-green-400' : item.value >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{item.value}</span>
           </div>
         ))}
       </div>
@@ -99,13 +116,31 @@ function SelectionQualitySection({ sq, winProb, placeProb }: { sq: NonNullable<R
   return (
     <Section>
       <SectionHeader title='Selection Quality' badge={sq.grade} badgeClass={sq.grade === 'A+' || sq.grade === 'A' ? 'bg-green-500/10 text-green-400' : ''} />
-      <div className='grid grid-cols-3 sm:grid-cols-6 gap-3'>
-        <StatCard label='Win%' value={`${winProb}%`} />
-        <StatCard label='Place%' value={`${placeProb || '-'}%`} />
-        <StatCard label='Fair Odds' value={sq.fairOdds} />
-        <StatCard label='Market' value={sq.marketOdds} />
-        <StatCard label='Edge' value={`${sq.edge > 0 ? '+' : ''}${(sq.edge * 100).toFixed(1)}%`} color={sq.edge > 0 ? 'text-green-400' : 'text-red-400'} />
-        <StatCard label='Value' value={`${sq.value > 0 ? '+' : ''}${sq.value}%`} color={sq.value > 0 ? 'text-green-400' : 'text-red-400'} />
+      <div className='grid grid-cols-2 sm:grid-cols-3 gap-3'>
+        <div className='bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Win Probability</span>
+          <strong className='text-2xl font-bold text-green-400'>{winProb}%</strong>
+        </div>
+        <div className='bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Place Probability</span>
+          <strong className='text-2xl font-bold text-blue-400'>{placeProb || '-'}%</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Fair Odds</span>
+          <strong className='text-2xl font-bold text-white'>{sq.fairOdds}</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Market Odds</span>
+          <strong className='text-2xl font-bold text-white'>{sq.marketOdds}</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${sq.edge > 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Edge</span>
+          <strong className={`text-2xl font-bold ${sq.edge > 0 ? 'text-green-400' : 'text-red-400'}`}>{sq.edge > 0 ? '+' : ''}{(sq.edge * 100).toFixed(1)}%</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${sq.value > 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Value Rating</span>
+          <strong className={`text-2xl font-bold ${sq.value > 0 ? 'text-green-400' : 'text-red-400'}`}>{sq.value > 0 ? '+' : ''}{sq.value}%</strong>
+        </div>
       </div>
     </Section>
   )
@@ -115,11 +150,23 @@ function SimulationSection({ sim }: { sim: NonNullable<Runner['simulation']> }) 
   return (
     <Section>
       <SectionHeader title='Race Simulation' badge={sim.raceShape} badgeClass={sim.raceShape === 'HONEST' ? 'bg-green-500/10 text-green-400' : sim.raceShape === 'SLOW' ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'} />
-      <div className='grid grid-cols-4 gap-3'>
-        <StatCard label='Sim Win%' value={`${sim.winRate}%`} />
-        <StatCard label='Sim Place%' value={`${sim.placeRate}%`} />
-        <StatCard label='Avg Pos' value={sim.avgPosition} />
-        <StatCard label='Collapse%' value={`${sim.collapseRate}%`} color={sim.collapseRate > 15 ? 'text-red-400' : undefined} />
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+        <div className='bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Win Rate</span>
+          <strong className='text-2xl font-bold text-green-400'>{sim.winRate}%</strong>
+        </div>
+        <div className='bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Place Rate</span>
+          <strong className='text-2xl font-bold text-blue-400'>{sim.placeRate}%</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Avg Position</span>
+          <strong className='text-2xl font-bold text-white'>{sim.avgPosition}</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${sim.collapseRate > 20 ? 'bg-red-500/5 border border-red-500/10' : 'bg-white/[0.03] border border-white/5'}`}>
+          <span className='text-zinc-500 text-xs block'>Collapse Risk</span>
+          <strong className={`text-2xl font-bold ${sim.collapseRate > 20 ? 'text-red-400' : sim.collapseRate > 10 ? 'text-amber-400' : 'text-green-400'}`}>{sim.collapseRate}%</strong>
+        </div>
       </div>
     </Section>
   )
@@ -129,11 +176,23 @@ function ValueEngineSection({ ve }: { ve: NonNullable<Runner['valueEngine']> }) 
   return (
     <Section>
       <SectionHeader title='Value Engine' badge={ve.valueGrade} badgeClass={ve.valueGrade === 'A+' || ve.valueGrade === 'A' ? 'bg-green-500/10 text-green-400' : ''} />
-      <div className='grid grid-cols-4 gap-3'>
-        <StatCard label='Edge' value={`${ve.edge >= 0 ? '+' : ''}${ve.edge}%`} color={ve.edge >= 0 ? 'text-green-400' : 'text-red-400'} />
-        <StatCard label='EV' value={`${ve.expectedValue >= 0 ? '+' : ''}${ve.expectedValue}`} color={ve.expectedValue >= 0 ? 'text-green-400' : 'text-red-400'} />
-        <StatCard label='ROI' value={`${ve.roi >= 0 ? '+' : ''}${ve.roi}%`} color={ve.roi >= 0 ? 'text-green-400' : 'text-red-400'} />
-        <StatCard label='Bettable' value={ve.bettable ? 'YES' : 'NO'} color={ve.bettable ? 'text-green-400' : 'text-red-400'} />
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+        <div className={`rounded-xl p-4 text-center ${ve.edge >= 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Edge</span>
+          <strong className={`text-2xl font-bold ${ve.edge >= 0 ? 'text-green-400' : 'text-red-400'}`}>{ve.edge >= 0 ? '+' : ''}{ve.edge}%</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${ve.expectedValue >= 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Expected Value</span>
+          <strong className={`text-2xl font-bold ${ve.expectedValue >= 0 ? 'text-green-400' : 'text-red-400'}`}>{ve.expectedValue >= 0 ? '+' : ''}{ve.expectedValue}</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${ve.roi >= 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>ROI</span>
+          <strong className={`text-2xl font-bold ${ve.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{ve.roi >= 0 ? '+' : ''}{ve.roi}%</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${ve.bettable ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Bettable</span>
+          <strong className={`text-2xl font-bold ${ve.bettable ? 'text-green-400' : 'text-red-400'}`}>{ve.bettable ? 'YES' : 'NO'}</strong>
+        </div>
       </div>
     </Section>
   )
