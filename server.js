@@ -19,6 +19,16 @@ import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchl
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
 
+// Global error handlers to prevent crashes
+process.on('uncaughtException', (error) => {
+  console.error('[UNCAUGHT EXCEPTION]', error.message)
+  console.error(error.stack)
+})
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[UNHANDLED REJECTION]', reason)
+})
+
 import {
   analyzeHistoricalPerformance,
   buildLearningRecord,
@@ -450,14 +460,22 @@ async function fetchAtrRacecardData(race = {}) {
     const odds = {}
 
     try {
-      const mobileHtml = await fetchAtrPageText(mobileUrl)
+      // Add timeout to ATR requests
+      const fetchWithTimeout = (url, timeoutMs = 10000) => {
+        return Promise.race([
+          fetchAtrPageText(url),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('ATR request timeout')), timeoutMs))
+        ])
+      }
+
+      const mobileHtml = await fetchWithTimeout(mobileUrl, 10000)
 
       if (mobileHtml) {
         Object.assign(links, extractHorseLinks(mobileHtml))
       }
 
       const desktopUrl = mobileUrl.replace('m.attheraces.com', 'www.attheraces.com')
-      const desktopHtml = await fetchAtrPageText(desktopUrl)
+      const desktopHtml = await fetchWithTimeout(desktopUrl, 10000)
 
       if (desktopHtml) {
         Object.assign(odds, extractBestOdds(desktopHtml))
@@ -1008,128 +1026,141 @@ async function backfillPreviousDaysResults(daysBack = 7) {
 }
 
 async function processRace(race) {
-  const runners = race.runners || []
+  try {
+    const runners = race.runners || []
 
-  if (runners.length < 5) {
+    if (runners.length < 5) {
+      return {
+        ...race,
+        runners: [],
+        betFilter: { verdict: 'AUTO SKIP', reason: 'Small field (<5 runners)' },
+        paceMap: {},
+        volatility: { chaos: 0, label: 'N/A' },
+      }
+    }
+
+    const atrData = { links: {}, odds: {} }
+    // const atrData = await fetchAtrRacecardData(race) // DISABLED - too slow (10-50s per race)
+    const atrHorseLinks = atrData.links
+    const atrOdds = atrData.odds
+
+    const enrichedRunners = (race.runners || []).map((r) => {
+      const normalized = normalizeHorseName(r.horse)
+      const atrPrice = atrOdds[normalized]
+      if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
+        return { ...r, odds: atrPrice }
+      }
+      return r
+    })
+
+    const apexResult = runApexEngine(enrichedRunners, race, {
+      goingDb: GOING_DATABASE,
+      distanceDb: DISTANCE_DATABASE,
+      replayDb: REPLAY_NOTES_DATABASE,
+      bucketDb: BUCKET_DATABASE,
+      horseProfiles: HORSE_DATABASE,
+      races: LEARNING_DATABASE.races || [],
+      trainerForm: TRAINER_FORM_DATABASE,
+      jockeyForm: JOCKEY_FORM_DATABASE,
+    })
+
+    const scoredRunners = apexResult.racecards.map((runner) => {
+      const horseId = runner.horse_id || runner.horse
+      const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
+      if (!HORSE_DATABASE[horseId]) {
+        HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
+      }
+      const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
+      const profileAdj = computeProfileAdjustment(horseProfile, race)
+      if (horseProfile) {
+        HORSE_DATABASE[horseId].profile = horseProfile
+        HORSE_DATABASE[horseId].profile_adjustment = profileAdj
+      }
+      const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
+      const marketMovement = analyzeMarketMovement({ horse: runner.horse, currentOdds: runner.odds, previousOdds, aiConfidence: runner.finalScore })
+      MARKET_DATABASE[horseId] = { horse: runner.horse, lastOdds: runner.odds, movement: marketMovement.movement, updatedAt: new Date().toISOString() }
+      const bettingSignals = generateSignals({ ...runner, aiProfile: { confidence: runner.finalScore }, marketMovement })
+      if (marketMovement.alert) {
+        createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
+      }
+      logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: runner.winProb, placeProb: runner.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
+
+      // Store historical snapshot
+      if (runner.snapshot) {
+        const raceId = `${race.course?.toLowerCase().replace(/\s+/g, '_')}_${race.date?.replace(/-/g, '_')}_${race.off_time?.replace(/:/g, '_')}`
+        storeRunnerSnapshot({
+          raceId,
+          runId: `run_${Date.now()}_${runner.horse?.replace(/\s+/g, '_').toLowerCase() || 'unknown'}`,
+          horseId: runner.horse_id || runner.horse || 'unknown',
+          horseName: runner.horse || 'Unknown',
+          timestamp: runner.snapshot.timestamp,
+          signals: runner.snapshot.signals,
+          scores: runner.snapshot.scores,
+          commentary: runner.snapshot.commentary,
+        })
+      }
+
+      return {
+        horse: runner.horse,
+        horse_id: runner.horse_id,
+        age: runner.age,
+        sex: runner.sex,
+        sex_code: runner.sex_code,
+        colour: runner.colour,
+        region: runner.region,
+        dam: runner.dam,
+        sire: runner.sire,
+        damsire: runner.damsire,
+        trainer: runner.trainer,
+        owner: runner.owner,
+        number: runner.number,
+        draw: runner.draw,
+        headgear: runner.headgear,
+        lbs: runner.lbs,
+        ofr: runner.ofr,
+        jockey: runner.jockey,
+        last_run: runner.last_run,
+        form: runner.form,
+        odds: runner.odds,
+        atrFormUrl,
+        runningStyle: runner.runningStyle,
+        finalScore: runner.finalScore,
+        winProb: runner.winProb,
+        placeProb: runner.placeProb,
+        probBand: runner.probBand,
+        probRange: runner.probRange,
+        probTier: runner.probTier,
+        confidenceScore: runner.confidenceScore,
+        betQuality: runner.betQuality,
+        selectionQuality: runner.selectionQuality,
+        powerScore: runner.power?.total,
+        paceScore: runner.pace?.score,
+        humanScore: runner.human?.score,
+        marketScore: runner.market?.score,
+        score: runner.finalScore,
+        bettingSignals,
+        marketMovement,
+        elimination: runner.elimination,
+      }
+    })
+
+    return {
+      ...race,
+      paceMap: apexResult.paceMap,
+      volatility: apexResult.volatility,
+      betFilter: apexResult.betFilter,
+      runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
+    }
+  } catch (error) {
+    const elapsed = Date.now() - startTime
+    console.error(`[processRace] Error ${race.course} ${race.off_time} (${elapsed}ms):`, error.message)
     return {
       ...race,
       runners: [],
-      betFilter: { verdict: 'AUTO SKIP', reason: 'Small field (<5 runners)' },
+      betFilter: { verdict: 'ERROR', reason: error.message },
       paceMap: {},
       volatility: { chaos: 0, label: 'N/A' },
     }
-  }
-
-  const atrData = await fetchAtrRacecardData(race)
-  const atrHorseLinks = atrData.links
-  const atrOdds = atrData.odds
-
-  const enrichedRunners = (race.runners || []).map((r) => {
-    const normalized = normalizeHorseName(r.horse)
-    const atrPrice = atrOdds[normalized]
-    if (atrPrice && (!r.odds || Number(r.odds) <= 1)) {
-      return { ...r, odds: atrPrice }
-    }
-    return r
-  })
-
-  const apexResult = runApexEngine(enrichedRunners, race, {
-    goingDb: GOING_DATABASE,
-    distanceDb: DISTANCE_DATABASE,
-    replayDb: REPLAY_NOTES_DATABASE,
-    bucketDb: BUCKET_DATABASE,
-    horseProfiles: HORSE_DATABASE,
-    races: LEARNING_DATABASE.races || [],
-    trainerForm: TRAINER_FORM_DATABASE,
-    jockeyForm: JOCKEY_FORM_DATABASE,
-  })
-
-  const scoredRunners = apexResult.racecards.map((runner) => {
-    const horseId = runner.horse_id || runner.horse
-    const atrFormUrl = atrHorseLinks[normalizeHorseName(runner.horse)]
-    if (!HORSE_DATABASE[horseId]) {
-      HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
-    }
-    const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
-    const profileAdj = computeProfileAdjustment(horseProfile, race)
-    if (horseProfile) {
-      HORSE_DATABASE[horseId].profile = horseProfile
-      HORSE_DATABASE[horseId].profile_adjustment = profileAdj
-    }
-    const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
-    const marketMovement = analyzeMarketMovement({ horse: runner.horse, currentOdds: runner.odds, previousOdds, aiConfidence: runner.finalScore })
-    MARKET_DATABASE[horseId] = { horse: runner.horse, lastOdds: runner.odds, movement: marketMovement.movement, updatedAt: new Date().toISOString() }
-    const bettingSignals = generateSignals({ ...runner, aiProfile: { confidence: runner.finalScore }, marketMovement })
-    if (marketMovement.alert) {
-      createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
-    }
-    logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: runner.winProb, placeProb: runner.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
-
-    // Store historical snapshot
-    if (runner.snapshot) {
-      const raceId = `${race.course?.toLowerCase().replace(/\s+/g, '_')}_${race.date?.replace(/-/g, '_')}_${race.off_time?.replace(/:/g, '_')}`
-      storeRunnerSnapshot({
-        raceId,
-        runId: `run_${Date.now()}_${runner.horse?.replace(/\s+/g, '_').toLowerCase() || 'unknown'}`,
-        horseId: runner.horse_id || runner.horse || 'unknown',
-        horseName: runner.horse || 'Unknown',
-        timestamp: runner.snapshot.timestamp,
-        signals: runner.snapshot.signals,
-        scores: runner.snapshot.scores,
-        commentary: runner.snapshot.commentary,
-      })
-    }
-
-    return {
-      horse: runner.horse,
-      horse_id: runner.horse_id,
-      age: runner.age,
-      sex: runner.sex,
-      sex_code: runner.sex_code,
-      colour: runner.colour,
-      region: runner.region,
-      dam: runner.dam,
-      sire: runner.sire,
-      damsire: runner.damsire,
-      trainer: runner.trainer,
-      owner: runner.owner,
-      number: runner.number,
-      draw: runner.draw,
-      headgear: runner.headgear,
-      lbs: runner.lbs,
-      ofr: runner.ofr,
-      jockey: runner.jockey,
-      last_run: runner.last_run,
-      form: runner.form,
-      odds: runner.odds,
-      atrFormUrl,
-      runningStyle: runner.runningStyle,
-      finalScore: runner.finalScore,
-      winProb: runner.winProb,
-      placeProb: runner.placeProb,
-      probBand: runner.probBand,
-      probRange: runner.probRange,
-      probTier: runner.probTier,
-      confidenceScore: runner.confidenceScore,
-      betQuality: runner.betQuality,
-      selectionQuality: runner.selectionQuality,
-      powerScore: runner.power?.total,
-      paceScore: runner.pace?.score,
-      humanScore: runner.human?.score,
-      marketScore: runner.market?.score,
-      score: runner.finalScore,
-      bettingSignals,
-      marketMovement,
-      elimination: runner.elimination,
-    }
-  })
-
-  return {
-    ...race,
-    paceMap: apexResult.paceMap,
-    volatility: apexResult.volatility,
-    betFilter: apexResult.betFilter,
-    runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
   }
 }
 
@@ -1151,19 +1182,45 @@ async function fetchLiveMeetings() {
 
     const data = await response.json()
     const racecards = data.racecards || []
-    const processed = await Promise.all(racecards.map(processRace))
+    console.log(`[LiveMeetings] Processing ${racecards.length} races...`)
+    
+    // Process races in batches to avoid memory issues
+    const batchSize = 2
+    const processed = []
+    for (let i = 0; i < racecards.length; i += batchSize) {
+      const batch = racecards.slice(i, i + batchSize)
+      console.log(`[LiveMeetings] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(racecards.length / batchSize)}`)
+      try {
+        const batchResults = await Promise.all(batch.map(race => 
+          Promise.race([
+            processRace(race),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 60000))
+          ])
+        ))
+        processed.push(...batchResults)
+      } catch (error) {
+        console.error(`[LiveMeetings] Batch ${Math.floor(i / batchSize) + 1} failed:`, error.message)
+      }
+      // Yield to event loop
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
 
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
-    saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
-    saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
-    saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
+    try {
+      saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
+      saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
+      saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
+    } catch (error) {
+      console.error('[LiveMeetings] Database save failed:', error.message)
+    }
     io.emit('live-update', buildLightweightState())
     console.log(`Broadcasted ${processed.length} races from Racing API`)
     scrapeFinishedRaceResults()
   } catch (error) {
-    console.error(error)
+    console.error('[LiveMeetings] Error:', error.message)
+    console.error(error.stack)
   }
 }
 
@@ -1401,57 +1458,73 @@ async function refreshNonRunners() {
 
 async function refreshATRResults() {
   try {
+    console.log('[ATR Results] Starting refresh...')
     const races = await fetchATRResults()
-    if (races.length === 0) return
+    console.log(`[ATR Results] Fetched ${races?.length || 0} races`)
+    if (!races || races.length === 0) return
 
     console.log(`[ATR Results] ${races.length} races with results`)
 
-    const standardRaces = races.map(race => ({
-      date: race.date,
-      course: race.course,
-      going: '',
-      distanceFurlongs: 0,
-      raceClass: race.raceClass || '',
-      runners: race.runners.map(runner => ({
-        horse: runner.horse,
-        position: runner.position,
-        or: 0,
-        rpr: 0,
-        weight: '',
-        odds: runner.odds,
-        comments: '',
-      })),
-    }))
+    // Process in batches to avoid blocking
+    const batchSize = 5
+    for (let i = 0; i < races.length; i += batchSize) {
+      const batch = races.slice(i, i + batchSize)
+      console.log(`[ATR Results] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(races.length / batchSize)}`)
+      
+      const standardRaces = batch.map(race => ({
+        date: race.date,
+        course: race.course,
+        going: '',
+        distanceFurlongs: 0,
+        raceClass: race.raceClass || '',
+        runners: (race.runners || []).map(runner => ({
+          horse: runner.horse,
+          position: runner.position,
+          or: 0,
+          rpr: 0,
+          weight: '',
+          odds: runner.odds,
+          comments: '',
+        })),
+      }))
 
-    standardRaces.forEach(race => recordRun(race))
+      standardRaces.forEach(race => recordRun(race))
 
-    standardRaces.forEach(race => {
-      race.runners.forEach(runner => {
-        if (runner.position >= 1) {
-          const alreadyRecorded = LEARNING_DATABASE.records.some(
-            r => r.horse === runner.horse && r.timestamp?.startsWith(race.date)
-          )
-          if (!alreadyRecorded) {
-            LEARNING_DATABASE.records.push({
-              horse: runner.horse,
-              position: runner.position,
-              won: runner.position === 1,
-              spOdds: runner.odds,
-              aiConfidence: 0,
-              signal: 'ATR_RESULT',
-              marketMovement: 'N/A',
-              timestamp: new Date().toISOString(),
-              resultProcessed: true,
-            })
+      standardRaces.forEach(race => {
+        race.runners.forEach(runner => {
+          if (runner.position >= 1) {
+            const alreadyRecorded = LEARNING_DATABASE.records.some(
+              r => r.horse === runner.horse && r.timestamp?.startsWith(race.date)
+            )
+            if (!alreadyRecorded) {
+              LEARNING_DATABASE.records.push({
+                horse: runner.horse,
+                position: runner.position,
+                won: runner.position === 1,
+                spOdds: runner.odds,
+                aiConfidence: 0,
+                signal: 'ATR_RESULT',
+                marketMovement: 'N/A',
+                timestamp: new Date().toISOString(),
+                resultProcessed: true,
+              })
+            }
           }
-        }
+        })
       })
-    })
+      
+      // Yield to event loop
+      await new Promise(resolve => setTimeout(resolve, 10))
+    }
 
+    console.log('[ATR Results] Updating LIVE_STATE...')
     LIVE_STATE.atrResults = races
+    console.log('[ATR Results] Emitting to sockets...')
     io.emit('atr-results', races)
+    console.log('[ATR Results] Refresh complete')
   } catch (error) {
     console.error('[ATR Results] Refresh failed:', error.message)
+    console.error(error.stack)
   }
 }
 
