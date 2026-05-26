@@ -12,6 +12,7 @@ import { generateSignals } from './src/lib/signalEngine.js'
 import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 import { runApexEngine } from './src/lib/apexEngine.js'
 import { storeRunnerSnapshot, getSnapshotsByRace, getSnapshotsByHorse, getSnapshotsByVerdict, getSnapshotsByDateRange, getSnapshotStats } from './src/lib/historicalSnapshotStore.js'
+import { recordRun, getConditionDBStats, getHorseProfile, matchConditions } from './src/lib/conditionDB.js'
 import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
@@ -1580,6 +1581,24 @@ app.post('/api/upload-results', (req, res) => {
     races.forEach((race) => {
       const runners = race.runners || []
 
+      // Record runs in condition database
+      recordRun({
+        date: race.date,
+        course: race.course,
+        going: race.going,
+        distanceFurlongs: race.distance_f || race.distanceFurlongs,
+        raceClass: race.class || race.raceClass,
+        runners: runners.map(r => ({
+          horse: r.horse,
+          position: Number(r.position || 0),
+          or: r.or || 0,
+          rpr: r.rpr || 0,
+          weight: r.weight || '',
+          odds: resolveOdds(r),
+          comments: r.comments || '',
+        })),
+      })
+
       runners.forEach((runner) => {
         const prediction = findPredictionForRunner(race, runner)
 
@@ -1816,6 +1835,24 @@ app.get('/api/snapshots/date-range', (req, res) => {
 app.delete('/api/snapshots/clear', (_req, res) => {
   deleteAllSnapshots()
   res.json({ success: true, message: 'All snapshots cleared' })
+})
+
+// Condition DB Routes
+app.get('/api/conditions/stats', (_req, res) => {
+  res.json(getConditionDBStats())
+})
+
+app.get('/api/conditions/horse/:horseName', (req, res) => {
+  const profile = getHorseProfile(req.params.horseName)
+  if (!profile) return res.status(404).json({ error: 'No data for this horse' })
+  res.json(profile)
+})
+
+app.get('/api/conditions/match', (req, res) => {
+  const { horse, going, distance, raceClass, weight } = req.query
+  if (!horse) return res.status(400).json({ error: 'horse query param required' })
+  const match = matchConditions(horse, going, distance, raceClass, weight)
+  res.json(match)
 })
 
 server.listen(PORT, () => {
