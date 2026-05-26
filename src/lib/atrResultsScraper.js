@@ -66,7 +66,22 @@ function parseATRResults(html) {
     races.push(...racesInCourse)
   }
 
-  return races
+  // Filter to UK/IRE only
+  const ukIreCourses = new Set([
+    'Aintree', 'Ascot', 'Ayr', 'Bath', 'Bellewstown', 'Beverley',
+    'Brighton', 'Cartmel', 'Catterick', 'Chelmsford City', 'Cheltenham',
+    'Chepstow', 'Cork', 'Curragh', 'Doncaster', 'Down Royal', 'Dundalk',
+    'Exeter', 'Fairyhouse', 'Fontwell', 'Ffos Las', 'Goodwood',
+    'Haydock', 'Hereford', 'Huntingdon', 'Kempton', 'Kelso', 'Leicester',
+    'Leopardstown', 'Limerick', 'Lingfield', 'Ludlow', 'Market Rasen',
+    'Naas', 'Navan', 'Newbury', 'Newcastle', 'Newmarket', 'Newton Abbot',
+    'Nottingham', 'Perth', 'Plumpton', 'Punchestown', 'Redcar', 'Sandown',
+    'Sedgefield', 'Southwell', 'Stratford', 'Taunton', 'Thirsk', 'Thurles',
+    'Tipperary', 'Tramore', 'Uttoxeter', 'Warwick', 'Wetherby', 'Wexford',
+    'Wincanton', 'Windsor', 'Wolverhampton', 'Yarmouth', 'York',
+  ])
+
+  return races.filter(r => ukIreCourses.has(r.course))
 }
 
 function extractCourseBlocks(text) {
