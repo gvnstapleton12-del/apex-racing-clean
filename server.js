@@ -179,7 +179,11 @@ const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
 
 const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)
-const learningLoaded = LEARNING_DATABASE?.records?.length > 0 || LEARNING_DATABASE?.races?.length > 0
+if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
+if (!LEARNING_DATABASE.races) LEARNING_DATABASE.races = []
+if (!LEARNING_DATABASE.analytics) LEARNING_DATABASE.analytics = {}
+if (!LEARNING_DATABASE.weights) LEARNING_DATABASE.weights = {}
+const learningLoaded = LEARNING_DATABASE.records.length > 0 || LEARNING_DATABASE.races.length > 0
 const learningDb = learningLoaded
   ? LEARNING_DATABASE
   : {
@@ -1076,7 +1080,48 @@ async function processRace(race) {
       })
     }
 
-    return { ...runner, atrFormUrl, bettingSignals, marketMovement, elimination: runner.elimination, powerScore: runner.power?.total, paceScore: runner.pace?.score, humanScore: runner.human?.score, marketScore: runner.market?.score, finalScore: runner.finalScore, winProb: runner.winProb, placeProb: runner.placeProb, placeTraits: runner.placeTraits, interactions: runner.interactions, horseQuality: runner.horseQuality, simulation: runner.simulation, marketModel: runner.marketModel, valueEngine: runner.valueEngine, bankrollEngine: runner.bankrollEngine, scenarioFlags: runner.scenarioFlags, explanation: runner.explanation, confidenceTier: runner.confidenceTier, confidenceLabel: runner.confidenceLabel, confidenceScore: runner.confidenceScore, score: runner.finalScore, betQuality: runner.betQuality, selectionQuality: runner.selectionQuality, runningStyle: runner.runningStyle }
+    return {
+      horse: runner.horse,
+      horse_id: runner.horse_id,
+      age: runner.age,
+      sex: runner.sex,
+      sex_code: runner.sex_code,
+      colour: runner.colour,
+      region: runner.region,
+      dam: runner.dam,
+      sire: runner.sire,
+      damsire: runner.damsire,
+      trainer: runner.trainer,
+      owner: runner.owner,
+      number: runner.number,
+      draw: runner.draw,
+      headgear: runner.headgear,
+      lbs: runner.lbs,
+      ofr: runner.ofr,
+      jockey: runner.jockey,
+      last_run: runner.last_run,
+      form: runner.form,
+      odds: runner.odds,
+      atrFormUrl,
+      runningStyle: runner.runningStyle,
+      finalScore: runner.finalScore,
+      winProb: runner.winProb,
+      placeProb: runner.placeProb,
+      probBand: runner.probBand,
+      probRange: runner.probRange,
+      probTier: runner.probTier,
+      confidenceScore: runner.confidenceScore,
+      betQuality: runner.betQuality,
+      selectionQuality: runner.selectionQuality,
+      powerScore: runner.power?.total,
+      paceScore: runner.pace?.score,
+      humanScore: runner.human?.score,
+      marketScore: runner.market?.score,
+      score: runner.finalScore,
+      bettingSignals,
+      marketMovement,
+      elimination: runner.elimination,
+    }
   })
 
   return {
@@ -1114,7 +1159,7 @@ async function fetchLiveMeetings() {
     saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
     saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
     saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
-    io.emit('live-update', LIVE_STATE)
+    io.emit('live-update', buildLightweightState())
     console.log(`Broadcasted ${processed.length} races from Racing API`)
     scrapeFinishedRaceResults()
   } catch (error) {
@@ -1342,9 +1387,6 @@ async function fetchTodayResults() {
   }
 }
 
-fetchLiveMeetings()
-setInterval(fetchLiveMeetings, 300000)
-
 async function refreshNonRunners() {
   try {
     const courses = await fetchNonRunners()
@@ -1357,9 +1399,6 @@ async function refreshNonRunners() {
   }
 }
 
-refreshNonRunners()
-setInterval(refreshNonRunners, 300000)
-
 async function refreshATRResults() {
   try {
     const races = await fetchATRResults()
@@ -1367,7 +1406,6 @@ async function refreshATRResults() {
 
     console.log(`[ATR Results] ${races.length} races with results`)
 
-    // Convert ATR format to standard race format for condition DB
     const standardRaces = races.map(race => ({
       date: race.date,
       course: race.course,
@@ -1385,10 +1423,8 @@ async function refreshATRResults() {
       })),
     }))
 
-    // Record in condition DB
     standardRaces.forEach(race => recordRun(race))
 
-    // Also feed into learning DB
     standardRaces.forEach(race => {
       race.runners.forEach(runner => {
         if (runner.position >= 1) {
@@ -1412,7 +1448,6 @@ async function refreshATRResults() {
       })
     })
 
-    // Update LIVE_STATE
     LIVE_STATE.atrResults = races
     io.emit('atr-results', races)
   } catch (error) {
@@ -1420,19 +1455,99 @@ async function refreshATRResults() {
   }
 }
 
-refreshATRResults()
+// Defer heavy initial fetches to avoid blocking server startup
+setTimeout(() => {
+  fetchLiveMeetings()
+  refreshNonRunners()
+  refreshATRResults()
+}, 1000)
+
+setInterval(fetchLiveMeetings, 300000)
+setInterval(refreshNonRunners, 300000)
 setInterval(refreshATRResults, 300000)
 
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
 
+function buildLightweightState() {
+  return {
+    racecards: LIVE_STATE.racecards.map(race => ({
+      race_id: race.race_id,
+      course: race.course,
+      date: race.date,
+      off_time: race.off_time,
+      off_dt: race.off_dt,
+      race_name: race.race_name,
+      distance_f: race.distance_f,
+      region: race.region,
+      pattern: race.pattern,
+      race_class: race.race_class,
+      type: race.type,
+      age_band: race.age_band,
+      rating_band: race.rating_band,
+      sex_restriction: race.sex_restriction,
+      prize: race.prize,
+      field_size: race.field_size,
+      going: race.going,
+      surface: race.surface,
+      race_status: race.race_status,
+      paceMap: race.paceMap,
+      volatility: race.volatility,
+      betFilter: race.betFilter,
+      runners: (race.runners || []).map(r => ({
+        horse: r.horse,
+        horse_id: r.horse_id,
+        age: r.age,
+        sex: r.sex,
+        sex_code: r.sex_code,
+        colour: r.colour,
+        region: r.region,
+        dam: r.dam,
+        sire: r.sire,
+        damsire: r.damsire,
+        trainer: r.trainer,
+        owner: r.owner,
+        number: r.number,
+        draw: r.draw,
+        headgear: r.headgear,
+        lbs: r.lbs,
+        ofr: r.ofr,
+        jockey: r.jockey,
+        last_run: r.last_run,
+        form: r.form,
+        odds: r.odds,
+        runningStyle: r.runningStyle,
+        finalScore: r.finalScore,
+        winProb: r.winProb,
+        placeProb: r.placeProb,
+        probBand: r.probBand,
+        probRange: r.probRange,
+        probTier: r.probTier,
+        confidenceScore: r.confidenceScore,
+        betQuality: r.betQuality,
+        selectionQuality: r.selectionQuality,
+        atrFormUrl: r.atrFormUrl,
+        powerScore: r.powerScore,
+        paceScore: r.paceScore,
+        humanScore: r.humanScore,
+        marketScore: r.marketScore,
+        score: r.score,
+      })),
+    })),
+    nonRunners: LIVE_STATE.nonRunners,
+    atrResults: LIVE_STATE.atrResults,
+    updatedAt: LIVE_STATE.updatedAt,
+    loading: LIVE_STATE.loading,
+  }
+}
+
 io.on('connection', (socket) => {
   console.log('Client connected')
-  socket.emit('live-update', LIVE_STATE)
+  socket.emit('live-update', buildLightweightState())
 })
 
 app.get('/api/live-state', (_req, res) => {
-  res.json(LIVE_STATE)
+  res.json(buildLightweightState())
 })
 
 app.get('/api/alerts', (_req, res) => {
