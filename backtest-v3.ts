@@ -21,6 +21,13 @@ interface Runner {
   formPositions: number[]
   daysSinceLastRun: number
   comments: string
+  rpr: number
+  age: number
+  weight: string
+  headgear: string
+  sire: string
+  dam: string
+  owner: string
 }
 
 interface Race {
@@ -78,6 +85,23 @@ interface HistoricalSnapshot {
   }
 }
 
+interface ConditionRecord {
+  runs: number
+  wins: number
+  places: number
+  avgPos: number
+  positions: number[]
+}
+
+interface HorseConditionProfile {
+  name: string
+  stats: { total: number; wins: number; places: number }
+  going: Record<string, ConditionRecord>
+  distance: Record<string, ConditionRecord>
+  class: Record<string, ConditionRecord>
+  weight: Record<string, ConditionRecord>
+}
+
 // =========================================
 // CONFIG
 // =========================================
@@ -91,6 +115,129 @@ const CONFIG = {
   skipLargeFields: true,
   minimumScore: 3,
   maxPicksPerRace: 1
+}
+
+// =========================================
+// CONDITION DB (in-memory for backtest)
+// =========================================
+
+const conditionDB: Record<string, HorseConditionProfile> = {}
+
+function normalizeGoing(going: string): string {
+  if (!going) return 'unknown'
+  const g = going.toLowerCase().trim()
+  if (g.includes('heavy')) return 'heavy'
+  if (g.includes('soft')) return 'soft'
+  if (g.includes('good to soft')) return 'good_to_soft'
+  if (g.includes('good to firm')) return 'good_to_firm'
+  if (g.includes('good')) return 'good'
+  if (g.includes('firm')) return 'firm'
+  if (g.includes('standard')) return 'standard'
+  return 'unknown'
+}
+
+function normalizeDistance(distF: number): string {
+  if (!distF || isNaN(distF)) return 'unknown'
+  if (distF <= 5) return 'sprint'
+  if (distF <= 7) return 'short_mile'
+  if (distF <= 9) return 'mile'
+  if (distF <= 12) return 'middle'
+  if (distF <= 16) return 'long'
+  return 'stayer'
+}
+
+function normalizeClass(raceClass: string): string {
+  if (!raceClass) return 'unknown'
+  const c = String(raceClass).toLowerCase().replace('class ', '')
+  const num = parseInt(c, 10)
+  if (num >= 1 && num <= 6) return `class_${num}`
+  return 'unknown'
+}
+
+function recordRunToDB(race: Race) {
+  const going = normalizeGoing(race.going)
+  const dist = normalizeDistance(race.distanceFurlongs)
+  const cls = normalizeClass(race.raceClass || '')
+
+  for (const runner of race.runners) {
+    const horseId = runner.horse.toLowerCase().replace(/\s+/g, '_')
+    if (!conditionDB[horseId]) {
+      conditionDB[horseId] = {
+        name: runner.horse,
+        stats: { total: 0, wins: 0, places: 0 },
+        going: {},
+        distance: {},
+        class: {},
+        weight: {},
+      }
+    }
+
+    const horse = conditionDB[horseId]
+    const position = runner.position || 0
+    horse.stats.total++
+
+    const buckets = [
+      { map: horse.going, key: going },
+      { map: horse.distance, key: dist },
+      { map: horse.class, key: cls },
+      { map: horse.weight, key: runner.weight || 'unknown' },
+    ]
+
+    for (const { map, key } of buckets) {
+      if (!map[key]) map[key] = { runs: 0, wins: 0, places: 0, avgPos: 0, positions: [] }
+      map[key].runs++
+      map[key].positions.push(position)
+      if (position === 1) map[key].wins++
+      else if (position >= 2 && position <= 3) map[key].places++
+    }
+
+    if (position === 1) horse.stats.wins++
+    else if (position >= 2 && position <= 3) horse.stats.places++
+  }
+}
+
+function getConditionMatch(horseName: string, todayGoing: string, todayDistF: number, todayClass: string, todayWeight: string) {
+  const horseId = horseName.toLowerCase().replace(/\s+/g, '_')
+  const profile = conditionDB[horseId]
+  if (!profile || profile.stats.total === 0) {
+    return { hasHistory: false, overallScore: 50, positives: [] as string[], negatives: [] as string[] }
+  }
+
+  const going = normalizeGoing(todayGoing)
+  const dist = normalizeDistance(todayDistF)
+  const cls = normalizeClass(todayClass)
+  const weightBucket = todayWeight || 'unknown'
+
+  let score = 50
+  const positives: string[] = []
+  const negatives: string[] = []
+
+  const checks = [
+    { data: profile.going[going], label: going.replace(/_/g, ' '), type: 'going' },
+    { data: profile.distance[dist], label: dist, type: 'distance' },
+    { data: profile.class[cls], label: cls, type: 'class' },
+    { data: profile.weight[weightBucket], label: weightBucket, type: 'weight' },
+  ]
+
+  for (const { data, label, type } of checks) {
+    if (data && data.runs > 0) {
+      const winRate = data.wins / data.runs
+      const placeRate = (data.wins + data.places) / data.runs
+      if (winRate >= 0.3) { score += 12; positives.push(`Strong ${type}: ${data.wins}/${data.runs} on ${label}`) }
+      else if (winRate >= 0.15) { score += 6; positives.push(`Proven ${type}: ${data.wins}/${data.runs} on ${label}`) }
+      else if (placeRate >= 0.4) { score += 3; positives.push(`Places ${type} on ${label}`) }
+      else { score -= 4; negatives.push(`Poor ${type} on ${label}`) }
+    } else {
+      negatives.push(`No ${type} record on ${label}`)
+    }
+  }
+
+  return {
+    hasHistory: true,
+    overallScore: Math.max(0, Math.min(100, score)),
+    positives,
+    negatives,
+  }
 }
 
 // =========================================
@@ -139,6 +286,10 @@ function buildSnapshot(runner: Runner, race: Race, score: number): HistoricalSna
   const avgOR = ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0
   const orDiff = runner.or - avgOR
 
+  const rprs = race.runners.map(r => r.rpr).filter(Boolean)
+  const avgRPR = rprs.length > 0 ? rprs.reduce((a, b) => a + b, 0) / rprs.length : 0
+  const rprDiff = runner.rpr - avgRPR
+
   const raceClass = extractRaceClass(race.raceName)
   const expectedOR = raceClassToExpectedOR(raceClass)
   const classDrop = raceClass > 0 && runner.or > 0 && runner.or < expectedOR - 10
@@ -158,10 +309,14 @@ function buildSnapshot(runner: Runner, race: Race, score: number): HistoricalSna
   if (classDrop) positives.push('Dropping in class')
   if (runner.daysSinceLastRun > 0 && runner.daysSinceLastRun <= 30) positives.push('Recent run — fit')
   if (orDiff >= 5) positives.push('Above average OR')
+  if (rprDiff >= 10) positives.push('High RPR — proven ability')
+  if (runner.age >= 4 && runner.age <= 7) positives.push('Prime age')
+  if (runner.headgear.toLowerCase().includes('first time')) positives.push('First-time headgear')
 
   if (weakened) negatives.push('Tendency to weaken late')
   if (runner.daysSinceLastRun > 180) negatives.push('Long absence')
   if (orDiff <= -10) negatives.push('Below average OR')
+  if (rprDiff <= -10) negatives.push('Low RPR')
   if (race.fieldSize >= 16) negatives.push('Large field — traffic risk')
 
   const summary = positives.length > negatives.length
@@ -201,7 +356,7 @@ function buildSnapshot(runner: Runner, race: Race, score: number): HistoricalSna
         trainerHiddenUpside: false,
       },
       stableIntent: {
-        equipmentChange: null,
+        equipmentChange: runner.headgear || null,
         jockeyChange: false,
         trainerPattern: null,
       },
@@ -244,7 +399,18 @@ function scoreRunner(runner: Runner, race: Race): number {
     else if (orDiff <= -10) score -= 2
   }
 
-  // FORM SCORE (pre-parsed positions)
+  // RPR (Racing Post Rating) — direct ability measure
+  const rprs = race.runners.map(r => r.rpr).filter(Boolean)
+  if (rprs.length > 0) {
+    const avgRPR = rprs.reduce((a, b) => a + b, 0) / rprs.length
+    const rprDiff = runner.rpr - avgRPR
+    if (rprDiff >= 10) score += 4
+    else if (rprDiff >= 5) score += 2
+    else if (rprDiff >= 0) score += 1
+    else if (rprDiff <= -10) score -= 2
+  }
+
+  // FORM SCORE (if available — new format may be empty)
   for (const pos of runner.formPositions) {
     if (pos === 1) score += 4
     else if (pos === 2) score += 2
@@ -252,13 +418,24 @@ function scoreRunner(runner: Runner, race: Race): number {
     else if (pos >= 8) score -= 1
   }
 
-  // RECENCY
+  // RECENCY (if available)
   if (runner.daysSinceLastRun > 0 && runner.daysSinceLastRun <= 30) {
     score += 1
   }
   if (runner.daysSinceLastRun > 180) {
     score -= 2
   }
+
+  // AGE — prime age bonus
+  if (runner.age >= 4 && runner.age <= 7) score += 1
+  if (runner.age >= 8 && runner.age <= 10) score += 0
+  if (runner.age > 10) score -= 1
+
+  // HEADGEAR — equipment change signals
+  const hg = runner.headgear.toLowerCase()
+  if (hg.includes('first time') || hg.includes('ft')) score += 2
+  if (hg.includes('cheekpieces') || hg.includes('blinkers') || hg.includes('visor')) score += 1
+  if (hg.includes('removed') || hg.includes('off')) score -= 1
 
   // FIELD SIZE
   if (race.runners.length <= 6) score += 1
@@ -295,6 +472,13 @@ function scoreRunner(runner: Runner, race: Race): number {
   // Pace negatives — poor start/traffic issues
   if (c.includes('slowly away') || c.includes('jumped slowly')) score -= 1
   if (c.includes('badly hampered') || c.includes('checked')) score -= 1
+
+  // CONDITION MATCH — historical wins on today's going/distance/class/weight
+  const cond = getConditionMatch(runner.horse, race.going, race.distanceFurlongs, race.raceClass || '', runner.weight)
+  if (cond.hasHistory) {
+    const adj = (cond.overallScore - 50) * 0.1
+    score += adj
+  }
 
   return score
 }
@@ -348,12 +532,42 @@ function selectPick(race: Race): PickResult | null {
 // RUN BACKTEST
 // =========================================
 
+// Sort races chronologically to avoid look-ahead bias
+races.sort((a, b) => {
+  const dateA = `${a.date}T${a.time || '00:00'}`
+  const dateB = `${b.date}T${b.time || '00:00'}`
+  return dateA.localeCompare(dateB)
+})
+
 const picks: PickResult[] = []
+let racesProcessed = 0
+let skippedByField = 0
+let skippedByOdds = 0
+let skippedByScore = 0
 
 for (const race of races) {
+  // Score using historical data from PREVIOUS races only (no look-ahead bias)
   const result = selectPick(race)
   if (result) picks.push(result)
+  else {
+    if (CONFIG.skipLargeFields && race.fieldSize > CONFIG.maxFieldSize) skippedByField++
+    else {
+      const scored = race.runners.map(runner => ({ runner, score: scoreRunner(runner, race) }))
+      const inOdds = scored.filter(({ runner }) => runner.odds >= CONFIG.minOdds && runner.odds <= CONFIG.maxOdds)
+      if (inOdds.length === 0) skippedByOdds++
+      else {
+        inOdds.sort((a, b) => b.score - a.score)
+        if (inOdds[0].score < CONFIG.minimumScore) skippedByScore++
+      }
+    }
+  }
+
+  // Record this race to condition DB for FUTURE races
+  recordRunToDB(race)
+  racesProcessed++
 }
+
+console.log(`\nSkipped: ${skippedByField} field, ${skippedByOdds} odds, ${skippedByScore} score`)
 
 // =========================================
 // RESULTS
@@ -367,6 +581,10 @@ const totalProfit = picks.reduce((sum, p) => sum + p.profit, 0)
 const totalStaked = totalBets * CONFIG.stakePerBet
 const roi = totalStaked ? ((totalProfit / totalStaked) * 100).toFixed(2) : '0'
 
+const dbHorses = Object.keys(conditionDB).length
+const dbRuns = Object.values(conditionDB).reduce((sum, h) => sum + h.stats.total, 0)
+const dbWins = Object.values(conditionDB).reduce((sum, h) => sum + h.stats.wins, 0)
+
 console.log('\n=========================================')
 console.log('APEX RACING BACKTEST RESULTS')
 console.log('=========================================\n')
@@ -376,6 +594,13 @@ console.log(`Losses:         ${totalLosses}`)
 console.log(`Strike Rate:    ${strikeRate}%`)
 console.log(`Profit/Loss:    ${totalProfit.toFixed(2)} pts`)
 console.log(`ROI:            ${roi}%`)
+
+console.log('\n=========================================')
+console.log('CONDITION DATABASE')
+console.log('=========================================')
+console.log(`Horses Tracked: ${dbHorses}`)
+console.log(`Total Runs:     ${dbRuns}`)
+console.log(`Total Wins:     ${dbWins}`)
 
 console.log('\n=========================================')
 console.log('ALL PICKS')

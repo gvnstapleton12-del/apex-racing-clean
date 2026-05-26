@@ -9,6 +9,7 @@ import { buildSyndicateFeatures } from './syndicateFeatures.js'
 import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments, getFieldSizeAdjustments } from './raceArchetype.js'
 import { bucketKey, getBucketWeights } from './contextBuckets.js'
 import { buildNarrative } from './narrativeBuilder.js'
+import { matchConditions } from './conditionDB.js'
 import { estimateEnergyDistribution } from './energyModel.js'
 import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
 import { detectFalseFavourite } from './falseFavourite.js'
@@ -129,6 +130,15 @@ export function runApexEngine(runners, race, options = {}) {
       distanceDb,
     })
 
+    // Condition matching — cross-reference historical wins/places
+    const conditionMatch = matchConditions(
+      runner.horse,
+      race.going,
+      race.distance_f,
+      race.raceClass,
+      runner.weight,
+    )
+
     const humanAdj = humanIntelligenceLayer(replayNote, race.course)
     const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
 
@@ -229,8 +239,13 @@ export function runApexEngine(runners, race, options = {}) {
     // Blend trainer/jockey form into score
     const formAdj = trainerAdj + jockeyAdj
 
+    // Condition match adjustment — historical wins on today's going/distance/class/weight
+    const conditionAdj = conditionMatch.hasHistory
+      ? (conditionMatch.overallScore - 50) * 0.15
+      : 0
+
     const layeredWithChaos = withMovement * chaosSuppression
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj)))
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj)))
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.50 +
@@ -297,6 +312,16 @@ export function runApexEngine(runners, race, options = {}) {
         weakened: runner.comments?.toLowerCase().includes('weakened') || false,
         staminaBias: raceShapeSuitability > 60 ? true : false,
       },
+      conditionMatch: {
+        hasHistory: conditionMatch.hasHistory,
+        overallScore: conditionMatch.overallScore,
+        goingMatch: conditionMatch.goingMatch,
+        distanceMatch: conditionMatch.distanceMatch,
+        classMatch: conditionMatch.classMatch,
+        weightMatch: conditionMatch.weightMatch,
+        positives: conditionMatch.positives || [],
+        negatives: conditionMatch.negatives || [],
+      },
     }
 
     const scoreSnapshot = {
@@ -333,6 +358,7 @@ export function runApexEngine(runners, race, options = {}) {
       paceCompat,
       improver,
       stableIntent,
+      conditionMatch,
       components,
       newComponents,
       finalProbability,

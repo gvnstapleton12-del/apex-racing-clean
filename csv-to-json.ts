@@ -2,10 +2,12 @@ import fs from 'fs'
 import path from 'path'
 
 // =========================================
-// CSV -> JSON CONVERTER
+// CSV -> JSON CONVERTER (Racing Post format v2)
 // =========================================
-// Cleans Racing Post CSV into structured JSON
-// Run once: npx tsx csv-to-json.ts
+// Columns: date,region,course,course_detail,off,race_name,type,class,pattern,
+// rating_band,age_band,sex_rest,dist,dist_f,dist_m,going,surface,ran,num,pos,
+// draw,ovr_btn,btn,horse,age,sex,lbs,hg,time,secs,dec,jockey,trainer,prize,
+// or,rpr,sire,dam,damsire,owner,comment
 // =========================================
 
 function parseCsvLine(line: string): string[] {
@@ -22,8 +24,15 @@ function parseCsvLine(line: string): string[] {
   return result
 }
 
+function parseDecimalOdds(input: string): number {
+  if (!input) return 0
+  const val = parseFloat(input)
+  return val > 1 ? val : 0
+}
+
 function parseFractionalOdds(input: string): number {
   if (!input) return 0
+  if (input.toLowerCase().includes('fav') || input.toLowerCase() === 'bf') return 0
   if (!input.includes('/')) {
     const val = Number(input)
     return val > 1 ? val : 0
@@ -42,7 +51,11 @@ function parseFinishingPosition(position: string): number {
   return 0
 }
 
-function parseFurlongs(dist: string): number {
+function parseFurlongs(dist: string, distF: string): number {
+  if (distF) {
+    const val = parseFloat(distF)
+    if (!isNaN(val) && val > 0) return val
+  }
   if (!dist) return 0
   const m = dist.match(/(\d+)m\s*(\d*)f?\s*(\d*)y?/)
   if (m) {
@@ -72,18 +85,13 @@ function normalizeDate(dateStr: string): string {
   return dateStr
 }
 
-function parseFormString(form: string): number[] {
-  if (!form) return []
-  const entries = form.split(/[-–]/).filter(Boolean)
-  const positions: number[] = []
-  for (const entry of entries) {
-    const pos = parseInt(entry, 10)
-    if (isNaN(pos)) continue
-    if (pos > 20) continue
-    if (pos === 0) continue
-    positions.push(pos)
+function normalizeTime(timeStr: string): string {
+  if (!timeStr) return '00:00'
+  const match = timeStr.match(/(\d{1,2}):(\d{2})/)
+  if (match) {
+    return `${match[1].padStart(2, '0')}:${match[2]}`
   }
-  return positions
+  return timeStr
 }
 
 function extractRaceType(code: string): string {
@@ -92,6 +100,10 @@ function extractRaceType(code: string): string {
   if (c === 'c') return 'Chase'
   if (c === 'b') return 'Bumper'
   if (c === 'f') return 'Flat'
+  if (c.includes('hurdle')) return 'Hurdle'
+  if (c.includes('chase')) return 'Chase'
+  if (c.includes('bumper')) return 'Bumper'
+  if (c.includes('flat')) return 'Flat'
   return 'Unknown'
 }
 
@@ -99,57 +111,123 @@ function extractRaceType(code: string): string {
 // MAIN
 // =========================================
 
-const inputPath = path.join(process.cwd(), 'historical_races.csv')
-const outputPath = path.join(process.cwd(), 'historical_races.json')
+const args = process.argv.slice(2)
+const inputFile = args[0] || 'historical_races.csv'
+const outputFile = args[1] || 'historical_races.json'
+
+const inputPath = path.join(process.cwd(), inputFile)
+const outputPath = path.join(process.cwd(), outputFile)
+
+if (!fs.existsSync(inputPath)) {
+  console.error(`File not found: ${inputPath}`)
+  console.error('Usage: npx tsx csv-to-json.ts [input.csv] [output.json]')
+  process.exit(1)
+}
 
 const rawFile = fs.readFileSync(inputPath, 'utf-8')
 const lines = rawFile.split('\n').filter(line => line.trim().length > 0)
+
+// Auto-detect format
+const firstCols = parseCsvLine(lines[0])
+const isNewFormat = firstCols[0].toLowerCase().includes('date') ||
+  (firstCols.length >= 41 && !/^\d+$/.test(firstCols[0]))
+
+let dataLines = lines
+if (isNewFormat && firstCols[0].toLowerCase().includes('date')) {
+  dataLines = lines.slice(1)
+}
 
 const racesMap = new Map<string, any>()
 let totalRunners = 0
 let skipped = 0
 
-for (const line of lines) {
+for (const line of dataLines) {
   const cols = parseCsvLine(line)
 
   try {
-    const raceId = cols[0]
-    const course = cols[1]
-    const date = cols[2]
-    const time = cols[3]
-    const raceName = cols[4]
-    const typeCode = cols[5]
-    const going = cols[12]
-    const distance = cols[10]
-    const fieldSize = Number(cols[9]) || 0
+    let date: string, course: string, time: string, raceName: string, typeCode: string
+    let raceClass: string, going: string, distance: string, distF: string, fieldSize: number
+    let position: number, horse: string, oddsDecimal: number, or: number, draw: number
+    let trainer: string, jockey: string, comments: string, rpr: number, age: number
+    let weight: string, headgear: string, sire: string, dam: string, owner: string
 
-    const position = parseFinishingPosition(cols[16])
-    const horse = cols[20]
-    const oddsFrac = cols[37]
-    const oddsDecimal = parseFractionalOdds(oddsFrac)
-    const or = Number(cols[26]) || 0
-    const draw = Number(cols[9]) || 0
-    const trainer = cols[29]
-    const jockey = cols[30]
-    const formRaw = cols[34] || ''
-    const daysSinceLastRun = Number(cols[35]) || 0
-    const comments = cols[33] || ''
+    if (isNewFormat) {
+      // New format: date,region,course,course_detail,off,race_name,type,class,...
+      date = normalizeDate(cols[0])
+      course = cols[2]
+      time = normalizeTime(cols[4])
+      raceName = cols[5]
+      typeCode = cols[6]
+      raceClass = cols[7]
+      going = cols[15]
+      distance = cols[12]
+      distF = cols[13]
+      fieldSize = Number(cols[17]) || 0
+      position = parseFinishingPosition(cols[19])
+      horse = cols[23]
+      oddsDecimal = parseDecimalOdds(cols[30])
+      or = Number(cols[34]) || 0
+      draw = Number(cols[20]) || 0
+      trainer = cols[32]
+      jockey = cols[31]
+      comments = cols[40] || ''
+      rpr = Number(cols[35]) || 0
+      age = Number(cols[24]) || 0
+      weight = cols[26] || ''
+      headgear = cols[27] || ''
+      sire = cols[36] || ''
+      dam = cols[37] || ''
+      owner = cols[39] || ''
+    } else {
+      // Old Racing Post format (39 cols):
+      // 0:raceId 1:course 2:date 3:time 4:raceName 5:type 6:class 7:ageBand 8:? 9:fieldSize
+      // 10:distance 11:? 12:going 13:? 14:winTime 15:? 16:position 17:? 18:btn 19:draw
+      // 20:horse 21:age 22:weight 23:? 24:lbs 25:? 26:? 27:? 28:? 29:trainer 30:jockey
+      // 31:prize 32:or 33:comments 34:form 35:days 36:? 37:oddsFrac 38:?
+      date = normalizeDate(cols[2])
+      course = cols[1]
+      time = normalizeTime(cols[3])
+      raceName = cols[4]
+      typeCode = cols[5]
+      raceClass = cols[6]
+      going = cols[12]
+      distance = cols[10]
+      distF = ''
+      fieldSize = Number(cols[9]) || 0
+      position = parseFinishingPosition(cols[16])
+      horse = cols[20]
+      oddsDecimal = parseFractionalOdds(cols[37])
+      or = Number(cols[32]) || 0
+      draw = Number(cols[19]) || 0
+      trainer = cols[29]
+      jockey = cols[30]
+      comments = cols[33] || ''
+      rpr = 0
+      age = Number(cols[21]) || 0
+      weight = cols[22] || ''
+      headgear = ''
+      sire = ''
+      dam = ''
+      owner = ''
+    }
 
     if (!horse) { skipped++; continue }
 
-    const formPositions = parseFormString(formRaw)
+    // Build race ID from date + course + time
+    const raceId = `${date}_${course.toLowerCase().replace(/\s+/g, '_')}_${time.replace(/:/g, '')}`
 
     if (!racesMap.has(raceId)) {
       racesMap.set(raceId, {
         raceId,
         course,
-        date: normalizeDate(date),
+        date,
         time,
         raceName,
         raceType: extractRaceType(typeCode),
+        raceClass,
         going,
         distance,
-        distanceFurlongs: parseFurlongs(distance),
+        distanceFurlongs: parseFurlongs(distance, distF),
         fieldSize,
         runners: []
       })
@@ -159,15 +237,21 @@ for (const line of lines) {
       horse,
       position,
       odds: oddsDecimal,
-      oddsFractional: oddsFrac,
       or,
       draw,
       trainer,
       jockey,
-      formRaw,
-      formPositions,
-      daysSinceLastRun,
-      comments
+      formRaw: '',
+      formPositions: [],
+      daysSinceLastRun: 0,
+      comments,
+      rpr,
+      age,
+      weight,
+      headgear,
+      sire,
+      dam,
+      owner,
     })
 
     totalRunners++
@@ -180,6 +264,7 @@ const races = Array.from(racesMap.values())
 
 const output = {
   generatedAt: new Date().toISOString(),
+  sourceFile: inputFile,
   totalRaces: races.length,
   totalRunners,
   skippedRows: skipped,
