@@ -13,6 +13,7 @@ import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 import { runApexEngine } from './src/lib/apexEngine.js'
 import { storeRunnerSnapshot, getSnapshotsByRace, getSnapshotsByHorse, getSnapshotsByVerdict, getSnapshotsByDateRange, getSnapshotStats } from './src/lib/historicalSnapshotStore.js'
 import { recordRun, getConditionDBStats, getHorseProfile, matchConditions } from './src/lib/conditionDB.js'
+import { fetchNonRunners } from './src/lib/nonRunnerScraper.js'
 import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
@@ -212,6 +213,7 @@ const JOCKEY_FORM_DATABASE = loadDatabase(JOCKEY_FORM_PATH) || {}
 
 const LIVE_STATE = {
   racecards: [],
+  nonRunners: [],
   updatedAt: null,
   loading: true,
 }
@@ -1324,6 +1326,21 @@ async function fetchTodayResults() {
 fetchLiveMeetings()
 setInterval(fetchLiveMeetings, 300000)
 
+async function refreshNonRunners() {
+  try {
+    const courses = await fetchNonRunners()
+    LIVE_STATE.nonRunners = courses
+    if (courses.length > 0) {
+      console.log(`[NonRunners] ${courses.length} courses updated`)
+    }
+  } catch (error) {
+    console.error('[NonRunners] Refresh failed:', error.message)
+  }
+}
+
+refreshNonRunners()
+setInterval(refreshNonRunners, 300000)
+
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
 
@@ -1853,6 +1870,16 @@ app.get('/api/conditions/match', (req, res) => {
   if (!horse) return res.status(400).json({ error: 'horse query param required' })
   const match = matchConditions(horse, going, distance, raceClass, weight)
   res.json(match)
+})
+
+// Non-Runner Routes
+app.get('/api/non-runners', async (_req, res) => {
+  try {
+    const courses = await fetchNonRunners()
+    res.json({ courses, updatedAt: new Date().toISOString() })
+  } catch (error) {
+    res.status(500).json({ error: error.message, courses: [] })
+  }
 })
 
 server.listen(PORT, () => {
