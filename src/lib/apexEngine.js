@@ -93,6 +93,7 @@ export function runApexEngine(runners, race, options = {}) {
   const pacePressure = computePacePressure(paceMap)
 
   const results = runners.map((runner, idx) => {
+    const runnerStart = Date.now()
     const runningStyle = styles[idx]
     const draw = Number(runner.draw || 0)
     const fieldSize = runners.length
@@ -397,7 +398,7 @@ export function runApexEngine(runners, race, options = {}) {
 
   // Engine 2: Race Shape Simulation
   const simulation = runRaceSimulation(sorted, race, paceMap, {
-    numSimulations: 1000,
+    numSimulations: 100,
     seed: Date.now(),
   })
 
