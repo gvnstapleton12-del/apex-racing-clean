@@ -1470,72 +1470,74 @@ setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
 
 function buildLightweightState() {
-  return {
-    racecards: LIVE_STATE.racecards.map(race => ({
-      race_id: race.race_id,
-      course: race.course,
-      date: race.date,
-      off_time: race.off_time,
-      off_dt: race.off_dt,
-      race_name: race.race_name,
-      distance_f: race.distance_f,
-      region: race.region,
-      pattern: race.pattern,
-      race_class: race.race_class,
-      type: race.type,
-      age_band: race.age_band,
-      rating_band: race.rating_band,
-      sex_restriction: race.sex_restriction,
-      prize: race.prize,
-      field_size: race.field_size,
-      going: race.going,
-      surface: race.surface,
-      race_status: race.race_status,
-      paceMap: race.paceMap,
-      volatility: race.volatility,
-      betFilter: race.betFilter,
-      runners: (race.runners || []).map(r => ({
-        horse: r.horse,
-        horse_id: r.horse_id,
-        age: r.age,
-        sex: r.sex,
-        sex_code: r.sex_code,
-        colour: r.colour,
-        region: r.region,
-        dam: r.dam,
-        sire: r.sire,
-        damsire: r.damsire,
-        trainer: r.trainer,
-        owner: r.owner,
-        number: r.number,
-        draw: r.draw,
-        headgear: r.headgear,
-        lbs: r.lbs,
-        ofr: r.ofr,
-        jockey: r.jockey,
-        last_run: r.last_run,
-        form: r.form,
-        odds: r.odds,
-        runningStyle: r.runningStyle,
-        finalScore: r.finalScore,
-        winProb: r.winProb,
-        placeProb: r.placeProb,
-        probBand: r.probBand,
-        probRange: r.probRange,
-        probTier: r.probTier,
-        confidenceScore: r.confidenceScore,
-        betQuality: r.betQuality,
-        selectionQuality: r.selectionQuality,
-        atrFormUrl: r.atrFormUrl,
-        powerScore: r.powerScore,
-        paceScore: r.paceScore,
-        humanScore: r.humanScore,
-        marketScore: r.marketScore,
-        score: r.score,
-      })),
+  const racecards = (LIVE_STATE.racecards || []).map(race => ({
+    race_id: race.race_id,
+    course: race.course,
+    date: race.date,
+    off_time: race.off_time,
+    off_dt: race.off_dt,
+    race_name: race.race_name,
+    distance_f: race.distance_f,
+    region: race.region,
+    pattern: race.pattern,
+    race_class: race.race_class,
+    type: race.type,
+    age_band: race.age_band,
+    rating_band: race.rating_band,
+    sex_restriction: race.sex_restriction,
+    prize: race.prize,
+    field_size: race.field_size,
+    going: race.going,
+    surface: race.surface,
+    race_status: race.race_status,
+    paceMap: race.paceMap,
+    volatility: race.volatility,
+    betFilter: race.betFilter,
+    runners: (race.runners || []).map(r => ({
+      horse: r.horse,
+      horse_id: r.horse_id,
+      age: r.age,
+      sex: r.sex,
+      sex_code: r.sex_code,
+      colour: r.colour,
+      region: r.region,
+      dam: r.dam,
+      sire: r.sire,
+      damsire: r.damsire,
+      trainer: r.trainer,
+      owner: r.owner,
+      number: r.number,
+      draw: r.draw,
+      headgear: r.headgear,
+      lbs: r.lbs,
+      ofr: r.ofr,
+      jockey: r.jockey,
+      last_run: r.last_run,
+      form: r.form,
+      odds: r.odds,
+      runningStyle: r.runningStyle,
+      finalScore: r.finalScore,
+      winProb: r.winProb,
+      placeProb: r.placeProb,
+      probBand: r.probBand,
+      probRange: r.probRange,
+      probTier: r.probTier,
+      confidenceScore: r.confidenceScore,
+      betQuality: r.betQuality,
+      selectionQuality: r.selectionQuality,
+      atrFormUrl: r.atrFormUrl,
+      powerScore: r.powerScore,
+      paceScore: r.paceScore,
+      humanScore: r.humanScore,
+      marketScore: r.marketScore,
+      score: r.score,
     })),
-    nonRunners: LIVE_STATE.nonRunners,
-    atrResults: LIVE_STATE.atrResults,
+  }))
+
+  return {
+    racecards,
+    nonRunners: LIVE_STATE.nonRunners || [],
+    atrResults: LIVE_STATE.atrResults || [],
     updatedAt: LIVE_STATE.updatedAt,
     loading: LIVE_STATE.loading,
   }
@@ -1543,11 +1545,28 @@ function buildLightweightState() {
 
 io.on('connection', (socket) => {
   console.log('Client connected')
-  socket.emit('live-update', buildLightweightState())
+  try {
+    socket.emit('live-update', buildLightweightState())
+  } catch (error) {
+    console.error('[Socket] live-update error:', error.message)
+    socket.emit('live-update', { racecards: [], nonRunners: [], atrResults: [], loading: false })
+  }
 })
 
 app.get('/api/live-state', (_req, res) => {
-  res.json(buildLightweightState())
+  const timeout = setTimeout(() => {
+    res.status(504).json({ error: 'Request timeout' })
+  }, 8000)
+
+  try {
+    const state = buildLightweightState()
+    clearTimeout(timeout)
+    res.json(state)
+  } catch (error) {
+    clearTimeout(timeout)
+    console.error('[API] live-state error:', error.message)
+    res.status(500).json({ error: 'Failed to build state', details: error.message })
+  }
 })
 
 app.get('/api/alerts', (_req, res) => {
