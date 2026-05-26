@@ -1,17 +1,10 @@
+import { analyzeForm } from './formEngine.js'
+
 function computeConsistency(runner) {
-  const form = runner.form || ''
-  if (!form || form === '-') return 0
+  const formAnalysis = analyzeForm(runner)
+  if (formAnalysis.summary.finishedRuns < 2) return 50
 
-  const positions = []
-  const parts = form.split(/[\s/-]+/)
-
-  parts.forEach((p) => {
-    const num = parseInt(p, 10)
-    if (!isNaN(num) && num >= 1 && num <= 20) {
-      positions.push(num)
-    }
-  })
-
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
   if (positions.length < 2) return 50
 
   const avg = positions.reduce((a, b) => a + b, 0) / positions.length
@@ -42,7 +35,8 @@ function computeConsistency(runner) {
 function computeReliability(runner) {
   let score = 50
 
-  const runs = runner.form ? runner.form.split(/[\s/-]+/).filter((p) => /^\d+$/.test(p)).length : 0
+  const formAnalysis = analyzeForm(runner)
+  const runs = formAnalysis.summary.finishedRuns
   if (runs >= 6) score += 15
   else if (runs >= 4) score += 10
   else if (runs >= 2) score += 5
@@ -68,12 +62,8 @@ function computeReliability(runner) {
 function computeHonesty(runner) {
   let score = 50
 
-  const form = runner.form || ''
-  const positions = []
-  form.split(/[\s/-]+/).forEach((p) => {
-    const num = parseInt(p, 10)
-    if (!isNaN(num) && num >= 1 && num <= 20) positions.push(num)
-  })
+  const formAnalysis = analyzeForm(runner)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
 
   if (positions.length < 2) return 50
 
@@ -99,12 +89,8 @@ function computeHonesty(runner) {
 function computeFinishingKick(runner) {
   let score = 50
 
-  const form = runner.form || ''
-  const positions = []
-  form.split(/[\s/-]+/).forEach((p) => {
-    const num = parseInt(p, 10)
-    if (!isNaN(num) && num >= 1 && num <= 20) positions.push(num)
-  })
+  const formAnalysis = analyzeForm(runner)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
 
   if (positions.length < 2) return 50
 
@@ -145,8 +131,8 @@ function computeExplosiveAbility(runner) {
   else if (rpr > 120) score += 10
   else if (rpr > 100) score += 5
 
-  const form = runner.form || ''
-  const wins = form.split(/[\s/-]+/).filter((p) => p === '1').length
+  const formAnalysis = analyzeForm(runner)
+  const wins = formAnalysis.runs.filter(r => r.position === 1).length
   if (wins >= 2) score += 15
   else if (wins === 1) score += 8
 
@@ -225,33 +211,99 @@ export function bayesianPlaceProbabilities(runners) {
   return posteriors.map((p) => (total > 0 ? (p / total) * 100 : 0))
 }
 
-export function bayesianWinProbabilities(runners) {
-  const priors = runners.map((r) => {
-    const odds = Number(r.odds || r.price || 0)
-    if (odds > 1) return 1 / odds
-    return 1 / runners.length
+function fieldSizeWinFactor(fieldSize) {
+  if (fieldSize <= 4) return 1.4
+  if (fieldSize <= 7) return 1.15
+  if (fieldSize <= 12) return 1.0
+  return 0.85
+}
+
+function archetypeWinFactor(race) {
+  const name = (race.race_name || race.pattern || '').toLowerCase()
+  const type = (race.type || race.race_type || '').toLowerCase()
+
+  if (name.includes('handicap') || type.includes('handicap')) return 0.9
+  if (name.includes('maiden') || type.includes('maiden')) return 0.75
+  if (name.includes('novice') || type.includes('novice')) return 0.8
+  if (name.includes('listed') || type.includes('listed')) return 1.1
+  if (name.includes('group') || type.includes('group')) return 1.15
+  if (type.includes('chase')) return 0.85
+  if (type.includes('hurdle')) return 0.95
+  return 1.0
+}
+
+export function bayesianWinProbabilities(runners, race) {
+  const fieldSize = runners.length
+  const fsFactor = fieldSizeWinFactor(fieldSize)
+  const archFactor = race ? archetypeWinFactor(race) : 1.0
+
+  const modelScores = runners.map((r) => {
+    const score = r.finalScore || r.confidenceScore || 50
+    const elimination = r.elimination
+    if (elimination?.eliminated) return score * 0.3
+    return score
   })
 
-  const totalPrior = priors.reduce((a, b) => a + b, 0)
-  const normalizedPriors = priors.map((p) => p / totalPrior)
+  const totalScore = modelScores.reduce((a, b) => a + b, 0)
+  const modelPriors = modelScores.map((s) => (totalScore > 0 ? s / totalScore : 1 / runners.length))
+
+  const componentProbs = runners.map((r) => {
+    const finalProb = r.finalProbability || 50
+    return finalProb / 100
+  })
+  const totalComponent = componentProbs.reduce((a, b) => a + b, 0)
+  const normalizedComponents = componentProbs.map((p) => (totalComponent > 0 ? p / totalComponent : 1 / runners.length))
+
+  const marketOdds = runners.map((r) => Number(r.odds || r.price || 0))
+  const marketProbs = marketOdds.map((o) => (o > 1 ? 1 / o : 0))
+  const totalMarket = marketProbs.reduce((a, b) => a + b, 0)
+  const normalizedMarket = marketProbs.map((p) => (totalMarket > 0 ? p / totalMarket : 1 / runners.length))
+
+  const blendedPriors = modelPriors.map((mp, i) => {
+    const componentBlend = normalizedComponents[i]
+    const marketBlend = normalizedMarket[i]
+    return mp * 0.5 + componentBlend * 0.3 + marketBlend * 0.2
+  })
+
+  const totalBlended = blendedPriors.reduce((a, b) => a + b, 0)
+  let priors = blendedPriors.map((p) => p / totalBlended)
+
+  // Chaos widening: flatten probability distribution for high-volatility races
+  // This gives outsiders more realistic chances
+  const avgChaosWidening = runners.reduce((s, r) => s + (r.chaosWidening || 1.0), 0) / runners.length
+  if (avgChaosWidening > 1.0) {
+    const flattenPower = 1.0 / avgChaosWidening
+    priors = priors.map((p) => Math.pow(p, flattenPower))
+    const totalFlattened = priors.reduce((a, b) => a + b, 0)
+    priors = priors.map((p) => p / totalFlattened)
+  }
 
   const posteriors = runners.map((r, i) => {
-    const prior = normalizedPriors[i]
+    const prior = priors[i]
     const traits = placeTraits(r)
 
-    const consistencyLR = Math.exp((traits.consistency - 50) * 0.02)
-    const reliabilityLR = Math.exp((traits.reliability - 50) * 0.015)
-    const honestyLR = Math.exp((traits.honesty - 50) * 0.01)
-    const kickLR = Math.exp((traits.finishingKick - 50) * 0.04)
-    const explosiveLR = Math.exp((traits.explosiveAbility - 50) * 0.04)
-    const marketLR = Math.exp((traits.marketConfidence - 50) * 0.04)
+    const consistencyLR = Math.exp((traits.consistency - 50) * 0.025)
+    const reliabilityLR = Math.exp((traits.reliability - 50) * 0.02)
+    const honestyLR = Math.exp((traits.honesty - 50) * 0.015)
+    const kickLR = Math.exp((traits.finishingKick - 50) * 0.05)
+    const explosiveLR = Math.exp((traits.explosiveAbility - 50) * 0.05)
+    const marketLR = Math.exp((traits.marketConfidence - 50) * 0.03)
 
-    const consistencyWeight = 0.10
-    const reliabilityWeight = 0.05
-    const honestyWeight = 0.05
-    const kickWeight = 0.25
-    const explosiveWeight = 0.30
-    const marketWeight = 0.25
+    const hiddenPosWeight = r.elimination?.hiddenPositives?.totalWeight || 0
+    const hiddenLR = Math.exp(hiddenPosWeight * 0.03)
+
+    // Race shape suitability likelihood ratio
+    const raceShapeSuit = r.raceShapeSuitability || 50
+    const raceShapeLR = Math.exp((raceShapeSuit - 50) * 0.04)
+
+    const consistencyWeight = 0.06
+    const reliabilityWeight = 0.04
+    const honestyWeight = 0.04
+    const kickWeight = 0.15
+    const explosiveWeight = 0.20
+    const marketWeight = 0.12
+    const hiddenWeight = 0.15
+    const raceShapeWeight = 0.24
 
     const combinedLR =
       Math.pow(consistencyLR, consistencyWeight) *
@@ -259,9 +311,11 @@ export function bayesianWinProbabilities(runners) {
       Math.pow(honestyLR, honestyWeight) *
       Math.pow(kickLR, kickWeight) *
       Math.pow(explosiveLR, explosiveWeight) *
-      Math.pow(marketLR, marketWeight)
+      Math.pow(marketLR, marketWeight) *
+      Math.pow(hiddenLR, hiddenWeight) *
+      Math.pow(raceShapeLR, raceShapeWeight)
 
-    return prior * combinedLR
+    return prior * combinedLR * fsFactor * archFactor
   })
 
   const total = posteriors.reduce((a, b) => a + b, 0)

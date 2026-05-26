@@ -1,6 +1,51 @@
 function parseFurlongs(distanceF) {
   if (!distanceF) return 0
+  if (typeof distanceF === 'number') return distanceF
+  const m = String(distanceF).match(/(\d+)m\s*(\d*)f?\s*(\d*)y?/)
+  if (m) {
+    const miles = Number(m[1]) || 0
+    const furlongs = Number(m[2]) || 0
+    const yards = Number(m[3]) || 0
+    return miles * 8 + furlongs + yards / 220
+  }
   return parseFloat(String(distanceF).replace(/[^0-9.]/g, '')) || 0
+}
+
+function getFieldSizeTier(fieldSize) {
+  if (fieldSize <= 4) return 'TINY'
+  if (fieldSize <= 7) return 'SMALL'
+  if (fieldSize <= 12) return 'MEDIUM'
+  return 'LARGE'
+}
+
+function detectRaceType(race) {
+  const name = (race.race_name || race.pattern || '').toLowerCase()
+  const type = (race.type || race.race_type || '').toLowerCase()
+  const raceClass = String(race.race_class || '').toLowerCase()
+
+  if (type.includes('chase') || name.includes('chase') || raceClass.includes('chase')) return 'CHASE'
+  if (type.includes('hurdle') || name.includes('hurdle') || raceClass.includes('hurdle')) return 'HURDLE'
+  if (type.includes('nh flat') || name.includes('nh flat') || name.includes('national hunt flat')) return 'NH_FLAT'
+  if (type.includes('flat') || name.includes('flat')) return 'FLAT'
+  if (type.includes('bumper') || name.includes('bumper')) return 'NH_FLAT'
+
+  if (name.includes('handicap')) return 'HANDICAP'
+  if (name.includes('maiden')) return 'MAIDEN'
+  if (name.includes('novice')) return 'NOVICE'
+  if (name.includes('listed')) return 'LISTED'
+  if (name.includes('group')) return 'GROUP'
+
+  return 'UNKNOWN'
+}
+
+function detectDistanceBand(distanceF) {
+  if (distanceF <= 0) return 'UNKNOWN'
+  if (distanceF <= 5) return 'SPRINT'
+  if (distanceF <= 7) return 'SHORT_MILE'
+  if (distanceF <= 9) return 'MILE'
+  if (distanceF <= 11) return 'MIDDLE'
+  if (distanceF <= 14) return 'STAYING'
+  return 'MARATHON'
 }
 
 export function classifyRaceArchetype(race) {
@@ -13,24 +58,45 @@ export function classifyRaceArchetype(race) {
   const surface = (race.surface || '').toLowerCase()
   const fieldSize = (race.runners || []).length
 
+  const raceTypeDetected = detectRaceType(race)
+  const distanceBand = detectDistanceBand(distanceF)
+  const fieldTier = getFieldSizeTier(fieldSize)
+
   let archetype = 'STANDARD'
   const modifiers = []
 
-  if (distanceF > 0 && distanceF <= 6) {
+  if (raceTypeDetected === 'CHASE') {
+    archetype = 'CHASE'
+    modifiers.push('jumping')
+    if (distanceF >= 16) modifiers.push('staying_chase')
+  } else if (raceTypeDetected === 'HURDLE') {
+    archetype = 'HURDLE'
+    modifiers.push('jumping')
+    if (distanceF >= 16) modifiers.push('staying_hurdle')
+  } else if (raceTypeDetected === 'NH_FLAT') {
+    archetype = 'NH_FLAT'
+    modifiers.push('flat_jumps')
+  } else if (raceTypeDetected === 'GROUP' || raceTypeDetected === 'LISTED') {
+    archetype = 'PATTERN'
+    modifiers.push('class_race')
+  }
+
+  if (distanceF > 0 && distanceF <= 5 && archetype === 'STANDARD') {
     archetype = 'SPRINT_CHAOS'
     modifiers.push('short_distance')
-    if (fieldSize >= 12) modifiers.push('large_field')
-  } else if (distanceF > 0 && distanceF >= 12) {
+  } else if (distanceF > 0 && distanceF >= 14 && archetype === 'STANDARD') {
     archetype = 'STAMINA_GRIND'
     modifiers.push('long_distance')
   }
 
-  if (pattern.includes('maiden') || pattern.includes('novice') || raceType.includes('maiden')) {
-    archetype = 'MAIDEN_NOVICE'
+  if (pattern.includes('maiden') || pattern.includes('novice') || raceType.includes('maiden') || raceTypeDetected === 'MAIDEN' || raceTypeDetected === 'NOVICE') {
+    if (archetype === 'STANDARD' || archetype === 'SPRINT_CHAOS') {
+      archetype = raceTypeDetected === 'NOVICE' ? 'NOVICE_RACE' : 'MAIDEN_NOVICE'
+    }
     modifiers.push('inexperience')
   }
 
-  if (raceClass.includes('handicap') || pattern.includes('handicap')) {
+  if ((raceClass.includes('handicap') || pattern.includes('handicap') || raceTypeDetected === 'HANDICAP') && !['CHASE', 'HURDLE', 'PATTERN'].includes(archetype)) {
     if (archetype === 'STANDARD' || archetype === 'SPRINT_CHAOS') {
       archetype = 'HANDICAP_COMPRESSION'
     }
@@ -50,11 +116,17 @@ export function classifyRaceArchetype(race) {
     modifiers.push('artificial_surface')
   }
 
+  modifiers.push(`field_${fieldTier.toLowerCase()}`)
+  modifiers.push(`dist_${distanceBand.toLowerCase()}`)
+
   return {
     archetype,
     modifiers,
     distanceF,
     fieldSize,
+    fieldTier,
+    distanceBand,
+    raceType: raceTypeDetected,
     going,
     surface,
     raceClass,
@@ -64,11 +136,11 @@ export function classifyRaceArchetype(race) {
 
 const WEIGHT_PROFILES = {
   SPRINT_CHAOS: {
-    power: 0.45,
-    pace: 0.25,
-    human: 0.08,
-    market: 0.07,
-    trainer: 0.15,
+    power: 0.40,
+    pace: 0.30,
+    human: 0.05,
+    market: 0.05,
+    trainer: 0.20,
     elimination: {
       paceThreshold: 'FAST',
       drawPenalty: 1.5,
@@ -78,36 +150,49 @@ const WEIGHT_PROFILES = {
   },
   STAMINA_GRIND: {
     power: 0.65,
-    pace: 0.08,
+    pace: 0.05,
     human: 0.10,
     market: 0.05,
-    trainer: 0.12,
+    trainer: 0.15,
     elimination: {
       paceThreshold: 'SLOW',
-      drawPenalty: 0.5,
+      drawPenalty: 0.3,
       formRecency: 60,
     },
     notes: 'Class and staying power dominate. Consistency over speed.',
   },
   MAIDEN_NOVICE: {
-    power: 0.35,
-    pace: 0.10,
-    human: 0.10,
+    power: 0.30,
+    pace: 0.08,
+    human: 0.12,
     market: 0.15,
-    trainer: 0.30,
+    trainer: 0.35,
     elimination: {
       paceThreshold: 'ANY',
-      drawPenalty: 0.5,
+      drawPenalty: 0.3,
       formRecency: 999,
     },
     notes: 'Huge uncertainty. Trainer intent and market intelligence matter most.',
   },
+  NOVICE_RACE: {
+    power: 0.35,
+    pace: 0.10,
+    human: 0.10,
+    market: 0.12,
+    trainer: 0.33,
+    elimination: {
+      paceThreshold: 'ANY',
+      drawPenalty: 0.4,
+      formRecency: 999,
+    },
+    notes: 'Some experience but still learning. Trainer and breeding matter.',
+  },
   HANDICAP_COMPRESSION: {
-    power: 0.40,
-    pace: 0.22,
+    power: 0.35,
+    pace: 0.25,
     human: 0.12,
-    market: 0.08,
-    trainer: 0.18,
+    market: 0.06,
+    trainer: 0.22,
     elimination: {
       paceThreshold: 'ANY',
       drawPenalty: 1.2,
@@ -115,12 +200,64 @@ const WEIGHT_PROFILES = {
     },
     notes: 'Ratings tightly clustered. Pace/setup edge matters most.',
   },
+  CHASE: {
+    power: 0.50,
+    pace: 0.12,
+    human: 0.10,
+    market: 0.06,
+    trainer: 0.22,
+    elimination: {
+      paceThreshold: 'ANY',
+      drawPenalty: 0.3,
+      formRecency: 60,
+    },
+    notes: 'Jumping ability and stamina. Class and experience critical.',
+  },
+  HURDLE: {
+    power: 0.45,
+    pace: 0.15,
+    human: 0.10,
+    market: 0.08,
+    trainer: 0.22,
+    elimination: {
+      paceThreshold: 'ANY',
+      drawPenalty: 0.4,
+      formRecency: 45,
+    },
+    notes: 'Speed over hurdles. Pace and class both matter.',
+  },
+  NH_FLAT: {
+    power: 0.30,
+    pace: 0.10,
+    human: 0.10,
+    market: 0.20,
+    trainer: 0.30,
+    elimination: {
+      paceThreshold: 'ANY',
+      drawPenalty: 0.5,
+      formRecency: 999,
+    },
+    notes: 'Bumper races. Pure uncertainty — market and trainer dominate.',
+  },
+  PATTERN: {
+    power: 0.55,
+    pace: 0.12,
+    human: 0.08,
+    market: 0.10,
+    trainer: 0.15,
+    elimination: {
+      paceThreshold: 'ANY',
+      drawPenalty: 0.8,
+      formRecency: 30,
+    },
+    notes: 'Class races. Best horse usually wins. Form and ability key.',
+  },
   STANDARD: {
-    power: 0.60,
+    power: 0.55,
     pace: 0.15,
     human: 0.10,
     market: 0.05,
-    trainer: 0.10,
+    trainer: 0.15,
     elimination: {
       paceThreshold: 'ANY',
       drawPenalty: 1.0,
@@ -130,8 +267,43 @@ const WEIGHT_PROFILES = {
   },
 }
 
+const FIELD_SIZE_ADJUSTMENTS = {
+  TINY: {
+    powerMod: 0.10,
+    paceMod: -0.05,
+    marketMod: 0.05,
+    trainerMod: -0.05,
+    notes: 'Small fields — favourite wins more often. Market intelligence matters.',
+  },
+  SMALL: {
+    powerMod: 0.05,
+    paceMod: 0.05,
+    marketMod: 0.0,
+    trainerMod: 0.0,
+    notes: 'Small-medium fields. Pace setup matters more than usual.',
+  },
+  MEDIUM: {
+    powerMod: 0.0,
+    paceMod: 0.0,
+    marketMod: 0.0,
+    trainerMod: 0.0,
+    notes: 'Standard field size. No adjustment needed.',
+  },
+  LARGE: {
+    powerMod: -0.05,
+    paceMod: 0.10,
+    marketMod: -0.05,
+    trainerMod: 0.05,
+    notes: 'Large fields — chaos factor increases. Pace and draw critical.',
+  },
+}
+
 export function getRaceWeights(archetype) {
   return WEIGHT_PROFILES[archetype] || WEIGHT_PROFILES.STANDARD
+}
+
+export function getFieldSizeAdjustments(fieldTier) {
+  return FIELD_SIZE_ADJUSTMENTS[fieldTier] || FIELD_SIZE_ADJUSTMENTS.MEDIUM
 }
 
 export function getModifierAdjustments(modifiers) {
@@ -147,9 +319,18 @@ export function getModifierAdjustments(modifiers) {
     adjustments.paceAdj -= 0.05
   }
 
-  if (modifiers.includes('large_field')) {
-    adjustments.drawAdj += 0.05
+  if (modifiers.includes('large_field') || modifiers.includes('field_large')) {
+    adjustments.drawAdj += 0.08
     adjustments.paceAdj += 0.05
+  }
+
+  if (modifiers.includes('field_small')) {
+    adjustments.marketAdj += 0.05
+  }
+
+  if (modifiers.includes('field_tiny')) {
+    adjustments.marketAdj += 0.08
+    adjustments.paceAdj -= 0.05
   }
 
   if (modifiers.includes('young_horses')) {
@@ -159,6 +340,20 @@ export function getModifierAdjustments(modifiers) {
 
   if (modifiers.includes('artificial_surface')) {
     adjustments.paceAdj -= 0.03
+  }
+
+  if (modifiers.includes('dist_sprint')) {
+    adjustments.paceAdj += 0.05
+    adjustments.drawAdj += 0.03
+  }
+
+  if (modifiers.includes('dist_staying') || modifiers.includes('dist_marathon')) {
+    adjustments.paceAdj -= 0.05
+    adjustments.trainerAdj += 0.03
+  }
+
+  if (modifiers.includes('jumping')) {
+    adjustments.trainerAdj += 0.03
   }
 
   return adjustments

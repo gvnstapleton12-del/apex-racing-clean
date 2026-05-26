@@ -2,6 +2,9 @@
 // Pure racing merit. Ignores odds entirely.
 // Answers: "Who should win most often?"
 
+import { computeFinishingStrength, computeStaminaBias } from './finishingStrength.js'
+import { analyzeForm } from './formEngine.js'
+
 function computePowerRating(runner) {
   const or = runner.or || runner.ofr || 0
   const rpr = runner.rpr || 0
@@ -20,12 +23,8 @@ function computePowerRating(runner) {
   else if (lastRun > 90) base -= 8
   else if (lastRun > 150) base -= 15
 
-  const form = runner.form || ''
-  const positions = []
-  form.split(/[\s/-]+/).forEach((p) => {
-    const num = parseInt(p, 10)
-    if (!isNaN(num) && num >= 1 && num <= 20) positions.push(num)
-  })
+  const formAnalysis = analyzeForm(runner)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
 
   if (positions.length > 0) {
     const recent = positions.slice(0, 3)
@@ -50,12 +49,8 @@ function computeSuitability(runner, race) {
   const going = (race.going || '').toLowerCase()
 
   if (raceDist > 0) {
-    const form = runner.form || ''
-    const positions = []
-    form.split(/[\s/-]+/).forEach((p) => {
-      const num = parseInt(p, 10)
-      if (!isNaN(num) && num >= 1 && num <= 20) positions.push(num)
-    })
+    const formAnalysis = analyzeForm(runner)
+    const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
 
     const runs = positions.length
     if (runs >= 3) {
@@ -82,12 +77,8 @@ function computeSuitability(runner, race) {
 }
 
 function computeConsistency(runner) {
-  const form = runner.form || ''
-  const positions = []
-  form.split(/[\s/-]+/).forEach((p) => {
-    const num = parseInt(p, 10)
-    if (!isNaN(num) && num >= 1 && num <= 20) positions.push(num)
-  })
+  const formAnalysis = analyzeForm(runner)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
 
   if (positions.length < 2) return 50
 
@@ -120,6 +111,7 @@ function computePaceCompatibility(runner, paceMap) {
   const frontRunners = paceMap?.frontRunners || 0
   const tempo = paceMap?.projectedTempo || 'EVEN'
   const collapseRisk = paceMap?.collapseRisk || 'LOW'
+  const pacePressure = paceMap?.pacePressure || 'MEDIUM'
 
   let score = 50
 
@@ -141,6 +133,7 @@ function computePaceCompatibility(runner, paceMap) {
     else if (frontRunners >= 2) score += 10
     else if (frontRunners <= 1 && tempo === 'SLOW') score -= 10
     if (collapseRisk === 'HIGH') score += 15
+    if (pacePressure === 'HIGH') score += 10
   }
 
   if (style === 'Midfield') {
@@ -154,12 +147,8 @@ function computePaceCompatibility(runner, paceMap) {
 function computeVolatility(runner, race) {
   let score = 50
 
-  const form = runner.form || ''
-  const positions = []
-  form.split(/[\s/-]+/).forEach((p) => {
-    const num = parseInt(p, 10)
-    if (!isNaN(num) && num >= 1 && num <= 20) positions.push(num)
-  })
+  const formAnalysis = analyzeForm(runner)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
 
   if (positions.length === 0) score += 25
   else if (positions.length <= 2) score += 15
@@ -194,12 +183,18 @@ export function computeHorseQuality(runner, race, paceMap) {
   const paceCompat = computePaceCompatibility(runner, paceMap)
   const volatility = computeVolatility(runner, race)
 
+  // New: Finishing Strength and Stamina Bias
+  const finishing = computeFinishingStrength(runner)
+  const staminaBias = computeStaminaBias(runner, race)
+
   const weights = {
-    power: 0.35,
-    suitability: 0.20,
-    consistency: 0.20,
+    power: 0.30,
+    suitability: 0.15,
+    consistency: 0.15,
     paceCompat: 0.15,
-    volatility: 0.10,
+    volatility: 0.05,
+    finishing: 0.10,
+    staminaBias: 0.10,
   }
 
   const volPenalty = (volatility - 50) * 0.15
@@ -209,7 +204,9 @@ export function computeHorseQuality(runner, race, paceMap) {
     consistency * weights.consistency +
     paceCompat * weights.paceCompat +
     (100 - volatility) * weights.volatility -
-    volPenalty
+    volPenalty +
+    finishing.score * weights.finishing +
+    staminaBias * weights.staminaBias
 
   const finalScore = Math.max(1, Math.min(99, Math.round(qualityScore * 10) / 10))
 
@@ -219,6 +216,8 @@ export function computeHorseQuality(runner, race, paceMap) {
     consistency,
     paceCompat,
     volatility,
+    finishing,
+    staminaBias,
     finalScore,
     label: finalScore >= 80 ? 'Elite' : finalScore >= 65 ? 'Strong' : finalScore >= 50 ? 'Competitive' : finalScore >= 35 ? 'Marginal' : 'Weak',
   }

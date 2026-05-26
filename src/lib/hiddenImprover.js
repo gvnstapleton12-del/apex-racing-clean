@@ -1,17 +1,15 @@
-function parseFormPositions(form = '') {
-  const positions = []
-  const segments = form.split(/[\/-]/)
-  segments.forEach((seg) => {
-    for (const ch of seg) {
-      const n = parseInt(ch, 10)
-      if (!isNaN(n)) positions.push(n)
-    }
-  })
-  return positions.filter((p) => p > 0)
-}
+import { analyzeForm } from './formEngine.js'
 
 function parseFurlongs(distanceF) {
   if (!distanceF) return 0
+  if (typeof distanceF === 'number') return distanceF
+  const m = String(distanceF).match(/(\d+)m\s*(\d*)f?\s*(\d*)y?/)
+  if (m) {
+    const miles = Number(m[1]) || 0
+    const furlongs = Number(m[2]) || 0
+    const yards = Number(m[3]) || 0
+    return miles * 8 + furlongs + yards / 220
+  }
   return parseFloat(String(distanceF).replace(/[^0-9.]/g, '')) || 0
 }
 
@@ -21,8 +19,8 @@ export function detectHiddenImprover(runner, race, options = {}) {
   const replayDb = options.replayDb || {}
   const horseId = runner.horse_id || runner.horse
 
-  const formString = String(runner.form || '')
-  const positions = parseFormPositions(formString)
+  const formAnalysis = analyzeForm(runner, race)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
   const lastRun = Number(runner.last_run || 0)
   const age = Number(runner.age || 0)
   const or = Number(runner.ofr || runner.official_rating || runner.or || 0)
@@ -38,7 +36,7 @@ export function detectHiddenImprover(runner, race, options = {}) {
   const flags = []
   let potential = 0
 
-  const runCount = positions.length
+  const runCount = formAnalysis.summary.finishedRuns
   if (runCount <= 2 && runCount > 0) {
     potential += 20
     flags.push('LOW EXPOSURE')
@@ -168,6 +166,41 @@ export function detectHiddenImprover(runner, race, options = {}) {
     } else if (lastRun >= 30 && lastRun <= 60) {
       potential += 3
       flags.push('WELL RESTED')
+    }
+
+    if (runCount === 2 && lastRun >= 30 && lastRun <= 90) {
+      potential += 12
+      flags.push('2ND RUN AFTER LAYOFF')
+    }
+  }
+
+  const lastOR = Number(runner.last_or || runner.previous_or || runner.last_rating || 0)
+  if (lastOR > 0 && or > 0 && or < lastOR) {
+    const drop = lastOR - or
+    if (drop >= 5 && drop <= 15) {
+      potential += 10
+      flags.push('DROPPED IN CLASS')
+    } else if (drop > 15) {
+      potential += 8
+      flags.push('HEAVY CLASS DROP')
+    }
+  }
+
+  if (distProfile?.lastDistance > 0 && distanceF > 0) {
+    const change = distanceF - distProfile.lastDistance
+    if (change >= 2 && change <= 5) {
+      potential += 10
+      flags.push('STEP UP IN TRIP')
+    }
+  }
+
+  if (positions.length >= 3) {
+    const lastPos = positions[0]
+    const prevPositions = positions.slice(1, 4)
+    const avgPrev = prevPositions.reduce((a, b) => a + b, 0) / prevPositions.length
+    if (lastPos >= 6 && avgPrev <= 3) {
+      potential += 12
+      flags.push('HIDDEN SPEED FIGURE')
     }
   }
 
