@@ -14,6 +14,7 @@ import { runApexEngine } from './src/lib/apexEngine.js'
 import { storeRunnerSnapshot, getSnapshotsByRace, getSnapshotsByHorse, getSnapshotsByVerdict, getSnapshotsByDateRange, getSnapshotStats } from './src/lib/historicalSnapshotStore.js'
 import { recordRun, getConditionDBStats, getHorseProfile, matchConditions } from './src/lib/conditionDB.js'
 import { fetchNonRunners } from './src/lib/nonRunnerScraper.js'
+import { fetchATRResults } from './src/lib/atrResultsScraper.js'
 import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
@@ -1155,6 +1156,24 @@ async function fetchTodayResults() {
       const raceSurface = race.surface || ''
       const raceDist = race.distance_f || ''
 
+      // Record runs in condition database
+      recordRun({
+        date: race.date || new Date().toISOString().split('T')[0],
+        course: race.course || '',
+        going: raceGoing,
+        distanceFurlongs: parseFloat(String(raceDist).replace(/[^0-9.]/g, '')) || 0,
+        raceClass: race.race_class || race.class || '',
+        runners: runners.map(r => ({
+          horse: r.horse,
+          position: Number(r.position || 0),
+          or: r.ofr || r.official_rating || r.or || 0,
+          rpr: r.rpr || 0,
+          weight: r.lbs ? String(r.lbs) + 'lbs' : '',
+          odds: resolveOdds(r),
+          comments: r.comments || '',
+        })),
+      })
+
       runners.forEach((runner) => {
         const horseId = runner.horse_id || runner.horse
         const position = Number(runner.position || 0)
@@ -1340,6 +1359,69 @@ async function refreshNonRunners() {
 
 refreshNonRunners()
 setInterval(refreshNonRunners, 300000)
+
+async function refreshATRResults() {
+  try {
+    const races = await fetchATRResults()
+    if (races.length === 0) return
+
+    console.log(`[ATR Results] ${races.length} races with results`)
+
+    // Convert ATR format to standard race format for condition DB
+    const standardRaces = races.map(race => ({
+      date: race.date,
+      course: race.course,
+      going: '',
+      distanceFurlongs: 0,
+      raceClass: race.raceClass || '',
+      runners: race.runners.map(runner => ({
+        horse: runner.horse,
+        position: runner.position,
+        or: 0,
+        rpr: 0,
+        weight: '',
+        odds: runner.odds,
+        comments: '',
+      })),
+    }))
+
+    // Record in condition DB
+    standardRaces.forEach(race => recordRun(race))
+
+    // Also feed into learning DB
+    standardRaces.forEach(race => {
+      race.runners.forEach(runner => {
+        if (runner.position >= 1) {
+          const alreadyRecorded = LEARNING_DATABASE.records.some(
+            r => r.horse === runner.horse && r.timestamp?.startsWith(race.date)
+          )
+          if (!alreadyRecorded) {
+            LEARNING_DATABASE.records.push({
+              horse: runner.horse,
+              position: runner.position,
+              won: runner.position === 1,
+              spOdds: runner.odds,
+              aiConfidence: 0,
+              signal: 'ATR_RESULT',
+              marketMovement: 'N/A',
+              timestamp: new Date().toISOString(),
+              resultProcessed: true,
+            })
+          }
+        }
+      })
+    })
+
+    // Update LIVE_STATE
+    LIVE_STATE.atrResults = races
+    io.emit('atr-results', races)
+  } catch (error) {
+    console.error('[ATR Results] Refresh failed:', error.message)
+  }
+}
+
+refreshATRResults()
+setInterval(refreshATRResults, 300000)
 
 setTimeout(fetchTodayResults, 30000)
 setInterval(fetchTodayResults, 300000)
@@ -1880,6 +1962,11 @@ app.get('/api/non-runners', async (_req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message, courses: [] })
   }
+})
+
+// ATR Results Routes
+app.get('/api/atr-results', (_req, res) => {
+  res.json({ races: LIVE_STATE.atrResults || [], updatedAt: new Date().toISOString() })
 })
 
 server.listen(PORT, () => {
