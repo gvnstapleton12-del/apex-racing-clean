@@ -11,6 +11,7 @@ import { generateConfidence } from './src/lib/confidenceEngine.js'
 import { generateSignals } from './src/lib/signalEngine.js'
 import { analyzeMarketMovement } from './src/lib/marketEngine.js'
 import { runApexEngine } from './src/lib/apexEngine.js'
+import { storeRunnerSnapshot, getSnapshotsByRace, getSnapshotsByHorse, getSnapshotsByVerdict, getSnapshotsByDateRange, getSnapshotStats } from './src/lib/historicalSnapshotStore.js'
 import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
@@ -174,8 +175,10 @@ const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
 
-const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)?.records
-  ? loadDatabase(LEARNING_DB_PATH)
+const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)
+const learningLoaded = LEARNING_DATABASE?.records?.length > 0 || LEARNING_DATABASE?.races?.length > 0
+const learningDb = learningLoaded
+  ? LEARNING_DATABASE
   : {
       records: [],
       races: [],
@@ -193,8 +196,8 @@ const CALIBRATION_DATABASE = loadDatabase(CALIBRATION_DB_PATH)?.records
     }
 
 // ensure seeded multipliers even if loading existing file with empty weights
-if (!LEARNING_DATABASE.weights?.multiplier?.class) {
-  LEARNING_DATABASE.weights = {
+if (!learningDb.weights?.multiplier?.class) {
+  learningDb.weights = {
     multiplier: { class: 1.3, stride: 1.1, trainer: 0.7, traffic: 1.0, clv: 0.8 },
   }
 }
@@ -1053,6 +1056,22 @@ async function processRace(race) {
       createAlert(horseId, runner.horse, marketMovement.alert.type, marketMovement.alert.message, marketMovement.alert.severity)
     }
     logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: runner.winProb, placeProb: runner.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
+
+    // Store historical snapshot
+    if (runner.snapshot) {
+      const raceId = `${race.course?.toLowerCase().replace(/\s+/g, '_')}_${race.date?.replace(/-/g, '_')}_${race.off_time?.replace(/:/g, '_')}`
+      storeRunnerSnapshot({
+        raceId,
+        runId: `run_${Date.now()}_${runner.horse?.replace(/\s+/g, '_').toLowerCase() || 'unknown'}`,
+        horseId: runner.horse_id || runner.horse || 'unknown',
+        horseName: runner.horse || 'Unknown',
+        timestamp: runner.snapshot.timestamp,
+        signals: runner.snapshot.signals,
+        scores: runner.snapshot.scores,
+        commentary: runner.snapshot.commentary,
+      })
+    }
+
     return { ...runner, atrFormUrl, bettingSignals, marketMovement, elimination: runner.elimination, powerScore: runner.power?.total, paceScore: runner.pace?.score, humanScore: runner.human?.score, marketScore: runner.market?.score, finalScore: runner.finalScore, winProb: runner.winProb, placeProb: runner.placeProb, placeTraits: runner.placeTraits, interactions: runner.interactions, horseQuality: runner.horseQuality, simulation: runner.simulation, marketModel: runner.marketModel, valueEngine: runner.valueEngine, bankrollEngine: runner.bankrollEngine, scenarioFlags: runner.scenarioFlags, explanation: runner.explanation, confidenceTier: runner.confidenceTier, confidenceLabel: runner.confidenceLabel, confidenceScore: runner.confidenceScore, score: runner.finalScore, betQuality: runner.betQuality, selectionQuality: runner.selectionQuality, runningStyle: runner.runningStyle }
   })
 
@@ -1769,87 +1788,34 @@ app.get('/api/anti-overfit', (_req, res) => {
   res.json(report)
 })
 
-app.post('/api/backtest', async (req, res) => {
-  try {
-    const { runBacktest } = await import('./src/lib/backtestEngine.js')
-    const { runApexEngine } = await import('./src/lib/apexEngine.js')
-    const historicalRaces = req.body.races || []
-    const options = req.body.options || {}
-
-    if (!Array.isArray(historicalRaces) || historicalRaces.length === 0) {
-      return res.status(400).json({ error: 'Provide races array' })
-    }
-
-    const report = runBacktest(historicalRaces, {
-      ...options,
-      goingDb: GOING_DATABASE,
-      distanceDb: DISTANCE_DATABASE,
-      replayDb: REPLAY_NOTES_DATABASE,
-      bucketDb: BUCKET_DATABASE,
-      horseProfiles: HORSE_DATABASE,
-      races: LEARNING_DATABASE.races || [],
-      trainerForm: TRAINER_FORM_DATABASE,
-      jockeyForm: JOCKEY_FORM_DATABASE,
-    })
-
-    res.json(report)
-  } catch (e) {
-    console.error('Backtest error:', e.message)
-    res.status(500).json({ error: e.message })
-  }
+// Historical Snapshot Routes
+app.get('/api/snapshots/stats', (_req, res) => {
+  res.json(getSnapshotStats())
 })
 
-app.post('/api/import-historical', (req, res) => {
-  try {
-    const races = req.body.races || []
-    if (!Array.isArray(races) || races.length === 0) {
-      return res.status(400).json({ error: 'Provide races array' })
-    }
+app.get('/api/snapshots/race/:raceId', (req, res) => {
+  res.json(getSnapshotsByRace(req.params.raceId))
+})
 
-    let imported = 0
-    races.forEach((race) => {
-      if (!race.runners || race.runners.length < 5) return
+app.get('/api/snapshots/horse/:horseId', (req, res) => {
+  res.json(getSnapshotsByHorse(req.params.horseId))
+})
 
-      const alreadyStored = (LEARNING_DATABASE.races || []).some(
-        (r) => r.course === race.course && r.off_time === race.off_time && r.date === race.date
-      )
-      if (alreadyStored) return
+app.get('/api/snapshots/verdict/:verdict', (req, res) => {
+  res.json(getSnapshotsByVerdict(req.params.verdict))
+})
 
-      const hasResults = (race.runners || []).some(r => r.position > 0)
-
-      if (hasResults) {
-        race.runners.forEach((runner) => {
-          const pos = Number(runner.position || 0)
-          if (pos < 1) return
-
-          LEARNING_DATABASE.records.push({
-            horse: runner.horse,
-            course: race.course,
-            offTime: race.off_time,
-            position: pos,
-            won: pos === 1,
-            spOdds: Number(runner.odds || runner.sp || 0),
-            aiConfidence: runner.finalScore || runner.aiConfidence || 0,
-            signal: 'HISTORICAL_IMPORT',
-            timestamp: new Date().toISOString(),
-            resultProcessed: true,
-          })
-        })
-
-        LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), race]
-        imported++
-      }
-    })
-
-    if (imported > 0) {
-      LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(LEARNING_DATABASE.records)
-      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
-    }
-
-    res.json({ ok: true, imported, totalRecords: LEARNING_DATABASE.records.length })
-  } catch (e) {
-    res.status(500).json({ error: e.message })
+app.get('/api/snapshots/date-range', (req, res) => {
+  const { start, end } = req.query
+  if (!start || !end) {
+    return res.status(400).json({ error: 'start and end query params required' })
   }
+  res.json(getSnapshotsByDateRange(start, end))
+})
+
+app.delete('/api/snapshots/clear', (_req, res) => {
+  deleteAllSnapshots()
+  res.json({ success: true, message: 'All snapshots cleared' })
 })
 
 server.listen(PORT, () => {

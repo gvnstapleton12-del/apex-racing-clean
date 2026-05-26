@@ -2,11 +2,12 @@
 // Aggressively identifies unbettable races
 // Professional bettors pass constantly
 
+import { analyzeForm } from './formEngine.js'
+
 function countDebutants(runners) {
   return runners.filter((r) => {
-    const form = r.form || ''
-    const runs = form.split(/[\s/-]+/).filter((p) => /^\d+$/.test(p)).length
-    return runs === 0
+    const formAnalysis = analyzeForm(r)
+    return formAnalysis.summary.finishedRuns === 0
   }).length
 }
 
@@ -60,8 +61,8 @@ function computeConfidenceSpread(runners) {
 function computeDataSufficiency(runners) {
   const rated = runners.filter((r) => r.or || r.ofr).length
   const withForm = runners.filter((r) => {
-    const form = r.form || ''
-    return form.split(/[\s/-]+/).filter((p) => /^\d+$/.test(p)).length >= 2
+    const formAnalysis = analyzeForm(r)
+    return formAnalysis.summary.finishedRuns >= 2
   }).length
 
   const fieldSize = runners.length
@@ -171,8 +172,8 @@ export function computeBetFilter(runners, race, paceMap) {
   if (rated >= runners.length * 0.7) positiveSignals.push('Most runners rated')
 
   const withForm = runners.filter((r) => {
-    const form = r.form || ''
-    return form.split(/[\s/-]+/).filter((p) => /^\d+$/.test(p)).length >= 3
+    const formAnalysis = analyzeForm(r)
+    return formAnalysis.summary.finishedRuns >= 3
   }).length
   if (withForm >= runners.length * 0.5) positiveSignals.push('Proven runners')
 

@@ -7,6 +7,14 @@ const DISTANCE_BANDS = {
 
 function parseFurlongs(distanceF) {
   if (!distanceF) return 0
+  if (typeof distanceF === 'number') return distanceF
+  const m = String(distanceF).match(/(\d+)m\s*(\d*)f?\s*(\d*)y?/)
+  if (m) {
+    const miles = Number(m[1]) || 0
+    const furlongs = Number(m[2]) || 0
+    const yards = Number(m[3]) || 0
+    return miles * 8 + furlongs + yards / 220
+  }
   return parseFloat(String(distanceF).replace(/[^0-9.]/g, '')) || 0
 }
 

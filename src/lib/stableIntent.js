@@ -1,32 +1,33 @@
-function parseFormPositions(form = '') {
-  const positions = []
-  const segments = form.split(/[\/-]/)
-  segments.forEach((seg) => {
-    for (const ch of seg) {
-      const n = parseInt(ch, 10)
-      if (!isNaN(n)) positions.push(n)
-    }
-  })
-  return positions.filter((p) => p > 0)
-}
+import { analyzeForm } from './formEngine.js'
 
 function parseFurlongs(distanceF) {
   if (!distanceF) return 0
+  if (typeof distanceF === 'number') return distanceF
+  const m = String(distanceF).match(/(\d+)m\s*(\d*)f?\s*(\d*)y?/)
+  if (m) {
+    const miles = Number(m[1]) || 0
+    const furlongs = Number(m[2]) || 0
+    const yards = Number(m[3]) || 0
+    return miles * 8 + furlongs + yards / 220
+  }
   return parseFloat(String(distanceF).replace(/[^0-9.]/g, '')) || 0
 }
 
 const TRAINER_PROFILES = {
-  'mullins': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.35 },
-  'skelton': { targets: ['handicaps', 'novices'], prepRuns: true, secondRunStrike: 0.28 },
-  'henderson': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.32 },
-  'nicholls': { targets: ['handicaps', 'graded'], prepRuns: true, secondRunStrike: 0.30 },
-  'obrien': { targets: ['group', 'classics'], prepRuns: true, secondRunStrike: 0.38 },
-  'gosden': { targets: ['group', 'classics'], prepRuns: true, secondRunStrike: 0.35 },
-  'haggas': { targets: ['handicaps', 'group'], prepRuns: false, secondRunStrike: 0.25 },
-  'pipe': { targets: ['festivals', 'novices'], prepRuns: true, secondRunStrike: 0.27 },
-  'stoute': { targets: ['group', 'classics'], prepRuns: true, secondRunStrike: 0.33 },
-  'williams': { targets: ['handicaps', 'novices'], prepRuns: true, secondRunStrike: 0.22 },
-  'elliott': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.30 },
+  'mullins': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.35, hiddenUpside: 15 },
+  'skelton': { targets: ['handicaps', 'novices'], prepRuns: true, secondRunStrike: 0.28, hiddenUpside: 8 },
+  'henderson': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.32, hiddenUpside: 10 },
+  'nicholls': { targets: ['handicaps', 'graded'], prepRuns: true, secondRunStrike: 0.30, hiddenUpside: 8 },
+  'obrien': { targets: ['group', 'classics'], prepRuns: true, secondRunStrike: 0.38, hiddenUpside: 12 },
+  'gosden': { targets: ['group', 'classics'], prepRuns: true, secondRunStrike: 0.35, hiddenUpside: 10 },
+  'haggas': { targets: ['handicaps', 'group'], prepRuns: false, secondRunStrike: 0.25, hiddenUpside: 5 },
+  'pipe': { targets: ['festivals', 'novices'], prepRuns: true, secondRunStrike: 0.27, hiddenUpside: 8 },
+  'stoute': { targets: ['group', 'classics'], prepRuns: true, secondRunStrike: 0.33, hiddenUpside: 10 },
+  'williams': { targets: ['handicaps', 'novices'], prepRuns: true, secondRunStrike: 0.22, hiddenUpside: 5 },
+  'elliott': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.30, hiddenUpside: 10 },
+  'de bromhead': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.32, hiddenUpside: 12 },
+  'gordon elliott': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.30, hiddenUpside: 10 },
+  'henry de bromhead': { targets: ['festivals', 'graded'], prepRuns: true, secondRunStrike: 0.32, hiddenUpside: 12 },
 }
 
 export function detectStableIntent(runner, race, options = {}) {
@@ -36,8 +37,8 @@ export function detectStableIntent(runner, race, options = {}) {
   const trainer = String(runner.trainer || '').toLowerCase()
   const jockey = String(runner.jockey || '').toLowerCase()
   const trainerRtf = Number(runner.trainer_rtf || 0)
-  const formString = String(runner.form || '')
-  const positions = parseFormPositions(formString)
+  const formAnalysis = analyzeForm(runner, race)
+  const positions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
   const lastRun = Number(runner.last_run || 0)
   const age = Number(runner.age || 0)
   const or = Number(runner.ofr || runner.official_rating || runner.or || 0)
@@ -48,8 +49,18 @@ export function detectStableIntent(runner, race, options = {}) {
 
   const signals = []
   let intentScore = 0
+  let hiddenUpside = 0
 
   const knownTrainer = TRAINER_PROFILES[Object.keys(TRAINER_PROFILES).find((k) => trainer.includes(k))]
+
+  // Hidden upside for pattern trainers with outsiders
+  if (knownTrainer?.hiddenUpside) {
+    const odds = Number(runner.odds || runner.price || 0)
+    if (odds >= 10) {
+      hiddenUpside += knownTrainer.hiddenUpside
+      signals.push('TRAINER HIDDEN UPSIDE')
+    }
+  }
 
   if (lastRun > 0) {
     if (lastRun >= 60 && lastRun <= 120) {
@@ -165,6 +176,7 @@ export function detectStableIntent(runner, race, options = {}) {
   }
 
   intentScore = Math.max(0, Math.min(100, intentScore))
+  hiddenUpside = Math.max(0, Math.min(30, hiddenUpside))
 
   let label = 'NO CLEAR INTENT'
   if (intentScore >= 60) label = 'STRONG INTENT'
@@ -174,6 +186,7 @@ export function detectStableIntent(runner, race, options = {}) {
 
   return {
     score: intentScore,
+    hiddenUpside,
     label,
     signals,
     trainerProfile: knownTrainer ? {
@@ -181,6 +194,7 @@ export function detectStableIntent(runner, race, options = {}) {
       targets: knownTrainer.targets,
       prepRuns: knownTrainer.prepRuns,
       secondRunStrike: knownTrainer.secondRunStrike,
+      hiddenUpside: knownTrainer.hiddenUpside,
     } : null,
     factors: {
       breakStatus: lastRun >= 120 ? 'LONG BREAK' : lastRun >= 60 ? 'MODERATE BREAK' : lastRun >= 30 ? 'FRESH' : 'RECENT',

@@ -1,16 +1,5 @@
 import { calculateFieldStrength } from './fieldStrength.js'
-
-function parseFormPositions(form = '') {
-  const positions = []
-  const segments = form.split(/[\/-]/)
-  segments.forEach((seg) => {
-    for (const ch of seg) {
-      const n = parseInt(ch, 10)
-      if (!isNaN(n)) positions.push(n)
-    }
-  })
-  return positions.filter((p) => p > 0)
-}
+import { analyzeForm } from './formEngine.js'
 
 export function volatilityIndex(race) {
   let chaos = 0.5
@@ -40,7 +29,8 @@ export function volatilityIndex(race) {
 
   let inconsistentForm = 0
   runners.forEach((r) => {
-    const pos = parseFormPositions(r.form || '')
+    const formAnalysis = analyzeForm(r, race)
+    const pos = formAnalysis.runs.filter(run => !run.nonFinisher).map(run => run.position)
     if (pos.length >= 3) {
       const spread = Math.max(...pos) - Math.min(...pos)
       if (spread > 8) inconsistentForm++
@@ -50,7 +40,8 @@ export function volatilityIndex(race) {
   chaos += (inconsistentForm / Math.max(1, runners.length)) * 0.15
 
   let lightlyRaced = runners.filter((r) => {
-    const pos = parseFormPositions(r.form || '')
+    const formAnalysis = analyzeForm(r, race)
+    const pos = formAnalysis.runs.map(run => run.position)
     return pos.length <= 2 && pos.length > 0
   }).length
   chaos += (lightlyRaced / Math.max(1, runners.length)) * 0.1

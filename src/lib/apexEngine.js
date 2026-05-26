@@ -1,13 +1,14 @@
 import { eliminationGate } from './eliminationGate.js'
 import { corePowerScore } from './powerScore.js'
-import { classifyRunningStyle, generatePaceMap, paceMatrixScore } from './paceEngine.js'
+import { classifyRunningStyle, generatePaceMap, paceMatrixScore, computePacePressure } from './paceEngine.js'
 import { humanIntelligenceLayer } from './humanIntelligence.js'
 import { marketIntelligence, marketAlignment } from './marketIntelligence.js'
 import { volatilityIndex } from './volatilityIndex.js'
 import { syndicateStake } from './kellyEngine.js'
 import { buildSyndicateFeatures } from './syndicateFeatures.js'
-import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments } from './raceArchetype.js'
+import { classifyRaceArchetype, getRaceWeights, getModifierAdjustments, getFieldSizeAdjustments } from './raceArchetype.js'
 import { bucketKey, getBucketWeights } from './contextBuckets.js'
+import { buildNarrative } from './narrativeBuilder.js'
 import { estimateEnergyDistribution } from './energyModel.js'
 import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
 import { detectFalseFavourite } from './falseFavourite.js'
@@ -27,7 +28,7 @@ import { generateExplanation } from './explainability.js'
 import { detectScenarioFlags } from './scenarioFlags.js'
 import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
-import { computeAllComponents } from './componentScores.js'
+import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -66,13 +67,14 @@ export function runApexEngine(runners, race, options = {}) {
   const source = bucketDb?.[raceBucket]?.predictions >= 20 ? 'bucket' : 'archetype'
 
   const modifiers = getModifierAdjustments(archetype.modifiers)
+  const fieldSizeAdj = getFieldSizeAdjustments(archetype.fieldTier)
 
   const adjustedWeights = {
-    power: weights.power + (modifiers.paceAdj || 0),
-    pace: weights.pace + (modifiers.paceAdj || 0),
+    power: weights.power + (modifiers.paceAdj || 0) + (fieldSizeAdj.powerMod || 0),
+    pace: weights.pace + (modifiers.paceAdj || 0) + (fieldSizeAdj.paceMod || 0),
     human: weights.human,
-    market: weights.market + (modifiers.marketAdj || 0),
-    trainer: weights.trainer + (modifiers.trainerAdj || 0) + (modifiers.drawAdj || 0),
+    market: weights.market + (modifiers.marketAdj || 0) + (fieldSizeAdj.marketMod || 0),
+    trainer: weights.trainer + (modifiers.trainerAdj || 0) + (modifiers.drawAdj || 0) + (fieldSizeAdj.trainerMod || 0),
   }
 
   const totalWeight = adjustedWeights.power + adjustedWeights.pace + adjustedWeights.human + adjustedWeights.market + adjustedWeights.trainer
@@ -87,6 +89,7 @@ export function runApexEngine(runners, race, options = {}) {
   const volatility = volatilityIndex(race)
   const styles = runners.map((r) => classifyRunningStyle(r, race))
   const paceMap = generatePaceMap(runners.map((r, i) => ({ ...r, runningStyle: styles[i] })))
+  const pacePressure = computePacePressure(paceMap)
 
   const results = runners.map((runner, idx) => {
     const runningStyle = styles[idx]
@@ -167,8 +170,30 @@ export function runApexEngine(runners, race, options = {}) {
       races: options.races || [],
     })
 
+    // New Component Scores: PACE, DRAW, GROUND, DISTANCE, CLASS_MOVE, LAST_RUN_TROUBLE, TRAINER_FORM, JOCKEY_COURSE_SR
+    const newComponents = computeComponentScores(runner, race, {
+      paceMap,
+      goingDb,
+      distanceDb,
+      trainerForm: options.trainerForm || {},
+      jockeyForm: options.jockeyForm || {},
+    })
+
     // Engine 1: Horse Quality Model — pure racing merit, ignores odds
     const horseQuality = computeHorseQuality(runner, race, paceMap)
+
+    // FINAL_PROBABILITY from component scores
+    const finalProbability = computeFinalProbability(newComponents)
+
+    // Race Shape Suitability Score
+    // Who benefits MOST if this race unfolds a certain way?
+    const raceShapeSuitability = Math.round(
+      horseQuality.paceCompat * 0.30 +
+      horseQuality.finishing.score * 0.25 +
+      horseQuality.staminaBias * 0.20 +
+      pacePressure * 0.15 +
+      (stableIntent.hiddenUpside || 0) * 0.10
+    )
 
     // Blend component score with legacy layered score
     const paceNorm = ((paceScore + 15) / 30) * 100
@@ -208,13 +233,22 @@ export function runApexEngine(runners, race, options = {}) {
     const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj)))
 
     const qualityAdjustedScore = Math.round(
-      horseQuality.finalScore * 0.70 +
-      finalScore * 0.30
+      horseQuality.finalScore * 0.50 +
+      finalScore * 0.20 +
+      raceShapeSuitability * 0.30
     )
+
+    // Chaos detection: widen probability distributions for high-volatility races
+    // This allows outsiders more realistic chances in chaotic races
+    const chaosWidening = volatility.chaos > 0.7 ? 1.25 :
+      volatility.chaos > 0.55 ? 1.15 :
+      volatility.chaos > 0.4 ? 1.05 : 1.0
 
     const uncertainty = calculateUncertainty({
       ...runner,
       finalScore: qualityAdjustedScore,
+      raceShapeSuitability,
+      chaosWidening,
     }, race, {
       goingDb,
       distanceDb,
@@ -226,6 +260,60 @@ export function runApexEngine(runners, race, options = {}) {
       range: uncertainty.range,
       bankrollAdvice: uncertainty.bankrollAdvice,
       factors: uncertainty.factors,
+    }
+
+    // Build historical snapshot
+    const signals = {
+      formEngine: {
+        formPositions: runner.form ? runner.form.split(/[-–]/).filter(Boolean).map(Number).filter(n => !isNaN(n) && n > 0 && n <= 20) : [],
+      },
+      paceEngine: {
+        runningStyle,
+        pacePressure: pacePressure[race.course] || pacePressure,
+      },
+      componentScores: {
+        pace: newComponents.pace || 50,
+        draw: newComponents.draw || 50,
+        ground: newComponents.ground || 50,
+        distance: newComponents.distance || 50,
+        classMove: newComponents.classMove || 50,
+        lastRunTrouble: newComponents.lastRunTrouble || 50,
+        trainerForm: newComponents.trainerForm || 50,
+        jockeyCourseSR: newComponents.jockeyCourseSR || 50,
+      },
+      hiddenImprover: {
+        classDrop: improver.classDrop || false,
+        tripStepUp: improver.tripStepUp || false,
+        secondRunAfterLayoff: improver.secondRunAfterLayoff || false,
+        trainerHiddenUpside: improver.trainerHiddenUpside || false,
+      },
+      stableIntent: {
+        equipmentChange: stableIntent.equipmentChange || null,
+        jockeyChange: stableIntent.jockeyChange || false,
+        trainerPattern: stableIntent.trainerPattern || null,
+      },
+      finishingStrength: {
+        stayedOn: runner.comments?.toLowerCase().includes('stayed on') || false,
+        weakened: runner.comments?.toLowerCase().includes('weakened') || false,
+        staminaBias: raceShapeSuitability > 60 ? true : false,
+      },
+    }
+
+    const scoreSnapshot = {
+      legacyLayeredScore: Math.round(withMovement),
+      componentBlend: Math.round(components.finalScore * 0.65 + (withMovement) * 0.35),
+      marketAdjustment: Math.round(marketAdj * 10) / 10,
+      volatilityAdjustment: Math.round(chaosSuppression * 100) / 100,
+      finalScore: qualityAdjustedScore,
+    }
+
+    const commentary = buildNarrative(signals, scoreSnapshot, runner, race)
+
+    const snapshot = {
+      signals,
+      scores: scoreSnapshot,
+      commentary,
+      timestamp: new Date().toISOString(),
     }
 
     return {
@@ -246,6 +334,10 @@ export function runApexEngine(runners, race, options = {}) {
       improver,
       stableIntent,
       components,
+      newComponents,
+      finalProbability,
+      raceShapeSuitability,
+      chaosWidening,
       human: {
         score: humanAdj,
         tags: replayNote.tags || [],
@@ -259,6 +351,7 @@ export function runApexEngine(runners, race, options = {}) {
       finalScore: qualityAdjustedScore,
       horseQuality,
       features,
+      snapshot,
     }
   })
 
@@ -273,7 +366,7 @@ export function runApexEngine(runners, race, options = {}) {
   })
 
   const sorted = interactionResults.sort((a, b) => b.finalScore - a.finalScore)
-  const winProbs = bayesianWinProbabilities(sorted)
+  const winProbs = bayesianWinProbabilities(sorted, race)
   const placeProbs = bayesianPlaceProbabilities(sorted)
 
   // Engine 2: Race Shape Simulation

@@ -1,20 +1,36 @@
 import { calculateFieldStrength, normalizePosition } from './fieldStrength.js'
+import { analyzeForm } from './formEngine.js'
 
-function parseFormPositions(form = '') {
-  const positions = []
-  const segments = form.split(/[\/-]/)
-  segments.forEach((seg) => {
-    for (const ch of seg) {
-      const n = parseInt(ch, 10)
-      if (!isNaN(n)) positions.push(n)
+const STYLE_KEYWORDS = {
+  leader: ['led', 'made all', 'front', 'early lead', 'set the pace', 'controlled'],
+  prominent: ['prominent', 'close up', 'tracked leader', 'chased leaders', 'pressed', 'in touch'],
+  midfield: ['midfield', 'mid-division', 'mid-division', 'in rear', 'held up', 'towards rear'],
+  holdUp: ['held up', 'rear', 'last', 'well behind', 'towards rear', 'held up in rear'],
+}
+
+function detectStyleFromComments(comments) {
+  const lower = comments.toLowerCase()
+  for (const [style, keywords] of Object.entries(STYLE_KEYWORDS)) {
+    if (keywords.some(kw => lower.includes(kw))) {
+      return style === 'leader' ? 'Front Runner' :
+             style === 'prominent' ? 'Prominent' :
+             style === 'midfield' ? 'Midfield' : 'Hold Up'
     }
-  })
-  return positions.filter((p) => p > 0)
+  }
+  return null
 }
 
 export function classifyRunningStyle(runner, race = null) {
   const form = runner.form || ''
-  const rawPositions = parseFormPositions(form)
+  const comments = runner.comments || ''
+  const formAnalysis = analyzeForm(runner, race)
+  const rawPositions = formAnalysis.runs.filter(r => !r.nonFinisher).map(r => r.position)
+
+  // First try to detect style from comments
+  const commentStyle = detectStyleFromComments(comments)
+  if (commentStyle) return commentStyle
+
+  // Fallback to form-based classification
   if (rawPositions.length < 2) return 'Midfield'
 
   let positions = rawPositions
@@ -48,6 +64,7 @@ export function generatePaceMap(runners = []) {
     holdUp: 0,
     projectedTempo: 'EVEN',
     collapseRisk: 'LOW',
+    pacePressure: 'MEDIUM',
   }
 
   runners.forEach((runner) => {
@@ -58,18 +75,50 @@ export function generatePaceMap(runners = []) {
     else pace.midfield++
   })
 
+  // Compute pace pressure
+  const totalRunners = runners.length
+  const pacePressureRatio = (pace.frontRunners + pace.prominent) / Math.max(1, totalRunners)
+
   if (pace.frontRunners >= 4 || (pace.frontRunners >= 3 && pace.prominent >= 3)) {
     pace.projectedTempo = 'FAST'
     pace.collapseRisk = 'HIGH'
+    pace.pacePressure = 'HIGH'
   } else if (pace.frontRunners <= 1 && pace.holdUp + pace.midfield >= 4) {
     pace.projectedTempo = 'SLOW'
     pace.collapseRisk = 'LOW'
+    pace.pacePressure = 'LOW'
   } else if (pace.frontRunners >= 2) {
     pace.projectedTempo = 'FAIR'
     pace.collapseRisk = 'MEDIUM'
+    pace.pacePressure = 'MEDIUM'
+  }
+
+  // High pace pressure favors hold-up horses
+  if (pace.pacePressure === 'HIGH' && pace.holdUp >= 2) {
+    pace.collapseRisk = 'VERY HIGH'
   }
 
   return pace
+}
+
+export function computePacePressure(paceMap) {
+  const fr = paceMap.frontRunners || 0
+  const prom = paceMap.prominent || 0
+  const total = fr + prom + paceMap.midfield + paceMap.holdUp
+  const pressureRatio = (fr + prom) / Math.max(1, total)
+
+  let pressure = 50
+  if (pressureRatio >= 0.7) pressure = 85
+  else if (pressureRatio >= 0.5) pressure = 70
+  else if (pressureRatio >= 0.3) pressure = 50
+  else pressure = 30
+
+  // Adjust for collapse risk
+  if (paceMap.collapseRisk === 'HIGH' || paceMap.collapseRisk === 'VERY HIGH') {
+    pressure += 10
+  }
+
+  return Math.max(0, Math.min(100, pressure))
 }
 
 export function paceMatrixScore(runningStyle, paceMap, draw, fieldSize) {
@@ -77,6 +126,7 @@ export function paceMatrixScore(runningStyle, paceMap, draw, fieldSize) {
   const fr = paceMap.frontRunners || 0
   const tempo = paceMap.projectedTempo || 'EVEN'
   const collapseRisk = paceMap.collapseRisk || 'LOW'
+  const pacePressure = paceMap.pacePressure || 'MEDIUM'
 
   if (runningStyle === 'Front Runner') {
     if (fr === 1) {
@@ -111,6 +161,10 @@ export function paceMatrixScore(runningStyle, paceMap, draw, fieldSize) {
     else if (tempo === 'FAST') score = 5
     else if (tempo === 'FAIR') score = 1
     else score = -6
+
+    // High pace pressure strongly favors hold-up horses
+    if (pacePressure === 'HIGH' && collapseRisk === 'HIGH') score += 5
+    if (pacePressure === 'HIGH') score += 3
   }
 
   if (draw > 0 && fieldSize > 0) {
@@ -129,5 +183,3 @@ export function paceMatrixScore(runningStyle, paceMap, draw, fieldSize) {
 export function getPaceAdjustment(runningStyle, paceMap) {
   return paceMatrixScore(runningStyle, paceMap, 0, 0) / 3
 }
-
-export { parseFormPositions }
