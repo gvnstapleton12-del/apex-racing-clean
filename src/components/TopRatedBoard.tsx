@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, getGrade, getScoreColor, sortByScore } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -12,59 +13,20 @@ interface TopRatedBoardProps {
 export default function TopRatedBoard({
   races,
 }: TopRatedBoardProps) {
-  const topSelections = races
-    .flatMap((race: Race) => {
-      const top = race.runners?.[0]
+  const allRunners = races.flatMap((race: Race) =>
+    (race.runners || []).map((runner) => ({
+      race: race.race_name,
+      course: race.course,
+      time: formatOffTime(race),
+      off_time: race.off_time,
+      horse: runner.horse,
+      score: getScore(runner),
+      odds: runner.odds,
+    }))
+  )
 
-      if (!top) return []
-
-      return [
-        {
-          race: race.race_name,
-          course: race.course,
-          time: formatOffTime(race),
-          off_time: race.off_time,
-          horse: top.horse,
-
-          score:
-            top.aiProfile?.confidence ||
-            top.score ||
-            0,
-
-          odds: top.odds,
-        },
-      ]
-    })
-    .sort(
-      (a, b) =>
-        (b.score || 0) -
-        (a.score || 0)
-    )
-    .slice(0, 5)
-
-  function getGrade(score: number) {
-    if (score >= 90) return 'A+'
-    if (score >= 80) return 'A'
-    if (score >= 70) return 'B'
-    if (score >= 60) return 'C'
-    return 'D'
-  }
-
-  function getScoreColor(score: number) {
-    if (score >= 90)
-      return 'text-green-400'
-
-    if (score >= 80)
-      return 'text-emerald-400'
-
-    if (score >= 70)
-      return 'text-amber-400'
-
-    if (score >= 60)
-      return 'text-yellow-400'
-
-    return 'text-red-400'
-  }
+  const topSelections = sortByScore(allRunners as unknown as Runner[])
+    .slice(0, 5) as unknown as typeof allRunners
 
   return (
     <div className='relative z-10 rounded-2xl border bg-card p-6 pointer-events-auto'>

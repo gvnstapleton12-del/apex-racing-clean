@@ -23,7 +23,7 @@ src/
 │   ├── IntelligenceDashboard.tsx  # Multi-board hub (error-boundary-wrapped)
 │   ├── Replays.jsx
 │   └── Analytics.tsx
-└── main.jsx              # App entry + home page PickCard
+└── main.tsx              # App entry + home page PickCard
 ```
 
 ## Architecture
@@ -50,7 +50,7 @@ Three-layer separation:
 ### Pending / Future
 - [ ] Further engine extraction from dashboard widgets (some inline calculations remain)
 - [ ] Add zod/valibot for schema validation if data shape issues arise
-- [ ] Convert `main.jsx` → `main.tsx` for full type coverage
+- [x] Convert `main.jsx` → `main.tsx` for full type coverage
 - [ ] Better loading states for individual widgets
 - [ ] RaceModal — convert to use same Tailwind card pattern as RacePage
 

@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Race, Runner } from '../lib/types'
 import { fetchRacecards } from '../lib/racingApi'
-import { openAtTheRacesHorseForm } from '../lib/horseLinks'
 import { formatOffTime } from '../lib/formatTime'
-import { filterGBIRE, filterToday, sortByOffTime, sortByScore, getScore, scoreRunners, countRunners } from '../lib/engine'
+import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
+import { filterGBIRE, filterToday, filterUnfinished, sortByOffTime, sortByScore, getScore, scoreRunners, countRunners } from '../lib/engine'
 import RacePage from './RacePage'
 import RacePressureGraph from '../components/RacePressureGraph'
 
@@ -49,9 +49,11 @@ export default function Racecards() {
   }
 
   const ukIreRaces = sortByOffTime(filterGBIRE(races))
-  const todayRaces = filterToday(ukIreRaces)
+  const unfinishedRaces = filterUnfinished(ukIreRaces)
+  const todayRaces = filterToday(unfinishedRaces)
   const totalRunners = countRunners(todayRaces)
-  const nextRace = todayRaces[0]
+  const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
+  const nextRace = todayRaces.find(r => r.off_time && r.off_time >= ukNow) || todayRaces[0]
 
   if (selectedRace) {
     return (
@@ -65,7 +67,9 @@ export default function Racecards() {
     <div className='dashboard-page max-w-7xl mx-auto'>
       <section className='dashboard-hero'>
         <div className='hero-copy'>
-          <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>UK & Ireland live feed</span>
+          <span className={`text-sm font-medium uppercase tracking-wider px-3 py-1 rounded-full border ${todayRaces.length ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
+            {todayRaces.length ? 'UK & Ireland live feed' : 'UK & Ireland archive'}
+          </span>
           <h1 className='text-5xl font-black tracking-tight'>Racecards command centre</h1>
           <p className='text-zinc-400 text-lg mt-3'>
             Live runners, confidence scores, market positions and race-level signals in one focused workspace.
@@ -146,15 +150,14 @@ export default function Racecards() {
                 <div className='top-rated-strip flex justify-between items-center bg-white/[0.02] rounded-xl p-4 mb-4 border border-white/5'>
                   <p className='text-zinc-500 text-sm font-medium'>Top Rated</p>
                   <div className='flex items-center gap-4'>
-                    <button
-                      type='button'
-                      onClick={() =>
-                        openAtTheRacesHorseForm(topRated, race)
-                      }
-                      className='top-rated-name-button text-lg font-bold hover:text-amber-300 transition'
+                    <a
+                      href={getAtTheRacesHorseUrl(topRated, race)}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-lg font-bold hover:text-amber-300 transition'
                     >
                       {topRated.horse}
-                    </button>
+                    </a>
                     <strong className='text-2xl font-black text-amber-400'>{getScore(topRated)}</strong>
                   </div>
                 </div>
@@ -167,15 +170,14 @@ export default function Racecards() {
                     className='runner-row flex justify-between items-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:border-white/10 transition-all duration-200'
                   >
                     <div className='flex items-center gap-4 flex-1 min-w-0'>
-                      <button
-                        type='button'
-                        onClick={() =>
-                          openAtTheRacesHorseForm(runner, race)
-                        }
-                        className='runner-name-button text-lg font-bold hover:text-amber-300 transition truncate'
+                      <a
+                        href={getAtTheRacesHorseUrl(runner, race)}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='text-lg font-bold hover:text-amber-300 transition truncate'
                       >
                         {runner.horse}
-                      </button>
+                      </a>
                       <div className='flex gap-2 flex-shrink-0'>
                         {runner.runningStyle && (
                           <span className={`pace-badge px-2 py-1 rounded-md text-xs font-medium ${runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>

@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, sortByScore } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -16,12 +17,11 @@ export default function BestBetCard({ races }: BestBetCardProps) {
       raceName: race.race_name,
       course: race.course,
       offTime: formatOffTime(race),
+      score: getScore(runner),
     }))
   )
 
-  const best = selections.sort(
-    (a: Runner & { raceName?: string; course?: string; offTime?: string }, b: Runner & { raceName?: string; course?: string; offTime?: string }) => (b.score || 0) - (a.score || 0)
-  )[0]
+  const best = sortByScore(selections)[0]
 
   if (!best) {
     return (
@@ -35,7 +35,7 @@ export default function BestBetCard({ races }: BestBetCardProps) {
     <div className='rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/10 to-black p-6'>
       <div className='flex items-center gap-2 mb-4'>
         <span className='text-xs px-3 py-1 rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300'>
-          BEST BET OF THE DAY
+          NAP
         </span>
       </div>
 

@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchRacecards } from '../lib/racingApi'
 import { formatOffTime } from '../lib/formatTime'
-import { openAtTheRacesHorseForm } from '../lib/horseLinks'
+import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
+
 
 const QUICK_REPLAY_TAGS = [
   'looked_winner', 'weakened', 'one_paced', 'outpaced',
@@ -145,9 +146,9 @@ export default function Replays() {
                   )}
                 </div>
                 <div className='replay-card-status'>
-                  <button type='button' className='text-xs text-cyan-400 hover:text-cyan-300 mr-2' onClick={(e) => { e.stopPropagation(); openAtTheRacesHorseForm(runner, runner.race) }}>
+                  <a href={getAtTheRacesHorseUrl(runner, runner.race)} target='_blank' rel='noopener noreferrer' className='text-xs text-cyan-400 hover:text-cyan-300 mr-2' onClick={(e) => e.stopPropagation()}>
                     Replay
-                  </button>
+                  </a>
                   {existing ? (
                     <span className={`replay-badge ${existing.adjustment > 0 ? 'pos' : existing.adjustment < 0 ? 'neg' : 'neutral'}`}>
                       {existing.adjustment > 0 ? '+' : ''}{existing.adjustment}

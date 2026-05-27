@@ -192,7 +192,7 @@ export function estimateEnergyDistribution(runner, race, options = {}) {
   } else if (profile === 'LATE-ENERGY') {
     if (paceMap.projectedTempo === 'FAST') energyAdj += 6
     else if (paceMap.projectedTempo === 'SLOW') energyAdj -= 5
-    else if (paceMap.collapseRisk === 'HIGH') energyAdj += 4
+    else if (paceMap.collapseRisk === 'HIGH') energyAdj += 2
   } else if (profile === 'STAYER') {
     if (distanceF >= 10) energyAdj += 4
     else if (distanceF <= 6) energyAdj -= 3

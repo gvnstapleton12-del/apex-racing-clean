@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, sortByScore, getConfidenceStyle } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -9,39 +10,11 @@ interface ConfidenceHeatmapProps {
   races: Race[]
 }
 
-function getConfidence(score: number) {
-  if (score >= 90) {
-    return {
-      label: 'Elite',
-      style: 'bg-green-500/20 border-green-500/20 text-green-400',
-    }
-  }
-
-  if (score >= 75) {
-    return {
-      label: 'Strong',
-      style: 'bg-amber-500/20 border-amber-500/20 text-amber-300',
-    }
-  }
-
-  if (score >= 60) {
-    return {
-      label: 'Moderate',
-      style: 'bg-orange-500/20 border-orange-500/20 text-orange-300',
-    }
-  }
-
-  return {
-    label: 'Weak',
-    style: 'bg-red-500/20 border-red-500/20 text-red-400',
-  }
-}
-
 export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
   const runners = races.flatMap((race: Race) =>
     (race.runners || []).map((runner: Runner) => ({
       horse: runner.horse,
-      score: runner.score || 0,
+      score: getScore(runner),
       race: race.race_name,
       course: race.course,
       time: formatOffTime(race),
@@ -49,9 +22,8 @@ export default function ConfidenceHeatmap({ races }: ConfidenceHeatmapProps) {
     }))
   )
 
-  const sorted = runners
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 20)
+  const sorted = sortByScore(runners as unknown as Runner[])
+    .slice(0, 20) as unknown as typeof runners
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

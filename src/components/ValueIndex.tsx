@@ -1,5 +1,6 @@
 import { formatOffTime } from '../lib/formatTime'
 import { parseOdds } from '../lib/parseOdds'
+import { getScore, calculateValueIndex, sortByValueIndex } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -14,9 +15,8 @@ export default function ValueIndex({ races }: ValueIndexProps) {
   const valueRunners = races.flatMap((race: Race) =>
     (race.runners || []).map((runner: Runner) => {
       const odds = parseOdds(runner.odds)
-      const score = runner.score || 0
-
-      const valueIndex = Number(((score / odds) * 10).toFixed(1))
+      const score = getScore(runner)
+      const valueIndex = calculateValueIndex(score, odds ?? 0)
 
       return {
         horse: runner.horse,
@@ -31,9 +31,7 @@ export default function ValueIndex({ races }: ValueIndexProps) {
     })
   )
 
-  const sorted = valueRunners
-    .sort((a, b) => b.valueIndex - a.valueIndex)
-    .slice(0, 15)
+  const sorted = sortByValueIndex(valueRunners).slice(0, 15)
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

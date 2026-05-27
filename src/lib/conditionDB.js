@@ -65,8 +65,9 @@ export function recordRun(race) {
   const going = normalizeGoing(race.going)
   const dist = normalizeDistance(race.distanceFurlongs)
   const cls = normalizeClass(race.raceClass)
+  const runners = race.runners ?? []
 
-  for (const runner of race.runners) {
+  for (const runner of runners) {
     const horseId = runner.horse?.toLowerCase().replace(/\s+/g, '_')
     if (!horseId) continue
 
@@ -88,7 +89,7 @@ export function recordRun(race) {
 
     const horse = db.horses[horseId]
     const position = runner.position || 0
-    const fieldSize = race.runners.length
+    const fieldSize = runners.length
 
     const run = {
       date: race.date,

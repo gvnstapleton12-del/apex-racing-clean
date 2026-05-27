@@ -1,4 +1,5 @@
-import type { Race, Runner } from '../lib/types'
+import { countRunners, countReplayFlags, calculateAvgFieldSize } from '../lib/engine'
+import type { Race } from '../lib/types'
 
 interface LiveStatsBarProps {
   races: Race[]
@@ -6,29 +7,9 @@ interface LiveStatsBarProps {
 
 export default function LiveStatsBar({ races }: LiveStatsBarProps) {
   const totalRaces = races.length
-
-  const totalRunners = races.reduce(
-    (acc: number, race: Race) => acc + (race.runners?.length || 0),
-    0
-  )
-
-  const replayFlags = races.reduce(
-    (acc: number, race: Race) => {
-      return (
-        acc +
-        (race.runners || []).filter(
-          (runner: Runner) =>
-            runner.replayTriggers &&
-            runner.replayTriggers.length > 0
-        ).length
-      )
-    },
-    0
-  )
-
-  const avgFieldSize = totalRaces
-    ? Math.round(totalRunners / totalRaces)
-    : 0
+  const totalRunners = countRunners(races)
+  const replayFlags = countReplayFlags(races)
+  const avgFieldSize = calculateAvgFieldSize(races)
 
   return (
     <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>

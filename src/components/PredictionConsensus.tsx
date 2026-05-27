@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, sortByScore } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -11,9 +12,7 @@ interface PredictionConsensusProps {
 
 export default function PredictionConsensus({ races }: PredictionConsensusProps) {
   const consensus = races.flatMap((race: Race) => {
-    const sorted = [...(race.runners || [])]
-      .sort((a: Runner, b: Runner) => (b.score || 0) - (a.score || 0))
-      .slice(0, 3)
+    const sorted = sortByScore(race.runners || []).slice(0, 3)
 
     return sorted.map((runner: Runner, index: number) => ({
       horse: runner.horse,
@@ -21,7 +20,7 @@ export default function PredictionConsensus({ races }: PredictionConsensusProps)
       course: race.course,
       time: formatOffTime(race),
       off_time: race.off_time,
-      score: runner.score,
+      score: getScore(runner),
       odds: runner.odds,
       rank: index + 1,
       confidence:

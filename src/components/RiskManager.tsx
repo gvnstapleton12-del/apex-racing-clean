@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { parseOdds } from '../lib/parseOdds'
+import { calculateAvgScore, calculateAvgOdds, calculateRiskProfile } from '../lib/engine'
 
 interface RiskManagerProps {
   selections?: any[]
@@ -11,27 +11,9 @@ export default function RiskManager({
   bankroll = 1000,
 }: RiskManagerProps) {
   const analysis = useMemo(() => {
-    const avgScore = selections.length
-      ? selections.reduce((acc: number, s: any) => acc + (s.score || 0), 0) / selections.length
-      : 0
-
-    const avgOdds = selections.length
-      ? selections.reduce((acc: number, s: any) => acc + parseOdds(s.odds), 0) / selections.length
-      : 0
-
-    let risk = 'Low'
-    let stake = bankroll * 0.01
-    let style = 'text-green-400 border-green-500/20 bg-green-500/10'
-
-    if (avgOdds >= 8 || avgScore < 70) {
-      risk = 'High'
-      stake = bankroll * 0.005
-      style = 'text-red-400 border-red-500/20 bg-red-500/10'
-    } else if (avgOdds >= 5 || avgScore < 80) {
-      risk = 'Medium'
-      stake = bankroll * 0.0075
-      style = 'text-amber-300 border-amber-500/20 bg-amber-500/10'
-    }
+    const avgScore = calculateAvgScore(selections)
+    const avgOdds = calculateAvgOdds(selections)
+    const { risk, stake, style } = calculateRiskProfile(avgScore, avgOdds, bankroll)
 
     return {
       avgScore: Math.round(avgScore),

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, filterGBIRE, filterToday, sortByScore } from '../lib/engine'
 import { QUICK_REPLAY_TAGS, ALL_REPLAY_TAGS, REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, computeCategoryScores, extractTagsFromNotes } from '../lib/replayTagLibrary'
 
 function selectHorse(runner, race) {
@@ -123,10 +124,9 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
     closeTagPanel()
   }
 
-  const todayFlagged = races.flatMap((race: any) => {
-    const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
-    if (raceDate !== todayStr) return []
-    return (race.runners || [])
+  const todayGbire = filterToday(filterGBIRE(races))
+  const todayFlagged = todayGbire.flatMap((race: any) =>
+    (race.runners || [])
       .filter((runner: any) => runner.replayFlags && runner.replayFlags.length > 0)
       .map((runner: any) => ({
         horse: runner.horse,
@@ -135,21 +135,21 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
         time: formatOffTime(race),
         off_time: race.off_time,
         flags: runner.replayFlags,
-        score: runner.finalScore || runner.score || 0,
-        date: raceDate,
+        score: getScore(runner),
+        date: race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null),
         source: 'today',
       }))
-  })
+  )
 
   const needsReview = storedResults.flatMap((race: any) => {
     const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : null)
     if (raceDate === todayStr) return []
     const region = race.region || ''
-    if (region !== 'GB' && region !== 'IRE' && region !== 'gb' && region !== 'ire') return []
+    if (!['GB', 'IRE', 'gb', 'ire'].includes(region)) return []
     return (race.runners || [])
       .filter((runner: any) => {
         const pos = Number(runner.position || runner.pos || 0)
-        const score = Number(runner.finalScore || runner.score || runner.aiProfile?.confidence || 0)
+        const score = getScore(runner)
         const key = noteKey(runner.horse, race.course)
         if (replayDb[key]) return false
         if (pos >= 1 && pos <= 4 && score >= 70) return true
@@ -158,7 +158,7 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
       })
       .map((runner: any) => {
         const pos = Number(runner.position || runner.pos || 0)
-        const score = Number(runner.finalScore || runner.score || runner.aiProfile?.confidence || 0)
+        const score = getScore(runner)
         const flags = []
         if (pos >= 1 && pos <= 2 && score >= 80) flags.push({ key: 'MORE_TO_GIVE', label: 'More to Give', severity: 'info' })
         if (pos >= 3 && score >= 70) flags.push({ key: 'PACE_EXCUSE', label: 'Pace Excuse', severity: 'medium' })
@@ -195,7 +195,7 @@ export default function ReplayFlagBoard({ races }: ReplayFlagBoardProps) {
   const reviewedCount = reviewed.length
 
   const displayItems = tab === 'today' ? todayFlagged : tab === 'review' ? needsReview : reviewed
-  const sorted = tab === 'reviewed' ? displayItems : (displayItems as any[]).sort((a: any, b: any) => b.score - a.score)
+  const sorted = tab === 'reviewed' ? displayItems : sortByScore(displayItems as any[]) as unknown as typeof displayItems
 
   function dateLabel(dateStr: string) {
     if (dateStr === todayStr) return 'TODAY'

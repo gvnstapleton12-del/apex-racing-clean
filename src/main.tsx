@@ -13,17 +13,16 @@ import UploadResults, {
   ResultsList,
 } from './pages/Results'
 import { fetchRacecards } from './lib/racingApi'
-import { openAtTheRacesHorseForm } from './lib/horseLinks'
-import { formatOffTime } from './lib/formatTime'
-import { getScore, sortByScore, filterGBIRE, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections } from './lib/engine'
+import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
+import type { Race, Runner } from './lib/types'
+import { getAtTheRacesHorseUrl } from './lib/horseLinks'
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
 import Analytics from './pages/Analytics'
 import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
 
-const queryClient =
-  new QueryClient()
+const queryClient = new QueryClient()
 
 const tabs = [
   'Home',
@@ -32,18 +31,44 @@ const tabs = [
   'Intelligence',
   'Proof',
   'Calibration',
-  'Alerts',
-  'Horses',
   'Upload',
   'Replays',
   'Analytics',
 ]
 
-function PickCard({ selection, rank, result, position }) {
+interface Selection extends Runner {
+  race: Race
+  raceName: string
+  course: string
+  offTime: string
+  score: number
+  probBand: string
+  probRange: string
+  winProb: number | null
+  placeProb: number | null
+  fairOdds: number | null
+  probConfidence: number | null
+  valueEdge: number
+  kellyStake: number | null
+  noBet: boolean
+  noBetReason: string | null
+  confidenceTier: string
+  betFilterVerdict: string
+}
+
+interface PickCardProps {
+  selection: Selection
+  rank: number
+  result: string | null
+  position: number | null
+  isNap?: boolean
+}
+
+function PickCard({ selection, rank, result, position, isNap = false }: PickCardProps) {
   if (!selection) return null
   const label = resultLabel(result, position)
   return (
-    <article className={`bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
+    <article className={`${isNap ? 'lg:col-span-2' : ''} bg-[#0f1720] border ${isNap ? 'border-amber-500/20' : 'border-green-500/10'} rounded-2xl p-6 ${isNap ? 'hover:border-amber-400/30' : 'hover:border-green-400/30'} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
       <div className='pick-card-glow' />
       {label && (
         <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold z-10 ${label.cls === 'won' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : label.cls === 'placed' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : label.cls === 'nr' ? 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
@@ -53,26 +78,36 @@ function PickCard({ selection, rank, result, position }) {
       <div className='flex gap-6 items-start w-full overflow-hidden'>
         <div className='flex-1 min-w-0 overflow-hidden'>
           <div className='flex items-center gap-2 mb-3'>
-            <span className='text-zinc-500 text-sm font-bold'>#{rank}</span>
-            {selection.confidenceTier && (
-              <span className={`px-2 py-1 rounded-md text-xs font-medium ${selection.confidenceTier === 'S' || selection.confidenceTier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                T{selection.confidenceTier}
-              </span>
+            {isNap && (
+              <span className='text-xs px-2 py-1 rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300 font-bold'>NAP</span>
             )}
-            <span className={`px-2 py-1 rounded-md text-xs font-medium ${gradeClass(selection.probBand) === 'a-plus' || gradeClass(selection.probBand) === 'a' ? 'bg-green-500/10 text-green-400' : gradeClass(selection.probBand) === 'b' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>{selection.probBand}</span>
-            {selection.probRange && <span className='text-zinc-500 text-xs'>{selection.probRange}</span>}
+            <span className='text-zinc-500 text-sm font-bold'>#{rank}</span>
+            {selection.probConfidence != null && selection.probConfidence > 0.6 ? (
+              <span className='px-2 py-1 rounded-md text-xs font-medium bg-green-500/10 text-green-400'>HIGH</span>
+            ) : selection.probConfidence != null && selection.probConfidence > 0.3 ? (
+              <span className='px-2 py-1 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400'>MED</span>
+            ) : (
+              <span className='px-2 py-1 rounded-md text-xs font-medium bg-red-500/10 text-red-400'>LOW</span>
+            )}
+            {selection.fairOdds && (
+              <span className='px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-300'>{selection.fairOdds.toFixed(1)}</span>
+            )}
+            {selection.kellyStake != null && selection.kellyStake > 0 && (
+              <span className='px-2 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-300'>K{selection.kellyStake.toFixed(2)}</span>
+            )}
             <span className='text-zinc-500 text-xs'>{selection.offTime}</span>
           </div>
-          <button
-            type='button'
-            className='text-xl font-bold text-left hover:text-amber-300 transition truncate block w-full'
+          <a
+            href={getAtTheRacesHorseUrl(selection, selection.race)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className='text-xl font-bold hover:text-amber-300 transition truncate block w-full'
             onClick={() => {
-              openAtTheRacesHorseForm(selection, selection.race)
               window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
             }}
           >
             {selection.horse}
-          </button>
+          </a>
           <p className='text-zinc-400 text-sm mt-2'>
             <span className='font-medium'>{selection.course}</span>
             <span className='mx-2'>&middot;</span>
@@ -82,13 +117,16 @@ function PickCard({ selection, rank, result, position }) {
             {selection.form && (
               <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Form {selection.form}</span>
             )}
+            {selection.odds != null && (
+              <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold'>{selection.odds}</span>
+            )}
             {selection.draw && (
               <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Draw {selection.draw}</span>
             )}
-            {selection.valueEdge && selection.valueEdge > 0 ? (
-              <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-medium'>+{selection.valueEdge}% edge</span>
-            ) : selection.valueEdge < 0 ? (
-              <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{selection.valueEdge}% edge</span>
+            {selection.valueEdge != null && selection.valueEdge > 0 ? (
+              <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-medium'>+{(selection.valueEdge * 100).toFixed(1)}% edge</span>
+            ) : selection.valueEdge != null && selection.valueEdge < 0 ? (
+              <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{(selection.valueEdge * 100).toFixed(1)}% edge</span>
             ) : null}
             {selection.selectionQuality && (
               <span className={`px-2 py-1 rounded-lg text-xs font-medium ${selection.selectionQuality.grade === 'A+' || selection.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
@@ -98,29 +136,76 @@ function PickCard({ selection, rank, result, position }) {
           </div>
         </div>
 
-        <div className='shrink-0 w-28 h-28 rounded-2xl bg-[#0a1a14] border-2 border-green-400 flex flex-col items-center justify-center'>
-          <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>APEX</span>
-          <strong className='text-3xl font-black text-green-400'>{selection.score}</strong>
-          <div className='flex gap-2 mt-1'>
-            {selection.winProb && (
-              <span className='text-green-400 text-xs font-medium'>W:{selection.winProb}%</span>
-            )}
-            {selection.placeProb && (
-              <span className='text-blue-400 text-xs font-medium'>P:{selection.placeProb}%</span>
-            )}
-          </div>
+        <div className='shrink-0 rounded-2xl flex items-center gap-3'>
+          {isNap ? (
+            <>
+              <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center min-w-[70px]'>
+                <p className='text-xs text-zinc-500 mb-1'>Score</p>
+                <p className='text-2xl font-bold text-amber-400'>{selection.score}</p>
+              </div>
+              <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center min-w-[70px]'>
+                <p className='text-xs text-zinc-500 mb-1'>Odds</p>
+                <p className='text-2xl font-bold'>{selection.odds || '-'}</p>
+              </div>
+              <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center min-w-[70px]'>
+                <p className='text-xs text-zinc-500 mb-1'>Form</p>
+                <p className='text-2xl font-bold'>{selection.form || '-'}</p>
+              </div>
+            </>
+          ) : (
+            <div className='w-28 h-28 rounded-2xl bg-[#0a1a14] border-2 border-green-400 flex flex-col items-center justify-center'>
+              <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>APEX</span>
+              <strong className='text-3xl font-black text-green-400'>{selection.score}</strong>
+              <div className='flex gap-2 mt-1'>
+                {selection.winProb != null && (
+                  <span className='text-green-400 text-xs font-medium'>W:{(selection.winProb * 100).toFixed(1)}%</span>
+                )}
+                {selection.placeProb != null && (
+                  <span className='text-blue-400 text-xs font-medium'>P:{(selection.placeProb * 100).toFixed(0)}%</span>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </article>
   )
 }
 
+interface DailyPick {
+  horse: string
+  course: string
+  offTime: string
+  raceName: string
+  score: number
+  winProb: number | null
+  fairOdds: number | null
+  probConfidence: number | null
+  valueEdge: number
+  kellyStake: number | null
+  result: string | null
+  position: number | null
+}
+
+interface DayStats {
+  won: number
+  placed: number
+  lost: number
+  nr: number
+  pending: number
+}
+
+interface DailyPicksEntry {
+  picks: DailyPick[]
+  stats: DayStats
+}
+
 function Home() {
-  const [dailyPicksDb, setDailyPicksDb] = useState({})
+  const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
   const {
     data: races = [],
     isLoading,
-  } = useQuery({
+  } = useQuery<Race[]>({
     queryKey: ['home-racecards'],
     queryFn: fetchRacecards,
     refetchInterval: 60000,
@@ -134,31 +219,19 @@ function Home() {
   }, [])
 
   const today = new Date().toISOString().split('T')[0]
-  const ukIreRaces = races.filter(
-    (r) => {
-      if (r.region !== 'GB' && r.region !== 'IRE' && r.region !== 'gb' && r.region !== 'ire') return false
-      if ((r.runners?.length || 0) < 5) return false
-      return true
-    }
-  )
+  const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
-  const picks = allSelections
-    .filter((s) => s.score >= 50 && (s.valueEdge || 0) > 0)
-    .slice(0, 3)
-  const topScore = picks[0]?.score || allSelections[0]?.score || 0
-  const totalRunners = allSelections.length
+  const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03)
+  const picks = bettable.slice(0, 3)
+  const bestBet = picks[0]
+  const topScore = picks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
+  const totalRunners = countRunners(ukIreRaces)
 
-  const noBetReason = picks.length === 0 && ukIreRaces.length > 0 ? (() => {
-    const highChaos = ukIreRaces.filter(r => r.volatility?.chaos > 0.5).length
-    const autoSkipped = ukIreRaces.filter(r => r.betFilter?.verdict === 'AUTO SKIP').length
-    const highRisk = ukIreRaces.filter(r => r.betFilter?.verdict === 'HIGH RISK').length
-    const smallFields = races.filter(r => (r.region === 'GB' || r.region === 'IRE') && (r.runners?.length || 0) < 5).length
-    if (smallFields > races.filter(r => r.region === 'GB' || r.region === 'IRE').length * 0.5) return 'Most races have fewer than 5 runners — too small for reliable analysis'
-    if (highChaos > ukIreRaces.length * 0.5) return 'Most races are highly volatile — too chaotic for confident picks'
-    if (autoSkipped > ukIreRaces.length * 0.5) return 'Most races have weak data or poor conditions — system skipping'
-    if (highRisk > ukIreRaces.length * 0.5) return 'Most races flagged as high risk — no value edges detected'
-    return 'No runners met the minimum confidence threshold today'
-  })() : null
+  const noBetReason = picks.length === 0 && ukIreRaces.length > 0
+    ? bettable.length === 0
+      ? 'No bettable edges found today — probability estimates too low or market too efficient'
+      : getNoBetReason(ukIreRaces)
+    : null
 
   const todaySaved = dailyPicksDb[today]
   const todayResults = todaySaved?.picks || []
@@ -172,7 +245,7 @@ function Home() {
   const overallPlaced = pastDays.reduce((s, [, d]) => s + (d.stats?.placed || 0), 0)
   const overallLosses = pastDays.reduce((s, [, d]) => s + (d.stats?.lost || 0), 0)
   const overallTotal = overallWins + overallPlaced + overallLosses
-  const overallRate = overallTotal > 0 ? ((overallWins / overallTotal) * 100).toFixed(0) : null
+  const overallRate = calculateStrikeRate(overallWins, overallTotal)
 
   const picksKey = picks.map((p) => p.horse + p.course).join('|')
 
@@ -191,12 +264,14 @@ function Home() {
           offTime: p.offTime,
           raceName: p.raceName,
           score: p.score,
-          grade: p.grade,
+          winProb: p.winProb,
+          fairOdds: p.fairOdds,
+          probConfidence: p.probConfidence,
           odds: p.odds,
           form: p.form,
           draw: p.draw,
           valueEdge: p.valueEdge,
-          confidenceTier: p.confidenceTier,
+          kellyStake: p.kellyStake,
         })),
       }),
     })
@@ -212,15 +287,18 @@ function Home() {
                 offTime: p.offTime,
                 raceName: p.raceName,
                 score: p.score,
-                grade: p.grade,
+                winProb: p.winProb,
+                fairOdds: p.fairOdds,
+                probConfidence: p.probConfidence,
                 odds: p.odds,
                 form: p.form,
                 draw: p.draw,
                 valueEdge: p.valueEdge,
-                confidenceTier: p.confidenceTier,
+                kellyStake: p.kellyStake,
                 result: null,
+                position: null,
               })),
-              stats: { won: 0, placed: 0, lost: 0, pending: picks.length },
+              stats: { won: 0, placed: 0, lost: 0, pending: picks.length, nr: 0 },
             },
           }))
         }
@@ -290,7 +368,7 @@ function Home() {
             </>
           )}
         </section>
-      ) : (
+          ) : (
         <section className='home-picks-section space-y-6'>
           {todayStats && todayStats.won + todayStats.placed + todayStats.lost + todayStats.nr > 0 && (
             <div className={`home-picks-stats-bar flex items-center gap-4 p-4 rounded-xl border ${todayStats.won > 0 ? 'bg-green-500/5 border-green-500/20' : 'bg-white/[0.02] border-white/5'}`}>
@@ -318,6 +396,9 @@ function Home() {
               const saved = todayResults.find(
                 (r) => r.horse === s.horse && r.course === s.course
               )
+              if (i === 0 && bestBet) {
+                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNapa />
+              }
               return (
                 <PickCard
                   key={`${s.course}-${s.offTime}-${s.horse}`}
@@ -331,54 +412,15 @@ function Home() {
           </div>
         </section>
       )}
-
-      {pastDays.length > 0 && (
-        <section className='home-track-section space-y-4'>
-          <div className='home-picks-header'>
-            <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>History</span>
-            <h2 className='text-3xl font-black tracking-tight'>Track record</h2>
-          </div>
-          <div className='home-track-grid space-y-3'>
-            {pastDays.map(([date, day]) => {
-              const s = day.stats || { won: 0, placed: 0, lost: 0, nr: 0, pending: 0 }
-              const total = s.won + s.placed + s.lost
-              const rate = total > 0 ? ((s.won / total) * 100).toFixed(0) : '--'
-              return (
-                <details key={date} className='home-track-day bg-white/[0.02] rounded-xl border border-white/5'>
-                  <summary className='home-track-summary flex justify-between items-center p-4 cursor-pointer hover:bg-white/[0.02] transition'>
-                    <span className='home-track-date font-bold text-white'>{date}</span>
-                    <span className='home-track-stats flex items-center gap-3'>
-                      <span className='home-track-won text-green-400 font-bold text-sm'>{s.won}W</span>
-                      <span className='home-track-placed text-amber-400 font-bold text-sm'>{s.placed}P</span>
-                      <span className='home-track-lost text-red-400 font-bold text-sm'>{s.lost}L</span>
-                      {s.nr > 0 && <span className='home-track-nr text-zinc-400 font-bold text-sm'>{s.nr}NR</span>}
-                      {s.pending > 0 && <span className='home-track-pend text-zinc-500 font-bold text-sm'>{s.pending}PEND</span>}
-                      <span className='home-track-rate text-amber-400 font-bold text-sm'>{rate !== '--' ? `${rate}%` : '--'}</span>
-                    </span>
-                  </summary>
-                  <div className='home-track-detail p-4 pt-0 space-y-2'>
-                    {day.picks.map((p, i) => (
-                      <div key={i} className={`home-track-row flex justify-between items-center p-3 rounded-lg ${p.result === 'won' ? 'bg-green-500/5' : p.result === 'placed' ? 'bg-amber-500/5' : p.result === 'lost' ? 'bg-red-500/5' : 'bg-white/[0.01]'}`}>
-                        <span className='home-track-row-name font-bold'>{p.horse}</span>
-                        <span className='home-track-row-course text-zinc-400 text-sm'>{p.course}</span>
-                        <span className='home-track-row-score text-amber-400 font-bold'>{p.score}</span>
-                        <span className={`home-track-row-result px-2 py-1 rounded-md text-xs font-bold ${p.result === 'won' ? 'bg-green-500/20 text-green-400' : p.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : p.result === 'nr' ? 'bg-zinc-500/20 text-zinc-400' : p.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-white/5 text-zinc-500'}`}>
-                          {p.result === 'won' ? 'WON' : p.result === 'placed' ? 'P' : p.result === 'nr' ? 'NR' : p.result === 'lost' ? 'LOST' : 'PEND'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              )
-            })}
-          </div>
-        </section>
-      )}
     </div>
   )
 }
 
-function PlaceholderPage({ title }) {
+interface PlaceholderPageProps {
+  title: string
+}
+
+function PlaceholderPage({ title }: PlaceholderPageProps) {
   return (
     <div className='dashboard-page'>
       <section className='empty-state'>
@@ -393,15 +435,13 @@ function PlaceholderPage({ title }) {
 }
 
 function App() {
-  const [activeTab, setActiveTab] =
-    useState('Home')
-  const [uploadedResults, setUploadedResults] =
-    useState([])
-  const [selectedHorse, setSelectedHorse] = useState(null)
+  const [activeTab, setActiveTab] = useState('Home')
+  const [uploadedResults, setUploadedResults] = useState<any[]>([])
+  const [selectedHorse, setSelectedHorse] = useState<any>(null)
 
   useEffect(() => {
-    const handler = (e) => {
-      setSelectedHorse(e.detail)
+    const handler = (e: Event) => {
+      setSelectedHorse((e as CustomEvent).detail)
       setActiveTab('Racecards')
     }
     window.addEventListener('select-horse', handler)
@@ -411,36 +451,25 @@ function App() {
   useEffect(() => {
     async function loadSavedResults() {
       try {
-        const response = await fetch(
-          '/api/results'
-        )
-
+        const response = await fetch('/api/results')
         const data = await response.json()
-
         if (Array.isArray(data)) {
           setUploadedResults(data)
         }
       } catch (error) {
-        console.error(
-          'Failed to load saved results',
-          error
-        )
+        console.error('Failed to load saved results', error)
       }
     }
 
     loadSavedResults()
   }, [])
 
-  const handleResultsLoaded = (
-  results,
-  switchTab = true
-) => {
-  setUploadedResults(results)
-
-  if (switchTab) {
-    setActiveTab('Results')
+  const handleResultsLoaded = (results: any[], switchTab = true) => {
+    setUploadedResults(results)
+    if (switchTab) {
+      setActiveTab('Results')
+    }
   }
-}
 
   const renderPage = () => {
     if (activeTab === 'Racecards') {
@@ -514,8 +543,8 @@ function App() {
         </nav>
 
         <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5'>
-          <span className='text-zinc-500 text-xs uppercase tracking-wider'>Live Mode</span>
-          <strong className='text-green-400 text-sm'>Market scan active</strong>
+          <span className='text-zinc-500 text-xs uppercase tracking-wider'>APEX Racing</span>
+          <strong className='text-zinc-400 text-sm'>v1.0.0</strong>
         </div>
       </aside>
 

@@ -49,8 +49,26 @@ export function ResultsList({ results }: ResultsListProps) {
     if (race.region !== 'GB' && race.region !== 'IRE' && race.region !== 'gb' && race.region !== 'ire') return false
     const raceDate = race.date || (race.off_dt ? race.off_dt.slice(0, 10) : todayStr)
     if (raceDate !== todayStr) return false
-    if (race.off_dt && new Date(race.off_dt) > now) return false
+    if (race.off_dt && race.date === todayStr && race.off_time) {
+      const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
+      if (race.off_time > ukNow) return false
+    }
     return true
+  })
+
+  // Live races that have finished AND have results OR are 30+ minutes past off time
+  const liveWithResults = liveCompleted.filter((r: any) => {
+    const hasPositions = (r.runners || []).some((rn: any) => rn.position || rn.pos)
+    if (hasPositions) return true
+
+    // Time-based fallback: show if 30+ minutes past off time
+    const offDt = r.off_dt || r.off_time
+    if (offDt) {
+      const offTime = new Date(offDt)
+      const minutesSinceOff = (now.getTime() - offTime.getTime()) / 60000
+      return minutesSinceOff > 30
+    }
+    return false
   })
 
   const todayStored = allStored.filter((race: any) => {
@@ -61,24 +79,15 @@ export function ResultsList({ results }: ResultsListProps) {
     return hasResults
   })
 
-  const todayIds = new Set([
-    ...liveCompleted.map((r: any) => r.race_id || `${r.course}-${r.off_time}`),
-    ...todayStored.map((r: any) => r.race_id || `${r.course}-${r.off_time}`),
-  ])
-
-  const liveWithoutResults = liveCompleted.filter((r: any) =>
-    !(r.runners || []).some((rn: any) => rn.position || rn.pos)
-  )
-
-  const storedIds = new Set(todayStored.map((r: any) => r.race_id || `${r.course}-${r.off_time}`))
-
-  const liveNotInStored = liveWithoutResults.filter((r: any) =>
-    !storedIds.has(r.race_id || `${r.course}-${r.off_time}`)
+  // Merge live results with stored results, deduplicating by race_id
+  const todayIds = new Set(todayStored.map((r: any) => r.race_id || `${r.course}-${r.off_time}`))
+  const liveNotInStored = liveWithResults.filter((r: any) =>
+    !todayIds.has(r.race_id || `${r.course}-${r.off_time}`)
   )
 
   const todayRaces = [...liveNotInStored, ...todayStored].sort((a: any, b: any) => {
-    const aDt = a.off_dt || ''
-    const bDt = b.off_dt || ''
+    const aDt = a.off_dt || a.off_time || ''
+    const bDt = b.off_dt || b.off_time || ''
     return aDt.localeCompare(bDt)
   })
 
@@ -158,7 +167,7 @@ export function ResultsList({ results }: ResultsListProps) {
         todayRaces.length === 0 ? (
           <section className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
             <h2 className='text-2xl font-bold'>No results yet today</h2>
-            <p className='text-zinc-400 mt-2'>Completed UK/IRE races will appear here as results are scraped from ATR.</p>
+            <p className='text-zinc-400 mt-2'>Completed UK/IRE races will appear here automatically as results are fetched.</p>
           </section>
         ) : (
           <section className='race-grid space-y-6'>

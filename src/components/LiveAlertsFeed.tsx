@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, filterLiveAlerts, sortByScore } from '../lib/engine'
 import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -13,25 +14,18 @@ interface LiveAlertsFeedProps {
 export default function LiveAlertsFeed({ races }: LiveAlertsFeedProps) {
   const alerts = useMemo(() => {
     return races.flatMap((race: Race) =>
-      (race.runners || [])
-        .filter((runner: Runner) => {
-          const score = runner.score || 0
-          const triggers = runner.replayTriggers || []
-
-          return score >= 85 || triggers.length >= 2
-        })
-        .map((runner: Runner) => ({
-          horse: runner.horse,
-          race: race.race_name,
-          course: race.course,
-          time: formatOffTime(race),
-          off_time: race.off_time,
-          score: runner.score,
-          odds: runner.odds,
-          triggers: runner.replayTriggers || [],
-        }))
+      filterLiveAlerts(race.runners || []).map((runner: Runner) => ({
+        horse: runner.horse,
+        race: race.race_name,
+        course: race.course,
+        time: formatOffTime(race),
+        off_time: race.off_time,
+        score: getScore(runner),
+        odds: runner.odds,
+        triggers: runner.replayTriggers || [],
+      }))
     )
-      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .sort((a, b) => b.score - a.score)
       .slice(0, 15)
   }, [races])
 

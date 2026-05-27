@@ -1,46 +1,12 @@
-import type { Race, Runner } from '../lib/types'
+import { aggregateTrainerScores } from '../lib/engine'
+import type { Race } from '../lib/types'
 
 interface TrainerFormBoardProps {
   races: Race[]
 }
 
-function calculateTrainerScores(races: Race[]) {
-  const trainers: Record<string, {
-    trainer: string
-    runners: number
-    totalScore: number
-    avgScore: number
-  }> = {}
-
-  races.forEach((race: Race) => {
-    ;(race.runners || []).forEach((runner: Runner) => {
-      const trainer = runner.trainer || 'Unknown'
-
-      if (!trainers[trainer]) {
-        trainers[trainer] = {
-          trainer,
-          runners: 0,
-          totalScore: 0,
-          avgScore: 0,
-        }
-      }
-
-      trainers[trainer].runners += 1
-      trainers[trainer].totalScore += runner.score || 0
-      trainers[trainer].avgScore = Math.round(
-        trainers[trainer].totalScore / trainers[trainer].runners
-      )
-    })
-  })
-
-  return Object.values(trainers)
-    .filter((trainer) => trainer.runners >= 2)
-    .sort((a, b) => b.avgScore - a.avgScore)
-    .slice(0, 10)
-}
-
 export default function TrainerFormBoard({ races }: TrainerFormBoardProps) {
-  const trainers = calculateTrainerScores(races)
+  const trainers = aggregateTrainerScores(races)
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

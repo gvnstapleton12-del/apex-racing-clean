@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchRacecards } from '@/lib/racingApi'
+import { filterGBIRE } from '@/lib/engine'
 import ReplayFlagBoard from '@/components/ReplayFlagBoard'
 import CalibrationDashboard from '@/components/CalibrationDashboard'
 
@@ -16,7 +17,7 @@ export default function Analytics() {
     queryFn: fetchRacecards,
     refetchInterval: 60000,
   })
-  const races = allRaces.filter((r) => r.region === 'GB' || r.region === 'IRE' || r.region === 'gb' || r.region === 'ire')
+  const races = filterGBIRE(allRaces)
 
   return (
     <div className='dashboard-page p-6'>

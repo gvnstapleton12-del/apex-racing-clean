@@ -1,5 +1,5 @@
 export function isRaceEnvironmentValid(race = {}) {
-  const runners = Number(race.field_size || race.runners || 0)
+  const runners = Number(race.field_size ?? race.runners?.length ?? 0)
   const raceClass = String(race.class || race.race_class || '')
 
   // Ignore tiny fields

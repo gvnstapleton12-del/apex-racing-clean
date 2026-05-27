@@ -1,5 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
-import { parseOdds } from '../lib/parseOdds'
+import { getScore, filterSmartMoney, sortByScore } from '../lib/engine'
 import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -12,31 +12,19 @@ interface SmartMoneyTrackerProps {
 
 export default function SmartMoneyTracker({ races }: SmartMoneyTrackerProps) {
   const smartMoney = races.flatMap((race: Race) =>
-    (race.runners || [])
-      .filter((runner: Runner) => {
-        const odds = parseOdds(runner.odds)
-
-        return (
-          odds !== null &&
-          odds <= 4 &&
-          (runner.score || 0) >= 80
-        )
-      })
-      .map((runner: Runner) => ({
-        horse: runner.horse,
-        odds: runner.odds,
-        score: runner.score,
-        race: race.race_name,
-        course: race.course,
-        time: formatOffTime(race),
-        off_time: race.off_time,
-        triggers: runner.replayTriggers || [],
-      }))
+    filterSmartMoney(race.runners || []).map((runner: Runner) => ({
+      horse: runner.horse,
+      odds: runner.odds,
+      score: getScore(runner),
+      race: race.race_name,
+      course: race.course,
+      time: formatOffTime(race),
+      off_time: race.off_time,
+      triggers: runner.replayTriggers || [],
+    }))
   )
 
-  const sorted = smartMoney.sort(
-    (a, b) => (b.score || 0) - (a.score || 0)
-  )
+  const sorted = sortByScore(smartMoney as unknown as Runner[]) as unknown as typeof smartMoney
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

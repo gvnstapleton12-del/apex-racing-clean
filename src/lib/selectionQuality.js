@@ -52,11 +52,11 @@ export function selectionQuality(winProb, odds, confidence, volatility, uncertai
   else if (marketAdj > -5) { score += 3 }
   else { score += 0; reasons.push('Market overvaluing') }
 
-  // Uncertainty penalty (0-15 points)
-  if (uncertainty <= 8) { score += 15; reasons.push('Reliable data') }
-  else if (uncertainty <= 12) { score += 10 }
-  else if (uncertainty <= 18) { score += 6 }
-  else if (uncertainty <= 25) { score += 3 }
+  // Uncertainty penalty (0-8 points)
+  if (uncertainty <= 8) { score += 8; reasons.push('Reliable data') }
+  else if (uncertainty <= 12) { score += 5 }
+  else if (uncertainty <= 18) { score += 3 }
+  else if (uncertainty <= 25) { score += 1 }
   else { score += 0; reasons.push('Chaos machine') }
 
   // Grade assignment

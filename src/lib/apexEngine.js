@@ -203,7 +203,7 @@ export function runApexEngine(runners, race, options = {}) {
       horseQuality.finishing.score * 0.25 +
       horseQuality.staminaBias * 0.20 +
       pacePressure * 0.15 +
-      (stableIntent.hiddenUpside || 0) * 0.10
+      (stableIntent.hiddenUpside || 0) * 0.05
     )
 
     // Blend component score with legacy layered score

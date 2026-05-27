@@ -5,6 +5,7 @@ import { fetchRacecards } from '../lib/racingApi'
 import { filterGBIRE } from '../lib/engine'
 
 import ErrorBoundary from '../components/ErrorBoundary'
+import WidgetSkeleton from '../components/WidgetSkeleton'
 import LiveStatsBar from '@/components/LiveStatsBar'
 import BestBetCard from '@/components/BestBetCard'
 import TopRatedBoard from '@/components/TopRatedBoard'
@@ -37,16 +38,6 @@ export default function IntelligenceDashboard() {
     ? gbIreRaces
     : gbIreRaces.filter((r) => r.race_id === selectedRace)
 
-  if (isLoading) {
-    return (
-      <div className='p-6'>
-        <div className='rounded-2xl border bg-card p-6'>
-          Loading APEX Intelligence Dashboard...
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className='p-6 space-y-6'>
       <div className='flex items-center justify-between'>
@@ -77,36 +68,115 @@ export default function IntelligenceDashboard() {
         </div>
       </div>
 
-      <ErrorBoundary name='LiveStatsBar'><LiveStatsBar races={filteredRaces} /></ErrorBoundary>
+      {isLoading ? (
+        <WidgetSkeleton variant='stats' cols={4} />
+      ) : (
+        <ErrorBoundary name='LiveStatsBar'><LiveStatsBar races={filteredRaces} /></ErrorBoundary>
+      )}
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='BestBetCard'><BestBetCard races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='LiveAlertsFeed'><LiveAlertsFeed races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='card' lines={3} />
+            <WidgetSkeleton variant='list' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='BestBetCard'><BestBetCard races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='LiveAlertsFeed'><LiveAlertsFeed races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='TopRatedBoard'><TopRatedBoard races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='PredictionConsensus'><PredictionConsensus races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='list' lines={3} />
+            <WidgetSkeleton variant='list' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='TopRatedBoard'><TopRatedBoard races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='PredictionConsensus'><PredictionConsensus races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='ReplayWatchlist'><ReplayWatchlist races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='HiddenValueBoard'><HiddenValueBoard races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='list' lines={3} />
+            <WidgetSkeleton variant='list' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='ReplayWatchlist'><ReplayWatchlist races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='HiddenValueBoard'><HiddenValueBoard races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='SmartMoneyTracker'><SmartMoneyTracker races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='VolatilityGauge'><VolatilityGauge races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='list' lines={3} />
+            <WidgetSkeleton variant='card' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='SmartMoneyTracker'><SmartMoneyTracker races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='VolatilityGauge'><VolatilityGauge races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='ConfidenceHeatmap'><ConfidenceHeatmap races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='ValueIndex'><ValueIndex races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='list' lines={3} />
+            <WidgetSkeleton variant='list' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='ConfidenceHeatmap'><ConfidenceHeatmap races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='ValueIndex'><ValueIndex races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='TrainerFormBoard'><TrainerFormBoard races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='JockeyTracker'><JockeyTracker races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='list' lines={3} />
+            <WidgetSkeleton variant='list' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='TrainerFormBoard'><TrainerFormBoard races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='JockeyTracker'><JockeyTracker races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
+
       <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        <ErrorBoundary name='StableAlerts'><StableAlerts races={filteredRaces} /></ErrorBoundary>
-        <ErrorBoundary name='AIInsightFeed'><AIInsightFeed races={filteredRaces} /></ErrorBoundary>
+        {isLoading ? (
+          <>
+            <WidgetSkeleton variant='list' lines={3} />
+            <WidgetSkeleton variant='list' lines={3} />
+          </>
+        ) : (
+          <>
+            <ErrorBoundary name='StableAlerts'><StableAlerts races={filteredRaces} /></ErrorBoundary>
+            <ErrorBoundary name='AIInsightFeed'><AIInsightFeed races={filteredRaces} /></ErrorBoundary>
+          </>
+        )}
       </div>
-      <ErrorBoundary name='ROITracker'><ROITracker /></ErrorBoundary>
+
+      {isLoading ? (
+        <WidgetSkeleton variant='stats' cols={4} />
+      ) : (
+        <ErrorBoundary name='ROITracker'><ROITracker /></ErrorBoundary>
+      )}
     </div>
   )
 }

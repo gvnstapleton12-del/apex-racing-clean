@@ -216,8 +216,8 @@ button {
 }
 
 .sidebar-panel {
-  background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(21, 25, 34, 0.92));
-  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   margin-top: auto;
   padding: 16px;
@@ -231,7 +231,7 @@ button {
 }
 
 .sidebar-panel strong {
-  color: #fff7e6;
+  color: #a1a1aa;
   display: block;
   font-size: 15px;
 }
