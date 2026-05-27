@@ -1,6 +1,7 @@
 import type { Race, Runner } from '../lib/types'
 import { getScore, getScoreColor } from '../lib/engine'
-import { openAtTheRacesHorseForm } from '../lib/horseLinks'
+import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
+
 
 function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
   return <span className={`px-2 py-0.5 rounded text-xs font-bold ${className || 'bg-white/5 text-zinc-400'}`}>{children}</span>
@@ -258,13 +259,14 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               )}
             </div>
 
-            <button
-              type='button'
-              onClick={() => openAtTheRacesHorseForm(runner, race)}
-              className='text-2xl font-bold hover:text-amber-300 transition text-left'
+            <a
+              href={getAtTheRacesHorseUrl(runner, race)}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-2xl font-bold hover:text-amber-300 transition'
             >
               {runner.horse}
-            </button>
+            </a>
 
             <p className='text-zinc-400 text-sm mt-1'>
               {runner.jockey}{runner.jockey && runner.trainer && ' · '}{runner.trainer}

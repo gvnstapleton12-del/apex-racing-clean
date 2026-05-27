@@ -1,22 +1,15 @@
 export function formatOffTime(race: any): string {
   if (race.off_dt) {
-    const d = new Date(race.off_dt)
-    if (!isNaN(d.getTime())) {
-      const h = String(d.getHours()).padStart(2, '0')
-      const m = String(d.getMinutes()).padStart(2, '0')
-      return `${h}:${m}`
-    }
+    const m = race.off_dt.match(/T(\d{2}):(\d{2})/)
+    if (m) return `${m[1]}:${m[2]}`
   }
 
   if (race.off_time) {
-    const parts = race.off_time.match(/^(\d{1,2}):(\d{2})$/)
-    if (parts) {
-      let h = parseInt(parts[1], 10)
-      const m = parts[2]
-      if (h >= 1 && h <= 7) {
-        h += 12
-      }
-      return `${String(h).padStart(2, '0')}:${m}`
+    const m = race.off_time.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/)
+    if (m) {
+      let h = parseInt(m[1], 10)
+      if (h >= 1 && h <= 7) h += 12
+      return `${String(h).padStart(2, '0')}:${m[2]}`
     }
     return race.off_time
   }

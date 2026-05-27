@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, filterLiveAlerts, groupByTrainerWithMin } from '../lib/engine'
 import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -11,44 +12,20 @@ interface StableAlertsProps {
 
 export default function StableAlerts({ races }: StableAlertsProps) {
   const alerts = races.flatMap((race: Race) =>
-    (race.runners || [])
-      .filter((runner: Runner) => {
-        const score = runner.score || 0
-        const triggers = runner.replayTriggers || []
-
-        return score >= 80 || triggers.length >= 2
-      })
-      .map((runner: Runner) => ({
-        horse: runner.horse,
-        trainer: runner.trainer,
-        score: runner.score,
-        odds: runner.odds,
-        race: race.race_name,
-        course: race.course,
-        time: formatOffTime(race),
-        off_time: race.off_time,
-        triggers: runner.replayTriggers || [],
-      }))
+    filterLiveAlerts(race.runners || []).map((runner: Runner) => ({
+      horse: runner.horse,
+      trainer: runner.trainer,
+      score: getScore(runner),
+      odds: runner.odds,
+      race: race.race_name,
+      course: race.course,
+      time: formatOffTime(race),
+      off_time: race.off_time,
+      triggers: runner.replayTriggers || [],
+    }))
   )
 
-  const grouped = alerts.reduce((acc: Record<string, typeof alerts>, runner) => {
-    const trainer = runner.trainer || 'Unknown'
-
-    if (!acc[trainer]) {
-      acc[trainer] = []
-    }
-
-    acc[trainer].push(runner)
-
-    return acc
-  }, {} as Record<string, typeof alerts>)
-
-  const trainerAlerts = Object.entries(grouped)
-    .filter(([_, runners]) => runners.length >= 2)
-    .map(([trainer, runners]) => ({
-      trainer,
-      runners,
-    }))
+  const trainerAlerts = groupByTrainerWithMin(alerts, 2)
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

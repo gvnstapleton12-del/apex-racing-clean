@@ -1,53 +1,12 @@
-import type { Race, Runner } from '../lib/types'
+import { aggregateJockeyMetrics } from '../lib/engine'
+import type { Race } from '../lib/types'
 
 interface JockeyTrackerProps {
   races: Race[]
 }
 
-function calculateJockeyMetrics(races: Race[]) {
-  const jockeys: Record<string, {
-    jockey: string
-    rides: number
-    totalScore: number
-    avgScore: number
-    eliteRides: number
-  }> = {}
-
-  races.forEach((race: Race) => {
-    ;(race.runners || []).forEach((runner: Runner) => {
-      const jockey = runner.jockey || 'Unknown'
-
-      if (!jockeys[jockey]) {
-        jockeys[jockey] = {
-          jockey,
-          rides: 0,
-          totalScore: 0,
-          avgScore: 0,
-          eliteRides: 0,
-        }
-      }
-
-      jockeys[jockey].rides += 1
-      jockeys[jockey].totalScore += runner.score || 0
-
-      if ((runner.score || 0) >= 85) {
-        jockeys[jockey].eliteRides += 1
-      }
-
-      jockeys[jockey].avgScore = Math.round(
-        jockeys[jockey].totalScore / jockeys[jockey].rides
-      )
-    })
-  })
-
-  return Object.values(jockeys)
-    .filter((jockey) => jockey.rides >= 2)
-    .sort((a, b) => b.avgScore - a.avgScore)
-    .slice(0, 10)
-}
-
 export default function JockeyTracker({ races }: JockeyTrackerProps) {
-  const jockeys = calculateJockeyMetrics(races)
+  const jockeys = aggregateJockeyMetrics(races)
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

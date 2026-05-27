@@ -1,47 +1,16 @@
+import { getScore, classifySectional, sortByScore } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 interface SectionalTrackerProps {
   race: Race
 }
 
-function classifySectional(runner: Runner) {
-  const score = runner.score || 0
-  const triggers = runner.replayTriggers || []
-
-  if (score >= 90 && triggers.length >= 1) {
-    return {
-      label: 'Explosive Finish',
-      style: 'text-green-400 border-green-500/20 bg-green-500/10',
-    }
-  }
-
-  if (score >= 75) {
-    return {
-      label: 'Strong Closer',
-      style: 'text-cyan-300 border-cyan-500/20 bg-cyan-500/10',
-    }
-  }
-
-  if (score >= 60) {
-    return {
-      label: 'Balanced Pace',
-      style: 'text-amber-300 border-amber-500/20 bg-amber-500/10',
-    }
-  }
-
-  return {
-    label: 'Weak Finish',
-    style: 'text-red-400 border-red-500/20 bg-red-500/10',
-  }
-}
-
 export default function SectionalTracker({ race }: SectionalTrackerProps) {
-  const runners = (race.runners || [])
+  const runners = sortByScore(race.runners || [])
     .map((runner: Runner) => ({
       ...runner,
       sectional: classifySectional(runner),
     }))
-    .sort((a, b) => (b.score || 0) - (a.score || 0))
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

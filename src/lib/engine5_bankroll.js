@@ -24,6 +24,7 @@ function computeStake(modelProb, marketOdds, options = {}) {
     volatility = 0.5,
     uncertainty = 0,
     confidence = 'Medium',
+    engine = 'CORE',
   } = options
 
   if (!marketOdds || marketOdds <= 1 || !modelProb) {
@@ -39,6 +40,45 @@ function computeStake(modelProb, marketOdds, options = {}) {
 
   const edge = modelProb - (1 / marketOdds) * 100
 
+  // CHAOS engine: flat stakes for longshot overlays
+  if (engine === 'CHAOS') {
+    const flatStake = bankroll * 0.01 // 1% flat stake
+    const units = flatStake / (bankroll * 0.01)
+
+    let label = 'NO BET'
+    let reason = ''
+
+    if (edge < minEdge) {
+      label = 'NO BET'
+      reason = `Edge ${edge.toFixed(1)}% below minimum ${minEdge}%`
+    } else if (edge >= 10) {
+      label = 'STRONG BET'
+      reason = `High edge (${edge.toFixed(1)}%), flat stake`
+    } else if (edge >= 5) {
+      label = 'BET'
+      reason = `Positive edge (${edge.toFixed(1)}%)`
+    } else if (edge >= minEdge) {
+      label = 'CONSIDER'
+      reason = `Marginal edge (${edge.toFixed(1)}%)`
+    }
+
+    return {
+      stake: Math.round(flatStake * 100) / 100,
+      units: Math.round(units * 10) / 10,
+      label,
+      reason,
+      kelly: 0,
+      fractionalKelly: 0,
+      adjustedKelly: 0,
+      adjustments: {
+        volatility: 1.0,
+        uncertainty: 1.0,
+        confidence: 1.0,
+      },
+    }
+  }
+
+  // CORE engine: fractional Kelly with adjustments
   const fullKelly = computeKellyFraction(modelProb, marketOdds)
   const fractionalKelly = fullKelly * kellyFraction
 
@@ -113,11 +153,19 @@ export function computeBankroll(runners, race, options = {}) {
     const uncertainty = runner.uncertainty?.uncertainty || 0
     const confidence = runner.probBand || 'Medium'
 
+    // Determine engine based on grade and odds
+    const coreGrades = ['S', 'A', 'B', 'B+']
+    const grade = runner.selectionQuality?.grade || ''
+    const isCoreGrade = coreGrades.includes(grade)
+    const isCoreOdds = marketOdds > 0 && marketOdds <= 9.0
+    const engine = (isCoreGrade && isCoreOdds) ? 'CORE' : 'CHAOS'
+
     const stake = computeStake(modelProb, marketOdds, {
       ...options,
       volatility,
       uncertainty,
       confidence,
+      engine,
     })
 
     return {
@@ -125,6 +173,7 @@ export function computeBankroll(runners, race, options = {}) {
       horse_id: runner.horse_id || runner.horse,
       modelProb: Math.round(modelProb * 10) / 10,
       marketOdds,
+      engine,
       stake,
     }
   })
@@ -132,6 +181,9 @@ export function computeBankroll(runners, race, options = {}) {
   const bettable = results.filter((r) => r.stake.label === 'BET' || r.stake.label === 'STRONG BET')
   const avoid = results.filter((r) => r.stake.label === 'AVOID')
   const noBet = results.filter((r) => r.stake.label === 'NO BET')
+
+  const coreBets = bettable.filter((r) => r.engine === 'CORE')
+  const chaosBets = bettable.filter((r) => r.engine === 'CHAOS')
 
   const totalStake = bettable.reduce((s, r) => s + r.stake.stake, 0)
   const totalUnits = bettable.reduce((s, r) => s + r.stake.units, 0)
@@ -142,6 +194,8 @@ export function computeBankroll(runners, race, options = {}) {
       bettableCount: bettable.length,
       avoidCount: avoid.length,
       noBetCount: noBet.length,
+      coreBets: coreBets.length,
+      chaosBets: chaosBets.length,
       totalStake: Math.round(totalStake * 100) / 100,
       totalUnits: Math.round(totalUnits * 10) / 10,
       recommendation: bettable.length === 0 ? 'No bets today' : bettable.length === 1 ? 'Single bet' : `${bettable.length} bets`,

@@ -1,5 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
-import { parseOdds } from '../lib/parseOdds'
+import { getScore, filterHiddenValue, sortByScore } from '../lib/engine'
 import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -12,31 +12,19 @@ interface HiddenValueBoardProps {
 
 export default function HiddenValueBoard({ races }: HiddenValueBoardProps) {
   const valueSelections = races.flatMap((race: Race) =>
-    (race.runners || [])
-      .filter((runner: Runner) => {
-        const odds = parseOdds(runner.odds)
-
-        return (
-          odds !== null &&
-          odds >= 8 &&
-          (runner.score || 0) >= 75
-        )
-      })
-      .map((runner: Runner) => ({
-        horse: runner.horse,
-        odds: runner.odds,
-        score: runner.score,
-        race: race.race_name,
-        course: race.course,
-        time: formatOffTime(race),
-        off_time: race.off_time,
-        triggers: runner.replayTriggers || [],
-      }))
+    filterHiddenValue(race.runners || []).map((runner: Runner) => ({
+      horse: runner.horse,
+      odds: runner.odds,
+      score: getScore(runner),
+      race: race.race_name,
+      course: race.course,
+      time: formatOffTime(race),
+      off_time: race.off_time,
+      triggers: runner.replayTriggers || [],
+    }))
   )
 
-  const sorted = valueSelections.sort(
-    (a, b) => (b.score || 0) - (a.score || 0)
-  )
+  const sorted = sortByScore(valueSelections as unknown as Runner[]) as unknown as typeof valueSelections
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

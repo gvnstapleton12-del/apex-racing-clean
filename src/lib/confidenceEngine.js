@@ -12,7 +12,7 @@ export function generateConfidence(runner, race = {}, options = {}) {
   const jockey = String(runner.jockey || '').toLowerCase()
   const trainer = String(runner.trainer || '').toLowerCase()
   const course = String(race.course || runner.course || '').toLowerCase()
-  const fieldSize = (race.runners && race.runners.length) || Number(runner.number_of_runners || 0)
+  const fieldSize = race.runners?.length ?? Number(runner.number_of_runners ?? 0)
   const formString = String(runner.form || '')
   const weight = Number(runner.lbs || runner.weight_lbs || runner.weight || 0)
 
@@ -219,8 +219,8 @@ export function generateConfidence(runner, race = {}, options = {}) {
 
   confidence = Math.round(confidence * (0.75 + completeness / 300) * synergyMultiplier)
 
-  const replayAdj = Number(options.replayAdjustment) || 0
-  confidence += Math.max(-10, Math.min(10, replayAdj))
+  const replayAdj = Math.max(0, Number(options.replayAdjustment) || 0)
+  confidence += Math.min(3, replayAdj)
 
   const paceAdj = Number(options.paceAdj) || 0
   confidence += Math.max(-3, Math.min(3, paceAdj))

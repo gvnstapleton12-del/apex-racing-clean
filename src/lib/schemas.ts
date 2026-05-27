@@ -1,0 +1,198 @@
+import { z } from 'zod'
+
+const ReplayTriggerSchema = z.object({
+  key: z.string(),
+  short: z.string().optional(),
+  label: z.string(),
+  severity: z.string().optional(),
+})
+
+const ReplayFlagSchema = z.object({
+  key: z.string(),
+  label: z.string(),
+  severity: z.string().optional(),
+})
+
+const AiProfileSchema = z.object({
+  confidence: z.coerce.number().optional(),
+  grade: z.string().optional(),
+})
+
+const HorseQualitySchema = z.object({
+  label: z.string().optional(),
+  power: z.coerce.number().optional(),
+  suitability: z.coerce.number().optional(),
+  consistency: z.coerce.number().optional(),
+  paceCompat: z.coerce.number().optional(),
+  volatility: z.coerce.number().optional(),
+  finalScore: z.coerce.number().optional(),
+})
+
+const ComponentScoresSchema = z.object({
+  finalScore: z.coerce.number().optional(),
+  ability: z.coerce.number().optional(),
+  form: z.coerce.number().optional(),
+  suitability: z.coerce.number().optional(),
+  pace: z.coerce.number().optional(),
+  replay: z.coerce.number().optional(),
+  trainerJockey: z.coerce.number().optional(),
+  weightEffect: z.coerce.number().optional(),
+  conditionMatch: z.coerce.number().optional(),
+})
+
+const SelectionQualitySchema = z.object({
+  grade: z.string().optional(),
+  recommendation: z.string().optional(),
+  fairOdds: z.union([z.string(), z.number()]).optional(),
+  marketOdds: z.union([z.string(), z.number()]).optional(),
+  edge: z.coerce.number().optional(),
+  value: z.coerce.number().optional(),
+})
+
+const ValueEngineSchema = z.object({
+  edgeLabel: z.string().optional(),
+  valueGrade: z.string().optional(),
+  edge: z.coerce.number().optional(),
+  expectedValue: z.coerce.number().optional(),
+  roi: z.coerce.number().optional(),
+  bettable: z.boolean().optional(),
+})
+
+const BankrollEngineSchema = z.object({
+  label: z.string().optional(),
+  stake: z.coerce.number().optional(),
+  units: z.coerce.number().optional(),
+  adjustedKelly: z.coerce.number().optional(),
+  reason: z.string().optional(),
+})
+
+const BetFilterSchema = z.object({
+  verdict: z.string().optional(),
+})
+
+const PaceMapSchema = z.object({
+  projectedTempo: z.string().optional(),
+  collapseRisk: z.string().optional(),
+})
+
+const RunnerSchema = z.object({
+  horse: z.string().optional(),
+  horse_id: z.string().optional(),
+  name: z.string().optional(),
+  jockey: z.string().optional(),
+  trainer: z.string().optional(),
+  odds: z.union([z.string(), z.number()]).optional(),
+  draw: z.coerce.number().optional(),
+  or: z.coerce.number().optional(),
+  ofr: z.coerce.number().optional(),
+  rpr: z.coerce.number().optional(),
+  age: z.coerce.number().optional(),
+  lbs: z.union([z.string(), z.number()]).optional(),
+  last_run: z.coerce.number().optional(),
+  sex: z.string().optional(),
+  colour: z.string().optional(),
+  position: z.coerce.number().optional(),
+  pos: z.coerce.number().optional(),
+  spOdds: z.string().optional(),
+  sp: z.string().optional(),
+  score: z.coerce.number().optional(),
+  finalScore: z.coerce.number().optional(),
+  aiProfile: AiProfileSchema.optional(),
+  winProb: z.coerce.number().optional(),
+  placeProb: z.coerce.number().optional(),
+  probBand: z.string().optional(),
+  probRange: z.string().optional(),
+  runningStyle: z.string().optional(),
+  paceScore: z.coerce.number().optional(),
+  horseQuality: HorseQualitySchema.optional(),
+  components: ComponentScoresSchema.optional(),
+  placeTraits: z.object({
+    consistency: z.coerce.number().optional(),
+    reliability: z.coerce.number().optional(),
+    honesty: z.coerce.number().optional(),
+    finishingKick: z.coerce.number().optional(),
+    explosiveAbility: z.coerce.number().optional(),
+    marketConfidence: z.coerce.number().optional(),
+  }).optional(),
+  selectionQuality: SelectionQualitySchema.optional(),
+  simulation: z.object({
+    winRate: z.coerce.number().optional(),
+    placeRate: z.coerce.number().optional(),
+    avgPosition: z.coerce.number().optional(),
+    collapseRate: z.coerce.number().optional(),
+    raceShape: z.string().optional(),
+  }).optional(),
+  valueEngine: ValueEngineSchema.optional(),
+  bankrollEngine: BankrollEngineSchema.optional(),
+  confidenceTier: z.object({
+    tier: z.string().optional(),
+    label: z.string().optional(),
+    description: z.string().optional(),
+    maxStake: z.coerce.number().optional(),
+  }).optional(),
+  scenarioFlags: z.object({
+    flags: z.array(z.object({
+      flag: z.string(),
+      description: z.string().optional(),
+      action: z.string().optional(),
+      severity: z.string().optional(),
+    })).optional(),
+  }).optional(),
+  explanation: z.object({
+    whyCount: z.number().optional(),
+    riskCount: z.number().optional(),
+    why: z.array(z.object({ icon: z.string(), label: z.string() })).optional(),
+    risks: z.array(z.object({ icon: z.string(), label: z.string() })).optional(),
+  }).optional(),
+  interactions: z.object({
+    interactions: z.array(z.object({
+      label: z.string(),
+      adjustment: z.coerce.number(),
+      direction: z.string(),
+    })).optional(),
+    totalAdjustment: z.coerce.number().optional(),
+  }).optional(),
+  replayTriggers: z.array(ReplayTriggerSchema).optional(),
+  replayFlags: z.array(ReplayFlagSchema).optional(),
+  betQuality: z.string().optional(),
+  form: z.string().optional(),
+  atrUrl: z.string().optional(),
+  atrFormUrl: z.string().optional(),
+})
+
+const RaceSchema = z.object({
+  race_id: z.string().optional(),
+  race_name: z.string().optional(),
+  course: z.string().optional(),
+  off_time: z.string().optional(),
+  off_dt: z.string().optional(),
+  date: z.string().optional(),
+  region: z.string().optional(),
+  distance_f: z.string().optional(),
+  going: z.string().optional(),
+  surface: z.string().optional(),
+  race_class: z.coerce.number().optional(),
+  type: z.string().optional(),
+  pattern: z.string().optional(),
+  age_band: z.string().optional(),
+  field_size: z.coerce.number().optional(),
+  paceMap: PaceMapSchema.optional(),
+  betFilter: BetFilterSchema.optional(),
+  runners: z.array(RunnerSchema).optional(),
+})
+
+export const RacecardsSchema = z.array(RaceSchema)
+export const RaceSchemaExport = RaceSchema
+export const RunnerSchemaExport = RunnerSchema
+
+export function validateRacecards(data: unknown) {
+  return RacecardsSchema.safeParse(data)
+}
+
+export function validateRace(data: unknown) {
+  return RaceSchema.safeParse(data)
+}
+
+export function validateRunner(data: unknown) {
+  return RunnerSchema.safeParse(data)
+}

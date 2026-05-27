@@ -33,7 +33,7 @@ src/
 │   ├── IntelligenceDashboard.tsx  # Multi-board intelligence hub
 │   ├── Replays.jsx       # Replay note management
 │   └── Analytics.tsx     # Analytics views
-├── main.jsx              # App entry, routing, home page
+├── main.tsx              # App entry, routing, home page
 └── styles.css            # Global styles + utility classes
 ```
 

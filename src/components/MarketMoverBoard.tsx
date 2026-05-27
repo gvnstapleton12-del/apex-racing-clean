@@ -1,5 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
-import { parseOdds } from '../lib/parseOdds'
+import { getScore, filterMarketMovers, sortByScore } from '../lib/engine'
 import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 interface MarketMoverBoardProps {
@@ -8,26 +8,18 @@ interface MarketMoverBoardProps {
 
 export default function MarketMoverBoard({ races }: MarketMoverBoardProps) {
   const movers = races.flatMap((race: Race) =>
-    (race.runners || [])
-      .filter((runner: Runner) => {
-        if (!runner.odds) return false
-        const odds = parseOdds(runner.odds)
-        return odds <= 5
-      })
-      .map((runner: Runner) => ({
-        horse: runner.horse,
-        odds: runner.odds,
-        score: runner.score,
-        race: race.race_name,
-        course: race.course,
-        time: formatOffTime(race),
-        triggers: runner.replayTriggers || [],
-      }))
+    filterMarketMovers(race.runners || []).map((runner: Runner) => ({
+      horse: runner.horse,
+      odds: runner.odds,
+      score: getScore(runner),
+      race: race.race_name,
+      course: race.course,
+      time: formatOffTime(race),
+      triggers: runner.replayTriggers || [],
+    }))
   )
 
-  const sorted = movers.sort(
-    (a, b) => (b.score || 0) - (a.score || 0)
-  )
+  const sorted = sortByScore(movers as unknown as Runner[]) as unknown as typeof movers
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

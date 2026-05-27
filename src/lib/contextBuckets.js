@@ -75,6 +75,10 @@ function courseRegion(course) {
   return 'other'
 }
 
+function courseSlug(course) {
+  return (course || '').toLowerCase().replace(/[^a-z]/g, '').slice(0, 10)
+}
+
 export function bucketKey(race) {
   const surface = (race.surface || 'turf').toLowerCase() === 'all weather' ? 'aw' : 'turf'
   const dist = distanceBand(race.distance_f)
@@ -82,8 +86,9 @@ export function bucketKey(race) {
   const type = raceType(race.pattern, race.race_class, race.age_band)
   const field = fieldCategory((race.runners || []).length)
   const region = courseRegion(race.course)
+  const course = courseSlug(race.course)
 
-  return `${surface}_${dist}_${going}_${type}_${field}_${region}`
+  return `${surface}_${dist}_${going}_${type}_${field}_${region}_${course}`
 }
 
 export function bucketComponents(race) {

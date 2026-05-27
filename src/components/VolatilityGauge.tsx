@@ -1,38 +1,15 @@
 import { formatOffTime } from '../lib/formatTime'
-import type { Race, Runner } from '../lib/types'
+import { calculateRaceVolatility, getVolatilityLabel } from '../lib/engine'
+import type { Race } from '../lib/types'
 
 interface VolatilityGaugeProps {
   races: Race[]
 }
 
-function calculateVolatility(runners: Runner[]) {
-  if (!runners || runners.length === 0) return 0
-
-  const scores = runners.map((r: Runner) => r.score || 0)
-
-  const avg = scores.reduce((a: number, b: number) => a + b, 0) / scores.length
-
-  const variance = scores.reduce((acc: number, score: number) => {
-    return acc + Math.pow(score - avg, 2)
-  }, 0) / scores.length
-
-  return Math.round(Math.sqrt(variance))
-}
-
 export default function VolatilityGauge({ races }: VolatilityGaugeProps) {
   const raceVolatility = races.map((race: Race) => {
-    const volatility = calculateVolatility(race.runners || [])
-
-    let label = 'Stable'
-    let style = 'text-green-400 border-green-500/20 bg-green-500/10'
-
-    if (volatility >= 15) {
-      label = 'High Chaos'
-      style = 'text-red-400 border-red-500/20 bg-red-500/10'
-    } else if (volatility >= 8) {
-      label = 'Volatile'
-      style = 'text-amber-400 border-amber-500/20 bg-amber-500/10'
-    }
+    const volatility = calculateRaceVolatility(race.runners || [])
+    const { label, style } = getVolatilityLabel(volatility)
 
     return {
       race: race.race_name,

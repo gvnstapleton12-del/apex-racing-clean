@@ -34,9 +34,10 @@ export function classifyRunningStyle(runner, race = null) {
   if (rawPositions.length < 2) return 'Midfield'
 
   let positions = rawPositions
-  if (race && race.runners) {
-    const fieldSize = race.runners.length
-    const fieldStrength = calculateFieldStrength(race.runners, race)
+  const runners = race?.runners ?? []
+  if (runners.length > 0) {
+    const fieldSize = runners.length
+    const fieldStrength = calculateFieldStrength(runners, race)
     positions = rawPositions.map((p) => normalizePosition(p, fieldStrength.strength, fieldSize))
   }
 

@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { sortBySeverity } from '../lib/engine'
 import type { Race, Runner, ReplayTrigger } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -26,11 +27,7 @@ export default function ReplayWatchlist({ races }: ReplayWatchlistProps) {
       }))
   )
 
-  const sorted = flagged.sort((a, b) => {
-    if (a.highSeverity && !b.highSeverity) return -1
-    if (!a.highSeverity && b.highSeverity) return 1
-    return 0
-  })
+  const sorted = sortBySeverity(flagged)
 
   return (
     <div className='rounded-2xl border bg-card p-6'>

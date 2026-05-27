@@ -1,3 +1,5 @@
+import { getCourseModifiers } from './courseProfiles.js'
+
 function parseFurlongs(distanceF) {
   if (!distanceF) return 0
   if (typeof distanceF === 'number') return distanceF
@@ -119,6 +121,9 @@ export function classifyRaceArchetype(race) {
   modifiers.push(`field_${fieldTier.toLowerCase()}`)
   modifiers.push(`dist_${distanceBand.toLowerCase()}`)
 
+  const courseMods = getCourseModifiers(race.course, archetype, distanceF)
+  modifiers.push(...courseMods)
+
   return {
     archetype,
     modifiers,
@@ -131,6 +136,7 @@ export function classifyRaceArchetype(race) {
     surface,
     raceClass,
     pattern,
+    courseGroup: courseMods.length > 0 ? courseMods[0].replace('course_group_', '') : 'UNKNOWN',
   }
 }
 
@@ -354,6 +360,42 @@ export function getModifierAdjustments(modifiers) {
 
   if (modifiers.includes('jumping')) {
     adjustments.trainerAdj += 0.03
+  }
+
+  // Course archetype adjustments
+  if (modifiers.includes('tight_sprint')) {
+    adjustments.paceAdj += 0.08
+    adjustments.drawAdj += 0.08
+  }
+
+  if (modifiers.includes('tight_staying')) {
+    adjustments.trainerAdj += 0.05
+  }
+
+  if (modifiers.includes('undulating_stamina_test')) {
+    adjustments.paceAdj -= 0.05
+    adjustments.trainerAdj += 0.05
+  }
+
+  if (modifiers.includes('galloping_stamina')) {
+    adjustments.trainerAdj += 0.03
+  }
+
+  if (modifiers.includes('high_draw_bias_sprint')) {
+    adjustments.drawAdj += 0.06
+  }
+
+  if (modifiers.includes('pace_advantage_course')) {
+    adjustments.paceAdj += 0.05
+  }
+
+  if (modifiers.includes('course_specialist')) {
+    adjustments.trainerAdj += 0.04
+  }
+
+  if (modifiers.includes('course_uphill_finish')) {
+    adjustments.paceAdj -= 0.03
+    adjustments.trainerAdj += 0.02
   }
 
   return adjustments

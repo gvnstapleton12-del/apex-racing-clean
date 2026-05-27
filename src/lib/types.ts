@@ -9,6 +9,10 @@ export interface Race {
   distance_f?: string
   going?: string
   surface?: string
+  race_class?: string | number
+  type?: string
+  pattern?: string
+  age_band?: string
   field_size?: number
   paceMap?: PaceMap
   betFilter?: BetFilter
@@ -30,11 +34,16 @@ export interface Runner {
   name?: string
   jockey?: string
   trainer?: string
-  odds?: string
+  odds?: string | number
   draw?: number
   or?: number
   ofr?: number
   rpr?: number
+  age?: number
+  lbs?: string | number
+  last_run?: number
+  sex?: string
+  colour?: string
   position?: number
   pos?: number
   spOdds?: string
@@ -63,11 +72,8 @@ export interface Runner {
   replayFlags?: ReplayFlag[]
   betQuality?: string
   form?: string
+  atrUrl?: string
   atrFormUrl?: string
-  atrHorseId?: string
-  atr_race_id?: string
-  atrRaceId?: string
-  atr_horse_id?: string
 }
 
 export interface AiProfile {
@@ -109,8 +115,8 @@ export interface PlaceTraits {
 export interface SelectionQuality {
   grade: string
   recommendation: string
-  fairOdds: string
-  marketOdds: string
+  fairOdds: string | number
+  marketOdds: string | number
   edge: number
   value: number
 }

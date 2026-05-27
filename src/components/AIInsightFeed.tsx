@@ -1,4 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
+import { getScore, generateInsight } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {
@@ -9,26 +10,10 @@ interface AIInsightFeedProps {
   races: Race[]
 }
 
-function generateInsight(runner: Runner) {
-  if ((runner.score || 0) >= 90) {
-    return 'Elite confidence profile detected with strong model alignment.'
-  }
-
-  if ((runner.replayTriggers || []).length >= 2) {
-    return 'Replay intelligence suggests hidden upside not reflected in market positioning.'
-  }
-
-  if ((runner.score || 0) >= 75 && runner.odds) {
-    return 'Strong scoring runner with stable confidence metrics.'
-  }
-
-  return 'Moderate profile runner requiring market monitoring.'
-}
-
 export default function AIInsightFeed({ races }: AIInsightFeedProps) {
   const insights = races.flatMap((race: Race) =>
     (race.runners || [])
-      .filter((runner: Runner) => (runner.score || 0) >= 70)
+      .filter((runner: Runner) => getScore(runner) >= 70)
       .slice(0, 3)
       .map((runner: Runner) => ({
         horse: runner.horse,
@@ -36,7 +21,7 @@ export default function AIInsightFeed({ races }: AIInsightFeedProps) {
         course: race.course,
         time: formatOffTime(race),
         off_time: race.off_time,
-        score: runner.score,
+        score: getScore(runner),
         insight: generateInsight(runner),
       }))
   )

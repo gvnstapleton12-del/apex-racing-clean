@@ -102,70 +102,70 @@ export function computeBetFilter(runners, race, paceMap) {
   const flags = []
   let skipScore = 0
 
-  if (debCount >= 4) {
+  if (debCount >= 5) {
     flags.push({ type: 'debutants', label: 'Debutants Everywhere', severity: 'high' })
     skipScore += 25
-  } else if (debCount >= 2) {
+  } else if (debCount >= 3) {
     flags.push({ type: 'debutants', label: 'Multiple Debutants', severity: 'medium' })
-    skipScore += 10
+    skipScore += 6
   }
 
-  if (fieldChaos >= 40) {
+  if (fieldChaos >= 50) {
     flags.push({ type: 'chaos', label: 'High Field Chaos', severity: 'high' })
     skipScore += 25
-  } else if (fieldChaos >= 25) {
+  } else if (fieldChaos >= 35) {
     flags.push({ type: 'chaos', label: 'Moderate Chaos', severity: 'medium' })
-    skipScore += 10
+    skipScore += 6
   }
 
-  if (paceConflict >= 30) {
+  if (paceConflict >= 40) {
     flags.push({ type: 'pace', label: 'Conflicting Pace Setup', severity: 'high' })
     skipScore += 20
-  } else if (paceConflict >= 15) {
+  } else if (paceConflict >= 25) {
     flags.push({ type: 'pace', label: 'Pace Uncertainty', severity: 'medium' })
-    skipScore += 8
+    skipScore += 5
   }
 
-  if (dataSuff >= 25) {
+  if (dataSuff >= 35) {
     flags.push({ type: 'data', label: 'Insufficient Data', severity: 'high' })
     skipScore += 20
-  } else if (dataSuff >= 10) {
+  } else if (dataSuff >= 20) {
     flags.push({ type: 'data', label: 'Limited Data', severity: 'medium' })
-    skipScore += 8
+    skipScore += 5
   }
 
-  if (confSpread >= 25) {
+  if (confSpread >= 30) {
     flags.push({ type: 'confidence', label: 'Weak Confidence Spread', severity: 'high' })
     skipScore += 15
-  } else if (confSpread >= 15) {
+  } else if (confSpread >= 20) {
     flags.push({ type: 'confidence', label: 'Tight Spread', severity: 'medium' })
-    skipScore += 5
+    skipScore += 3
   }
 
-  if (edgeStrength >= 25) {
+  if (edgeStrength >= 30) {
     flags.push({ type: 'edge', label: 'No Strong Edge', severity: 'high' })
     skipScore += 15
-  } else if (edgeStrength >= 10) {
+  } else if (edgeStrength >= 15) {
     flags.push({ type: 'edge', label: 'Weak Edge', severity: 'medium' })
-    skipScore += 5
+    skipScore += 3
   }
 
   const going = (race.going || '').toLowerCase()
   if (going.includes('heavy')) {
     flags.push({ type: 'going', label: 'Volatile Ground', severity: 'medium' })
-    skipScore += 10
+    skipScore += 6
   }
 
   const fieldSize = runners.length
-  if (fieldSize >= 16) {
+  if (fieldSize >= 20) {
     flags.push({ type: 'field', label: 'Massive Field', severity: 'medium' })
-    skipScore += 10
+    skipScore += 6
   }
 
   let verdict = 'BETTABLE'
-  if (skipScore >= 50) verdict = 'AUTO SKIP'
-  else if (skipScore >= 30) verdict = 'HIGH RISK'
-  else if (skipScore >= 15) verdict = 'CAUTION'
+  if (skipScore >= 90) verdict = 'AUTO SKIP'
+  else if (skipScore >= 70) verdict = 'HIGH RISK'
+  else if (skipScore >= 50) verdict = 'CAUTION'
 
   const positiveSignals = []
   const rated = runners.filter((r) => r.or || r.ofr).length
