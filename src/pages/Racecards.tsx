@@ -10,6 +10,7 @@ import RacePressureGraph from '../components/RacePressureGraph'
 
 export default function Racecards() {
   const [selectedRace, setSelectedRace] = useState<Race | null>(null)
+  const [search, setSearch] = useState('')
   const scrollTarget = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -54,6 +55,11 @@ export default function Racecards() {
   const totalRunners = countRunners(todayRaces)
   const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const nextRace = todayRaces.find(r => r.off_time && r.off_time >= ukNow) || todayRaces[0]
+  const filtered = search
+    ? todayRaces.filter((r) =>
+        `${r.course} ${r.race_name}`.toLowerCase().includes(search.toLowerCase())
+      )
+    : todayRaces
 
   if (selectedRace) {
     return (
@@ -100,7 +106,36 @@ export default function Racecards() {
       )}
 
       <section className='race-grid space-y-6'>
-        {todayRaces.map((race, index) => {
+        <div className='flex items-center gap-3'>
+          <input
+            type='text'
+            placeholder='Search course or race name...'
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className='flex-1 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-green-500/40 transition'
+          />
+          {search && (
+            <button
+              type='button'
+              onClick={() => setSearch('')}
+              className='px-3 py-3 text-zinc-400 hover:text-white transition'
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {search && filtered.length > 0 && (
+          <p className='text-zinc-500 text-sm'>{filtered.length} of {todayRaces.length} races</p>
+        )}
+
+        {!filtered.length && (
+          <div className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-8 text-center'>
+            <p className='text-zinc-400'>{search ? `No races match "${search}"` : 'No races today'}</p>
+          </div>
+        )}
+
+        {filtered.map((race, index) => {
           const runners = scoreRunners(race.runners || [])
           const topRated = sortByScore(runners)[0]
 
