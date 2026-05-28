@@ -1,5 +1,5 @@
 import { formatOffTime } from '../lib/formatTime'
-import { getScore, sortByScore, getConfidenceStyle } from '../lib/engine'
+import { getScore, sortByScore, getConfidenceStyle as getConfidence } from '../lib/engine'
 import type { Race, Runner } from '../lib/types'
 
 function selectHorse(horse: string, race: { course?: string; off_time?: string }) {

@@ -9,7 +9,6 @@ export function validateRace(raw: unknown): Race | null {
   if (!raw || typeof raw !== 'object') return null
   const r = raw as Record<string, unknown>
   if (!r.course || !r.race_name || !r.off_time) {
-    console.warn('[validate] Skipped race: missing required fields', r.course || r.race_name || '(unknown)')
     return null
   }
   return r as Race
@@ -25,17 +24,18 @@ export function validateRunner(raw: unknown): Runner | null {
 export function validateRaces(raw: unknown[]): ValidationResult<Race> {
   const valid: Race[] = []
   const invalid: { item: unknown; reason: string }[] = []
+  let skipped = 0
   for (const item of raw) {
     const race = validateRace(item)
     if (race) {
       race.runners = (race.runners || []).map(validateRunner).filter(Boolean) as Runner[]
       valid.push(race)
     } else {
-      invalid.push({ item, reason: 'Missing required fields (course, race_name, off_time)' })
+      skipped++
     }
   }
-  if (invalid.length > 0) {
-    console.warn(`[validate] Filtered out ${invalid.length} malformed race(s)`)
+  if (skipped > 0) {
+    console.warn(`[validate] Filtered out ${skipped} malformed race(s)`)
   }
   return { valid, invalid }
 }

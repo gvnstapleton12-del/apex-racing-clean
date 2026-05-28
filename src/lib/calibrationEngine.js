@@ -324,3 +324,61 @@ export function computePlaceCalibration(records = [], bucketSize = 10) {
     reliability,
   }
 }
+
+export function computeCalibrationAdjustment(calibrationData) {
+  if (!calibrationData?.byProbability?.buckets?.length) {
+    return { winAdj: 0, placeAdj: 0, confidence: 'none' }
+  }
+
+  const buckets = calibrationData.byProbability.buckets
+  const totalRecords = calibrationData.byProbability.totalRecords || 0
+
+  if (totalRecords < 50) {
+    return { winAdj: 0, placeAdj: 0, confidence: 'insufficient' }
+  }
+
+  let totalWeightedAdj = 0
+  let totalWeight = 0
+
+  buckets.forEach((bucket) => {
+    if (bucket.count < 5) return
+
+    const error = bucket.actualRate - bucket.avgPredicted
+    const weight = bucket.count
+    totalWeightedAdj += error * weight
+    totalWeight += weight
+  })
+
+  if (totalWeight === 0) {
+    return { winAdj: 0, placeAdj: 0, confidence: 'empty' }
+  }
+
+  const rawWinAdj = totalWeightedAdj / totalWeight
+  const winAdj = Math.max(-3, Math.min(3, Math.round(rawWinAdj * 10) / 10))
+
+  let placeAdj = 0
+  if (calibrationData.byPlaceProbability?.buckets?.length) {
+    const placeBuckets = calibrationData.byPlaceProbability.buckets
+    let totalPlaceAdj = 0
+    let totalPlaceWeight = 0
+
+    placeBuckets.forEach((bucket) => {
+      if (bucket.count < 5) return
+      const error = bucket.actualRate - bucket.avgPredicted
+      totalPlaceAdj += error * bucket.count
+      totalPlaceWeight += bucket.count
+    })
+
+    if (totalPlaceWeight > 0) {
+      placeAdj = Math.max(-3, Math.min(3, Math.round((totalPlaceAdj / totalPlaceWeight) * 10) / 10))
+    }
+  }
+
+  return {
+    winAdj,
+    placeAdj,
+    confidence: totalRecords >= 200 ? 'high' : totalRecords >= 100 ? 'medium' : 'low',
+    totalRecords,
+    avgError: Math.round(totalWeightedAdj / totalWeight * 10) / 10,
+  }
+}

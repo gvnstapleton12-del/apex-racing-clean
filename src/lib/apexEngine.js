@@ -30,6 +30,7 @@ import { detectScenarioFlags } from './scenarioFlags.js'
 import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
 import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
+import { computeCalibrationAdjustment } from './calibrationEngine.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -76,6 +77,17 @@ export function runApexEngine(runners, race, options = {}) {
     human: weights.human,
     market: weights.market + (modifiers.marketAdj || 0) + (fieldSizeAdj.marketMod || 0),
     trainer: weights.trainer + (modifiers.trainerAdj || 0) + (modifiers.drawAdj || 0) + (fieldSizeAdj.trainerMod || 0),
+  }
+
+  // Apply learned multiplier weights from learning engine
+  // Maps: class→power, stride→pace, traffic→market, clv→human, trainer→trainer
+  const multiplier = options.multiplier || {}
+  if (multiplier.class || multiplier.stride || multiplier.trainer || multiplier.traffic || multiplier.clv) {
+    adjustedWeights.power *= (multiplier.class || 1)
+    adjustedWeights.pace *= (multiplier.stride || 1)
+    adjustedWeights.human *= (multiplier.clv || 1)
+    adjustedWeights.market *= (multiplier.traffic || 1)
+    adjustedWeights.trainer *= (multiplier.trainer || 1)
   }
 
   const totalWeight = adjustedWeights.power + adjustedWeights.pace + adjustedWeights.human + adjustedWeights.market + adjustedWeights.trainer
@@ -396,6 +408,17 @@ export function runApexEngine(runners, race, options = {}) {
   const winProbs = bayesianWinProbabilities(sorted, race)
   const placeProbs = bayesianPlaceProbabilities(sorted)
 
+  // Apply calibration adjustment — shifts probabilities based on historical accuracy
+  const calAdj = options.calibrationData ? computeCalibrationAdjustment(options.calibrationData) : { winAdj: 0, placeAdj: 0 }
+  const adjustedWinProbs = winProbs.map((p) => {
+    const adjusted = p + calAdj.winAdj
+    return Math.max(0.1, Math.min(99, Math.round(adjusted * 10) / 10))
+  })
+  const adjustedPlaceProbs = placeProbs.map((p) => {
+    const adjusted = p + calAdj.placeAdj
+    return Math.max(0.1, Math.min(99, Math.round(adjusted * 10) / 10))
+  })
+
   // Engine 2: Race Shape Simulation
   const simulation = runRaceSimulation(sorted, race, paceMap, {
     numSimulations: 100,
@@ -418,7 +441,7 @@ export function runApexEngine(runners, race, options = {}) {
   // Engine 4: Value Engine
   const sortedWithModelProb = sorted.map((r, i) => ({
     ...r,
-    modelProb: winProbs[i],
+    modelProb: adjustedWinProbs[i],
   }))
   const valueAnalysis = computeValue(sortedWithModelProb, race)
   const valueMap = {}
@@ -442,7 +465,7 @@ export function runApexEngine(runners, race, options = {}) {
   const betFilter = computeBetFilter(sorted, race, paceMap)
 
   const output = sorted.map((r, i) => {
-    const band = probBand(winProbs[i])
+    const band = probBand(adjustedWinProbs[i])
     const odds = Number(r.odds || r.price || 0)
     const traits = placeTraits(r)
     const key = r.horse_id || r.horse
@@ -451,7 +474,7 @@ export function runApexEngine(runners, race, options = {}) {
     const value = valueMap[key] || {}
     const bankroll = bankrollMap[key] || {}
 
-    const kelly = syndicateStake(winProbs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
+    const kelly = syndicateStake(adjustedWinProbs[i], odds, r.probBand, r.volatility, { maxStake: 0.05, uncertainty: r.uncertainty?.uncertainty || 0 })
 
     // Scenario Flags
     const scenarioFlags = detectScenarioFlags(r, sorted, race, paceMap)
@@ -467,15 +490,15 @@ export function runApexEngine(runners, race, options = {}) {
 
     return {
       ...r,
-      winProb: Math.round(winProbs[i] * 10) / 10,
-      placeProb: Math.round(placeProbs[i] * 10) / 10,
+      winProb: Math.round(adjustedWinProbs[i] * 10) / 10,
+      placeProb: Math.round(adjustedPlaceProbs[i] * 10) / 10,
       probBand: band.label,
       probRange: band.range,
       probTier: band.tier,
       confidenceScore: r.finalScore,
-      betQuality: betQuality(band, winProbs[i], r.market.score, odds),
+      betQuality: betQuality(band, adjustedWinProbs[i], r.market.score, odds),
       selectionQuality: selectionQuality(
-        winProbs[i],
+        adjustedWinProbs[i],
         odds,
         r.probBand,
         r.volatility,
@@ -531,5 +554,6 @@ export function runApexEngine(runners, race, options = {}) {
     valueEngine: valueAnalysis.summary,
     bankrollEngine: bankrollAnalysis.summary,
     betFilter,
+    calibrationAdjustment: calAdj,
   }
 }
