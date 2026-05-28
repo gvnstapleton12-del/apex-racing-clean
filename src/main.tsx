@@ -141,35 +141,18 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
         </div>
 
         <div className='shrink-0 rounded-2xl flex items-center gap-3'>
-          {isNap ? (
-            <>
-              <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center min-w-[70px]'>
-                <p className='text-xs text-zinc-500 mb-1'>Score</p>
-                <p className='text-2xl font-bold text-amber-400'>{selection.score}</p>
-              </div>
-              <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center min-w-[70px]'>
-                <p className='text-xs text-zinc-500 mb-1'>Odds</p>
-                <p className='text-2xl font-bold'>{selection.odds || '-'}</p>
-              </div>
-              <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center min-w-[70px]'>
-                <p className='text-xs text-zinc-500 mb-1'>Form</p>
-                <p className='text-2xl font-bold'>{selection.form || '-'}</p>
-              </div>
-            </>
-          ) : (
-            <div className='w-28 h-28 rounded-2xl bg-[#0a1a14] border-2 border-green-400 flex flex-col items-center justify-center'>
-              <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>APEX</span>
-              <strong className='text-3xl font-black text-green-400'>{selection.score}</strong>
-              <div className='flex gap-2 mt-1'>
-                {selection.winProb != null && (
-                  <span className='text-green-400 text-xs font-medium'>W:{(selection.winProb * 100).toFixed(1)}%</span>
-                )}
-                {selection.placeProb != null && (
-                  <span className='text-blue-400 text-xs font-medium'>P:{(selection.placeProb * 100).toFixed(0)}%</span>
-                )}
-              </div>
+          <div className='w-28 h-28 rounded-2xl bg-[#0a1a14] border-2 border-green-400 flex flex-col items-center justify-center'>
+            <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>APEX</span>
+            <strong className='text-3xl font-black text-green-400'>{selection.score}</strong>
+            <div className='flex gap-2 mt-1'>
+              {selection.winProb != null && (
+                <span className='text-green-400 text-xs font-medium'>W:{(selection.winProb * 100).toFixed(1)}%</span>
+              )}
+              {selection.placeProb != null && (
+                <span className='text-blue-400 text-xs font-medium'>P:{(selection.placeProb * 100).toFixed(0)}%</span>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </article>
@@ -226,7 +209,11 @@ function Home() {
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && (s.odds || 0) >= 2.0)
-  const core = bettable.filter((s) => (s.odds || 0) < 10).sort((a, b) => (b.valueEdge || 0) * (b.winProb || 0) - (a.valueEdge || 0) * (a.winProb || 0))
+  const core = bettable.filter((s) => (s.odds || 0) < 10).sort((a, b) => {
+    const scoreDiff = (b.score || 0) - (a.score || 0)
+    if (Math.abs(scoreDiff) > 2) return scoreDiff
+    return (b.valueEdge || 0) - (a.valueEdge || 0)
+  })
   const bombs = bettable.filter((s) => (s.odds || 0) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
   const picks = [...core.slice(0, 2), ...(bombs.length > 0 ? [bombs[0]] : core.slice(2, 3))]
   const bestBet = picks[0]
