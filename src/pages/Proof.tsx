@@ -33,6 +33,16 @@ function HistoryTab() {
 
   return (
     <div className='space-y-6'>
+      <section className='dashboard-hero' style={{ gridTemplateColumns: '1fr' }}>
+        <div className='hero-copy'>
+          <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>Evidence</span>
+          <h1 className='text-5xl font-black tracking-tight'>Proof of performance</h1>
+          <p className='text-zinc-400 text-lg mt-3'>
+            Real prediction data, accuracy metrics, and explainable race analysis.
+          </p>
+        </div>
+      </section>
+
       <div className='grid grid-cols-2 lg:grid-cols-6 gap-3'>
         <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
           <span className='text-zinc-500 text-xs block'>Total Runners</span>
