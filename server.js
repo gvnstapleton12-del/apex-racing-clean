@@ -1034,6 +1034,16 @@ function matchDailyPicksWithResults(races) {
     const date = rawDate.replace(/[/]/g, '-')
     if (!date || !DAILY_PICKS_DATABASE[date]) return
 
+    // Skip finished races — only mark NR for upcoming races
+    const hasResults = (race.runners || []).some((r) => r.position && r.position > 0)
+    if (hasResults) return
+    const offDt = race.off_dt || race.off_time
+    if (offDt) {
+      const offTime = new Date(offDt)
+      const minutesSinceOff = (Date.now() - offTime.getTime()) / 60000
+      if (minutesSinceOff > 30) return
+    }
+
     const dailyPicks = DAILY_PICKS_DATABASE[date].picks || []
     const raceRunners = new Set(
       (race.runners || []).map((r) => normalizeHorseName(r.horse))
