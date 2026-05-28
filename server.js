@@ -428,11 +428,12 @@ const LIVE_STATE = {
 function findPredictionForRunner(race, runner) {
   const course = String(race.course || '').trim()
   const date = String(race.date || '')
-  const raceKey = `${course}-${date}`
+  const offTime = String(race.off_time || '')
+  const raceKey = `${course}-${offTime}-${date}`
   const horseName = String(runner.horse || '').trim()
 
   const candidates = Object.entries(PREDICTIONS_DATABASE)
-    .filter(([key]) => key.includes(raceKey))
+    .filter(([key]) => key.includes(raceKey) || key.includes(`${course}-${date}`))
     .flatMap(([, preds]) => preds)
 
   return candidates.find(

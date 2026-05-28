@@ -271,9 +271,9 @@ function HistoryTab() {
                 return (
                   <div key={b.band} className='flex items-center gap-3 text-sm'>
                     <span className='w-20 text-zinc-400'>{b.band}</span>
-                    <div className='flex-1 bg-white/5 rounded-full h-4 overflow-hidden relative'>
-                      <div className='h-full bg-blue-500/30 rounded-full' style={{ width: `${Math.min(b.actual, 100)}%` }} />
-                      <div className='absolute top-0 left-0 h-full border-r border-blue-400/50' style={{ left: `${b.expected}%` }} />
+                    <div className='flex-1 bg-white/10 rounded-full h-5 overflow-hidden relative'>
+                      <div className='h-full bg-blue-500/60 rounded-full' style={{ width: `${Math.min(b.actual, 100)}%` }} />
+                      <div className='absolute top-0 left-0 h-full border-r-2 border-blue-400' style={{ left: `${b.expected}%` }} />
                     </div>
                     <span className='w-16 text-right text-xs text-zinc-500'>{b.total} bets</span>
                     <span className='w-16 text-right font-bold'>{b.actual}%</span>
@@ -295,9 +295,9 @@ function HistoryTab() {
                 return (
                   <div key={b.band} className='flex items-center gap-3 text-sm'>
                     <span className='w-20 text-zinc-400'>{b.band}</span>
-                    <div className='flex-1 bg-white/5 rounded-full h-4 overflow-hidden relative'>
-                      <div className='h-full bg-purple-500/30 rounded-full' style={{ width: `${Math.min(b.actual, 100)}%` }} />
-                      <div className='absolute top-0 left-0 h-full border-r border-purple-400/50' style={{ left: `${b.expected}%` }} />
+                    <div className='flex-1 bg-white/10 rounded-full h-5 overflow-hidden relative'>
+                      <div className='h-full bg-purple-500/60 rounded-full' style={{ width: `${Math.min(b.actual, 100)}%` }} />
+                      <div className='absolute top-0 left-0 h-full border-r-2 border-purple-400' style={{ left: `${b.expected}%` }} />
                     </div>
                     <span className='w-16 text-right text-xs text-zinc-500'>{b.total} bets</span>
                     <span className='w-16 text-right font-bold'>{b.actual}%</span>
