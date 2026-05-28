@@ -22,6 +22,20 @@ import Analytics from './pages/Analytics'
 import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
 
+function parseOddsToNum(odds: unknown): number {
+  if (odds == null) return 0
+  if (typeof odds === 'number') return odds
+  const str = String(odds)
+  const parts = str.split('/')
+  if (parts.length === 2) {
+    const n = parseFloat(parts[0])
+    const d = parseFloat(parts[1])
+    if (!isNaN(n) && !isNaN(d) && d !== 0) return n / d
+  }
+  const val = parseFloat(str)
+  return isNaN(val) ? 0 : val
+}
+
 const queryClient = new QueryClient()
 
 const tabs = [
@@ -208,13 +222,13 @@ function Home() {
   const today = new Date().toISOString().split('T')[0]
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
-  const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && (s.odds || 0) >= 2.0)
-  const core = bettable.filter((s) => (s.odds || 0) < 10).sort((a, b) => {
+  const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0)
+  const core = bettable.filter((s) => parseOddsToNum(s.odds) < 10).sort((a, b) => {
     const scoreDiff = (b.score || 0) - (a.score || 0)
     if (Math.abs(scoreDiff) > 2) return scoreDiff
     return (b.valueEdge || 0) - (a.valueEdge || 0)
   })
-  const bombs = bettable.filter((s) => (s.odds || 0) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
+  const bombs = bettable.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
   const picks = [...core.slice(0, 2), ...(bombs.length > 0 ? [bombs[0]] : core.slice(2, 3))]
   const bestBet = picks[0]
   const topScore = picks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
