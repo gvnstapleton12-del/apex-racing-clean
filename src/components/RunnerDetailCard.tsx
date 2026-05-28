@@ -120,11 +120,11 @@ function SelectionQualitySection({ sq, winProb, placeProb }: { sq: NonNullable<R
       <div className='grid grid-cols-2 sm:grid-cols-3 gap-3'>
         <div className='bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center'>
           <span className='text-zinc-500 text-xs block'>Win Probability</span>
-          <strong className='text-2xl font-bold text-green-400'>{winProb}%</strong>
+          <strong className='text-2xl font-bold text-green-400'>{winProb?.toFixed(1)}%</strong>
         </div>
         <div className='bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 text-center'>
           <span className='text-zinc-500 text-xs block'>Place Probability</span>
-          <strong className='text-2xl font-bold text-blue-400'>{placeProb || '-'}%</strong>
+          <strong className='text-2xl font-bold text-blue-400'>{placeProb?.toFixed(1) || '-'}%</strong>
         </div>
         <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
           <span className='text-zinc-500 text-xs block'>Fair Odds</span>
@@ -275,8 +275,8 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
             <div className='flex gap-2 mt-3 flex-wrap'>
               {runner.odds && <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold'>{runner.odds}</span>}
               {runner.draw && <span className='px-2 py-1 bg-white/[0.04] text-zinc-400 rounded-lg text-xs'>Draw {runner.draw}</span>}
-              {runner.winProb && <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-bold'>W:{runner.winProb}%</span>}
-              {runner.placeProb && <span className='px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-xs font-bold'>P:{runner.placeProb}%</span>}
+              {runner.winProb && <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-bold'>W:{runner.winProb.toFixed(1)}%</span>}
+              {runner.placeProb && <span className='px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-xs font-bold'>P:{runner.placeProb.toFixed(1)}%</span>}
             </div>
           </div>
 
