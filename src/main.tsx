@@ -62,9 +62,10 @@ interface PickCardProps {
   result: string | null
   position: number | null
   isNap?: boolean
+  isBomb?: boolean
 }
 
-function PickCard({ selection, rank, result, position, isNap = false }: PickCardProps) {
+function PickCard({ selection, rank, result, position, isNap = false, isBomb = false }: PickCardProps) {
   if (!selection) return null
   const label = resultLabel(result, position)
   return (
@@ -80,6 +81,9 @@ function PickCard({ selection, rank, result, position, isNap = false }: PickCard
           <div className='flex items-center gap-2 mb-3'>
             {isNap && (
               <span className='text-xs px-2 py-1 rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300 font-bold'>NAP</span>
+            )}
+            {isBomb && (
+              <span className='text-xs px-2 py-1 rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 font-bold'>BOMB</span>
             )}
             <span className='text-zinc-500 text-sm font-bold'>#{rank}</span>
             {selection.probConfidence != null && selection.probConfidence > 0.6 ? (
@@ -222,7 +226,9 @@ function Home() {
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && (s.odds || 0) >= 2.0)
-  const picks = bettable.slice(0, 3)
+  const core = bettable.filter((s) => (s.odds || 0) < 10).sort((a, b) => (b.valueEdge || 0) * (b.winProb || 0) - (a.valueEdge || 0) * (a.winProb || 0))
+  const bombs = bettable.filter((s) => (s.odds || 0) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
+  const picks = [...core.slice(0, 2), ...(bombs.length > 0 ? [bombs[0]] : core.slice(2, 3))]
   const bestBet = picks[0]
   const topScore = picks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
@@ -396,8 +402,9 @@ function Home() {
               const saved = todayResults.find(
                 (r) => r.horse === s.horse && r.course === s.course
               )
+              const isBombPick = i === 2 && bombs.length > 0
               if (i === 0 && bestBet) {
-                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNapa />
+                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNap isBomb={isBombPick} />
               }
               return (
                 <PickCard
@@ -406,6 +413,7 @@ function Home() {
                   rank={i + 1}
                   result={saved?.result || null}
                   position={saved?.position || null}
+                  isBomb={isBombPick}
                 />
               )
             })}
