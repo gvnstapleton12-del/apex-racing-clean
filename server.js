@@ -15,6 +15,9 @@ import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchl
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
 import { fetchAtrRacecards } from './src/lib/scrapers/atrScraper.js'
+import { initHorseDb, createTables, closeHorseDb } from './src/lib/horseMemoryDb.js'
+import { getHorseMemory, calculateHandicapScore, calculateAbilityFromMemory } from './src/lib/horseMemoryEngine.js'
+import { saveHorseRun } from './src/lib/saveHorseRun.js'
 
 // Global error handlers to prevent crashes
 process.on('uncaughtException', (error) => {
@@ -94,6 +97,9 @@ const CALIBRATION_DB_PATH = path.join(process.cwd(), 'data', 'calibration.json')
 const HISTORICAL_DB_PATH = path.join(process.cwd(), 'data', 'historical.json')
 const TRAINER_FORM_PATH = path.join(process.cwd(), 'data', 'trainer-form.json')
 const JOCKEY_FORM_PATH = path.join(process.cwd(), 'data', 'jockey-form.json')
+const HORSE_MEMORY_DB_PATH = path.join(process.cwd(), 'data', 'apex-horses.db')
+
+let HORSE_MEMORY_DB = null
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -379,7 +385,7 @@ const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
 
-const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH)
+const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH) || {}
 if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
 if (!LEARNING_DATABASE.races) LEARNING_DATABASE.races = []
 if (!LEARNING_DATABASE.analytics) LEARNING_DATABASE.analytics = {}
@@ -419,6 +425,18 @@ const JOCKEY_FORM_DATABASE = loadDatabase(JOCKEY_FORM_PATH) || {}
 const HISTORICAL_DATABASE = loadDatabase(HISTORICAL_DB_PATH)?.records
   ? loadDatabase(HISTORICAL_DB_PATH)
   : { records: [] }
+
+// Horse Memory SQLite Database
+async function initHorseMemory() {
+  try {
+    HORSE_MEMORY_DB = await initHorseDb()
+    await createTables(HORSE_MEMORY_DB)
+    console.log('[Horse Memory] Database initialized')
+  } catch (error) {
+    console.error('[Horse Memory] Failed to initialize:', error.message)
+  }
+}
+initHorseMemory()
 
 const LIVE_STATE = {
   racecards: [],
@@ -519,7 +537,26 @@ async function processRace(race) {
       }
     }
 
-    const enrichedRunners = race.runners || []
+    const enrichedRunners = await Promise.all((race.runners || []).map(async runner => {
+      if (HORSE_MEMORY_DB && runner.horse) {
+        try {
+          const memory = await getHorseMemory(HORSE_MEMORY_DB, runner.horse, runner.or || 0)
+          if (memory) {
+            const handicapScore = calculateHandicapScore(memory, runner.or || 0)
+            const abilityScore = calculateAbilityFromMemory(memory, runner.or || 0, runner.rpr || 0)
+            runner.horseMemory = {
+              ...memory,
+              handicapScore: handicapScore.score,
+              handicapLabel: handicapScore.label,
+              abilityScore,
+            }
+          }
+        } catch (err) {
+          // silently skip horse memory errors per-runner
+        }
+      }
+      return runner
+    }))
 
     const apexResult = runApexEngine(enrichedRunners, race, {
       goingDb: GOING_DATABASE,
@@ -530,6 +567,9 @@ async function processRace(race) {
       races: LEARNING_DATABASE.races || [],
       trainerForm: TRAINER_FORM_DATABASE,
       jockeyForm: JOCKEY_FORM_DATABASE,
+      multiplier: LEARNING_DATABASE.weights?.multiplier || {},
+      calibrationData: CALIBRATION_DATABASE.analytics || null,
+      horseMemoryDb: HORSE_MEMORY_DB,
     })
 
     const atrLinks = await fetchAtrHorseLinks(race)
@@ -770,21 +810,26 @@ async function fetchTodayResults() {
         const position = normalizePosition(runner.position)
         if (position < 1) return
 
-        const alreadyRecorded = LEARNING_DATABASE.records.some(
+        const alreadyRecorded = (LEARNING_DATABASE.records || []).some(
           (r) => r.horse === runner.horse && r.timestamp?.startsWith(today)
         )
         if (alreadyRecorded) return
 
+        // Match result with prediction for learning
+        const prediction = findPredictionForRunner(race, runner)
+
+        if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
         LEARNING_DATABASE.records.push({
           horse: runner.horse,
           position,
           won: position === 1,
-          spOdds: runner.sp || 0,
-          aiConfidence: 0,
-          signal: 'SL_RESULT',
-          marketMovement: 'N/A',
+          spOdds: runner.sp || resolveOdds(runner),
+          aiConfidence: prediction?.confidence || prediction?.finalScore || 0,
+          signal: prediction ? 'APEX_PREDICTION' : 'SL_RESULT',
+          marketMovement: prediction?.marketMovement?.movement || 'N/A',
           timestamp: new Date().toISOString(),
           resultProcessed: true,
+          breakdown: prediction?.breakdown || null,
         })
       })
     })
@@ -818,6 +863,37 @@ async function fetchTodayResults() {
       console.log(`[Results] Stored ${LEARNING_DATABASE.records.length - existingCount} new records`)
     }
 
+    // Bucket learning — update context bucket weights from results
+    const racesWithPredictions = resultRaces.filter((race) => {
+      const runners = race.runners || []
+      return runners.some((runner) => findPredictionForRunner(race, runner))
+    })
+
+    if (racesWithPredictions.length > 0) {
+      const bucketResult = learnFromBuckets(BUCKET_DATABASE, racesWithPredictions.map((race) => {
+        const runners = race.runners || []
+        const predictions = runners.map((runner) => {
+          const pred = findPredictionForRunner(race, runner)
+          return {
+            powerScore: pred?.breakdown?.powerScore || 50,
+            paceScore: pred?.breakdown?.paceScore || 0,
+            humanScore: pred?.breakdown?.humanAdj || 0,
+            marketScore: pred?.breakdown?.marketAdj || 0,
+            trainerRtf: Number(runner.trainer_rtf || 0),
+          }
+        })
+        const results = runners.map((runner) => ({
+          position: normalizePosition(runner.position),
+        }))
+        return { race, predictions, results }
+      }))
+
+      if (bucketResult.updated) {
+        saveDatabase(BUCKET_DB_PATH, BUCKET_DATABASE)
+        console.log(`[Bucket Learning] Updated ${bucketResult.bucketCount} buckets from ${racesWithPredictions.length} races`)
+      }
+    }
+
     let newCalRecords = 0
     resultRaces.forEach((race) => {
       const runners = race.runners ?? []
@@ -830,6 +906,7 @@ async function fetchTodayResults() {
           (r) => r.horse === runner.horse && r.date === race.date && r.race === `${race.course} ${race.off_time}`
         )
         if (dup) return
+        if (!CALIBRATION_DATABASE.records) CALIBRATION_DATABASE.records = []
         CALIBRATION_DATABASE.records.push(createCalibrationRecord({
           ...prediction,
           going: race.going || '',
@@ -883,6 +960,66 @@ async function fetchTodayResults() {
     if (historicalUpdated > 0) {
       saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
       console.log(`[Historical] Updated ${historicalUpdated} records with results (total: ${HISTORICAL_DATABASE.records.length})`)
+    }
+
+    // Update LIVE_STATE with position data from results
+    if (LIVE_STATE.racecards && resultRaces.length > 0) {
+      let positionsUpdated = 0
+      resultRaces.forEach((resultRace) => {
+        const liveRace = LIVE_STATE.racecards.find(
+          (lr) => lr.course === resultRace.course && lr.off_time === resultRace.off_time
+        )
+        if (!liveRace) return
+        const resultRunners = resultRace.runners || []
+        resultRunners.forEach((rr) => {
+          const pos = normalizePosition(rr.position)
+          if (pos < 1) return
+          const liveRunner = (liveRace.runners || []).find(
+            (lr) => lr.horse === rr.horse
+          )
+          if (liveRunner && !liveRunner.position) {
+            liveRunner.position = pos
+            positionsUpdated++
+          }
+        })
+      })
+      if (positionsUpdated > 0) {
+        console.log(`[Results] Updated ${positionsUpdated} runner positions in live state`)
+        API_CACHE.delete('racecards:sl')
+      }
+    }
+
+    // Save horse runs to SQLite memory database for future lookups
+    if (HORSE_MEMORY_DB) {
+      let horseRunsSaved = 0
+      for (const race of resultRaces) {
+        const runners = race.runners ?? []
+        for (const runner of runners) {
+          const position = normalizePosition(runner.position)
+          if (position < 1) continue
+          const saved = await saveHorseRun(HORSE_MEMORY_DB, {
+            horse_name: runner.horse || '',
+            horse_id: runner.horse_id || null,
+            race_date: race.date || new Date().toISOString().split('T')[0],
+            course: race.course || '',
+            distance: race.distance_f || '',
+            distance_furlongs: parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0,
+            going: race.going || '',
+            or_rating: runner.ofr || runner.or || 0,
+            rpr_rating: runner.rpr || 0,
+            finish_position: position,
+            starting_price: runner.sp || 0,
+            race_class: race.race_class || '',
+            field_size: race.field_size || runners.length,
+            trainer: runner.trainer || '',
+            jockey: runner.jockey || '',
+          })
+          if (saved) horseRunsSaved++
+        }
+      }
+      if (horseRunsSaved > 0) {
+        console.log(`[Horse Memory] Saved ${horseRunsSaved} horse runs to SQLite`)
+      }
     }
   } catch (error) {
     console.error('[Results] Error:', error.message)
@@ -1300,6 +1437,30 @@ app.post('/api/upload-results', (req, res) => {
 
       runners.forEach((runner) => {
         const horseId = runner.horse_id || runner.horse
+        
+        // Save to Horse Memory SQLite Database - TEMPORARILY DISABLED
+        // if (HORSE_MEMORY_DB && runner.horse) {
+        //   saveHorseRun(HORSE_MEMORY_DB, {
+        //     horse_name: runner.horse,
+        //     horse_id: horseId,
+        //     race_date: race.date || new Date().toISOString().split('T')[0],
+        //     course: race.course || '',
+        //     distance: raceDist,
+        //     going: raceGoing,
+        //     or_rating: runner.or || runner.ofr || 0,
+        //     rpr_rating: runner.rpr || 0,
+        //     finish_position: normalizePosition(runner.position) || 0,
+        //     starting_price: resolveOdds(runner),
+        //     race_class: race.race_class || race.class || '',
+        //     field_size: race.field_size || race.fieldSize || runners.length,
+        //     trainer: runner.trainer || '',
+        //     jockey: runner.jockey || '',
+        //   }).then(saved => {
+        //     if (!saved) {
+        //       console.error('[Horse Memory] Failed to save run for', runner.horse)
+        //     }
+        //   })
+        // }
         const position = normalizePosition(runner.position)
         if (!horseId) return
 
@@ -1978,9 +2139,12 @@ server.listen(PORT, () => {
 })
 
 function gracefulShutdown(signal) {
-  console.log(`[Shutdown] ${signal} received, closing browser...`)
-  closeBrowser().then(() => {
-    console.log('[Shutdown] Browser closed')
+  console.log(`[Shutdown] ${signal} received, closing databases...`)
+  Promise.all([
+    closeBrowser(),
+    // HORSE_MEMORY_DB ? closeHorseDb(HORSE_MEMORY_DB) : Promise.resolve(), // TEMPORARILY DISABLED
+  ]).then(() => {
+    console.log('[Shutdown] All databases and browser closed')
     process.exit(0)
   }).catch(() => {
     process.exit(1)

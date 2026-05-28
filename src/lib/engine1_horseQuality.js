@@ -4,11 +4,16 @@
 
 import { computeFinishingStrength, computeStaminaBias } from './finishingStrength.js'
 import { analyzeForm } from './formEngine.js'
+import { calculateAbilityFromHistory, getHorseHistory, calculateHandicapRecoveryScore } from './horseHistoryEngine.js'
 
-function computePowerRating(runner) {
+function computePowerRating(runner, race, horseHistory) {
   const or = runner.or || runner.ofr || 0
   const rpr = runner.rpr || 0
   const lastRun = runner.last_run || 999
+
+  if (horseHistory && horseHistory.runs.length >= 2) {
+    return calculateAbilityFromHistory(or, rpr, horseHistory)
+  }
 
   let base = 50
 
@@ -176,8 +181,8 @@ function computeVolatility(runner, race) {
   return Math.max(0, Math.min(100, Math.round(score * 10) / 10))
 }
 
-export function computeHorseQuality(runner, race, paceMap) {
-  const power = computePowerRating(runner)
+export function computeHorseQuality(runner, race, paceMap, horseHistory = null) {
+  const power = computePowerRating(runner, race, horseHistory)
   const suitability = computeSuitability(runner, race)
   const consistency = computeConsistency(runner)
   const paceCompat = computePaceCompatibility(runner, paceMap)
@@ -186,6 +191,9 @@ export function computeHorseQuality(runner, race, paceMap) {
   // New: Finishing Strength and Stamina Bias
   const finishing = computeFinishingStrength(runner)
   const staminaBias = computeStaminaBias(runner, race)
+
+  // Handicap Recovery Score from history
+  const handicapRecovery = horseHistory ? calculateHandicapRecoveryScore(runner.or || runner.ofr || 0, horseHistory) : 50
 
   const weights = {
     power: 0.30,
@@ -208,7 +216,9 @@ export function computeHorseQuality(runner, race, paceMap) {
     finishing.score * weights.finishing +
     staminaBias * weights.staminaBias
 
-  const finalScore = Math.max(1, Math.min(99, Math.round(qualityScore * 10) / 10))
+  // Apply handicap recovery bonus (max +10)
+  const recoveryBonus = (handicapRecovery - 50) * 0.1
+  const finalScore = Math.max(1, Math.min(99, Math.round((qualityScore + recoveryBonus) * 10) / 10))
 
   return {
     power,
@@ -218,6 +228,7 @@ export function computeHorseQuality(runner, race, paceMap) {
     volatility,
     finishing,
     staminaBias,
+    handicapRecovery,
     finalScore,
     label: finalScore >= 80 ? 'Elite' : finalScore >= 65 ? 'Strong' : finalScore >= 50 ? 'Competitive' : finalScore >= 35 ? 'Marginal' : 'Weak',
   }

@@ -10,7 +10,7 @@ export async function fetchRacecards(): Promise<Race[]> {
     const raw = data.racecards || []
     const result = validateRacecards(raw)
     if (!result.success) {
-      console.warn('Zod validation failed:', result.error.message)
+      console.warn(`Zod validation failed: ${result.error.issues.length} issues (e.g. ${result.error.issues[0]?.path.join('.')}: ${result.error.issues[0]?.message})`)
       const { valid } = validateRaces(raw)
       return valid
     }
@@ -28,7 +28,7 @@ export async function fetchResults(): Promise<Race[]> {
     const raw = Array.isArray(data) ? data : []
     const result = validateRacecards(raw)
     if (!result.success) {
-      console.warn('Zod validation failed:', result.error.message)
+      console.warn(`Zod validation failed: ${result.error.issues.length} issues (e.g. ${result.error.issues[0]?.path.join('.')}: ${result.error.issues[0]?.message})`)
       const { valid } = validateRaces(raw)
       return valid
     }

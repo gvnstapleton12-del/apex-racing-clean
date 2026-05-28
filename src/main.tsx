@@ -68,6 +68,7 @@ interface Selection extends Runner {
   noBetReason: string | null
   confidenceTier: string
   betFilterVerdict: string
+  odds?: string | number
 }
 
 interface PickCardProps {
@@ -83,8 +84,9 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
   if (!selection) return null
   const label = resultLabel(result, position)
   return (
-    <article className={`${isNap ? 'lg:col-span-2' : ''} bg-[#0f1720] border ${isNap ? 'border-amber-500/20' : 'border-green-500/10'} rounded-2xl p-6 ${isNap ? 'hover:border-amber-400/30' : 'hover:border-green-400/30'} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
-      <div className='pick-card-glow' />
+    <article className={`${isNap ? 'lg:col-span-2' : ''} ${isNap ? 'nap-card' : 'bg-[#0f1720]'} border ${isNap ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.15)]' : 'border-green-500/10'} rounded-2xl ${isNap ? 'p-8' : 'p-6'} ${isNap ? 'hover:border-amber-400/50' : 'hover:border-green-400/30'} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
+      {isNap && <div className='nap-glow' />}
+      {!isNap && <div className='pick-card-glow' />}
       {label && (
         <div className={`absolute top-4 right-4 px-3 py-1 rounded-lg text-xs font-bold z-10 ${label.cls === 'won' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : label.cls === 'placed' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : label.cls === 'nr' ? 'bg-zinc-500/20 text-zinc-400 border border-zinc-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
           {label.text}
@@ -92,9 +94,9 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
       )}
       <div className='flex gap-6 items-start w-full overflow-hidden'>
         <div className='flex-1 min-w-0 overflow-hidden'>
-          <div className='flex items-center gap-2 mb-3'>
+          <div className='flex items-center gap-3 mb-3'>
             {isNap && (
-              <span className='text-xs px-2 py-1 rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-300 font-bold'>NAP</span>
+              <span className='text-sm px-3 py-1.5 rounded-lg border-2 border-amber-500/40 bg-amber-500/20 text-amber-200 font-black tracking-wider'>NAP</span>
             )}
             {isBomb && (
               <span className='text-xs px-2 py-1 rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 font-bold'>BOMB</span>
@@ -119,7 +121,7 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             href={getAtTheRacesHorseUrl(selection, selection.race)}
             target="_blank"
             rel="noopener noreferrer"
-            className='text-xl font-bold hover:text-amber-300 transition truncate block w-full'
+            className={`${isNap ? 'text-3xl' : 'text-xl'} font-black hover:text-amber-300 transition truncate block w-full`}
             onClick={() => {
               window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
             }}
@@ -136,13 +138,13 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
               <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Form {selection.form}</span>
             )}
             {selection.odds != null && (
-              <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold'>{selection.odds}</span>
+              <span className={`px-2 py-1 rounded-lg text-xs font-bold ${isNap ? 'bg-amber-500/15 text-amber-200' : 'bg-white/[0.06] text-white'}`}>{selection.odds}</span>
             )}
             {selection.draw && (
               <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Draw {selection.draw}</span>
             )}
             {selection.valueEdge != null && selection.valueEdge > 0 ? (
-              <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-medium'>+{(selection.valueEdge * 100).toFixed(1)}% edge</span>
+              <span className={`px-2 py-1 rounded-lg text-xs font-medium ${isNap ? 'bg-green-500/15 text-green-300' : 'bg-green-500/10 text-green-400'}`}>+{(selection.valueEdge * 100).toFixed(1)}% edge</span>
             ) : selection.valueEdge != null && selection.valueEdge < 0 ? (
               <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{(selection.valueEdge * 100).toFixed(1)}% edge</span>
             ) : null}
@@ -155,15 +157,15 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
         </div>
 
         <div className='shrink-0 rounded-2xl flex items-center gap-3'>
-          <div className='w-28 h-28 rounded-2xl bg-[#0a1a14] border-2 border-green-400 flex flex-col items-center justify-center'>
-            <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>APEX</span>
-            <strong className='text-3xl font-black text-green-400'>{selection.score}</strong>
+          <div className={`${isNap ? 'w-32 h-32' : 'w-28 h-28'} rounded-2xl ${isNap ? 'bg-amber-500/10 border-amber-400' : 'bg-[#0a1a14] border-green-400'} border-2 flex flex-col items-center justify-center`}>
+            <span className={`${isNap ? 'text-amber-300' : 'text-zinc-400'} text-xs font-medium uppercase tracking-wider`}>APEX</span>
+            <strong className={`${isNap ? 'text-4xl text-amber-300' : 'text-3xl text-green-400'} font-black`}>{selection.score}</strong>
             <div className='flex gap-2 mt-1'>
               {selection.winProb != null && (
-                <span className='text-green-400 text-xs font-medium'>W:{(selection.winProb * 100).toFixed(1)}%</span>
+                <span className={`${isNap ? 'text-amber-300' : 'text-green-400'} text-xs font-medium`}>W:{(selection.winProb * 100).toFixed(1)}%</span>
               )}
               {selection.placeProb != null && (
-                <span className='text-blue-400 text-xs font-medium'>P:{(selection.placeProb * 100).toFixed(0)}%</span>
+                <span className={`${isNap ? 'text-amber-400' : 'text-blue-400'} text-xs font-medium`}>P:{(selection.placeProb * 100).toFixed(0)}%</span>
               )}
             </div>
           </div>
@@ -219,14 +221,57 @@ function Home() {
       .catch(() => {})
   }, [])
 
+  // Refetch daily picks every 60s to pick up matched results
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('/api/daily-picks')
+        .then((r) => r.json())
+        .then(setDailyPicksDb)
+        .catch(() => {})
+    }, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
   const today = new Date().toISOString().split('T')[0]
+  const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
-  const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0)
-  const core = bettable.filter((s) => parseOddsToNum(s.odds) < 10).sort((a, b) => (b.score || 0) - (a.score || 0))
+  const bettable = allSelections
+    .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0)
+    .filter((s) => {
+      if (!s.offTime) return true
+      const raceTime = s.offTime.replace(':', '')
+      const nowTime = ukNow.replace(':', '')
+      return raceTime > nowTime
+    })
+  const core = bettable
+    .filter((s) => parseOddsToNum(s.odds) < 10)
+    .sort((a, b) => {
+      const aVal = (a.valueEdge || 0) * (a.winProb || 0)
+      const bVal = (b.valueEdge || 0) * (b.winProb || 0)
+      const diff = bVal - aVal
+      if (Math.abs(diff) > 0.001) return diff
+      return (b.score || 0) - (a.score || 0)
+    })
   const bombs = bettable.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
-  const picks = [...core.slice(0, 2), ...(bombs.length > 0 ? [bombs[0]] : core.slice(2, 3))]
-  const bestBet = picks[0]
+  const bestBet = [...core, ...bombs].sort((a, b) => ((b.valueEdge || 0) * (b.winProb || 0)) - ((a.valueEdge || 0) * (a.winProb || 0)))[0]
+  const sortedByTime = [...core, ...bombs].sort((a, b) => {
+    const aTime = (a.offTime || '').replace(':', '')
+    const bTime = (b.offTime || '').replace(':', '')
+    return aTime.localeCompare(bTime)
+  })
+  // One pick per race — keep the best per course+offTime
+  const seenRaces = new Set<string>()
+  if (bestBet) seenRaces.add(`${bestBet.course}-${bestBet.offTime}`)
+  const onePerRace = sortedByTime.filter((s) => {
+    if (s === bestBet) return false
+    const raceKey = `${s.course}-${s.offTime}`
+    if (seenRaces.has(raceKey)) return false
+    seenRaces.add(raceKey)
+    return true
+  })
+  const picks = bestBet ? [bestBet, ...onePerRace] : onePerRace
+  const picksKey = picks.map((p) => p.horse + p.course).join('|')
   const topScore = picks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
 
@@ -249,8 +294,6 @@ function Home() {
   const overallLosses = pastDays.reduce((s, [, d]) => s + (d.stats?.lost || 0), 0)
   const overallTotal = overallWins + overallPlaced + overallLosses
   const overallRate = calculateStrikeRate(overallWins, overallTotal)
-
-  const picksKey = picks.map((p) => p.horse + p.course).join('|')
 
   useEffect(() => {
     if (picks.length === 0) return
@@ -399,9 +442,10 @@ function Home() {
               const saved = todayResults.find(
                 (r) => r.horse === s.horse && r.course === s.course
               )
-              const isBombPick = i === 2 && bombs.length > 0
-              if (i === 0 && bestBet) {
-                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNap isBomb={isBombPick} />
+              const isNapPick = bestBet && s.horse === bestBet.horse && s.course === bestBet.course
+              const isBombPick = s.odds && parseOddsToNum(s.odds) >= 10
+              if (isNapPick) {
+                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNap isBomb={false} />
               }
               return (
                 <PickCard

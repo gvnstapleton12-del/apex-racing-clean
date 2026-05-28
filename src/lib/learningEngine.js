@@ -234,13 +234,13 @@ export function buildLearningRecord({
 
 export function learnFromResults(records = [], currentWeights = {}) {
   const withBreakdown = records.filter(
-    (r) => r.breakdown && typeof r.breakdown.classLockScore === 'number'
+    (r) => r.breakdown && typeof r.breakdown.powerScore === 'number'
   )
 
-  if (withBreakdown.length < 200) {
+  if (withBreakdown.length < 50) {
     return {
       adjusted: false,
-      reason: `Only ${withBreakdown.length} records with breakdown data (need 200+)`,
+      reason: `Only ${withBreakdown.length} records with breakdown data (need 50+)`,
       weights: currentWeights,
     }
   }
@@ -250,10 +250,10 @@ export function learnFromResults(records = [], currentWeights = {}) {
     (r) => Number(r.position) > 1 && Number(r.position) <= 20
   )
 
-  if (winners.length < 20) {
+  if (winners.length < 10) {
     return {
       adjusted: false,
-      reason: `Only ${winners.length} winners in data (need 20+)`,
+      reason: `Only ${winners.length} winners in data (need 10+)`,
       weights: currentWeights,
     }
   }
@@ -266,14 +266,13 @@ export function learnFromResults(records = [], currentWeights = {}) {
     }
   }
 
-  const factors = ['classLockScore', 'strideScore', 'trainerScore', 'trafficScore', 'clvScore']
-
+  // Map apex engine breakdown fields to learning factors
+  const factors = ['powerScore', 'paceScore', 'humanAdj', 'marketAdj']
   const factorLabels = {
-    classLockScore: 'class',
-    strideScore: 'stride',
-    trainerScore: 'trainer',
-    trafficScore: 'traffic',
-    clvScore: 'clv',
+    powerScore: 'class',
+    paceScore: 'stride',
+    humanAdj: 'trainer',
+    marketAdj: 'traffic',
   }
 
   const analysis = factors.map((factor) => {

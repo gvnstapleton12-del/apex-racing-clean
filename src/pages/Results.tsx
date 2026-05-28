@@ -212,24 +212,27 @@ export function ResultsList({ results }: ResultsListProps) {
 }
 
 function RaceResultCard({ race }: { race: any }) {
-  const runners = (race.runners || []).filter((r: any) => r.position || r.pos)
-  const hasResults = runners.length > 0
-  const sorted = hasResults ? [...runners].sort((a: any, b: any) => {
-    const aPos = Number(a.position || a.pos || 999)
-    const bPos = Number(b.position || b.pos || 999)
+  const [expanded, setExpanded] = useState(false)
+  const allRunners = race.runners || []
+  const sorted = [...allRunners].sort((a: any, b: any) => {
+    const aPos = Number(a.position || a.pos || a.finish_position || a.finishing_position || a.result_position || a.place || 999)
+    const bPos = Number(b.position || b.pos || b.finish_position || b.finishing_position || b.result_position || b.place || 999)
     return aPos - bPos
-  }) : (race.runners || [])
+  })
+  const top3 = sorted.slice(0, 3)
+  const rest = sorted.slice(3)
+  const hasResults = allRunners.some((r: any) => Number(r.position || r.pos || r.finish_position || r.finishing_position || r.result_position || r.place) > 0)
 
   return (
-    <article className='race-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300'>
+    <article className='race-card bg-[#111827] border border-[#2a3441] rounded-2xl p-6 hover:border-[#3a4a5a] transition-all duration-300' style={{ opacity: 1 }}>
       <div className='race-card-header flex justify-between items-start mb-4'>
         <div className='space-y-2'>
           <div className='race-meta-row flex items-center gap-3'>
             <span className={`live-badge px-3 py-1 rounded-lg text-xs font-bold ${hasResults ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'}`}>
               {hasResults ? 'RESULT' : 'PENDING'}
             </span>
-            <span className='text-zinc-400 text-sm'>{hasResults ? `${runners.length}/${race.runners?.length || 0} runners` : `${race.runners?.length || 0} runners`}</span>
-            <span className='px-2 py-1 bg-white/5 rounded-md text-xs text-zinc-500 font-medium'>{race.region || ''}</span>
+            <span className='text-slate-200 text-sm'>{allRunners.length} runners</span>
+            <span className='px-2 py-1 bg-[#1e293b] rounded-md text-xs text-slate-200 font-medium'>{race.region || ''}</span>
           </div>
           <h2 className='text-xl font-bold text-white'>{race.race_name}</h2>
           <p className='text-zinc-400 text-sm'>{race.course} &middot; {formatOffTime(race)}</p>
@@ -237,28 +240,63 @@ function RaceResultCard({ race }: { race: any }) {
       </div>
       {hasResults ? (
         <div className='runner-list space-y-3'>
-          {sorted.map((runner: any, runnerIndex: number) => {
-            const pos = runner.position || runner.pos
-            const isWinner = pos === 1
-            const isPlaced = pos >= 2 && pos <= 4
+          {top3.map((runner: any, runnerIndex: number) => {
+            const pos = runnerIndex + 1
+            const posClass = pos === 1 ? 'bg-amber-500/5 border-amber-500/20' : pos === 2 ? 'bg-zinc-400/5 border-zinc-400/20' : 'bg-orange-500/5 border-orange-500/20'
             return (
-              <div key={runner.horse_id || runnerIndex} className={`runner-row flex justify-between items-center p-4 rounded-xl border transition-all duration-200 ${isWinner ? 'bg-amber-500/5 border-amber-500/20' : isPlaced ? 'bg-white/[0.02] border-white/5' : 'bg-white/[0.01] border-white/5'} hover:border-white/10`}>
+              <div key={runner.horse_id || runnerIndex} className={`runner-row flex justify-between items-center p-4 rounded-xl border ${posClass} hover:border-[#3a4a5a] transition-all duration-200`} style={{ opacity: 1 }}>
                 <div className='flex items-center gap-4'>
-                  <strong className={`result-position w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${isWinner ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : isPlaced ? 'bg-white/5 text-zinc-300 border border-white/10' : 'bg-white/5 text-zinc-500 border border-white/5'}`}>
+                  <strong className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black" style={{ opacity: 1, backgroundColor: pos === 1 ? '#f59e0b' : pos === 2 ? '#cbd5e1' : '#fb923c', color: '#000000' }}>
                     {pos}
                   </strong>
                   <div>
                     <span className='result-horse-name'>
-                      <button type='button' className='hover:text-amber-300 transition text-left font-bold text-lg' onClick={() => selectHorse(runner.horse || runner.name, race)}>
+                      <button type='button' className='hover:text-amber-300 transition text-left font-bold text-lg text-slate-200' onClick={() => selectHorse(runner.horse || runner.name, race)}>
                         {runner.horse || runner.name || '-'}
                       </button>
                     </span>
-                    <p className='text-zinc-500 text-sm mt-0.5'>{runner.jockey || '-'}</p>
+                    <p className='text-slate-200 text-sm mt-0.5'>{runner.jockey || '-'}</p>
                   </div>
                 </div>
                 <div className='runner-score text-right'>
-                  <strong className='text-lg'>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
-                  <span className='text-zinc-500 text-xs block'>SP</span>
+                  <strong className='text-lg text-slate-200'>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
+                  <span className='text-slate-200 text-xs block'>SP</span>
+                </div>
+              </div>
+            )
+          })}
+
+          {rest.length > 0 && (
+            <button
+              type='button'
+              onClick={() => setExpanded(!expanded)}
+              className='w-full px-4 py-2.5 rounded-xl border border-[#2a3441] bg-[#1e293b] text-slate-200 text-sm font-medium hover:bg-[#2a3a4a] hover:text-white transition flex items-center justify-center gap-2'
+              style={{ opacity: 1 }}
+            >
+              <span className={`text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}>▼</span>
+              {expanded ? 'Hide' : `${rest.length} more runner${rest.length > 1 ? 's' : ''}`}
+            </button>
+          )}
+
+          {expanded && rest.map((runner: any, runnerIndex: number) => {
+            const pos = Number(runner.position || runner.pos || runner.finish_position || runner.finishing_position || runner.result_position || runner.place)
+            return (
+              <div key={runner.horse_id || `rest-${runnerIndex}`} className='runner-row flex justify-between items-center p-4 rounded-xl border border-[#2a3441] bg-[#111827] hover:border-[#3a4a5a] transition-all duration-200' style={{ opacity: 1 }}>
+                <div className='flex items-center gap-4'>
+                  <strong className='w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold bg-[#1e293b] text-slate-200'>
+                    {pos}
+                  </strong>
+                  <div>
+                    <span className='result-horse-name'>
+                      <button type='button' className='hover:text-amber-300 transition text-left font-medium text-slate-200' onClick={() => selectHorse(runner.horse || runner.name, race)}>
+                        {runner.horse || runner.name || '-'}
+                      </button>
+                    </span>
+                    <p className='text-slate-200 text-sm mt-0.5'>{runner.jockey || '-'}</p>
+                  </div>
+                </div>
+                <div className='runner-score text-right'>
+                  <strong className='text-sm text-slate-200'>{runner.spOdds || runner.sp || runner.odds || '-'}</strong>
                 </div>
               </div>
             )
@@ -266,22 +304,22 @@ function RaceResultCard({ race }: { race: any }) {
         </div>
       ) : (
         <div className='runner-list space-y-3'>
-          {(race.runners || []).map((runner: any, runnerIndex: number) => (
-            <div key={runner.horse_id || runnerIndex} className='runner-row flex justify-between items-center p-4 rounded-xl border border-white/5 bg-white/[0.01] opacity-50'>
+            {(race.runners || []).map((runner: any, runnerIndex: number) => (
+            <div key={runner.horse_id || runnerIndex} className='runner-row flex justify-between items-center p-4 rounded-xl border border-[#2a3441] bg-[#111827] opacity-50'>
               <div className='flex items-center gap-4'>
-                <div className='w-10 h-10 rounded-xl bg-white/5 border border-white/5' />
+                <div className='w-10 h-10 rounded-xl bg-[#1e293b] border border-[#2a3441]' />
                 <div>
                   <span className='result-horse-name'>
-                    <button type='button' className='hover:text-amber-300 transition text-left font-bold text-lg' onClick={() => selectHorse(runner.horse || runner.name, race)}>
+                    <button type='button' className='hover:text-amber-300 transition text-left font-bold text-lg text-slate-200' onClick={() => selectHorse(runner.horse || runner.name, race)}>
                       {runner.horse || runner.name || '-'}
                     </button>
                   </span>
-                  <p className='text-zinc-500 text-sm mt-0.5'>{runner.jockey || '-'}</p>
+                  <p className='text-slate-200 text-sm mt-0.5'>{runner.jockey || '-'}</p>
                 </div>
               </div>
               <div className='runner-score text-right'>
-                <strong className='text-lg'>{runner.odds || '-'}</strong>
-                <span className='text-zinc-500 text-xs block'>Odds</span>
+                <strong className='text-lg text-slate-200'>{runner.odds || '-'}</strong>
+                <span className='text-slate-200 text-xs block'>Odds</span>
               </div>
             </div>
           ))}

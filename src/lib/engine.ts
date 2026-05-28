@@ -25,8 +25,20 @@ export interface ProbabilityEstimate {
 
 export function calcAbility(runner: Runner): number {
   const c = runner.components
-  if (!c) return getScore(runner)
-  return c.ability
+  const hm = runner.horseMemory
+  
+  // Use historical ability if available (horse memory)
+  if (hm?.abilityScore) {
+    return hm.abilityScore
+  }
+  
+  // Fallback to components
+  if (c?.ability) {
+    return c.ability
+  }
+  
+  // Final fallback to legacy score
+  return getScore(runner)
 }
 
 export function calcSuitability(runner: Runner): number {
@@ -277,11 +289,22 @@ export function gradeClass(label: string): string {
 
 export function resultLabel(result: string | null | undefined, position?: number) {
   if (!result) return null
-  if (result === 'won') return { text: 'WON', cls: 'won' }
-  if (result === 'placed') return { text: 'P', cls: 'placed' }
+  const posText = position ? ` ${position}` : ''
+  if (result === 'won') return { text: `WON${posText}`, cls: 'won' }
+  if (result === 'placed') return { text: `${position || 'P'}${position ? getOrdinal(position) : ''}`, cls: 'placed' }
   if (result === 'nr') return { text: 'NR', cls: 'nr' }
-  if (result === 'lost') return { text: 'LOST', cls: 'lost' }
+  if (result === 'lost') return { text: `${position || 'L'}${position ? getOrdinal(position) : ''}`, cls: 'lost' }
   return null
+}
+
+function getOrdinal(n: number): string {
+  if (n >= 11 && n <= 13) return 'th'
+  switch (n % 10) {
+    case 1: return 'st'
+    case 2: return 'nd'
+    case 3: return 'rd'
+    default: return 'th'
+  }
 }
 
 function parseField(val: any) {
@@ -338,6 +361,7 @@ export function formatSelection(race: Race, runner: Runner) {
     confidenceTier: '',
     betFilterVerdict: betFilter.verdict || 'BETTABLE',
     selectionQuality: runner.selectionQuality,
+    odds: runner.odds,
   } as const
 }
 
@@ -410,15 +434,17 @@ export function filterLiveAlerts(runners: Runner[]): Runner[] {
   })
 }
 
-function parseOddsNum(odds?: string): number | null {
-  if (!odds) return null
-  const parts = odds.split('/')
+function parseOddsNum(odds?: string | number): number | null {
+  if (odds == null || odds === '') return null
+  if (typeof odds === 'number') return odds > 0 ? odds : null
+  const str = String(odds)
+  const parts = str.split('/')
   if (parts.length === 2) {
     const num = parseFloat(parts[0])
     const den = parseFloat(parts[1])
     if (!isNaN(num) && !isNaN(den) && den !== 0) return num / den
   }
-  const val = parseFloat(odds)
+  const val = parseFloat(str)
   return isNaN(val) ? null : val
 }
 

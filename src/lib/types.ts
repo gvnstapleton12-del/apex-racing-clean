@@ -31,7 +31,6 @@ export interface BetFilter {
 export interface Runner {
   horse?: string
   horse_id?: string
-  name?: string
   jockey?: string
   trainer?: string
   odds?: string | number
@@ -74,6 +73,30 @@ export interface Runner {
   form?: string
   atrUrl?: string
   atrFormUrl?: string
+  horseMemory?: HorseMemory
+}
+
+export interface HorseMemory {
+  horseName: string
+  runsCount: number
+  peakRPR: number
+  peakOR: number
+  lastWinningOR: number | null
+  lastWinningRPR: number | null
+  currentVsPeak: number
+  currentVsLastWin: number
+  avgRPR: number
+  recentRPR: number
+  olderRPR: number
+  rprTrend: number
+  bestDistance: number | null
+  bestGoing: string | null
+  bestCourse: string | null
+  wins: number
+  winRate: number
+  handicapScore?: number
+  handicapLabel?: string
+  abilityScore?: number
 }
 
 export interface AiProfile {

@@ -105,7 +105,7 @@ export default function Racecards() {
         </div>
       )}
 
-      <section className='race-grid space-y-6'>
+      <section className='space-y-6'>
         <div className='flex items-center gap-3'>
           <input
             type='text'
@@ -143,11 +143,11 @@ export default function Racecards() {
             <article
               key={race.race_id || index}
               id={`race-${race.course ? race.course.replace(/\s+/g, '-') : ''}-${(race.off_time || '').replace(':', '')}`}
-              className='race-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300'
+              className='race-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 overflow-hidden'
             >
-              <div className='race-card-header flex justify-between items-start mb-4'>
-                <div className='space-y-2'>
-                  <div className='race-meta-row flex items-center gap-3 flex-wrap'>
+              <div className='race-card-header flex flex-wrap justify-between items-start gap-4 mb-4'>
+                <div className='space-y-2 min-w-0 flex-1'>
+                  <div className='race-meta-row flex items-center gap-2 flex-wrap'>
                     <span className='live-badge px-3 py-1 rounded-lg text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20'>LIVE</span>
                     <span className='text-zinc-400 text-sm'>{race.field_size} runners</span>
                     {race.paceMap && (
@@ -163,7 +163,7 @@ export default function Racecards() {
                     )}
                   </div>
 
-                  <h2 className='text-xl font-bold text-white'>{race.race_name}</h2>
+                  <h2 className='text-xl font-bold text-white break-words'>{race.race_name}</h2>
                   <p className='text-zinc-400 text-sm'>
                     {race.course} &middot; {formatOffTime(race)}
                     {race.distance_f && <span> &middot; {race.distance_f}</span>}
@@ -202,9 +202,9 @@ export default function Racecards() {
                 {runners.slice(0, 5).map((runner, runnerIndex) => (
                   <div
                     key={runnerIndex}
-                    className='runner-row flex justify-between items-center p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:border-white/10 transition-all duration-200'
+                    className='runner-row flex flex-wrap justify-between items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:border-white/10 transition-all duration-200'
                   >
-                    <div className='flex items-center gap-4 flex-1 min-w-0'>
+                    <div className='flex items-center gap-3 flex-1 min-w-0 flex-wrap'>
                       <a
                         href={getAtTheRacesHorseUrl(runner, race)}
                         target='_blank'
@@ -216,7 +216,7 @@ export default function Racecards() {
                       {runner.odds && (
                         <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold flex-shrink-0'>{runner.odds}</span>
                       )}
-                      <div className='flex gap-2 flex-shrink-0'>
+                      <div className='flex gap-2 flex-wrap'>
                         {runner.runningStyle && (
                           <span className={`pace-badge px-2 py-1 rounded-md text-xs font-medium ${runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
                             {runner.runningStyle}
@@ -236,7 +236,7 @@ export default function Racecards() {
                       </div>
                     </div>
 
-                    <div className='runner-score flex items-center gap-4 flex-shrink-0'>
+                    <div className='runner-score flex items-center gap-3 flex-shrink-0 min-w-0'>
                       <div className='text-right'>
                         <strong className='text-xl font-black text-amber-400'>{getScore(runner)}</strong>
                         <div className='flex gap-2 mt-1'>
