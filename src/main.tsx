@@ -221,7 +221,7 @@ function Home() {
   const today = new Date().toISOString().split('T')[0]
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
-  const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03)
+  const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && (s.odds || 0) >= 2.0)
   const picks = bettable.slice(0, 3)
   const bestBet = picks[0]
   const topScore = picks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
