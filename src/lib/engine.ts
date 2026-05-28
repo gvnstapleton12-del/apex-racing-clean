@@ -349,8 +349,8 @@ export function getHomeSelections(races: Race[]) {
         .filter(Boolean)
     )
     .sort((a: any, b: any) => {
-      const aVal = (a.winProb || 0) * (1 + Math.max(a.valueEdge || 0, 0))
-      const bVal = (b.winProb || 0) * (1 + Math.max(b.valueEdge || 0, 0))
+      const aVal = (a.valueEdge || 0) * (a.winProb || 0)
+      const bVal = (b.valueEdge || 0) * (b.winProb || 0)
       const diff = bVal - aVal
       if (Math.abs(diff) > 0.001) return diff
       return (b.score || 0) - (a.score || 0)
