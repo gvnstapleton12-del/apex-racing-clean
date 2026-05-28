@@ -203,10 +203,10 @@ export default function Racecards() {
                         <strong className='text-xl font-black text-amber-400'>{getScore(runner)}</strong>
                         <div className='flex gap-2 mt-1'>
                           {runner.winProb && (
-                            <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{runner.winProb}%</span>
+                            <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{runner.winProb.toFixed(1)}%</span>
                           )}
                           {runner.placeProb && (
-                            <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{runner.placeProb}%</span>
+                            <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{runner.placeProb.toFixed(1)}%</span>
                           )}
                         </div>
                       </div>
