@@ -998,6 +998,7 @@ function placedPositions(fieldSize) {
 function matchDailyPicksWithResults(races) {
   let matchCount = 0
 
+  // Only match picks with actual results — no pre-race NR detection
   races.forEach((race) => {
     const rawDate = String(race.date || (race.off_dt || '').slice(0, 10) || '')
     const date = rawDate.replace(/[/]/g, '-')
@@ -1028,39 +1029,6 @@ function matchDailyPicksWithResults(races) {
   if (matchCount > 0) {
     console.log(`[DAILY PICKS] Matched ${matchCount} runners with results`)
   }
-
-  races.forEach((race) => {
-    const rawDate = String(race.date || (race.off_dt || '').slice(0, 10) || '')
-    const date = rawDate.replace(/[/]/g, '-')
-    if (!date || !DAILY_PICKS_DATABASE[date]) return
-
-    // Skip finished races — only mark NR for upcoming races
-    const hasResults = (race.runners || []).some((r) => r.position && r.position > 0)
-    if (hasResults) return
-    const offDt = race.off_dt || race.off_time
-    if (offDt) {
-      const offTime = new Date(offDt)
-      const minutesSinceOff = (Date.now() - offTime.getTime()) / 60000
-      if (minutesSinceOff > 30) return
-    }
-
-    const dailyPicks = DAILY_PICKS_DATABASE[date].picks || []
-    const raceRunners = new Set(
-      (race.runners || []).map((r) => normalizeHorseName(r.horse))
-    )
-
-    dailyPicks.forEach((p) => {
-      if (p.result !== null) return
-      if (
-        normalizeCourse(p.course) === normalizeCourse(race.course) &&
-        !raceRunners.has(normalizeHorseName(p.horse))
-      ) {
-        p.result = 'nr'
-        p.position = 0
-        matchCount++
-      }
-    })
-  })
 
   Object.keys(DAILY_PICKS_DATABASE).forEach((date) => {
     const entry = DAILY_PICKS_DATABASE[date]
