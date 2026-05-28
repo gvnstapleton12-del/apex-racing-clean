@@ -223,11 +223,7 @@ function Home() {
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections.filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0)
-  const core = bettable.filter((s) => parseOddsToNum(s.odds) < 10).sort((a, b) => {
-    const scoreDiff = (b.score || 0) - (a.score || 0)
-    if (Math.abs(scoreDiff) > 2) return scoreDiff
-    return (b.valueEdge || 0) - (a.valueEdge || 0)
-  })
+  const core = bettable.filter((s) => parseOddsToNum(s.odds) < 10).sort((a, b) => (b.score || 0) - (a.score || 0))
   const bombs = bettable.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
   const picks = [...core.slice(0, 2), ...(bombs.length > 0 ? [bombs[0]] : core.slice(2, 3))]
   const bestBet = picks[0]
