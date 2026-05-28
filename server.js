@@ -14,6 +14,7 @@ import { selectionQuality } from './src/lib/selectionQuality.js'
 import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
+import { fetchAtrRacecards } from './src/lib/scrapers/atrScraper.js'
 
 // Global error handlers to prevent crashes
 process.on('uncaughtException', (error) => {
@@ -685,6 +686,41 @@ async function fetchLiveMeetings() {
         console.error(`[LiveMeetings] Batch ${Math.floor(i / batchSize) + 1} failed:`, error.message)
       }
       await new Promise(resolve => setTimeout(resolve, 100))
+    }
+
+    // Fetch ATR odds as secondary source
+    try {
+      console.log('[LiveMeetings] Fetching ATR odds...')
+      const atrRaces = await fetchAtrRacecards(today)
+      if (atrRaces && atrRaces.length > 0) {
+        let oddsMerged = 0
+        processed.forEach((race) => {
+          const atrMatch = atrRaces.find(
+            (ar) => normalizeCourse(ar.course) === normalizeCourse(race.course) &&
+              String(ar.off_time || '').replace(':', '') === String(race.off_time || '').replace(':', '')
+          )
+          if (atrMatch && atrMatch.runners) {
+            race.runners = (race.runners || []).map((runner) => {
+              const atrRunner = atrMatch.runners.find(
+                (ar) => normalizeHorseName(ar.horse) === normalizeHorseName(runner.horse)
+              )
+              if (atrRunner && atrRunner.sp && atrRunner.sp > 0) {
+                const slOdds = runner.odds
+                const atrOdds = atrRunner.sp
+                if (String(slOdds) !== String(atrOdds)) {
+                  console.log(`[ODDS] ${runner.horse}: SL=${slOdds} ATR=${atrOdds} → using ATR`)
+                  oddsMerged++
+                }
+                return { ...runner, odds: atrOdds, atrOdds }
+              }
+              return runner
+            })
+          }
+        })
+        console.log(`[LiveMeetings] Merged ${oddsMerged} ATR odds`)
+      }
+    } catch (error) {
+      console.error('[LiveMeetings] ATR odds fetch failed:', error.message)
     }
 
     LIVE_STATE.racecards = processed

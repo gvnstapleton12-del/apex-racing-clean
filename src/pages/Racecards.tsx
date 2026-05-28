@@ -213,6 +213,9 @@ export default function Racecards() {
                       >
                         {runner.horse}
                       </a>
+                      {runner.odds && (
+                        <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold flex-shrink-0'>{runner.odds}</span>
+                      )}
                       <div className='flex gap-2 flex-shrink-0'>
                         {runner.runningStyle && (
                           <span className={`pace-badge px-2 py-1 rounded-md text-xs font-medium ${runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
