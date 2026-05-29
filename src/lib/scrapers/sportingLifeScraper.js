@@ -9,9 +9,11 @@ const UK_IRE_COURSES = new Set([
   'kelso', 'kempton', 'leicester', 'lingfield', 'market-rasen', 'newbury', 'newcastle', 'newmarket',
   'newton-abbot', 'northam', 'nottingham', 'plumpton', 'pontefret', 'redcar', 'ripon', 'sandown', 'sedgefield',
   'southwell', 'stratford', 'taunton', 'thirsk', 'uttoxeter', 'wetherby', 'wolverhampton', 'worcester',
-  'yarmouth', 'york', 'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney', 'kilkenny',
+  'great-yarmouth', 'york', 'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney',
   'laytown', 'leopardstown', 'listowel', 'naas', 'navan', 'punchestown', 'roscommon', 'sligo',
   'tipperary', 'tramore', 'wexford',
+  'aintree', 'bangor-on-dee', 'chelmsford-city', 'exeter', 'fakenham', 'ffos-las', 'fontwell-park', 'ludlow', 'musselburgh', 'perth', 'salisbury', 'warwick', 'wincanton', 'windsor',
+  'bellewstown', 'clonmel', 'cork', 'downpatrick', 'kilbeggan', 'limerick', 'thurles',
 ])
 
 function isUkIre(course) {
