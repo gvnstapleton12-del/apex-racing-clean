@@ -96,7 +96,12 @@ async function fetchMeetingList(dateStr) {
           })
 
           if (meetingInfo) {
-            meetings.push(meetingInfo)
+            // Check if meeting name indicates abandoned status
+            if (!meetingInfo.name.toLowerCase().includes('abandoned') && !meetingInfo.name.toLowerCase().includes('(off)')) {
+              meetings.push(meetingInfo)
+            } else {
+              console.log(`[SL] Skipping abandoned meeting: ${meetingInfo.name}`)
+            }
           }
         } catch (err) {
           console.error(`[SL] Failed to extract meeting "${name}": ${err.message}`)
@@ -138,6 +143,12 @@ async function fetchMeetingRaces(meetingId) {
     const data = await fetchJson(`${SL_API}/meeting/${meetingId}`)
     const meeting = data.meeting_summary
     const races = data.races || []
+
+    // Skip abandoned meetings
+    if (meeting?.status === 'abandoned' || meeting?.meeting_status === 'abandoned') {
+      console.log(`[SL] Skipping abandoned meeting: ${meeting.course_name || meetingId}`)
+      return []
+    }
 
     return races.map(race => {
       const isUk = isUkIre(race.course_name)
