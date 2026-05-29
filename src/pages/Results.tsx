@@ -279,7 +279,7 @@ function RaceResultCard({ race }: { race: any }) {
           )}
 
           {expanded && rest.map((runner: any, runnerIndex: number) => {
-            const pos = Number(runner.position || runner.pos || runner.finish_position || runner.finishing_position || runner.result_position || runner.place)
+            const pos = 4 + runnerIndex
             return (
               <div key={runner.horse_id || `rest-${runnerIndex}`} className='runner-row flex justify-between items-center p-4 rounded-xl border border-[#2a3441] bg-[#111827] hover:border-[#3a4a5a] transition-all duration-200' style={{ opacity: 1 }}>
                 <div className='flex items-center gap-4'>
