@@ -313,6 +313,8 @@ function storeHistoricalRecord(runner, race, apexResult) {
     distance: race.distance || race.distancef || '',
     field_size: race.field_size || race.fieldSize || race.runners?.length || 0,
     class: race.class || '',
+    trainer: runner.trainer || '',
+    jockey: runner.jockey || '',
     finalScore: score,
     winProb: prob,
     placeProb: runner.placeProb,
@@ -477,6 +479,7 @@ function logPrediction(race, runner, aiProfile) {
     course: race.course,
     offTime: race.off_time,
     horse: runner.horse,
+    trainer: runner.trainer || '',
     odds: runner.odds || runner.price || 0,
     confidence: aiProfile.confidence,
     estimatedWinProbability:
