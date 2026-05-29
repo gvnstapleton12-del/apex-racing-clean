@@ -244,8 +244,11 @@ async function fetchResultsMeetingList(dateStr) {
 export async function fetchSlRacecards(dateStr) {
   try {
     console.log(`[SL] Fetching racecards for ${dateStr}...`)
-    const meetings = await fetchMeetingList(dateStr)
-    console.log(`[SL] Found ${meetings.length} UK/IRE meetings`)
+    const result = await fetchMeetingList(dateStr)
+    const meetings = result?.meetings || result || []
+    const abandoned = result?.abandoned || []
+
+    console.log(`[SL] Found ${meetings.length} UK/IRE meetings, ${abandoned.length} abandoned`)
 
     const allRaces = []
 
@@ -268,7 +271,7 @@ export async function fetchSlRacecards(dateStr) {
       }
     }
 
-    return allRaces
+    return { races: allRaces, abandoned }
   } catch (err) {
     console.error(`[SL Racecards] Failed for ${dateStr}:`, err.message)
     return []
