@@ -4,8 +4,8 @@ const SL_BASE = 'https://www.sportinglife.com'
 const SL_API = 'https://www.sportinglife.com/api/horse-racing'
 
 const UK_IRE_COURSES = new Set([
-  'ascot', 'ayr', 'bath', 'beverley', 'brighton', 'cartmel', 'cheltenham', 'chester', 'catterick', 'chepstow',
-  'doncaster', 'epsom', 'fairyhouse', 'goodwood', 'hamilton', 'haydock', 'hereford', 'hexham', 'huntingdon',
+  'ascot', 'ayr', 'bath', 'beverley', 'brighton', 'cartmel', 'carlisle', 'cheltenham', 'chester', 'catterick', 'chepstow',
+  'doncaster', 'down-royal', 'epsom', 'fairyhouse', 'goodwood', 'hamilton', 'haydock', 'hereford', 'hexham', 'huntingdon',
   'kelso', 'kempton', 'leicester', 'lingfield', 'market-rasen', 'newbury', 'newcastle', 'newmarket',
   'newton-abbot', 'northam', 'nottingham', 'plumpton', 'pontefret', 'redcar', 'ripon', 'sandown', 'sedgefield',
   'southwell', 'stratford', 'taunton', 'thirsk', 'uttoxeter', 'wetherby', 'wolverhampton', 'worcester',
