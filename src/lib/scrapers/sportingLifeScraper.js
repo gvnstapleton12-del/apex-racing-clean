@@ -68,6 +68,7 @@ async function fetchMeetingList(dateStr) {
       if (ukIreTabs.length === 0) return []
 
       const meetings = []
+      const abandoned = []
       const seenSlugs = new Set()
 
       for (const name of ukIreTabs) {
@@ -98,10 +99,11 @@ async function fetchMeetingList(dateStr) {
           if (meetingInfo) {
             console.log(`[SL] Found meeting: "${meetingInfo.name}" (slug: ${meetingInfo.slug})`)
             // Check if meeting name indicates abandoned status
-            if (!meetingInfo.name.toLowerCase().includes('abandoned') && !meetingInfo.name.toLowerCase().includes('(off)')) {
-              meetings.push(meetingInfo)
+            if (meetingInfo.name.toLowerCase().includes('abandoned') || meetingInfo.name.toLowerCase().includes('(off)')) {
+              console.log(`[SL] Abandoned meeting: ${meetingInfo.name}`)
+              abandoned.push(meetingInfo)
             } else {
-              console.log(`[SL] Skipping abandoned meeting: ${meetingInfo.name}`)
+              meetings.push(meetingInfo)
             }
           }
         } catch (err) {
@@ -109,7 +111,7 @@ async function fetchMeetingList(dateStr) {
         }
       }
 
-      return meetings
+      return { meetings, abandoned }
     } finally {
       await context.close()
     }
@@ -139,7 +141,7 @@ function gmtToBstTime(timeStr) {
   return `${String(newH).padStart(2, '0')}:${m}`
 }
 
-async function fetchMeetingRaces(meetingId) {
+export async function fetchMeetingRaces(meetingId) {
   try {
     const data = await fetchJson(`${SL_API}/meeting/${meetingId}`)
     const meeting = data.meeting_summary

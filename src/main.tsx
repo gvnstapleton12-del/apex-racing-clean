@@ -205,6 +205,7 @@ interface DailyPicksEntry {
 
 function Home() {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
+  const [abandoned, setAbandoned] = useState<any[]>([])
   const {
     data: races = [],
     isLoading,
@@ -219,6 +220,23 @@ function Home() {
       .then((r) => r.json())
       .then(setDailyPicksDb)
       .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/live-state')
+      .then((r) => r.json())
+      .then((data) => setAbandoned(data.abandoned || []))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch('/api/live-state')
+        .then((r) => r.json())
+        .then((data) => setAbandoned(data.abandoned || []))
+        .catch(() => {})
+    }, 60000)
+    return () => clearInterval(interval)
   }, [])
 
   // Refetch daily picks every 60s to pick up matched results
@@ -416,6 +434,20 @@ function Home() {
         </section>
           ) : (
         <section className='home-picks-section space-y-6'>
+          {abandoned.length > 0 && (
+            <div className='abandoned-alert bg-red-500/5 border border-red-500/20 rounded-xl p-4'>
+              <div className='flex items-center gap-2 mb-2'>
+                <span className='text-red-400 text-sm font-bold'>⚠ ABANDONED MEETINGS</span>
+              </div>
+              <div className='flex flex-wrap gap-2'>
+                {abandoned.map((m) => (
+                  <span key={m.slug} className='px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-lg text-red-300 text-sm font-medium'>
+                    {m.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           {todayStats && todayStats.won + todayStats.placed + todayStats.lost + todayStats.nr > 0 && (
             <div className={`home-picks-stats-bar flex items-center gap-4 p-4 rounded-xl border ${todayStats.won > 0 ? 'bg-green-500/5 border-green-500/20' : 'bg-white/[0.02] border-white/5'}`}>
               <span className='text-zinc-400 text-sm'>Today&apos;s results:</span>

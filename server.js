@@ -49,7 +49,7 @@ import {
 } from './src/lib/antiOverfit.js'
 import { retry } from './src/lib/utils/retry.js'
 import { LruCache } from './src/lib/utils/lruCache.js'
-import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLifeScraper.js'
+import { fetchSlRacecards, fetchSlResults, fetchMeetingRaces } from './src/lib/scrapers/sportingLifeScraper.js'
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
 
 dotenv.config()
@@ -714,12 +714,30 @@ async function fetchLiveMeetings() {
     }
 
     const today = new Date().toISOString().split('T')[0]
-    const rawRaces = await retry(() => fetchSlRacecards(today), 2, 2000)
+    const scrapeResult = await retry(() => fetchSlRacecards(today), 2, 2000)
+    const rawMeetings = scrapeResult?.meetings || scrapeResult || []
+    const abandonedMeetings = scrapeResult?.abandoned || []
 
-    if (!rawRaces || rawRaces.length === 0) {
+    if (abandonedMeetings.length > 0) {
+      LIVE_STATE.abandoned = abandonedMeetings.map(m => ({
+        name: m.name,
+        slug: m.slug,
+        date: m.date,
+      }))
+    } else {
+      LIVE_STATE.abandoned = []
+    }
+
+    if (!rawMeetings || rawMeetings.length === 0) {
       console.log('[LiveMeetings] No races found on Sporting Life')
       LIVE_STATE.loading = false
       return
+    }
+
+    const rawRaces = []
+    for (const meeting of rawMeetings) {
+      const races = await fetchMeetingRaces(meeting.id)
+      rawRaces.push(...races)
     }
 
     console.log(`[LiveMeetings] Processing ${rawRaces.length} races from Sporting Life...`)
@@ -1119,6 +1137,7 @@ function buildLightweightState() {
 
   return {
     racecards,
+    abandoned: LIVE_STATE.abandoned || [],
     updatedAt: LIVE_STATE.updatedAt,
     loading: LIVE_STATE.loading,
   }
