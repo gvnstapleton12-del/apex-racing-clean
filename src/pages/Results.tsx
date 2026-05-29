@@ -221,7 +221,7 @@ function RaceResultCard({ race }: { race: any }) {
   })
   const top3 = sorted.slice(0, 3)
   const rest = sorted.slice(3)
-  const hasResults = allRunners.some((r: any) => Number(r.position || r.pos || r.finish_position || r.finishing_position || r.result_position || r.place) > 0)
+  const hasResults = allRunners.some((r: any) => Number(r.position || r.pos || r.finish_position || r.finishing_position || r.result_position || r.place) > 0) || (race.date && race.date < todayStr)
 
   return (
     <article className='race-card bg-[#111827] border border-[#2a3441] rounded-2xl p-6 hover:border-[#3a4a5a] transition-all duration-300' style={{ opacity: 1 }}>
