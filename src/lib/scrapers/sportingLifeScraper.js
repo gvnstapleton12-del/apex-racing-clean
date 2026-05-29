@@ -15,7 +15,11 @@ const UK_IRE_COURSES = new Set([
 ])
 
 function isUkIre(course) {
-  const slug = course.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
+  const slug = course.toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/'/g, '')
+    .trim()
   return UK_IRE_COURSES.has(slug)
 }
 
