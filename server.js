@@ -510,6 +510,15 @@ function createAlert(horseId, horse, type, message, severity = 'MEDIUM') {
   io.emit('new-alert', alert)
 }
 
+function cleanRaceName(name = '') {
+  return String(name)
+    .replace(/https?:\/\/[^\s]+/gi, '')
+    .replace(/www\.[^\s]+/gi, '')
+    .replace(/[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/[^\s]*)?/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 async function processRace(race) {
   const startTime = Date.now()
   try {
@@ -533,6 +542,7 @@ async function processRace(race) {
     if (runners.length < 5) {
       return {
         ...race,
+        race_name: cleanRaceName(race.race_name),
         betFilter: { verdict: 'AUTO SKIP', reason: 'Small field (<5 runners)' },
       }
     }
@@ -665,6 +675,7 @@ async function processRace(race) {
 
     return {
       ...race,
+      race_name: cleanRaceName(race.race_name),
       paceMap: apexResult.paceMap,
       volatility: apexResult.volatility,
       betFilter: apexResult.betFilter,
@@ -675,6 +686,7 @@ async function processRace(race) {
     console.error(`[processRace] Error ${race.course} ${race.off_time} (${elapsed}ms):`, error.message)
     return {
       ...race,
+      race_name: cleanRaceName(race.race_name),
       runners: [],
       betFilter: { verdict: 'ERROR', reason: error.message },
       paceMap: {},
