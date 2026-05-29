@@ -96,6 +96,7 @@ async function fetchMeetingList(dateStr) {
           })
 
           if (meetingInfo) {
+            console.log(`[SL] Found meeting: "${meetingInfo.name}" (slug: ${meetingInfo.slug})`)
             // Check if meeting name indicates abandoned status
             if (!meetingInfo.name.toLowerCase().includes('abandoned') && !meetingInfo.name.toLowerCase().includes('(off)')) {
               meetings.push(meetingInfo)
@@ -144,8 +145,11 @@ async function fetchMeetingRaces(meetingId) {
     const meeting = data.meeting_summary
     const races = data.races || []
 
-    // Skip abandoned meetings
-    if (meeting?.status === 'abandoned' || meeting?.meeting_status === 'abandoned') {
+    console.log(`[SL] Meeting ${meetingId} status: ${meeting?.status || meeting?.meeting_status || 'none'}, course: ${meeting?.course_name || 'unknown'}`)
+
+    // Skip abandoned meetings (case-insensitive)
+    const status = (meeting?.status || meeting?.meeting_status || '').toUpperCase()
+    if (status === 'ABANDONED') {
       console.log(`[SL] Skipping abandoned meeting: ${meeting.course_name || meetingId}`)
       return []
     }
