@@ -213,6 +213,7 @@ export function ResultsList({ results }: ResultsListProps) {
 
 function RaceResultCard({ race }: { race: any }) {
   const [expanded, setExpanded] = useState(false)
+  const todayStr = new Date().toISOString().slice(0, 10)
   const allRunners = race.runners || []
   const sorted = [...allRunners].sort((a: any, b: any) => {
     const aPos = Number(a.position || a.pos || a.finish_position || a.finishing_position || a.result_position || a.place || 999)
