@@ -105,11 +105,12 @@ function extractResultsFromHtml(html, dateStr) {
     }
 
     if (runners.length > 0) {
+      const region = course.toLowerCase().includes('(ire)') || course.toLowerCase().includes('down royal') || course.toLowerCase().includes('curragh') || course.toLowerCase().includes('leopardstown') ? 'IRE' : 'GB'
       races.push({
         course,
         off_time: offTime,
         date: dateStr,
-        region: course.toLowerCase().includes('(ire)') ? 'IRE' : 'GB',
+        region,
         runners,
       })
     }
