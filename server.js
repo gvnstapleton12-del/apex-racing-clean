@@ -1053,8 +1053,34 @@ async function fetchTodayResults() {
   }
 }
 
+// Auto cache cleaner — removes stale results older than 7 days
+function cleanStaleResults() {
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - 7)
+  const cutoffStr = cutoff.toISOString().split('T')[0]
+
+  const before = LEARNING_DATABASE.races?.length || 0
+  LEARNING_DATABASE.races = (LEARNING_DATABASE.races || []).filter(r => {
+    const raceDate = r.date || (r.off_dt ? r.off_dt.slice(0, 10) : null)
+    return raceDate && raceDate >= cutoffStr
+  })
+  const after = LEARNING_DATABASE.races?.length || 0
+
+  if (before !== after) {
+    console.log(`[Cache Cleaner] Removed ${before - after} stale results (older than 7 days)`)
+    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+  }
+}
+
 // Defer heavy initial fetches to avoid blocking server startup
 setTimeout(() => {
+  cleanStaleResults()
+  fetchLiveMeetings()
+}, 1000)
+
+// Defer heavy initial fetches to avoid blocking server startup
+setTimeout(() => {
+  cleanStaleResults()
   fetchLiveMeetings()
 }, 1000)
 
