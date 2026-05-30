@@ -50,6 +50,7 @@ import {
 import { retry } from './src/lib/utils/retry.js'
 import { LruCache } from './src/lib/utils/lruCache.js'
 import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLifeScraper.js'
+import { fetchAtrResults } from './src/lib/scrapers/atrScraper.js'
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
 
 dotenv.config()
@@ -815,13 +816,13 @@ async function fetchLiveMeetings() {
 
 async function fetchTodayResults() {
   try {
-    console.log('[Results] Fetching Sporting Life results...')
+    console.log('[Results] Fetching ATR results...')
 
     const today = new Date().toISOString().split('T')[0]
-    const resultRaces = await retry(() => fetchSlResults(today), 2, 2000)
+    const resultRaces = await retry(() => fetchAtrResults(today), 2, 2000)
 
     if (!resultRaces || resultRaces.length === 0) {
-      console.log('[Results] No results found on Sporting Life')
+      console.log('[Results] No results found on ATR')
       return
     }
 
