@@ -69,19 +69,28 @@ function parseATRResults(html) {
   // Filter to UK/IRE only
   const ukIreCourses = new Set([
     'Aintree', 'Ascot', 'Ayr', 'Bath', 'Bellewstown', 'Beverley',
-    'Brighton', 'Cartmel', 'Catterick', 'Chelmsford City', 'Cheltenham',
+    'Bangor-on-Dee', 'Brighton', 'Cartmel', 'Carlisle', 'Catterick', 'Chelmsford City', 'Cheltenham',
     'Chepstow', 'Cork', 'Curragh', 'Doncaster', 'Down Royal', 'Dundalk',
-    'Exeter', 'Fairyhouse', 'Fontwell', 'Ffos Las', 'Goodwood',
-    'Haydock', 'Hereford', 'Huntingdon', 'Kempton', 'Kelso', 'Leicester',
+    'Exeter', 'Fairyhouse', 'Fakenham', 'Fontwell', 'Ffos Las', 'Goodwood',
+    'Great Yarmouth', 'Haydock', 'Hereford', 'Huntingdon', 'Kempton', 'Kelso', 'Kilbeggan', 'Leicester',
     'Leopardstown', 'Limerick', 'Lingfield', 'Ludlow', 'Market Rasen',
-    'Naas', 'Navan', 'Newbury', 'Newcastle', 'Newmarket', 'Newton Abbot',
-    'Nottingham', 'Perth', 'Plumpton', 'Punchestown', 'Redcar', 'Sandown',
+    'Musselburgh', 'Naas', 'Navan', 'Newbury', 'Newcastle', 'Newmarket', 'Newton Abbot',
+    'Nottingham', 'Perth', 'Plumpton', 'Punchestown', 'Redcar', 'Salisbury', 'Sandown',
     'Sedgefield', 'Southwell', 'Stratford', 'Taunton', 'Thirsk', 'Thurles',
     'Tipperary', 'Tramore', 'Uttoxeter', 'Warwick', 'Wetherby', 'Wexford',
-    'Wincanton', 'Windsor', 'Wolverhampton', 'Yarmouth', 'York',
+    'Wincanton', 'Windsor', 'Wolverhampton', 'York',
   ])
 
-  return races.filter(r => ukIreCourses.has(r.course))
+  const ireCourses = new Set([
+    'Bellewstown', 'Cork', 'Curragh', 'Down Royal', 'Dundalk', 'Fairyhouse',
+    'Kilbeggan', 'Leopardstown', 'Limerick', 'Naas', 'Navan', 'Punchestown',
+    'Thurles', 'Tipperary', 'Tramore', 'Wexford',
+  ])
+
+  return races.filter(r => ukIreCourses.has(r.course)).map(r => ({
+    ...r,
+    region: ireCourses.has(r.course) ? 'IRE' : 'GB',
+  }))
 }
 
 function extractCourseBlocks(text) {
@@ -158,8 +167,8 @@ function extractRacesFromCourse(block) {
       races.push({
         course,
         date: new Date().toISOString().split('T')[0],
-        time,
-        raceName,
+        off_time: time,
+        race_name: raceName,
         raceNum,
         runners,
         nonRunners,
