@@ -193,9 +193,8 @@ export async function fetchMeetingRaces(meetingId) {
 async function fetchRaceRunners(raceId) {
   try {
     const data = await fetchJson(`${SL_API}/race/${raceId}`)
-    const rides = (data.rides || []).filter(
-      (ride) => !ride.ride_status || ride.ride_status === 'RUNNER'
-    )
+    // For results, include all rides (not just RUNNER status) to get finish positions
+    const rides = data.rides || []
 
     return rides.map((ride, i) => {
       const horseName = ride.horse?.name || ''
@@ -207,6 +206,7 @@ async function fetchRaceRunners(raceId) {
       jockey: ride.jockey?.name || '',
       trainer: ride.trainer?.name || '',
       odds: parseFractionalOdds(ride.betting?.current_odds),
+      sp: parseFractionalOdds(ride.betting?.sp || ride.betting?.starting_price),
       draw: ride.draw_number || ride.cloth_number || 0,
       lbs: ride.handicap || '',
       form: ride.horse?.formsummary?.display_text || '',
