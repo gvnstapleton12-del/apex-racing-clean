@@ -1,87 +1,50 @@
 import React, { useState } from 'react'
 
-function getRunnerZone(runner) {
+function ScoreBar({ score }) {
+  const clamped = Math.max(5, Math.min(95, score))
+  let color = 'bg-amber-500'
+  if (score >= 72) color = 'bg-red-500'
+  else if (score >= 56) color = 'bg-orange-400'
+  else if (score <= 35) color = 'bg-green-500'
+  else if (score <= 45) color = 'bg-emerald-400'
+
+  return (
+    <div className='pace-score-track'>
+      <div className={`pace-score-fill ${color}`} style={{ width: `${clamped}%` }} />
+    </div>
+  )
+}
+
+function RunnerRow({ runner, rank }) {
+  const score = runner.earlyPaceScore || 50
   const style = runner.runningStyle || 'Midfield'
-  if (style === 'Front Runner') return 'early'
-  if (style === 'Prominent') return 'early-mid'
-  if (style === 'Hold Up') return 'hold-up'
-  return 'midfield'
-}
 
-function getPressureLevel(runner) {
-  const energy = runner.energy || {}
-  const early = energy.earlyEnergy || 50
-  const compat = runner.paceCompat?.compatibility || 50
-  const avg = (early + compat) / 2
-
-  if (avg >= 70) return 'high'
-  if (avg >= 50) return 'medium'
-  return 'low'
-}
-
-function PressureBar({ level, width }) {
-  const colors = {
-    high: 'bg-red-500',
-    medium: 'bg-amber-500',
-    low: 'bg-green-500',
-  }
   return (
-    <div className='pressure-bar-track'>
-      <div
-        className={`pressure-bar-fill ${colors[level]}`}
-        style={{ width: `${width}%` }}
-      />
+    <div className='pace-runner-row'>
+      <span className='pace-runner-rank'>#{rank + 1}</span>
+      <span className='pace-runner-name'>{runner.horse}</span>
+      <div className='pace-runner-bar'>
+        <ScoreBar score={score} />
+      </div>
+      <span className='pace-runner-score'>{score}</span>
     </div>
   )
 }
 
-function RunnerRow({ runner, index }) {
-  const pressure = getPressureLevel(runner)
-  const energy = runner.energy || {}
-  const early = energy.earlyEnergy || 50
-  const sustain = energy.sustainability || 50
-  const compat = runner.paceCompat?.compatibility || 50
+function BenefitList({ items, type }) {
+  if (!items || items.length === 0) return null
+  const label = type === 'benefit' ? 'Beneficiaries' : 'Disadvantaged'
+  const cls = type === 'benefit' ? 'pace-benefit' : 'pace-disadvantage'
 
   return (
-    <div className='pressure-runner-row'>
-      <span className='pressure-runner-num'>#{index + 1}</span>
-      <span className='pressure-runner-name'>{runner.horse}</span>
-      <div className='pressure-runner-bars'>
-        <div className='pressure-bar-group'>
-          <span className='pressure-bar-label'>Early</span>
-          <PressureBar level={early >= 70 ? 'high' : early >= 50 ? 'medium' : 'low'} width={early} />
+    <div className={cls}>
+      <span className='pace-benefit-label'>{label}</span>
+      {items.map((item, i) => (
+        <div key={item.horse_id || item.horse || i} className='pace-benefit-item'>
+          <span className='pace-benefit-horse'>{item.horse}</span>
+          <span className='pace-benefit-reason'>{item.reason}</span>
         </div>
-        <div className='pressure-bar-group'>
-          <span className='pressure-bar-label'>Sustain</span>
-          <PressureBar level={sustain >= 70 ? 'high' : sustain >= 50 ? 'medium' : 'low'} width={sustain} />
-        </div>
-        <div className='pressure-bar-group'>
-          <span className='pressure-bar-label'>Compat</span>
-          <PressureBar level={pressure} width={compat} />
-        </div>
-      </div>
-      <span className={`pressure-runner-tag tag-${energy.profile?.toLowerCase().replace(/[^a-z]/g, '') || 'even'}`}>
-        {energy.profile || 'EVEN'}
-      </span>
-    </div>
-  )
-}
-
-function ZoneSection({ title, runners, icon, color }) {
-  if (!runners || runners.length === 0) return null
-
-  return (
-    <div className={`pressure-zone zone-${color}`}>
-      <div className='pressure-zone-header'>
-        <span className='pressure-zone-icon'>{icon}</span>
-        <span className='pressure-zone-title'>{title}</span>
-        <span className='pressure-zone-count'>{runners.length}</span>
-      </div>
-      <div className='pressure-zone-runners'>
-        {runners.map((r, i) => (
-          <RunnerRow key={r.horse_id || r.horse || i} runner={r} index={i} />
-        ))}
-      </div>
+      ))}
     </div>
   )
 }
@@ -92,108 +55,64 @@ export default function RacePressureGraph({ race }) {
   if (!race || !race.runners) return null
 
   const runners = race.runners || []
+  const raceShape = race.raceShape || null
   const paceMap = race.paceMap || {}
   const volatility = race.volatility || {}
 
-  const earlyRunners = runners.filter((r) => getRunnerZone(r) === 'early')
-  const earlyMidRunners = runners.filter((r) => getRunnerZone(r) === 'early-mid')
-  const midfieldRunners = runners.filter((r) => getRunnerZone(r) === 'midfield')
-  const holdUpRunners = runners.filter((r) => getRunnerZone(r) === 'hold-up')
+  const sorted = [...runners].sort((a, b) => (b.earlyPaceScore || 50) - (a.earlyPaceScore || 50))
 
-  const tempo = paceMap.projectedTempo || 'EVEN'
-  const collapseRisk = paceMap.collapseRisk || 'LOW'
-  const frontRunners = paceMap.frontRunners || 0
+  const shape = raceShape?.shape || paceMap.projectedTempo || 'UNKNOWN'
+  const tempo = raceShape?.tempo || paceMap.projectedTempo || 'EVEN'
+  const leaders = raceShape?.leaders ?? paceMap.frontRunners ?? 0
+  const pressureLabel = raceShape?.pressureLabel || paceMap.pacePressure || 'MEDIUM'
+  const collapseProb = raceShape?.collapseProb ?? 0
+  const collapseRisk = collapseProb >= 55 ? 'HIGH' : collapseProb >= 30 ? 'MEDIUM' : 'LOW'
 
-  let pressureLabel = 'EVEN PACE'
-  let pressureColor = 'even'
-  if (tempo === 'FAST' || frontRunners >= 3) {
-    pressureLabel = 'FAST EARLY PACE'
-    pressureColor = 'fast'
-  } else if (tempo === 'SLOW') {
-    pressureLabel = 'SLOW PACE'
-    pressureColor = 'slow'
-  } else if (tempo === 'FAIR') {
-    pressureLabel = 'FAIR PACE'
-    pressureColor = 'fair'
-  }
+  const beneficiaries = raceShape?.beneficiaries || []
+  const disadvantaged = raceShape?.disadvantaged || []
+
+  const collapsePct = collapseProb
 
   return (
     <div className='race-pressure-graph'>
-      <button
-        type='button'
-        className='pressure-toggle'
-        onClick={() => setExpanded(!expanded)}
-      >
+      <button type='button' className='pressure-toggle' onClick={() => setExpanded(!expanded)}>
         <span className='pressure-toggle-icon'>📊</span>
         <span className='pressure-toggle-text'>
-          Pace Map: {pressureLabel}
-          {collapseRisk === 'HIGH' && ' ⚡ COLLAPSE RISK'}
+          Pace Map: {shape}
+          {collapseRisk === 'HIGH' && ` — ${collapsePct}% collapse risk`}
         </span>
         <span className={`pressure-toggle-arrow ${expanded ? 'open' : ''}`}>▼</span>
       </button>
 
       {expanded && (
         <div className='pressure-content'>
-          <div className='pressure-summary'>
-            <div className='pressure-summary-item'>
-              <span className='pressure-summary-label'>Tempo</span>
-              <span className={`pressure-summary-value tempo-${tempo.toLowerCase()}`}>{tempo}</span>
+          <div className='pace-shape-header'>
+            <div className='pace-shape-stat'>
+              <span className='pace-shape-label'>Tempo</span>
+              <span className={`pace-shape-value tempo-${tempo.toLowerCase()}`}>{tempo}</span>
             </div>
-            <div className='pressure-summary-item'>
-              <span className='pressure-summary-label'>Collapse Risk</span>
-              <span className={`pressure-summary-value risk-${collapseRisk.toLowerCase()}`}>{collapseRisk}</span>
+            <div className='pace-shape-stat'>
+              <span className='pace-shape-label'>Leaders</span>
+              <span className='pace-shape-value'>{leaders}</span>
             </div>
-            <div className='pressure-summary-item'>
-              <span className='pressure-summary-label'>Front Runners</span>
-              <span className='pressure-summary-value'>{frontRunners}</span>
+            <div className='pace-shape-stat'>
+              <span className='pace-shape-label'>Pressure</span>
+              <span className={`pace-shape-value pressure-${pressureLabel.toLowerCase().replace(' ', '-')}`}>{pressureLabel}</span>
             </div>
-            <div className='pressure-summary-item'>
-              <span className='pressure-summary-label'>Volatility</span>
-              <span className={`pressure-summary-value vol-${volatility.label?.toLowerCase() || 'medium'}`}>
-                {volatility.label || 'MEDIUM'}
-              </span>
+            <div className='pace-shape-stat'>
+              <span className='pace-shape-label'>Collapse Risk</span>
+              <span className={`pace-shape-value collapse-${collapseRisk.toLowerCase()}`}>{collapsePct}%</span>
             </div>
           </div>
 
-          <ZoneSection
-            title='EARLY PACE'
-            runners={earlyRunners}
-            icon='⚡'
-            color='fast'
-          />
+          <div className='pace-runners-list'>
+            {sorted.map((r, i) => (
+              <RunnerRow key={r.horse_id || r.horse || i} runner={r} rank={i} />
+            ))}
+          </div>
 
-          <ZoneSection
-            title='EARLY-MID'
-            runners={earlyMidRunners}
-            icon='🏃'
-            color='fair'
-          />
-
-          <ZoneSection
-            title='MIDFIELD'
-            runners={midfieldRunners}
-            icon='📍'
-            color='even'
-          />
-
-          <ZoneSection
-            title='HOLD-UP'
-            runners={holdUpRunners}
-            icon='🐢'
-            color='slow'
-          />
-
-          {earlyRunners.length + earlyMidRunners.length >= 4 && (
-            <div className='pressure-warning'>
-              ⚠ High pace pressure — {earlyRunners.length + earlyMidRunners.length} early runners likely to contest the lead
-            </div>
-          )}
-
-          {holdUpRunners.length >= 3 && tempo === 'FAST' && (
-            <div className='pressure-closer-bonus'>
-              💨 Fast pace with {holdUpRunners.length} closers — late runners may benefit from pace collapse
-            </div>
-          )}
+          <BenefitList items={beneficiaries} type='benefit' />
+          <BenefitList items={disadvantaged} type='disadvantage' />
         </div>
       )}
     </div>

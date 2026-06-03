@@ -250,6 +250,7 @@ export function computePlaceCalibration(records = [], bucketSize = 10) {
       count: 0,
       places: 0,
       expectedPlaces: 0,
+      runners: [],
     }
     bucketKeys.push(key)
   }

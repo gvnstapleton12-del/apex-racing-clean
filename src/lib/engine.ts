@@ -93,7 +93,7 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
     fairOdds = parseOdds(sq.fairOdds)
     marketOdds = parseOdds(sq.marketOdds)
     winProb = fairOdds > 0 ? 1 / fairOdds : 0.01
-    edge = marketOdds > 0 ? (fairOdds - marketOdds) / marketOdds : 0
+    edge = sq.edge ?? ((fairOdds - marketOdds) / marketOdds)
     confidence = runner.aiProfile?.confidence ?? Math.min(Math.max(winProb * 4, 0.2), 0.85)
     placeProb = winProb * 2.5
   } else if (runner.winProb != null && runner.winProb > 0) {

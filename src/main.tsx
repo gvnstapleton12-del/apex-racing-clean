@@ -256,6 +256,7 @@ function Home() {
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections
     .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0)
+  const upcoming = bettable
     .filter((s) => {
       if (!s.offTime) return true
       const raceTime = s.offTime.replace(':', '')
@@ -288,12 +289,40 @@ function Home() {
     seenRaces.add(raceKey)
     return true
   })
-  const picks = bestBet ? [bestBet, ...onePerRace] : onePerRace
-  const picksKey = picks.map((p) => p.horse + p.course).join('|')
-  const topScore = picks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
+  const allPicks = bestBet ? [bestBet, ...onePerRace] : onePerRace
+
+  // Upcoming picks for live display only
+  const upcomingCore = upcoming
+    .filter((s) => parseOddsToNum(s.odds) < 10)
+    .sort((a, b) => {
+      const aVal = (a.valueEdge || 0) * (a.winProb || 0)
+      const bVal = (b.valueEdge || 0) * (b.winProb || 0)
+      const diff = bVal - aVal
+      if (Math.abs(diff) > 0.001) return diff
+      return (b.score || 0) - (a.score || 0)
+    })
+  const upcomingBombs = upcoming.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
+  const upcomingBest = [...upcomingCore, ...upcomingBombs].sort((a, b) => ((b.valueEdge || 0) * (b.winProb || 0)) - ((a.valueEdge || 0) * (a.winProb || 0)))[0]
+  const upcomingSorted = [...upcomingCore, ...upcomingBombs].sort((a, b) => {
+    const aTime = (a.offTime || '').replace(':', '')
+    const bTime = (b.offTime || '').replace(':', '')
+    return aTime.localeCompare(bTime)
+  })
+  const seenUpcoming = new Set<string>()
+  if (upcomingBest) seenUpcoming.add(`${upcomingBest.course}-${upcomingBest.offTime}`)
+  const upcomingOnePerRace = upcomingSorted.filter((s) => {
+    if (s === upcomingBest) return false
+    const raceKey = `${s.course}-${s.offTime}`
+    if (seenUpcoming.has(raceKey)) return false
+    seenUpcoming.add(raceKey)
+    return true
+  })
+  const picks = upcomingBest ? [upcomingBest, ...upcomingOnePerRace] : upcomingOnePerRace
+  const picksKey = allPicks.map((p) => p.horse + p.course).join('|')
+  const topScore = allPicks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
 
-  const noBetReason = picks.length === 0 && ukIreRaces.length > 0
+  const noBetReason = allPicks.length === 0 && ukIreRaces.length > 0
     ? bettable.length === 0
       ? 'No bettable edges found today — probability estimates too low or market too efficient'
       : getNoBetReason(ukIreRaces)
@@ -314,7 +343,7 @@ function Home() {
   const overallRate = calculateStrikeRate(overallWins, overallTotal)
 
   useEffect(() => {
-    if (picks.length === 0) return
+    if (allPicks.length === 0) return
     if (todaySaved && todaySaved.picks.some((p) => p.result !== null)) return
 
     fetch('/api/daily-picks', {
@@ -322,7 +351,7 @@ function Home() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         date: today,
-        picks: picks.map((p) => ({
+        picks: allPicks.map((p) => ({
           horse: p.horse,
           course: p.course,
           offTime: p.offTime,
@@ -345,7 +374,7 @@ function Home() {
           setDailyPicksDb((prev) => ({
             ...prev,
             [today]: {
-              picks: picks.map((p) => ({
+              picks: allPicks.map((p) => ({
                 horse: p.horse,
                 course: p.course,
                 offTime: p.offTime,
@@ -362,7 +391,7 @@ function Home() {
                 result: null,
                 position: null,
               })),
-              stats: { won: 0, placed: 0, lost: 0, pending: picks.length, nr: 0 },
+              stats: { won: 0, placed: 0, lost: 0, pending: allPicks.length, nr: 0 },
             },
           }))
         }
@@ -396,7 +425,7 @@ function Home() {
           </div>
           <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
             <span className='text-zinc-400 text-sm block'>System picks</span>
-            <strong className='text-2xl font-bold text-amber-400'>{picks.length}</strong>
+            <strong className='text-2xl font-bold text-amber-400'>{allPicks.length}</strong>
           </div>
           {overallRate && (
             <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
@@ -414,7 +443,7 @@ function Home() {
           <div className='pulse-dot' />
           <span className='text-zinc-400'>Finding the strongest system picks...</span>
         </div>
-      ) : picks.length === 0 ? (
+      ) : picks.length === 0 && todayResults.length === 0 && allPicks.length === 0 ? (
         <section className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
           {noBetReason ? (
             <>
@@ -434,6 +463,36 @@ function Home() {
         </section>
           ) : (
         <section className='home-picks-section space-y-6'>
+          {todayResults.length > 0 && (
+            <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+              <div className='flex items-center justify-between mb-3'>
+                <h3 className='text-sm font-bold text-zinc-400 uppercase tracking-wider'>Today&apos;s Full Card</h3>
+                {todayStats && (todayStats.won + todayStats.placed + todayStats.lost) > 0 && (
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${todayStats.won > 0 ? 'bg-green-500/10 text-green-400' : 'bg-zinc-500/10 text-zinc-400'}`}>
+                    {todayStats.won}W {todayStats.placed}P {todayStats.lost}L
+                  </span>
+                )}
+              </div>
+              <div className='space-y-1'>
+                {todayResults.sort((a, b) => (a.offTime || '').localeCompare(b.offTime || '')).map((p, i) => {
+                  const resultColor = p.result === 'won' ? 'text-green-400' : p.result === 'placed' ? 'text-amber-400' : p.result === 'lost' ? 'text-red-400' : 'text-zinc-500'
+                  const resultBadge = p.result === 'won' ? 'W' : p.result === 'placed' ? 'P' : p.result === 'lost' ? 'L' : p.result === 'nr' ? 'NR' : '-'
+                  const badgeBg = p.result === 'won' ? 'bg-green-500/20 text-green-400' : p.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : p.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
+                  return (
+                    <div key={i} className='flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02]'>
+                      <div className='flex items-center gap-3'>
+                        <span className='text-zinc-500 text-xs w-10'>{p.offTime}</span>
+                        <span className='text-zinc-600 text-xs w-20 truncate'>{p.course}</span>
+                        <span className='text-white text-sm font-medium'>{p.horse}</span>
+                        <span className='text-zinc-600 text-xs'>{p.odds}</span>
+                      </div>
+                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
           {abandoned.length > 0 && (
             <div className='abandoned-alert bg-red-500/5 border border-red-500/20 rounded-xl p-4'>
               <div className='flex items-center gap-2 mb-2'>
@@ -446,27 +505,6 @@ function Home() {
                   </span>
                 ))}
               </div>
-            </div>
-          )}
-          {todayStats && todayStats.won + todayStats.placed + todayStats.lost + todayStats.nr > 0 && (
-            <div className={`home-picks-stats-bar flex items-center gap-4 p-4 rounded-xl border ${todayStats.won > 0 ? 'bg-green-500/5 border-green-500/20' : 'bg-white/[0.02] border-white/5'}`}>
-              <span className='text-zinc-400 text-sm'>Today&apos;s results:</span>
-              <strong className='stat-won text-green-400 font-bold'>{todayStats.won}W</strong>
-              <span className='text-zinc-600'>&middot;</span>
-              <strong className='stat-placed text-amber-400 font-bold'>{todayStats.placed}P</strong>
-              <span className='text-zinc-600'>&middot;</span>
-              <strong className='stat-lost text-red-400 font-bold'>{todayStats.lost}L</strong>
-              {todayStats.nr > 0 && (<>
-                <span className='text-zinc-600'>&middot;</span>
-                <strong className='stat-nr text-zinc-400 font-bold'>{todayStats.nr}NR</strong>
-              </>)}
-              <span className='text-zinc-600'>&middot;</span>
-              <strong className='stat-pend text-zinc-500 font-bold'>{todayStats.pending}PEND</strong>
-              {todayStats.won + todayStats.placed + todayStats.lost > 0 && (<>
-                <span className='text-zinc-600'>&middot;</span>
-                <span className='text-zinc-400 text-sm'>SR</span>
-                <strong className='text-amber-400 font-bold'>{(todayStats.won / (todayStats.won + todayStats.placed + todayStats.lost) * 100).toFixed(0)}%</strong>
-              </>)}
             </div>
           )}
           <div className='home-picks-grid grid grid-cols-1 lg:grid-cols-2 gap-6'>
