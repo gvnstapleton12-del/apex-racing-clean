@@ -51,6 +51,7 @@ import { retry } from './src/lib/utils/retry.js'
 import { LruCache } from './src/lib/utils/lruCache.js'
 import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLifeScraper.js'
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
+import { computeTrainerFreshness, getFreshFactor, getTrainerFreshnessProfile, loadFreshnessDb, saveFreshnessDb } from './src/lib/trainerFreshness.js'
 
 dotenv.config()
 
@@ -331,6 +332,7 @@ function storeHistoricalRecord(runner, race, apexResult) {
     runningStyle: runner.runningStyle,
     odds,
     takenOdds: odds,
+    last_run: runner.last_run || 0,
     volatility: apexResult?.volatility?.chaos,
     volatilityLabel: apexResult?.volatility?.label,
     betFilter: betFilterVerdict,
@@ -427,6 +429,8 @@ const JOCKEY_FORM_DATABASE = loadDatabase(JOCKEY_FORM_PATH) || {}
 const HISTORICAL_DATABASE = loadDatabase(HISTORICAL_DB_PATH)?.records
   ? loadDatabase(HISTORICAL_DB_PATH)
   : { records: [] }
+
+let TRAINER_FRESHNESS_DB = loadDatabase(path.join(process.cwd(), 'data', 'trainer-freshness.json')) || { trainers: {}, overall: {}, meta: {} }
 
 // Horse Memory SQLite Database
 async function initHorseMemory() {
@@ -614,6 +618,13 @@ async function processRace(race) {
       const odds = Number(runner.odds || 0)
       const grade = runner.selectionQuality?.grade || ''
       const engine = classifyEngine(grade, odds)
+
+      // Apply trainer freshness factor
+      const freshFactor = getFreshFactor(runner.trainer, runner.last_run, TRAINER_FRESHNESS_DB)
+      if (freshFactor !== 1.0 && runner.last_run > 0) {
+        runner.finalScore = Math.round(runner.finalScore * freshFactor)
+      }
+
       const routed = applyEngineRouting(runner, engine, odds)
 
       logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: routed.winProb, placeProb: routed.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
@@ -644,6 +655,7 @@ async function processRace(race) {
         form: runner.form,
         odds: runner.odds,
         runningStyle: runner.runningStyle,
+        earlyPaceScore: runner.earlyPaceScore || null,
         finalScore: runner.finalScore,
         winProb: routed.winProb,
         placeProb: routed.placeProb,
@@ -669,6 +681,9 @@ async function processRace(race) {
         paceScore: runner.pace?.score,
         humanScore: runner.human?.score,
         marketScore: runner.market?.score,
+        energy: runner.energy || null,
+        paceCompat: runner.paceCompat || null,
+        freshFactor,
         score: runner.finalScore,
         bettingSignals,
         marketMovement,
@@ -680,6 +695,7 @@ async function processRace(race) {
       ...race,
       race_name: cleanRaceName(race.race_name),
       paceMap: apexResult.paceMap,
+      raceShape: apexResult.raceShape || null,
       volatility: apexResult.volatility,
       betFilter: apexResult.betFilter,
       runners: scoredRunners.sort((a, b) => b.finalScore - a.finalScore),
@@ -813,128 +829,63 @@ async function fetchLiveMeetings() {
   }
 }
 
-async function fetchTodayResults() {
-  try {
-    console.log('[Results] Fetching Sporting Life results...')
+function matchResultsToCalibration(races) {
+  let matched = 0
 
-    const today = new Date().toISOString().split('T')[0]
-    const resultRaces = await retry(() => fetchSlResults(today), 2, 2000)
+  // Build set of existing calibration record keys to avoid duplicates
+  const existingCalKeys = new Set(
+    CALIBRATION_DATABASE.records.map(r => `${r.horse}-${r.course}-${r.date}-${r.race}`)
+  )
 
-    if (!resultRaces || resultRaces.length === 0) {
-      console.log('[Results] No results found on Sporting Life')
-      return
-    }
+  // Build set of existing learning record keys to avoid duplicates
+  const existingLearnKeys = new Set(
+    (LEARNING_DATABASE.records || []).map(r => r.id || `${r.horse}-${r.raceKey || ''}`)
+  )
 
-    console.log(`[Results] Found ${resultRaces.length} races with results`)
+  races.forEach((race) => {
+    const runners = race.runners || []
 
-    matchDailyPicksWithResults(resultRaces)
+    runners.forEach((runner) => {
+      const id = `${race.course}-${race.off_time}-${race.date}-${runner.horse}`
+      const position = normalizePosition(runner.position)
+      const rec = HISTORICAL_DATABASE.records.find((r) => r.id === id)
+      if (rec && !rec.resulted) {
+        const spOdds = resolveOdds(runner)
+        rec.actual_position = position
+        rec.actual_won = position === 1
+        rec.actual_placed = position >= 1 && position <= placedPositions(rec.field_size || 0)
+        rec.actual_odds = spOdds
+        rec.spOdds = spOdds
+        rec.closingOdds = spOdds
 
-    const existingCount = LEARNING_DATABASE.records.length
-
-    resultRaces.forEach((race) => {
-      const runners = race.runners ?? []
-      runners.forEach((runner) => {
-        const position = normalizePosition(runner.position)
-        if (position < 1) return
-
-        const alreadyRecorded = (LEARNING_DATABASE.records || []).some(
-          (r) => r.horse === runner.horse && r.timestamp?.startsWith(today)
-        )
-        if (alreadyRecorded) return
-
-        // Match result with prediction for learning
-        const prediction = findPredictionForRunner(race, runner)
-
-        if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
-        LEARNING_DATABASE.records.push({
-          horse: runner.horse,
-          position,
-          won: position === 1,
-          spOdds: runner.sp || resolveOdds(runner),
-          aiConfidence: prediction?.confidence || prediction?.finalScore || 0,
-          signal: prediction ? 'APEX_PREDICTION' : 'SL_RESULT',
-          marketMovement: prediction?.marketMovement?.movement || 'N/A',
-          timestamp: new Date().toISOString(),
-          resultProcessed: true,
-          breakdown: prediction?.breakdown || null,
-        })
-      })
-    })
-
-    if (LEARNING_DATABASE.records.length > existingCount) {
-      LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races ?? []), ...resultRaces]
-      LEARNING_DATABASE.analytics = analyzeHistoricalPerformance(LEARNING_DATABASE.records)
-
-      const rawLearningResult = learnFromResults(LEARNING_DATABASE.records, LEARNING_DATABASE.weights ?? {})
-      if (rawLearningResult.adjusted) {
-        const protectedResult = applyProtectedAdjustment(
-          LEARNING_DATABASE.weights ?? {},
-          rawLearningResult.weights?.multiplier ?? {},
-          LEARNING_DATABASE.records
-        )
-        if (protectedResult.adjusted) {
-          LEARNING_DATABASE.weights = { multiplier: protectedResult.weights }
-          LEARNING_DATABASE.lastLearningRun = {
-            date: new Date().toISOString(),
-            totalRecords: rawLearningResult.totalRecords,
-            winners: rawLearningResult.winners,
-            analysis: rawLearningResult.analysis,
-            protected: true,
-            learningRate: protectedResult.learningRate,
-            outliersSuppressed: protectedResult.outliersSuppressed,
-          }
+        // Recompute edge using SP instead of stale pre-race odds
+        if (spOdds > 0 && rec.fairOdds > 0) {
+          rec.odds = spOdds
+          const spEdge = (rec.fairOdds - spOdds) / spOdds
+          rec.valueEdge = Math.round(spEdge * 10000) / 10000
+          rec.rejectedBy = []
+          if (spEdge <= 0) rec.rejectedBy.push('NEGATIVE_EDGE')
+          if (!rec.winProb || rec.winProb <= 0) rec.rejectedBy.push('ZERO_PROBABILITY')
+          if (spOdds <= 1) rec.rejectedBy.push('INVALID_ODDS')
+          if (rec.confidenceScore !== undefined && rec.confidenceScore < 10) rec.rejectedBy.push('LOW_CONFIDENCE')
+          rec.noBet = rec.rejectedBy.length >= 2 || (rec.betFilter === 'AUTO SKIP' && rec.rejectedBy.length > 0)
         }
+
+        if (rec.takenOdds > 0 && spOdds > 0) {
+          rec.clv = ((rec.takenOdds - spOdds) / spOdds)
+        }
+        if (!rec.last_run && runner.last_run) rec.last_run = runner.last_run
+        if (!rec.trainer && runner.trainer) rec.trainer = runner.trainer
+        rec.resulted = true
       }
 
-      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
-      console.log(`[Results] Stored ${LEARNING_DATABASE.records.length - existingCount} new records`)
-    }
+      const prediction = findPredictionForRunner(race, runner)
 
-    // Bucket learning — update context bucket weights from results
-    const racesWithPredictions = resultRaces.filter((race) => {
-      const runners = race.runners || []
-      return runners.some((runner) => findPredictionForRunner(race, runner))
-    })
+      if (prediction) {
+        const calKey = `${prediction.horse}-${prediction.course}-${prediction.date}-${prediction.race}`
+        if (existingCalKeys.has(calKey)) return
 
-    if (racesWithPredictions.length > 0) {
-      const bucketResult = learnFromBuckets(BUCKET_DATABASE, racesWithPredictions.map((race) => {
-        const runners = race.runners || []
-        const predictions = runners.map((runner) => {
-          const pred = findPredictionForRunner(race, runner)
-          return {
-            powerScore: pred?.breakdown?.powerScore || 50,
-            paceScore: pred?.breakdown?.paceScore || 0,
-            humanScore: pred?.breakdown?.humanAdj || 0,
-            marketScore: pred?.breakdown?.marketAdj || 0,
-            trainerRtf: Number(runner.trainer_rtf || 0),
-          }
-        })
-        const results = runners.map((runner) => ({
-          position: normalizePosition(runner.position),
-        }))
-        return { race, predictions, results }
-      }))
-
-      if (bucketResult.updated) {
-        saveDatabase(BUCKET_DB_PATH, BUCKET_DATABASE)
-        console.log(`[Bucket Learning] Updated ${bucketResult.bucketCount} buckets from ${racesWithPredictions.length} races`)
-      }
-    }
-
-    let newCalRecords = 0
-    resultRaces.forEach((race) => {
-      const runners = race.runners ?? []
-      runners.forEach((runner) => {
-        const position = normalizePosition(runner.position)
-        if (position < 1) return
-        const prediction = findPredictionForRunner(race, runner)
-        if (!prediction) return
-        const dup = CALIBRATION_DATABASE.records.some(
-          (r) => r.horse === runner.horse && r.date === race.date && r.race === `${race.course} ${race.off_time}`
-        )
-        if (dup) return
-        if (!CALIBRATION_DATABASE.records) CALIBRATION_DATABASE.records = []
-        CALIBRATION_DATABASE.records.push(createCalibrationRecord({
+        const calRecord = createCalibrationRecord({
           ...prediction,
           going: race.going || '',
           fieldSize: race.field_size || race.fieldSize || 0,
@@ -943,151 +894,145 @@ async function fetchTodayResults() {
         }, {
           position,
           spOdds: resolveOdds(runner),
-        }))
-        newCalRecords++
-      })
-    })
-
-    if (newCalRecords > 0) {
-      CALIBRATION_DATABASE.analytics = {
-        byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
-        byPlaceProbability: computePlaceCalibration(CALIBRATION_DATABASE.records),
-        byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
-        byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
-        segments: computeAllSegmentations(CALIBRATION_DATABASE.records),
-        lastUpdated: new Date().toISOString(),
-      }
-      saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
-      console.log(`[Calibration] Added ${newCalRecords} new records (total: ${CALIBRATION_DATABASE.records.length})`)
-    }
-
-    let historicalUpdated = 0
-    resultRaces.forEach((race) => {
-      const runners = race.runners ?? []
-      runners.forEach((runner) => {
-        const position = normalizePosition(runner.position)
-        if (position < 1) return
-        const id = `${race.course}-${race.off_time}-${race.date}-${runner.horse}`
-        const rec = HISTORICAL_DATABASE.records.find((r) => r.id === id)
-        if (!rec || rec.resulted) return
-        rec.actual_position = position
-        rec.actual_won = position === 1
-        rec.actual_placed = position >= 1 && position <= placedPositions(rec.field_size || 0)
-        rec.actual_odds = resolveOdds(runner)
-        rec.spOdds = resolveOdds(runner)
-        rec.closingOdds = resolveOdds(runner)
-        if (rec.takenOdds > 0 && rec.closingOdds > 0) {
-          rec.clv = ((rec.takenOdds - rec.closingOdds) / rec.closingOdds)
-        }
-        rec.resulted = true
-        historicalUpdated++
-      })
-    })
-
-    if (historicalUpdated > 0) {
-      saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
-      console.log(`[Historical] Updated ${historicalUpdated} records with results (total: ${HISTORICAL_DATABASE.records.length})`)
-    }
-
-    // Update LIVE_STATE with position data from results
-    if (LIVE_STATE.racecards && resultRaces.length > 0) {
-      let positionsUpdated = 0
-      resultRaces.forEach((resultRace) => {
-        const liveRace = LIVE_STATE.racecards.find(
-          (lr) => lr.course === resultRace.course && lr.off_time === resultRace.off_time
-        )
-        if (!liveRace) return
-        const resultRunners = resultRace.runners || []
-        resultRunners.forEach((rr) => {
-          const pos = normalizePosition(rr.position)
-          if (pos < 1) return
-          const liveRunner = (liveRace.runners || []).find(
-            (lr) => lr.horse === rr.horse
-          )
-          if (liveRunner && !liveRunner.position) {
-            liveRunner.position = pos
-            positionsUpdated++
-          }
         })
-      })
-      if (positionsUpdated > 0) {
-        console.log(`[Results] Updated ${positionsUpdated} runner positions in live state`)
-        API_CACHE.delete('racecards:sl')
-      }
-    }
 
-    // Save horse runs to SQLite memory database for future lookups
-    if (HORSE_MEMORY_DB) {
-      let horseRunsSaved = 0
-      for (const race of resultRaces) {
-        const runners = race.runners ?? []
-        for (const runner of runners) {
-          const position = normalizePosition(runner.position)
-          if (position < 1) continue
-          const saved = await saveHorseRun(HORSE_MEMORY_DB, {
-            horse_name: runner.horse || '',
-            horse_id: runner.horse_id || null,
-            race_date: race.date || new Date().toISOString().split('T')[0],
-            course: race.course || '',
-            distance: race.distance_f || '',
-            distance_furlongs: parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0,
-            going: race.going || '',
-            or_rating: runner.ofr || runner.or || 0,
-            rpr_rating: runner.rpr || 0,
-            finish_position: position,
-            starting_price: runner.sp || 0,
-            race_class: race.race_class || '',
-            field_size: race.field_size || runners.length,
-            trainer: runner.trainer || '',
-            jockey: runner.jockey || '',
-          })
-          if (saved) horseRunsSaved++
-        }
-      }
-      if (horseRunsSaved > 0) {
-        console.log(`[Horse Memory] Saved ${horseRunsSaved} horse runs to SQLite`)
-      }
-    }
-  } catch (error) {
-    console.error('[Results] Error:', error.message)
-  }
-}
+        CALIBRATION_DATABASE.records.push(calRecord)
+        existingCalKeys.add(calKey)
 
-// Auto cache cleaner — removes stale results older than 7 days
-function cleanStaleResults() {
-  const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - 7)
-  const cutoffStr = cutoff.toISOString().split('T')[0]
+        // Also create learning record for anti-overfit/learning engine
+        const raceKey = `${race.course}-${race.off_time || ''}-${race.date}`
+        const learnId = `${runner.horse}-${raceKey}`
+        if (existingLearnKeys.has(learnId)) return
 
-  const before = LEARNING_DATABASE.races?.length || 0
-  LEARNING_DATABASE.races = (LEARNING_DATABASE.races || []).filter(r => {
-    const raceDate = r.date || (r.off_dt ? r.off_dt.slice(0, 10) : null)
-    return raceDate && raceDate >= cutoffStr
+        LEARNING_DATABASE.records.push({
+          id: learnId,
+          raceKey,
+          horse: runner.horse,
+          trainer: runner.trainer || '',
+          last_run: runner.last_run || 0,
+          position,
+          won: position === 1,
+          spOdds: resolveOdds(runner),
+          aiConfidence: Number(prediction.confidence || prediction.finalScore || 75),
+          signal: prediction.signal || 'AUTO_MATCH',
+          marketMovement: prediction.marketMovement || 'UNKNOWN',
+          timestamp: new Date().toISOString(),
+          resultProcessed: true,
+          breakdown: prediction.breakdown || null,
+          weights: prediction.weights || null,
+        })
+        existingLearnKeys.add(learnId)
+
+        matched++
+      }
+    })
   })
-  const after = LEARNING_DATABASE.races?.length || 0
 
-  if (before !== after) {
-    console.log(`[Cache Cleaner] Removed ${before - after} stale results (older than 7 days)`)
+  if (matched > 0) {
+    CALIBRATION_DATABASE.analytics = {
+      byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
+      byPlaceProbability: computePlaceCalibration(CALIBRATION_DATABASE.records),
+      byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
+      byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
+      segments: computeAllSegmentations(CALIBRATION_DATABASE.records),
+      lastUpdated: new Date().toISOString(),
+    }
+    saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
+
+    const existingWeights = LEARNING_DATABASE.weights || {}
+    const rawLearningResult = learnFromResults(LEARNING_DATABASE.records, existingWeights)
+    if (rawLearningResult.adjusted) {
+      const protectedResult = applyProtectedAdjustment(
+        existingWeights.multiplier || {},
+        rawLearningResult.weights.multiplier || {},
+        LEARNING_DATABASE.records
+      )
+      if (protectedResult.adjusted) {
+        LEARNING_DATABASE.weights = { multiplier: protectedResult.weights }
+        LEARNING_DATABASE.lastLearningRun = {
+          date: new Date().toISOString(),
+          totalRecords: rawLearningResult.totalRecords,
+          winners: rawLearningResult.winners,
+          analysis: rawLearningResult.analysis,
+          protected: true,
+          learningRate: protectedResult.learningRate,
+          outliersSuppressed: protectedResult.outliersSuppressed,
+        }
+        console.log('[Learning] Weights adjusted:', JSON.stringify(protectedResult.weights))
+      }
+    } else {
+      console.log('[Learning] Skipped:', rawLearningResult.reason)
+    }
+
     saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+
+    TRAINER_FRESHNESS_DB = computeTrainerFreshness(races, TRAINER_FRESHNESS_DB)
+    const freshnessPath = path.join(process.cwd(), 'data', 'trainer-freshness.json')
+    saveDatabase(freshnessPath, TRAINER_FRESHNESS_DB)
+    console.log(`[Freshness] Updated trainer freshness: ${Object.keys(TRAINER_FRESHNESS_DB.trainers).length} trainers`)
+
+    console.log(`[Calibration] Matched ${matched} runners for calibration, saved learning records`)
+  }
+
+  // Match results against daily picks so the home tab shows W/P/L
+  matchDailyPicksWithResults(races)
+}
+
+async function fetchResultsForDate(dateStr) {
+  try {
+    const today = new Date().toISOString().slice(0, 10)
+    // Only skip scraping for past dates if we already have data
+    // For today, always re-scrape since races finish throughout the day
+    if (dateStr !== today) {
+      const existingDateRaces = (LEARNING_DATABASE.races || []).filter(r => r.date === dateStr && r.off_time)
+      if (existingDateRaces.length >= 10) {
+        console.log(`[Results] Already have ${existingDateRaces.length} races for ${dateStr}, skipping scrape`)
+        matchResultsToCalibration(existingDateRaces)
+        return existingDateRaces.length
+      }
+    }
+
+    console.log(`[Results] Fetching results for ${dateStr}...`)
+    const resultRaces = await retry(() => fetchSlResults(dateStr), 2, 2000)
+
+    if (!resultRaces || resultRaces.length === 0) {
+      console.log(`[Results] No results found for ${dateStr}`)
+      return 0
+    }
+
+    console.log(`[Results] Found ${resultRaces.length} races for ${dateStr}`)
+
+    try {
+      const existingIds = new Set((LEARNING_DATABASE.races || []).map(r => r.race_id))
+      const newRaces = resultRaces.filter(r => !existingIds.has(r.race_id))
+      LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), ...newRaces]
+      console.log(`[Results] Stored ${newRaces.length} new races for ${dateStr}`)
+      saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    } catch (saveError) {
+      console.error(`[Results] Error saving ${dateStr}:`, saveError.message)
+      return 0
+    }
+
+    // Match all scraped results (new + existing) against predictions for calibration
+    const dateRaces = (LEARNING_DATABASE.races || []).filter(r => r.date === dateStr && r.off_time)
+    matchResultsToCalibration(dateRaces)
+
+    saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
+
+    return resultRaces.length
+  } catch (error) {
+    console.error(`[Results] Error fetching ${dateStr}:`, error.message)
+    return 0
   }
 }
 
-// Defer heavy initial fetches to avoid blocking server startup
-setTimeout(() => {
-  cleanStaleResults()
-  fetchLiveMeetings()
-}, 1000)
+async function fetchTodayResults() {
+  const today = new Date().toISOString().split('T')[0]
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
 
-// Defer heavy initial fetches to avoid blocking server startup
-setTimeout(() => {
-  cleanStaleResults()
-  fetchLiveMeetings()
-}, 1000)
-
-setInterval(fetchLiveMeetings, 300000)
-
-setTimeout(fetchTodayResults, 30000)
-setInterval(fetchTodayResults, 300000)
+  await fetchResultsForDate(yesterday)
+  await fetchResultsForDate(today)
+}
 
 function buildLightweightState() {
   const racecards = (LIVE_STATE.racecards || []).map(race => ({
@@ -1111,6 +1056,7 @@ function buildLightweightState() {
     surface: race.surface,
     race_status: race.race_status,
     paceMap: race.paceMap,
+    raceShape: race.raceShape || null,
     volatility: race.volatility,
     betFilter: race.betFilter,
     runners: (race.runners || []).map(r => ({
@@ -1138,6 +1084,7 @@ function buildLightweightState() {
       form: r.form,
       odds: r.odds,
       runningStyle: r.runningStyle,
+      earlyPaceScore: r.earlyPaceScore || null,
       finalScore: r.finalScore,
       winProb: r.winProb,
       placeProb: r.placeProb,
@@ -1372,15 +1319,67 @@ app.post('/api/replay-notes', (req, res) => {
 })
 
 app.get('/api/learning-stats', (_req, res) => {
+  const records = LEARNING_DATABASE.records || []
+  const totalBets = records.length
+  const winners = records.filter(r => r.won === true).length
+  const losers = records.filter(r => r.won === false).length
+  const winRate = totalBets > 0 ? ((winners / totalBets) * 100) : 0
+
+  let totalROI = 0
+  let avgConf = 0
+  if (totalBets > 0) {
+    let profit = 0
+    let confSum = 0
+    for (const r of records) {
+      if (r.won && r.spOdds) {
+        profit += r.spOdds - 1
+      } else {
+        profit -= 1
+      }
+      confSum += Number(r.aiConfidence || 0)
+    }
+    totalROI = (profit / totalBets) * 100
+    avgConf = Math.round(confSum / totalBets)
+  }
+
+  const signalCounts = {}
+  const signalWins = {}
+  for (const r of records) {
+    const sig = r.signal || 'UNKNOWN'
+    signalCounts[sig] = (signalCounts[sig] || 0) + 1
+    if (r.won) signalWins[sig] = (signalWins[sig] || 0) + 1
+  }
+  const profitableSignals = Object.entries(signalCounts).map(([signal, runs]) => ({
+    signal,
+    runs,
+    wins: signalWins[signal] || 0,
+    strikeRate: runs > 0 ? ((signalWins[signal] || 0) / runs * 100) : 0,
+  })).sort((a, b) => b.runs - a.runs)
+
+  const bands = [
+    { band: 'high', min: 80, max: 100, wins: 0, runs: 0, strikeRate: 0 },
+    { band: 'medium', min: 50, max: 79, wins: 0, runs: 0, strikeRate: 0 },
+    { band: 'low', min: 0, max: 49, wins: 0, runs: 0, strikeRate: 0 },
+  ]
+  for (const r of records) {
+    const conf = Number(r.aiConfidence || 0)
+    const b = bands.find(b => conf >= b.min && conf <= b.max) || bands[2]
+    b.runs++
+    if (r.won) b.wins++
+  }
+  for (const b of bands) {
+    b.strikeRate = b.runs > 0 ? ((b.wins / b.runs) * 100) : 0
+  }
+
   res.json({
-    ...(LEARNING_DATABASE.analytics || {
-      totalBets: 0,
-      winners: 0,
-      strikeRate: 0,
-      roi: 0,
-      averageConfidence: 0,
-      profitableSignals: [],
-    }),
+    totalBets,
+    winners,
+    losers,
+    strikeRate: winRate,
+    roi: totalROI,
+    averageConfidence: avgConf,
+    profitableSignals,
+    confidenceBands: bands,
     weights: LEARNING_DATABASE.weights || {},
     lastLearningRun: LEARNING_DATABASE.lastLearningRun || null,
   })
@@ -1906,7 +1905,7 @@ app.get('/api/historical/stats', (_req, res) => {
 
   res.json({
     total: records.length,
-    resolved: resolved.length,
+    resulted: resolved.length,
     bettable: bettable.length,
     invalidPositions: resulted.length - resolved.length,
     winners: won.length,
@@ -2188,8 +2187,54 @@ app.get('/api/anti-overfit', (_req, res) => {
   res.json(report)
 })
 
+app.get('/api/trainer-freshness', (_req, res) => {
+  res.json(TRAINER_FRESHNESS_DB)
+})
+
+app.get('/api/trainer-freshness/:trainer', (req, res) => {
+  const profile = getTrainerFreshnessProfile(req.params.trainer, TRAINER_FRESHNESS_DB)
+  if (!profile) return res.status(404).json({ error: 'Trainer not found' })
+  res.json(profile)
+})
+
 server.listen(PORT, () => {
   console.log(`APEX websocket engine running on ${PORT}`)
+  // Fetch today's data on startup
+  fetchLiveMeetings()
+  fetchTodayResults()
+
+  // Schedule daily racecard fetch at 8am UK time
+  function scheduleNext8am() {
+    const now = new Date()
+    const ukNow = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/London' }))
+    const target = new Date(ukNow)
+    target.setHours(8, 0, 0, 0)
+    if (target <= ukNow) target.setDate(target.getDate() + 1)
+    const msUntil = target.getTime() - ukNow.getTime()
+    console.log(`[Scheduler] Next racecard fetch in ${(msUntil / 3600000).toFixed(1)}h`)
+    setTimeout(async () => {
+      console.log('[Scheduler] 8am racecard fetch triggered')
+      try {
+        const races = await fetchLiveMeetings()
+        console.log(`[Scheduler] Fetched ${Array.isArray(races) ? races.length : '?'} races`)
+      } catch (e) {
+        console.error('[Scheduler] Fetch failed:', e.message)
+      }
+      scheduleNext8am()
+    }, msUntil)
+  }
+  scheduleNext8am()
+
+  // Re-scrape today's results every 30 min to pick up newly finished races
+  setInterval(async () => {
+    const today = new Date().toISOString().split('T')[0]
+    try {
+      console.log('[Scheduler] Periodic results refresh for', today)
+      await fetchResultsForDate(today)
+    } catch (e) {
+      console.error('[Scheduler] Results refresh failed:', e.message)
+    }
+  }, 30 * 60 * 1000)
 })
 
 function gracefulShutdown(signal) {

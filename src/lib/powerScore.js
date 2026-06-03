@@ -2,11 +2,16 @@ import { calculateFieldStrength, normalizePosition } from './fieldStrength.js'
 
 function parseFormPositions(form = '') {
   const positions = []
-  const segments = form.split(/[\/-]/)
+  const segments = form.split(/[\/\-]/)
   segments.forEach((seg) => {
-    for (const ch of seg) {
+    const cleaned = seg.replace(/[^0-9]/g, '')
+    if (!cleaned) return
+    const lastChar = seg.trim().slice(-1).toUpperCase()
+    const isNonFinisher = /[FUPRDLCB]/.test(lastChar)
+    if (isNonFinisher) return
+    for (const ch of cleaned) {
       const n = parseInt(ch, 10)
-      if (!isNaN(n)) positions.push(n)
+      if (n > 0) positions.push(n)
     }
   })
   return positions.filter((p) => p > 0)

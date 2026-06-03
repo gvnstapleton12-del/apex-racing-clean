@@ -46,6 +46,7 @@ Three-layer separation:
 - ✅ Home page score ring visible (flex layout, no absolute positioning)
 - ✅ Race times in 24hr format
 - ✅ README updated with full architecture
+- ✅ Sporting Life results scraper fixed — correctly extracts finish positions, SP odds, jockey/trainer
 
 ### Pending / Future
 - [ ] Further engine extraction from dashboard widgets (some inline calculations remain)
@@ -53,6 +54,7 @@ Three-layer separation:
 - [x] Convert `main.jsx` → `main.tsx` for full type coverage
 - [ ] Better loading states for individual widgets
 - [ ] RaceModal — convert to use same Tailwind card pattern as RacePage
+- [ ] Speed up results scraper (5+ min per date is slow; consider parallel fetching)
 
 ## Conventions
 

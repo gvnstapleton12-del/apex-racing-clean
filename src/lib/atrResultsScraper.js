@@ -28,16 +28,22 @@ function saveCache(races) {
 
 export async function fetchATRResults() {
   const cached = loadCache()
-  if (cached) return cached
+  if (cached) {
+    console.log(`[ATR Results] Returning ${cached.length} races from cache`)
+    return cached
+  }
 
   try {
+    console.log('[ATR Results] Fetching from attheraces.com/results...')
     const response = await fetch('https://www.attheraces.com/results', {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
     })
     const html = await response.text()
+    console.log(`[ATR Results] Fetched ${html.length} bytes`)
     const races = parseATRResults(html)
+    console.log(`[ATR Results] Parsed ${races.length} races`)
     saveCache(races)
     return races
   } catch (error) {

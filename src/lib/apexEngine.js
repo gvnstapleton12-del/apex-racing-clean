@@ -1,6 +1,6 @@
 import { eliminationGate } from './eliminationGate.js'
 import { corePowerScore } from './powerScore.js'
-import { classifyRunningStyle, generatePaceMap, paceMatrixScore, computePacePressure } from './paceEngine.js'
+import { classifyRunningStyle, generatePaceMap, paceMatrixScore, computePacePressure, computeEarlyPaceScore, detectRaceShape } from './paceEngine.js'
 import { humanIntelligenceLayer } from './humanIntelligence.js'
 import { marketIntelligence, marketAlignment } from './marketIntelligence.js'
 import { volatilityIndex } from './volatilityIndex.js'
@@ -11,7 +11,7 @@ import { bucketKey, getBucketWeights } from './contextBuckets.js'
 import { buildNarrative } from './narrativeBuilder.js'
 import { matchConditions } from './conditionDB.js'
 import { estimateEnergyDistribution } from './energyModel.js'
-import { classifyHorseTags, evaluatePaceCompatibility } from './horseTags.js'
+import { evaluatePaceCompatibility } from './horseTags.js'
 import { detectFalseFavourite } from './falseFavourite.js'
 import { detectHiddenImprover } from './hiddenImprover.js'
 import { detectStableIntent } from './stableIntent.js'
@@ -100,9 +100,16 @@ export function runApexEngine(runners, race, options = {}) {
   }
 
   const volatility = volatilityIndex(race)
-  const styles = runners.map((r) => classifyRunningStyle(r, race))
-  const paceMap = generatePaceMap(runners.map((r, i) => ({ ...r, runningStyle: styles[i] })))
+
+  const earlyScores = runners.map((r) => computeEarlyPaceScore(r, race))
+  const styles = runners.map((r, i) => {
+    r.earlyPaceScore = earlyScores[i]
+    return classifyRunningStyle(r, race)
+  })
+  const runnersWithScores = runners.map((r, i) => ({ ...r, runningStyle: styles[i], earlyPaceScore: earlyScores[i] }))
+  const paceMap = generatePaceMap(runnersWithScores)
   const pacePressure = computePacePressure(paceMap)
+  const raceShape = detectRaceShape(runnersWithScores, race)
 
   const results = runners.map((runner, idx) => {
     const runnerStart = Date.now()
@@ -110,6 +117,7 @@ export function runApexEngine(runners, race, options = {}) {
     const draw = Number(runner.draw || 0)
     const fieldSize = runners.length
     const horseId = runner.horse_id || runner.horse
+    const earlyPaceScore = earlyScores[idx]
     const replayKey = `${runner.horse}|${race.course}`
     const replayNote = replayDb[replayKey] || Object.entries(replayDb || {}).find(([key]) => key.startsWith(`${runner.horse}|`))?.[1] || {}
 
@@ -127,10 +135,16 @@ export function runApexEngine(runners, race, options = {}) {
     const energy = estimateEnergyDistribution(runner, race, {
       runningStyle,
       paceMap,
+      earlyPaceScore,
+      raceShape,
     })
 
-    const tags = classifyHorseTags(runner, race)
-    const paceCompat = evaluatePaceCompatibility(tags, paceMap, parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0)
+    const paceCompat = evaluatePaceCompatibility(
+      computeEarlyPaceScore(runner, race),
+      raceShape,
+      parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0,
+      fieldSize
+    )
 
     const improver = detectHiddenImprover(runner, race, {
       goingDb,
@@ -178,7 +192,6 @@ export function runApexEngine(runners, race, options = {}) {
       runningStyle,
       paceScore,
       energy,
-      tags,
       paceCompat,
       improver,
       stableIntent,
@@ -357,6 +370,7 @@ export function runApexEngine(runners, race, options = {}) {
     return {
       ...runner,
       runningStyle,
+      earlyPaceScore,
       elimination,
       power: {
         total: powerScore,
@@ -367,7 +381,6 @@ export function runApexEngine(runners, race, options = {}) {
         tempo: paceMap.projectedTempo,
       },
       energy,
-      tags,
       paceCompat,
       improver,
       stableIntent,
@@ -541,6 +554,7 @@ export function runApexEngine(runners, race, options = {}) {
   return {
     racecards: output,
     paceMap,
+    raceShape,
     volatility,
     archetype: archetype.archetype,
     archetypeInfo: archetype,

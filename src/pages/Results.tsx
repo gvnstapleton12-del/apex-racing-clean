@@ -79,11 +79,14 @@ export function ResultsList({ results }: ResultsListProps) {
     return hasResults
   })
 
-  // Merge live results with stored results, deduplicating by race_id
-  const todayIds = new Set(todayStored.map((r: any) => r.race_id || `${r.course}-${r.off_time}`))
-  const liveNotInStored = liveWithResults.filter((r: any) =>
-    !todayIds.has(r.race_id || `${r.course}-${r.off_time}`)
-  )
+  // Merge live results with stored results, deduplicating by race_id or course+time
+  const todayIds = new Set(todayStored.map((r: any) => r.race_id || ''))
+  const todayCourseTime = new Set(todayStored.map((r: any) => `${r.course}-${r.off_time || r.off || ''}`))
+  const liveNotInStored = liveWithResults.filter((r: any) => {
+    const rid = r.race_id || ''
+    const ct = `${r.course}-${r.off_time || r.off || ''}`
+    return !todayIds.has(rid) && !todayCourseTime.has(ct)
+  })
 
   const todayRaces = [...liveNotInStored, ...todayStored].sort((a: any, b: any) => {
     const aDt = a.off_dt || a.off_time || ''

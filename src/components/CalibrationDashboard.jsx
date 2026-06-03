@@ -122,7 +122,18 @@ export default function CalibrationDashboard() {
     )
   }
 
-  const { byProbability, byPlaceProbability, byGrade, byBetQuality } = calibration.analytics
+  const {
+    byProbability = { totalRecords: 0, totalWins: 0, overallAccuracy: 0, brierScore: 0, reliability: 'N/A', buckets: [] },
+    byPlaceProbability = { buckets: [] },
+    byGrade = { grades: [] },
+    byBetQuality = { qualities: [] },
+  } = calibration.analytics || {}
+
+  const records = calibration.records || []
+  const wins = records.filter(r => r.actualWon).length
+  const places = records.filter(r => !r.actualWon && r.actualPlaced).length
+  const losses = records.filter(r => !r.actualWon && !r.actualPlaced).length
+  const placeRate = records.length ? (((wins + places) / records.length) * 100).toFixed(1) : 0
 
   return (
     <div className='calibration-dashboard'>
@@ -133,13 +144,25 @@ export default function CalibrationDashboard() {
             <span className='cal-stat-value'>{byProbability.totalRecords}</span>
             <span className='cal-stat-label'>Predictions</span>
           </div>
-          <div className='cal-stat'>
-            <span className='cal-stat-value'>{byProbability.totalWins}</span>
-            <span className='cal-stat-label'>Winners</span>
+          <div className='cal-stat' style={{ color: '#22c55e' }}>
+            <span className='cal-stat-value'>{wins}</span>
+            <span className='cal-stat-label'>Wins</span>
+          </div>
+          <div className='cal-stat' style={{ color: '#eab308' }}>
+            <span className='cal-stat-value'>{places}</span>
+            <span className='cal-stat-label'>Places</span>
+          </div>
+          <div className='cal-stat' style={{ color: '#ef4444' }}>
+            <span className='cal-stat-value'>{losses}</span>
+            <span className='cal-stat-label'>Losses</span>
           </div>
           <div className='cal-stat'>
             <span className='cal-stat-value'>{byProbability.overallAccuracy}%</span>
-            <span className='cal-stat-label'>Strike Rate</span>
+            <span className='cal-stat-label'>Win Rate</span>
+          </div>
+          <div className='cal-stat'>
+            <span className='cal-stat-value'>{placeRate}%</span>
+            <span className='cal-stat-label'>Place Rate</span>
           </div>
           <div className='cal-stat'>
             <span className='cal-stat-value'>{byProbability.brierScore}</span>
