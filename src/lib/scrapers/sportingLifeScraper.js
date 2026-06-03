@@ -224,6 +224,8 @@ async function fetchRaceRunners(raceId) {
       sp: parseFractionalOdds(ride.betting?.sp || ride.betting?.starting_price),
       draw: ride.draw_number || ride.cloth_number || 0,
       lbs: ride.handicap || '',
+      or: Number(ride.official_rating || ride.horse?.official_rating || 0) || 0,
+      rpr: Number(ride.rpr || ride.horse?.rpr || 0) || 0,
       form: ride.horse?.formsummary?.display_text || '',
       age: ride.horse?.age || 0,
       sex: ride.horse?.sex?.type || '',
