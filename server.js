@@ -52,6 +52,7 @@ import { LruCache } from './src/lib/utils/lruCache.js'
 import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLifeScraper.js'
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
 import { computeTrainerFreshness, getFreshFactor, getTrainerFreshnessProfile, loadFreshnessDb, saveFreshnessDb } from './src/lib/trainerFreshness.js'
+import { buildORHistory } from './src/lib/classModel.js'
 
 dotenv.config()
 
@@ -314,6 +315,8 @@ function storeHistoricalRecord(runner, race, apexResult) {
     distance: race.distance || race.distancef || '',
     field_size: race.field_size || race.fieldSize || race.runners?.length || 0,
     class: race.class || '',
+    or: runner.or || 0,
+    rpr: runner.rpr || 0,
     trainer: runner.trainer || '',
     jockey: runner.jockey || '',
     finalScore: score,
@@ -431,6 +434,7 @@ const HISTORICAL_DATABASE = loadDatabase(HISTORICAL_DB_PATH)?.records
   : { records: [] }
 
 let TRAINER_FRESHNESS_DB = loadDatabase(path.join(process.cwd(), 'data', 'trainer-freshness.json')) || { trainers: {}, overall: {}, meta: {} }
+let OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
 
 // Horse Memory SQLite Database
 async function initHorseMemory() {
@@ -587,6 +591,7 @@ async function processRace(race) {
       multiplier: LEARNING_DATABASE.weights?.multiplier || {},
       calibrationData: CALIBRATION_DATABASE.analytics || null,
       horseMemoryDb: HORSE_MEMORY_DB,
+      orHistory: OR_HISTORY,
     })
 
     const atrLinks = await fetchAtrHorseLinks(race)
@@ -912,6 +917,7 @@ function matchResultsToCalibration(races) {
           raceKey,
           horse: runner.horse,
           trainer: runner.trainer || '',
+          or: runner.or || 0,
           last_run: runner.last_run || 0,
           position,
           won: position === 1,
@@ -973,6 +979,9 @@ function matchResultsToCalibration(races) {
     const freshnessPath = path.join(process.cwd(), 'data', 'trainer-freshness.json')
     saveDatabase(freshnessPath, TRAINER_FRESHNESS_DB)
     console.log(`[Freshness] Updated trainer freshness: ${Object.keys(TRAINER_FRESHNESS_DB.trainers).length} trainers`)
+
+    OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
+    console.log(`[OR History] Built OR profiles for ${Object.keys(OR_HISTORY).length} horses`)
 
     console.log(`[Calibration] Matched ${matched} runners for calibration, saved learning records`)
   }

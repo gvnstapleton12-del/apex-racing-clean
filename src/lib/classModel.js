@@ -124,3 +124,118 @@ export function computeWeightFit(lbs, fieldSize) {
 
   return { fit, impact }
 }
+
+const OR_BANDS = [
+  { key: '0_60', min: 0, max: 60, label: 'Low (<60)' },
+  { key: '60_75', min: 60, max: 75, label: 'Below Average (60-74)' },
+  { key: '75_85', min: 75, max: 85, label: 'Average (75-84)' },
+  { key: '85_95', min: 85, max: 95, label: 'Above Average (85-94)' },
+  { key: '95_105', min: 95, max: 105, label: 'Good (95-104)' },
+  { key: '105_plus', min: 105, max: Infinity, label: 'High (105+)' },
+]
+
+function classifyORBand(or) {
+  const n = Number(or) || 0
+  for (const band of OR_BANDS) {
+    if (n >= band.min && n < band.max) return band.key
+  }
+  return n >= 105 ? '105_plus' : '0_60'
+}
+
+export function buildORHistory(records = []) {
+  const history = {}
+
+  for (const rec of records) {
+    const horse = rec.horse
+    const or = Number(rec.or || 0)
+    const won = rec.won || rec.position === 1
+    const placed = rec.position && rec.position <= 3
+
+    if (!horse || or <= 0) continue
+    if (!history[horse]) {
+      history[horse] = { runs: 0, wins: 0, places: 0, bands: {} }
+      for (const band of OR_BANDS) {
+        history[horse].bands[band.key] = { runs: 0, wins: 0, places: 0 }
+      }
+    }
+
+    const bandKey = classifyORBand(or)
+    history[horse].runs++
+    if (won) history[horse].wins++
+    if (placed) history[horse].places++
+    history[horse].bands[bandKey].runs++
+    if (won) history[horse].bands[bandKey].wins++
+    if (placed) history[horse].bands[bandKey].places++
+  }
+
+  return history
+}
+
+export function getHorseORProfile(horseName, orHistory) {
+  if (!horseName || !orHistory?.[horseName]) return null
+
+  const data = orHistory[horseName]
+  if (data.runs < 2) return null
+
+  const bands = {}
+  let bestBand = null
+  let bestWinRate = 0
+
+  for (const band of OR_BANDS) {
+    const b = data.bands[band.key]
+    const winRate = b.runs > 0 ? b.wins / b.runs : 0
+    const placeRate = b.runs > 0 ? b.places / b.runs : 0
+    bands[band.key] = {
+      label: band.label,
+      runs: b.runs,
+      wins: b.wins,
+      places: b.places,
+      winRate: Math.round(winRate * 100),
+      placeRate: Math.round(placeRate * 100),
+    }
+    if (b.runs >= 2 && winRate > bestWinRate) {
+      bestWinRate = winRate
+      bestBand = band.key
+    }
+  }
+
+  const overallWinRate = data.runs > 0 ? data.wins / data.runs : 0
+
+  return {
+    horse: horseName,
+    totalRuns: data.runs,
+    totalWins: data.wins,
+    totalPlaces: data.places,
+    overallWinRate: Math.round(overallWinRate * 100),
+    bestORBand: bestBand ? OR_BANDS.find(b => b.key === bestBand)?.label : 'Unknown',
+    bestORWinRate: Math.round(bestWinRate * 100),
+    bands,
+  }
+}
+
+export function computeORProfileAdjustment(horseName, currentOR, orHistory) {
+  const profile = getHorseORProfile(horseName, orHistory)
+  if (!profile) return { adjustment: 0, label: 'No data', profile: null }
+
+  const currentBand = classifyORBand(currentOR)
+  const bandData = profile.bands[currentBand]
+
+  if (!bandData || bandData.runs < 2) {
+    return { adjustment: 0, label: 'Unproven at this level', profile }
+  }
+
+  const bandWinRate = bandData.winRate / 100
+  const overallWinRate = profile.overallWinRate / 100
+
+  if (bandWinRate > overallWinRate * 1.5 && bandWinRate > 0.15) {
+    return { adjustment: 3, label: `Thrives at OR ${currentBand.replace('_', '-')}`, profile }
+  } else if (bandWinRate > overallWinRate * 1.2) {
+    return { adjustment: 1.5, label: `Slightly above average at this level`, profile }
+  } else if (bandWinRate < overallWinRate * 0.5 && bandData.runs >= 3) {
+    return { adjustment: -2, label: `Struggles at OR ${currentBand.replace('_', '-')}`, profile }
+  } else if (bandWinRate < overallWinRate * 0.8 && bandData.runs >= 3) {
+    return { adjustment: -1, label: `Below average at this level`, profile }
+  }
+
+  return { adjustment: 0, label: 'Average at this level', profile }
+}

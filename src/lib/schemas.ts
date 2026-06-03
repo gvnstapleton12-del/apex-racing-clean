@@ -123,6 +123,8 @@ const RunnerSchema = z.object({
     orFitScore: z.coerce.number().optional(),
     weightFit: z.string().optional(),
     classAdj: z.coerce.number().optional(),
+    orProfile: z.string().optional(),
+    orProfileAdj: z.coerce.number().optional(),
   }).optional(),
   horseQuality: HorseQualitySchema.optional(),
   components: ComponentScoresSchema.optional(),

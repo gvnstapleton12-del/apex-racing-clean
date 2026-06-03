@@ -32,7 +32,7 @@ import { computeReplayFlags } from './replayFlagEngine.js'
 import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
 import { computeCalibrationAdjustment } from './calibrationEngine.js'
 import { computeTrackBiasFactor, getDrawBias, isAW } from './trackProfile.js'
-import { classifyClassLevel, computeORFit, computeWeightFit } from './classModel.js'
+import { classifyClassLevel, computeORFit, computeWeightFit, computeORProfileAdjustment } from './classModel.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -196,6 +196,11 @@ export function runApexEngine(runners, race, options = {}) {
 
     const classAdj = (orFit.fit - 0.5) * 8 * orWeight + (weightFit.fit - 0.5) * 4 * weightWeight
 
+    // OR profile — historical win rate at this OR level
+    const orProfileAdj = options.orHistory
+      ? computeORProfileAdjustment(runner.horse, runner.or || fieldAvgOR, options.orHistory)
+      : { adjustment: 0, label: 'No data', profile: null }
+
     const humanAdj = humanIntelligenceLayer(replayNote, race.course)
     const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
 
@@ -301,7 +306,7 @@ export function runApexEngine(runners, race, options = {}) {
       : 0
 
     const layeredWithChaos = withMovement * chaosSuppression
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + classAdj)))
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + classAdj + orProfileAdj.adjustment)))
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.50 +
@@ -427,6 +432,8 @@ export function runApexEngine(runners, race, options = {}) {
         orFitScore: orFit.fit,
         weightFit: weightFit.impact,
         classAdj: Math.round(classAdj * 10) / 10,
+        orProfile: orProfileAdj.label,
+        orProfileAdj: orProfileAdj.adjustment,
       },
       components,
       newComponents,
