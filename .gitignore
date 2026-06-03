@@ -2,6 +2,9 @@ node_modules
 .env
 data/
 dist/
-backtest_snapshots.json
-historical_races.json
-historical_races.csv
+*.log
+*.csv
+*.json.bak
+.idea/
+*.timestamp-*
+backtest*
