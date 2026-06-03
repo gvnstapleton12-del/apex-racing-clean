@@ -181,9 +181,20 @@ export function runApexEngine(runners, race, options = {}) {
 
     // Class model — class fit + OR fit
     const raceClass = classifyClassLevel(race.race_class, race.race_class)
+    const raceName = (race.race_name || '').toLowerCase()
+    const isHandicap = raceName.includes('handicap') || race.type === 'Handicap' || race.type === 'Hurdle' || race.type === 'Chase'
+    const isMaiden = raceName.includes('maiden') || raceName.includes('novice') || raceName.includes('bumper')
+    const isBigField = fieldSize >= 12
+
+    // OR fit: full weight in handicaps, reduced elsewhere
     const orFit = computeORFit(runner.or, fieldAvgOR, raceClass)
+    const orWeight = isHandicap ? 1.0 : isMaiden ? 0.2 : 0.4
+
+    // Weight fit: full weight in handicaps + big fields, reduced in small/novice
     const weightFit = computeWeightFit(runner.lbs, fieldSize)
-    const classAdj = (orFit.fit - 0.5) * 8 + (weightFit.fit - 0.5) * 4
+    const weightWeight = isHandicap && isBigField ? 1.0 : isHandicap ? 0.7 : isMaiden ? 0.2 : 0.4
+
+    const classAdj = (orFit.fit - 0.5) * 8 * orWeight + (weightFit.fit - 0.5) * 4 * weightWeight
 
     const humanAdj = humanIntelligenceLayer(replayNote, race.course)
     const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
