@@ -31,6 +31,8 @@ import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
 import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
 import { computeCalibrationAdjustment } from './calibrationEngine.js'
+import { computeTrackBiasFactor, getDrawBias, isAW } from './trackProfile.js'
+import { classifyClassLevel, computeORFit, computeWeightFit } from './classModel.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -111,6 +113,10 @@ export function runApexEngine(runners, race, options = {}) {
   const pacePressure = computePacePressure(paceMap)
   const raceShape = detectRaceShape(runnersWithScores, race)
 
+  // Compute field average OR for class model
+  const orValues = runners.map(r => Number(r.or || 0)).filter(n => n > 0)
+  const fieldAvgOR = orValues.length > 0 ? orValues.reduce((s, v) => s + v, 0) / orValues.length : 0
+
   const results = runners.map((runner, idx) => {
     const runnerStart = Date.now()
     const runningStyle = styles[idx]
@@ -165,6 +171,19 @@ export function runApexEngine(runners, race, options = {}) {
       race.raceClass,
       runner.weight,
     )
+
+    // Track profile — draw bias + surface/pace suitability
+    const distanceF = parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0
+    const trackBiasFactor = computeTrackBiasFactor(race.course, distanceF, runningStyle)
+    const drawBias = getDrawBias(race.course, distanceF)
+    const isAllWeather = isAW(race.course)
+    const trackAdj = (trackBiasFactor - 1.0) * 100
+
+    // Class model — class fit + OR fit
+    const raceClass = classifyClassLevel(race.race_class, race.race_class)
+    const orFit = computeORFit(runner.or, fieldAvgOR, raceClass)
+    const weightFit = computeWeightFit(runner.lbs, fieldSize)
+    const classAdj = (orFit.fit - 0.5) * 8 + (weightFit.fit - 0.5) * 4
 
     const humanAdj = humanIntelligenceLayer(replayNote, race.course)
     const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
@@ -271,7 +290,7 @@ export function runApexEngine(runners, race, options = {}) {
       : 0
 
     const layeredWithChaos = withMovement * chaosSuppression
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj)))
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + classAdj)))
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.50 +
@@ -385,6 +404,19 @@ export function runApexEngine(runners, race, options = {}) {
       improver,
       stableIntent,
       conditionMatch,
+      trackProfile: {
+        trackBiasFactor: Math.round(trackBiasFactor * 1000) / 1000,
+        drawBias,
+        isAllWeather,
+        trackAdj: Math.round(trackAdj * 10) / 10,
+      },
+      classModel: {
+        raceClass: raceClass.label,
+        orFit: orFit.label,
+        orFitScore: orFit.fit,
+        weightFit: weightFit.impact,
+        classAdj: Math.round(classAdj * 10) / 10,
+      },
       components,
       newComponents,
       finalProbability,
