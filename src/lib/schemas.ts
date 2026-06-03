@@ -105,6 +105,25 @@ const RunnerSchema = z.object({
   runningStyle: z.string().optional(),
   earlyPaceScore: z.coerce.number().optional(),
   paceScore: z.coerce.number().optional(),
+  energy: z.object({
+    earlyEnergy: z.coerce.number().optional(),
+    lateEnergy: z.coerce.number().optional(),
+    midEnergy: z.coerce.number().optional(),
+    energyAdj: z.coerce.number().optional(),
+  }).optional(),
+  trackProfile: z.object({
+    trackBiasFactor: z.coerce.number().optional(),
+    drawBias: z.any().optional(),
+    isAllWeather: z.boolean().optional(),
+    trackAdj: z.coerce.number().optional(),
+  }).optional(),
+  classModel: z.object({
+    raceClass: z.string().optional(),
+    orFit: z.string().optional(),
+    orFitScore: z.coerce.number().optional(),
+    weightFit: z.string().optional(),
+    classAdj: z.coerce.number().optional(),
+  }).optional(),
   horseQuality: HorseQualitySchema.optional(),
   components: ComponentScoresSchema.optional(),
   placeTraits: z.object({
