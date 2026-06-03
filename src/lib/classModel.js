@@ -97,6 +97,36 @@ export function computeORFit(horseOR, currentOR, raceClass) {
   return { fit, label, diff }
 }
 
+export function computeRPRORFit(rpr, or, isHandicap) {
+  if (!rpr || !or || rpr <= 0 || or <= 0) return { gap: 0, adjustment: 0, label: 'No data' }
+
+  const gap = rpr - or
+  let adjustment = 0
+  let label = 'Even'
+
+  if (gap >= 15) {
+    adjustment = isHandicap ? 4 : 2
+    label = 'Well ahead of mark'
+  } else if (gap >= 10) {
+    adjustment = isHandicap ? 3 : 1.5
+    label = 'Ahead of mark'
+  } else if (gap >= 5) {
+    adjustment = isHandicap ? 1.5 : 0.5
+    label = 'Slightly ahead'
+  } else if (gap >= -5) {
+    adjustment = 0
+    label = 'Even'
+  } else if (gap >= -10) {
+    adjustment = isHandicap ? -1.5 : -0.5
+    label = 'Behind mark'
+  } else {
+    adjustment = isHandicap ? -3 : -1
+    label = 'Well behind mark'
+  }
+
+  return { gap, adjustment, label }
+}
+
 export function computeWeightFit(lbs, fieldSize) {
   if (!lbs) return { fit: 0.5, impact: 'neutral' }
   const weight = Number(lbs) || 0

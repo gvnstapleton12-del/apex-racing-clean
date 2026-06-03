@@ -32,7 +32,7 @@ import { computeReplayFlags } from './replayFlagEngine.js'
 import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
 import { computeCalibrationAdjustment } from './calibrationEngine.js'
 import { computeTrackBiasFactor, getDrawBias, isAW } from './trackProfile.js'
-import { classifyClassLevel, computeORFit, computeWeightFit, computeORProfileAdjustment } from './classModel.js'
+import { classifyClassLevel, computeORFit, computeWeightFit, computeORProfileAdjustment, computeRPRORFit } from './classModel.js'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -201,6 +201,9 @@ export function runApexEngine(runners, race, options = {}) {
       ? computeORProfileAdjustment(runner.horse, runner.or || fieldAvgOR, options.orHistory)
       : { adjustment: 0, label: 'No data', profile: null }
 
+    // RPR vs OR gap — horse ahead of or behind handicapper's mark
+    const rprORFit = computeRPRORFit(runner.rpr, runner.or, isHandicap)
+
     const humanAdj = humanIntelligenceLayer(replayNote, race.course)
     const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
 
@@ -306,7 +309,7 @@ export function runApexEngine(runners, race, options = {}) {
       : 0
 
     const layeredWithChaos = withMovement * chaosSuppression
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + classAdj + orProfileAdj.adjustment)))
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment)))
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.50 +
@@ -434,6 +437,9 @@ export function runApexEngine(runners, race, options = {}) {
         classAdj: Math.round(classAdj * 10) / 10,
         orProfile: orProfileAdj.label,
         orProfileAdj: orProfileAdj.adjustment,
+        rprORGap: rprORFit.gap,
+        rprORLabel: rprORFit.label,
+        rprORAdj: rprORFit.adjustment,
       },
       components,
       newComponents,
