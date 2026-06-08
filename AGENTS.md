@@ -47,6 +47,7 @@ Three-layer separation:
 - ✅ Race times in 24hr format
 - ✅ README updated with full architecture
 - ✅ Sporting Life results scraper fixed — correctly extracts finish positions, SP odds, jockey/trainer
+- ✅ Code-match penalty — horses penalised when form is from different race code (Flat vs Hurdle/Chase)
 
 ### Pending / Future
 - [ ] Further engine extraction from dashboard widgets (some inline calculations remain)

@@ -42,7 +42,20 @@ function computeStake(modelProb, marketOdds, options = {}) {
 
   // CHAOS engine: flat stakes for longshot overlays
   if (engine === 'CHAOS') {
-    const flatStake = bankroll * 0.01 // 1% flat stake
+    if (marketOdds > 13.0) {
+      return {
+        stake: 0,
+        units: 0,
+        label: 'AVOID',
+        reason: 'Exceeds odds gate (>12/1)',
+        kelly: 0,
+        fractionalKelly: 0,
+        adjustedKelly: 0,
+        adjustments: { volatility: 1.0, uncertainty: 1.0, confidence: 1.0 },
+      }
+    }
+
+    const flatStake = bankroll * 0.01
     const units = flatStake / (bankroll * 0.01)
 
     let label = 'NO BET'

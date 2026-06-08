@@ -12,7 +12,7 @@ Live racing intelligence platform for UK & Ireland horse racing. Provides real-t
 | State | React Query (`@tanstack/react-query`) |
 | Backend | Express.js (Node) |
 | Scraping | Playwright (headless Chromium) |
-| Deploy | Capacitor (Android APK) / Electron (Windows .exe) |
+| Deploy | Static build (dist/) served by Express |
 
 ## Project Structure
 
@@ -79,8 +79,7 @@ npm run dev
 | `npm run dev` | Start frontend (Vite) + backend (Express) |
 | `npm run build` | Production build (Vite) |
 | `npm run server` | Start backend only |
-| `npm run apk` | Build + sync Capacitor + open Android Studio (APK) |
-| `npm run desktop` | Build Windows portable .exe (Electron) |
+
 
 ## Intelligence Engine
 
@@ -104,7 +103,7 @@ Each runner is scored by multiple engines, combined into a final APEX score:
 
 ### Track Profiles
 
-- 35 UK/IRE courses with handedness, surface type, draw bias data
+- 83 UK/IRE courses with handedness, surface type, draw bias, pace profiles
 - Surface suitability scoring for each runner
 - Draw bias adjustments per track and distance
 
@@ -129,7 +128,7 @@ Each runner is scored by multiple engines, combined into a final APEX score:
 - Results matched against predictions for calibration
 - SP odds replace pre-race odds when results arrive
 - Anti-overfit protection with protected weight adjustment
-- 482+ calibration records, 122+ completed races
+- 2,602 calibration records, 275 wins (10.6%), 550 placed (31.7%), Brier 0.0901 — NEEDS CALIBRATION
 
 ### Scheduled Tasks
 
@@ -151,5 +150,4 @@ Each runner is scored by multiple engines, combined into a final APEX score:
 - **Track Profiles** — Course-specific biases and surface data
 - **Replay Notes** — Structured flag system for race replay analysis
 - **Home PickCards** — Daily selections with W/P/L results
-- **Mobile APK** — Android build via Capacitor
-- **Desktop App** — Windows .exe via Electron
+

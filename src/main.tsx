@@ -21,6 +21,7 @@ import Replays from './pages/Replays'
 import Analytics from './pages/Analytics'
 import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
+import OrPrGapAnalysis from './pages/OrPrGapAnalysis'
 
 function parseOddsToNum(odds: unknown): number {
   if (odds == null) return 0
@@ -45,6 +46,7 @@ const tabs = [
   'Intelligence',
   'Proof',
   'Calibration',
+  'OR/PR Gap',
   'Upload',
   'Replays',
   'Analytics',
@@ -82,9 +84,10 @@ interface PickCardProps {
 
 function PickCard({ selection, rank, result, position, isNap = false, isBomb = false }: PickCardProps) {
   if (!selection) return null
+  const isNR = result === 'nr'
   const label = resultLabel(result, position)
   return (
-    <article className={`${isNap ? 'lg:col-span-2' : ''} ${isNap ? 'nap-card' : 'bg-[#0f1720]'} border ${isNap ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.15)]' : 'border-green-500/10'} rounded-2xl ${isNap ? 'p-8' : 'p-6'} ${isNap ? 'hover:border-amber-400/50' : 'hover:border-green-400/30'} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}`}>
+    <article className={`${isNap ? 'lg:col-span-2' : ''} ${isNap ? 'nap-card' : 'bg-[#0f1720]'} border ${isNap ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.15)]' : 'border-green-500/10'} rounded-2xl ${isNap ? 'p-8' : 'p-6'} ${isNap ? 'hover:border-amber-400/50' : 'hover:border-green-400/30'} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}${isNR ? ' opacity-40' : ''}`}>
       {isNap && <div className='nap-glow' />}
       {!isNap && <div className='pick-card-glow' />}
       {label && (
@@ -115,6 +118,9 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             {selection.kellyStake != null && selection.kellyStake > 0 && (
               <span className='px-2 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-300'>K{selection.kellyStake.toFixed(2)}</span>
             )}
+            {(selection as any).betType && (
+              <span className={`px-2 py-1 rounded-md text-xs font-bold ${(selection as any).betType === 'PLACE' ? 'bg-blue-500/15 text-blue-300' : 'bg-green-500/15 text-green-300'}`}>{(selection as any).betType}</span>
+            )}
             <span className='text-zinc-500 text-xs'>{selection.offTime}</span>
           </div>
           <a
@@ -128,6 +134,29 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
           >
             {selection.horse}
           </a>
+          <div className='flex gap-3 mt-1 flex-wrap'>
+            <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${selection.or != null && selection.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {selection.or != null && selection.or > 0 ? selection.or : '—'}</span>
+            <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${selection.rpr != null && selection.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {selection.rpr != null && selection.rpr > 0 ? selection.rpr : '—'}</span>
+            <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${selection.performanceRating?.pr != null && selection.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {selection.performanceRating?.pr != null && selection.performanceRating.pr > 0 ? Math.round(selection.performanceRating.pr) : '—'}</span>
+            {!isNR && selection.awTransfer?.isAWSpecialist && (
+              <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>AW specialist</span>
+            )}
+            {!isNR && selection.awTransfer?.surfaceSwitch && !selection.awTransfer?.isAWSpecialist && (
+              <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>AW to turf</span>
+            )}
+            {!isNR && selection.awTransfer?.provenBothSurfaces && (
+              <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>Proven both surfaces</span>
+            )}
+            {!isNR && selection.codeMatch?.matchedRuns === 0 && (
+              <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>Code switch</span>
+            )}
+            {!isNR && selection.codeMatch?.matchedRuns > 0 && selection.codeMatch?.matchedRuns < 3 && (
+              <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>Limited code form</span>
+            )}
+            {isNR && (
+              <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>NR</span>
+            )}
+          </div>
           <p className='text-zinc-400 text-sm mt-2'>
             <span className='font-medium'>{selection.course}</span>
             <span className='mx-2'>&middot;</span>
@@ -255,7 +284,7 @@ function Home() {
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections
-    .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0)
+    .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0 && (s.winProb || 0) >= 0.08)
   const upcoming = bettable
     .filter((s) => {
       if (!s.offTime) return true
@@ -266,14 +295,14 @@ function Home() {
   const core = bettable
     .filter((s) => parseOddsToNum(s.odds) < 10)
     .sort((a, b) => {
-      const aVal = (a.valueEdge || 0) * (a.winProb || 0)
-      const bVal = (b.valueEdge || 0) * (b.winProb || 0)
+      const aVal = (a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25
+      const bVal = (b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25
       const diff = bVal - aVal
       if (Math.abs(diff) > 0.001) return diff
       return (b.score || 0) - (a.score || 0)
     })
   const bombs = bettable.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
-  const bestBet = [...core, ...bombs].sort((a, b) => ((b.valueEdge || 0) * (b.winProb || 0)) - ((a.valueEdge || 0) * (a.winProb || 0)))[0]
+  const bestBet = [...core, ...bombs].sort((a, b) => ((b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25) - ((a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25))[0]
   const sortedByTime = [...core, ...bombs].sort((a, b) => {
     const aTime = (a.offTime || '').replace(':', '')
     const bTime = (b.offTime || '').replace(':', '')
@@ -295,14 +324,14 @@ function Home() {
   const upcomingCore = upcoming
     .filter((s) => parseOddsToNum(s.odds) < 10)
     .sort((a, b) => {
-      const aVal = (a.valueEdge || 0) * (a.winProb || 0)
-      const bVal = (b.valueEdge || 0) * (b.winProb || 0)
+      const aVal = (a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25
+      const bVal = (b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25
       const diff = bVal - aVal
       if (Math.abs(diff) > 0.001) return diff
       return (b.score || 0) - (a.score || 0)
     })
   const upcomingBombs = upcoming.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
-  const upcomingBest = [...upcomingCore, ...upcomingBombs].sort((a, b) => ((b.valueEdge || 0) * (b.winProb || 0)) - ((a.valueEdge || 0) * (a.winProb || 0)))[0]
+  const upcomingBest = [...upcomingCore, ...upcomingBombs].sort((a, b) => ((b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25) - ((a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25))[0]
   const upcomingSorted = [...upcomingCore, ...upcomingBombs].sort((a, b) => {
     const aTime = (a.offTime || '').replace(':', '')
     const bTime = (b.offTime || '').replace(':', '')
@@ -357,6 +386,7 @@ function Home() {
           offTime: p.offTime,
           raceName: p.raceName,
           score: p.score,
+          grade: p.selectionQuality?.grade || '',
           winProb: p.winProb,
           fairOdds: p.fairOdds,
           probConfidence: p.probConfidence,
@@ -365,6 +395,9 @@ function Home() {
           draw: p.draw,
           valueEdge: p.valueEdge,
           kellyStake: p.kellyStake,
+          or: p.or,
+          rpr: p.rpr,
+          performanceRating: p.performanceRating,
         })),
       }),
     })
@@ -388,6 +421,9 @@ function Home() {
                 draw: p.draw,
                 valueEdge: p.valueEdge,
                 kellyStake: p.kellyStake,
+                or: p.or,
+                rpr: p.rpr,
+                performanceRating: p.performanceRating,
                 result: null,
                 position: null,
               })),
@@ -484,6 +520,15 @@ function Home() {
                         <span className='text-zinc-500 text-xs w-10'>{p.offTime}</span>
                         <span className='text-zinc-600 text-xs w-20 truncate'>{p.course}</span>
                         <span className='text-white text-sm font-medium'>{p.horse}</span>
+                        {(p as any).or != null && (p as any).or > 0 && (
+                          <span className='px-2 py-0.5 bg-zinc-800 text-zinc-100 rounded text-xs font-bold border border-zinc-600'>OR {(p as any).or}</span>
+                        )}
+                        {(p as any).rpr != null && (p as any).rpr > 0 && (
+                          <span className='px-2 py-0.5 bg-violet-900/40 text-violet-200 rounded text-xs font-bold border border-violet-500/40'>RPR {(p as any).rpr}</span>
+                        )}
+                        {(p as any).performanceRating?.pr != null && (p as any).performanceRating.pr > 0 && (
+                          <span className='px-2 py-0.5 bg-cyan-900/40 text-cyan-200 rounded text-xs font-bold border border-cyan-500/40'>PR {Math.round((p as any).performanceRating.pr)}</span>
+                        )}
                         <span className='text-zinc-600 text-xs'>{p.odds}</span>
                       </div>
                       <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
@@ -617,6 +662,10 @@ function App() {
 
     if (activeTab === 'Calibration') {
       return <CalibrationDashboard />
+    }
+
+    if (activeTab === 'OR/PR Gap') {
+      return <OrPrGapAnalysis />
     }
 
     if (activeTab === 'Replays') {

@@ -2,6 +2,92 @@ import type { Race, Runner } from './types'
 import { formatOffTime } from './formatTime'
 
 // ============================================================
+// CODE MATCH — detect if horse's form is in different race code
+// ============================================================
+
+const SL_RUN_TYPE_MAP: Record<string, string> = {
+  FLAT: 'Flat',
+  HURDLE: 'Hurdle',
+  CHASE: 'Chase',
+  N_H_FLAT: 'NH Flat',
+  NH_FLAT: 'NH Flat',
+}
+
+function normalizeRaceType(raceType: string): string {
+  const lower = raceType.toLowerCase()
+  if (lower.includes('chase') || lower.includes('steeple')) return 'Chase'
+  if (lower.includes('hurdle')) return 'Hurdle'
+  if (lower.includes('nh flat') || lower.includes('national hunt flat') || lower.includes('bumper')) return 'NH Flat'
+  return 'Flat'
+}
+
+function normalizeRunType(rt: string): string {
+  return SL_RUN_TYPE_MAP[rt?.toUpperCase()] || 'Flat'
+}
+
+function isCodeCompatible(horseCode: string, raceCode: string): boolean {
+  if (horseCode === raceCode) return true
+  const jumps = ['Hurdle', 'Chase', 'NH Flat']
+  if (jumps.includes(horseCode) && jumps.includes(raceCode)) return true
+  return false
+}
+
+export function getCodeMatchScore(previousResults: any[], raceType: string): { score: number, label: string, matchedRuns: number, totalRuns: number, penalty: number } {
+  if (!previousResults || previousResults.length === 0) {
+    return { score: 0, label: 'No data', matchedRuns: 0, totalRuns: 0, penalty: -6 }
+  }
+
+  const raceCode = normalizeRaceType(raceType)
+  const runs = previousResults.filter(r => r.run_type)
+  if (runs.length === 0) return { score: 0, label: 'No data', matchedRuns: 0, totalRuns: 0, penalty: -6 }
+
+  let matched = 0
+  let wins = 0
+  let winsInCode = 0
+
+  for (const run of runs) {
+    const runCode = normalizeRunType(run.run_type)
+    if (isCodeCompatible(runCode, raceCode)) {
+      matched++
+      if (run.position === 1) {
+        winsInCode++
+        wins++
+      }
+    } else {
+      if (run.position === 1) wins++
+    }
+  }
+
+  const totalRuns = runs.length
+  const matchRate = matched / totalRuns
+  const winRateInCode = matched > 0 ? winsInCode / matched : 0
+
+  let score: number
+  let label: string
+  let penalty: number
+
+  if (matched >= 6) {
+    score = 100
+    label = 'Proven at code'
+    penalty = 0
+  } else if (matched >= 3) {
+    score = 70
+    label = 'Some code experience'
+    penalty = -1
+  } else if (matched >= 1) {
+    score = 40
+    label = 'Limited code experience'
+    penalty = -3
+  } else {
+    score = 0
+    label = 'No form at this code'
+    penalty = -6
+  }
+
+  return { score, label, matchedRuns: matched, totalRuns, penalty }
+}
+
+// ============================================================
 // PROBABILITY ENGINE — Five independent dimensions
 // ============================================================
 
@@ -93,7 +179,7 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
     fairOdds = parseOdds(sq.fairOdds)
     marketOdds = parseOdds(sq.marketOdds)
     winProb = fairOdds > 0 ? 1 / fairOdds : 0.01
-    edge = sq.edge ?? ((fairOdds - marketOdds) / marketOdds)
+    edge = marketOdds > 0 ? (fairOdds - marketOdds) / marketOdds : 0
     confidence = runner.aiProfile?.confidence ?? Math.min(Math.max(winProb * 4, 0.2), 0.85)
     placeProb = winProb * 2.5
   } else if (runner.winProb != null && runner.winProb > 0) {
@@ -136,10 +222,9 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
   const kellyStake = kellyFraction > 0 ? Math.min(kellyFraction, 0.03) : 0
 
   const reasons: string[] = []
-  if (winProb < 0.08) reasons.push('win probability too low')
+  if (winProb < 0.06) reasons.push('win probability too low')
   if (edge < -0.5) reasons.push('negative edge exceeds threshold')
-  if (kellyStake <= 0 && edge > 0) reasons.push('edge exists but kelly stake too small')
-  const noBet = reasons.length > 0 && (winProb < 0.08 || edge < -0.3)
+  const noBet = reasons.length > 0 && (winProb < 0.06 || edge < -0.3)
   const simCollapse = runner.simulation?.collapseRate ?? 0
   if (simCollapse > 0.4 && !noBet) {
     reasons.push('high collapse rate in simulation')
@@ -152,8 +237,8 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
     confidence: Math.round(confidence * 10000) / 10000,
     edge: Math.round(edge * 10000) / 10000,
     kellyStake: Math.round(kellyStake * 10000) / 10000,
-    noBet: noBet || kellyStake <= 0,
-    noBetReason: noBet || kellyStake <= 0 ? reasons.join('; ') : null,
+    noBet,
+    noBetReason: noBet ? reasons.join('; ') : null,
   }
 }
 
@@ -335,11 +420,27 @@ export function formatSelection(race: Race, runner: Runner) {
   const betFilter = race.betFilter || {}
   if (betFilter.verdict === 'AUTO SKIP') return null
 
-  const be = parseField(runner.bankrollEngine) || {}
-  if (be.label === 'AVOID') return null
-
   const prob = estimateWinProb(runner, race)
-  const ve = parseField(runner.valueEngine) || {}
+
+  const odds = parseOddsNum(runner.odds) || 0
+  const isFavourite = odds > 0 && odds <= 3.0
+  const hasRating = (runner.or || 0) > 0 || (runner.rpr || 0) > 0
+
+  const codeMatch = getCodeMatchScore(runner.previous_results || [], race.type || race.race_name || '')
+  const codePenalty = 0 // Disabled as score modifier, kept for flags
+
+  let betType: string | null = null
+  if (prob.winProb >= 0.10 && odds >= 2.0) {
+    if (isFavourite && prob.winProb >= 0.30) {
+      betType = 'PLACE'
+    } else if (prob.edge > 0.05) {
+      betType = 'WIN'
+    } else if (isFavourite) {
+      betType = 'PLACE'
+    }
+  }
+
+  const adjustedWinProb = prob.winProb // No code penalty
 
   return {
     ...runner,
@@ -348,9 +449,9 @@ export function formatSelection(race: Race, runner: Runner) {
     course: race.course,
     offTime: formatOffTime(race),
     score: getScore(runner),
-    winProb: prob.winProb,
+    winProb: adjustedWinProb,
     placeProb: prob.placeProb,
-    fairOdds: prob.fairOdds,
+    fairOdds: adjustedWinProb > 0 ? 1 / adjustedWinProb : 100,
     probConfidence: prob.confidence,
     valueEdge: prob.edge,
     kellyStake: prob.kellyStake,
@@ -362,6 +463,9 @@ export function formatSelection(race: Race, runner: Runner) {
     betFilterVerdict: betFilter.verdict || 'BETTABLE',
     selectionQuality: runner.selectionQuality,
     odds: runner.odds,
+    betType,
+    hasRating,
+    codeMatch,
   } as const
 }
 
@@ -373,9 +477,9 @@ export function getHomeSelections(races: Race[]) {
         .filter(Boolean)
     )
     .sort((a: any, b: any) => {
-      const aVal = (a.valueEdge || 0) * (a.winProb || 0)
-      const bVal = (b.valueEdge || 0) * (b.winProb || 0)
-      const diff = bVal - aVal
+      const aScore = (a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25
+      const bScore = (b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25
+      const diff = bScore - aScore
       if (Math.abs(diff) > 0.001) return diff
       return (b.score || 0) - (a.score || 0)
     })

@@ -22,7 +22,11 @@ function isUkIre(course) {
     .replace(/\s+/g, '-')
     .replace(/'/g, '')
     .trim()
-  return UK_IRE_COURSES.has(slug)
+    .replace(/-downs$/, '')
+    .replace(/-park$/, '')
+    .replace(/-city$/, '')
+    .replace(/-racecourse$/, '')
+  return UK_IRE_COURSES.has(slug) || UK_IRE_COURSES.has(slug + '-downs') || UK_IRE_COURSES.has(slug + '-park') || UK_IRE_COURSES.has(slug + '-city')
 }
 
 function deriveRaceType(raceName = '') {
@@ -147,6 +151,23 @@ function gmtToBstTime(timeStr) {
   return `${String(newH).padStart(2, '0')}:${m}`
 }
 
+function resolveNewmarketCourse(baseName, raceDate) {
+  const n = (baseName || '').toLowerCase().trim()
+  // If API already provides a specific course name, trust it
+  if (n.includes('july')) return 'Newmarket (July Course)'
+  if (n.includes('rowley')) return 'Newmarket (Rowley Mile)'
+  if (n === 'newmarket' && raceDate) {
+    const month = new Date(raceDate).getMonth()
+    // July Course operates June (5) through August (7)
+    if (month >= 5 && month <= 7) {
+      console.log(`[SL] Resolved Newmarket -> Newmarket (July Course) for ${raceDate}`)
+      return 'Newmarket (July Course)'
+    }
+    return 'Newmarket (Rowley Mile)'
+  }
+  return baseName
+}
+
 export async function fetchMeetingRaces(meetingId) {
   try {
     const data = await fetchJson(`${SL_API}/meeting/${meetingId}`)
@@ -166,9 +187,10 @@ export async function fetchMeetingRaces(meetingId) {
       const isUk = isUkIre(race.course_name)
       const localTime = isUk && race.date && isBst(race.date) ? gmtToBstTime(race.time) : race.time
       const offDt = race.date && localTime ? `${race.date}T${localTime}:00` : null
+      const course = resolveNewmarketCourse(race.course_name, race.date)
       return {
         race_id: String(race.race_summary_reference.id),
-        course: race.course_name,
+        course,
         off_time: localTime,
         off_dt: offDt,
         date: race.date,
@@ -202,7 +224,16 @@ async function fetchRaceRunners(raceId) {
       console.log('[SL] Full ride sample keys:', Object.keys(sample))
       rides[0]._logged = true
     }
-    return rides.map((ride, i) => {
+    return rides
+      .filter(ride => {
+        const status = (ride.ride_status || '').toUpperCase()
+        if (status === 'NONRUNNER' || status === 'NON_RUNNER' || status === 'WITHDRAWN') {
+          console.log(`[SL] Filtering non-runner: ${ride.horse?.name || 'Unknown'} (status: ${status})`)
+          return false
+        }
+        return true
+      })
+      .map((ride, i) => {
       const horseName = ride.horse?.name || ''
       const lastRunDays = ride.horse?.last_run_days || ride.horse?.days_since_last_run || ride.horse?.formsummary?.days_since || ride.days_since || 0
       const lastRunDate = ride.horse?.last_run_date || ride.horse?.last_ran || ride.horse?.formsummary?.last_run_date || ''
@@ -218,6 +249,7 @@ async function fetchRaceRunners(raceId) {
       horse: horseName,
       atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(horseName)}`,
       position: ride.finish_position || 0,
+      finish_distance: ride.finish_distance || '',
       jockey: ride.jockey?.name || '',
       trainer: ride.trainer?.name || '',
       odds: parseFractionalOdds(ride.betting?.current_odds),
@@ -226,11 +258,25 @@ async function fetchRaceRunners(raceId) {
       lbs: ride.handicap || '',
       or: Number(ride.official_rating || ride.horse?.official_rating || 0) || 0,
       rpr: Number(ride.rpr || ride.horse?.rpr || 0) || 0,
+      bha_trend: (() => {
+        const or = Number(ride.official_rating || 0) || 0
+        const prev = ride.horse?.previous_results || []
+        const lastBha = Number(prev[0]?.bha || 0) || 0
+        return or > 0 && lastBha > 0 ? or - lastBha : 0
+      })(),
       form: ride.horse?.formsummary?.display_text || '',
       age: ride.horse?.age || 0,
       sex: ride.horse?.sex?.type || '',
       last_run: lastRun,
       commentary: ride.commentary || '',
+      headgear: (() => {
+        const hg = ride.horse?.headgear || ride.headgear || []
+        if (!Array.isArray(hg)) return { items: [], firstTimeItems: [] }
+        const items = hg.map(h => (typeof h === 'string' ? h : h.type || h.name || '')).filter(Boolean)
+        const firstTimeItems = hg.filter(h => h && h.first_time).map(h => h.type || h.name || '').filter(Boolean)
+        return { items, firstTimeItems }
+      })(),
+      previous_results: (ride.horse?.previous_results || []).slice(0, 6),
     }
     })
   } catch (err) {
@@ -275,6 +321,7 @@ async function fetchResultRunners(race) {
               horse: horseName,
               atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(horseName)}`,
               position: ride.finish_position,
+              finish_distance: ride.finish_distance || '',
               jockey: ride.jockey?.name || '',
               trainer: ride.trainer?.name || '',
               odds: 0,
@@ -310,6 +357,7 @@ async function fetchResultRunners(race) {
                     horse: horseName,
                     atrUrl: '',
                     position: ride.finish_position,
+                    finish_distance: ride.finish_distance || '',
                     jockey: ride.jockey?.name || '',
                     trainer: ride.trainer?.name || '',
                     odds: 0,
