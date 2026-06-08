@@ -2796,6 +2796,16 @@ server.listen(PORT, () => {
       console.error('[Scheduler] Results refresh failed:', e.message)
     }
   }, 30 * 60 * 1000)
+
+  // Refresh racecards every 15 min to pick up odds changes and non-runners
+  setInterval(async () => {
+    try {
+      console.log('[Scheduler] Periodic racecard refresh')
+      await fetchLiveMeetings()
+    } catch (e) {
+      console.error('[Scheduler] Racecard refresh failed:', e.message)
+    }
+  }, 15 * 60 * 1000)
 })
 
 function gracefulShutdown(signal) {
