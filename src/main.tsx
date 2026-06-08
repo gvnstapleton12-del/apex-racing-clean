@@ -712,7 +712,7 @@ function App() {
 
         <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5'>
           <span className='text-zinc-500 text-xs uppercase tracking-wider'>APEX Racing</span>
-          <strong className='text-zinc-400 text-sm'>v1.0.0</strong>
+          <strong className='text-zinc-400 text-sm'>v1.1.0</strong>
         </div>
       </aside>
 
