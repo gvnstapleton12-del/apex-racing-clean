@@ -135,6 +135,20 @@ export default function CalibrationDashboard() {
   const losses = records.filter(r => !r.actualWon && !r.actualPlaced).length
   const placeRate = records.length ? (((wins + places) / records.length) * 100).toFixed(1) : 0
 
+  // Compute value-pick metrics on-the-fly using the production gate
+  function passesValueGate(prob, odds) {
+    if (!odds || odds <= 1 || !prob) return false
+    const implied = (1 / odds) * 100
+    const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
+    return prob >= 10 && marginPct > 25
+  }
+  const valuePicks = records.filter(r => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds)))
+  const nonValuePicks = records.filter(r => !passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds)))
+  const vpWins = valuePicks.filter(r => r.actualWon).length
+  const vpWR = valuePicks.length ? ((vpWins / valuePicks.length) * 100).toFixed(1) : '0.0'
+  const vpPL = valuePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
+  const vpROI = valuePicks.length ? ((vpPL / valuePicks.length) * 100).toFixed(1) : '0.0'
+
   return (
     <div className='calibration-dashboard'>
       <div className='cal-header'>
@@ -176,6 +190,17 @@ export default function CalibrationDashboard() {
           </div>
         </div>
       </div>
+
+      {valuePicks.length > 0 && (
+        <div className='cal-value-summary' style={{ display: 'flex', gap: '1rem', padding: '0.75rem 1rem', margin: '0 1rem', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: '0.75rem' }}>
+          <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Value Picks</span>
+          <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong>{valuePicks.length}</strong> bets</span>
+          <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: vpWins > 0 ? '#22c55e' : '#ef4444' }}>{vpWR}%</strong> WR</span>
+          <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: Number(vpROI) >= 0 ? '#22c55e' : '#ef4444' }}>{Number(vpROI) >= 0 ? '+' : ''}{vpROI}%</strong> ROI</span>
+          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>|</span>
+          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Gate: P ≥ 10% + 25% margin</span>
+        </div>
+      )}
 
       <div className='cal-tabs'>
         <button

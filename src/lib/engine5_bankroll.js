@@ -15,12 +15,17 @@ function computeKellyFraction(modelProb, marketOdds) {
   return edge / b
 }
 
+function passesValueGate(modelProb, marketOdds) {
+  const implied = (1 / marketOdds) * 100
+  const marginPct = implied > 0 ? ((modelProb - implied) / implied) * 100 : 0
+  return modelProb >= 10 && marginPct > 25
+}
+
 function computeStake(modelProb, marketOdds, options = {}) {
   const {
     bankroll = 100,
     maxStake = 0.05,
-    kellyFraction = 0.25,
-    minEdge = 2,
+    kellyFraction = 0.125,
     volatility = 0.5,
     uncertainty = 0,
     confidence = 'Medium',
@@ -39,6 +44,7 @@ function computeStake(modelProb, marketOdds, options = {}) {
   }
 
   const edge = modelProb - (1 / marketOdds) * 100
+  const gatePassed = passesValueGate(modelProb, marketOdds)
 
   // CHAOS engine: flat stakes for longshot overlays
   if (engine === 'CHAOS') {
@@ -55,22 +61,32 @@ function computeStake(modelProb, marketOdds, options = {}) {
       }
     }
 
+    if (!gatePassed) {
+      return {
+        stake: 0,
+        units: 0,
+        label: 'NO BET',
+        reason: 'Fails value gate (P < 10% or margin <= 25%)',
+        kelly: 0,
+        fractionalKelly: 0,
+        adjustedKelly: 0,
+        adjustments: { volatility: 1.0, uncertainty: 1.0, confidence: 1.0 },
+      }
+    }
+
     const flatStake = bankroll * 0.01
     const units = flatStake / (bankroll * 0.01)
 
     let label = 'NO BET'
     let reason = ''
 
-    if (edge < minEdge) {
-      label = 'NO BET'
-      reason = `Edge ${edge.toFixed(1)}% below minimum ${minEdge}%`
-    } else if (edge >= 10) {
+    if (edge >= 10) {
       label = 'STRONG BET'
       reason = `High edge (${edge.toFixed(1)}%), flat stake`
     } else if (edge >= 5) {
       label = 'BET'
       reason = `Positive edge (${edge.toFixed(1)}%)`
-    } else if (edge >= minEdge) {
+    } else {
       label = 'CONSIDER'
       reason = `Marginal edge (${edge.toFixed(1)}%)`
     }
@@ -119,12 +135,12 @@ function computeStake(modelProb, marketOdds, options = {}) {
   let label = 'NO BET'
   let reason = ''
 
-  if (edge < minEdge) {
+  if (!gatePassed) {
     label = 'NO BET'
-    reason = `Edge ${edge.toFixed(1)}% below minimum ${minEdge}%`
-  } else if (cappedKelly < 0.005 && edge >= minEdge) {
+    reason = 'Fails value gate (P < 10% or margin <= 25%)'
+  } else if (cappedKelly < 0.005) {
     label = 'MICRO BET'
-    reason = `Tiny stake (${(cappedKelly * 100).toFixed(2)}% Kelly) but edge exists`
+    reason = `Tiny stake (${(cappedKelly * 100).toFixed(2)}% Kelly) but value gate passed`
   } else if (volatility > 0.7) {
     label = 'AVOID'
     reason = 'High volatility race'
@@ -137,9 +153,9 @@ function computeStake(modelProb, marketOdds, options = {}) {
   } else if (edge >= 5 && cappedKelly >= 0.01) {
     label = 'BET'
     reason = `Positive edge (${edge.toFixed(1)}%)`
-  } else if (edge >= minEdge) {
+  } else {
     label = 'CONSIDER'
-    reason = `Marginal edge (${edge.toFixed(1)}%)`
+    reason = `Value gate passed (edge ${edge.toFixed(1)}%)`
   }
 
   return {

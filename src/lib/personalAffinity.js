@@ -53,7 +53,7 @@ function createHorseEntry(horseName) {
       historicalPredictions: [],
     },
     calibrationState: {
-      kAdjustments: { track: 15, distance: 8, going: 10, drawStyle: 3 },
+      kAdjustments: { track: 12, distance: 6, going: 7, drawStyle: 3 },
       accuracyByDimension: {},
     },
   }

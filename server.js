@@ -58,6 +58,7 @@ import { computeTrainerFreshness, getFreshFactor, getTrainerFreshnessProfile, lo
 import { buildORHistory } from './src/lib/classModel.js'
 import { recordRun } from './src/lib/conditionDB.js'
 import { computePerformanceRating, updatePerformanceRating, computeActualPerformance, getStoredPR, savePerformanceRatingStore } from './src/lib/performanceRating.js'
+import { normalizeGoingString } from './src/lib/normalizeGoing.js'
 
 dotenv.config()
 
@@ -480,17 +481,6 @@ function findPredictionForRunner(race, runner) {
   return candidates.find(
     (p) => String(p.horse || '').trim() === horseName || normalizeHorseName(p.horse) === normalizeHorseName(horseName)
   )
-}
-
-function normalizeGoingString(rawString) {
-  if (!rawString) return 'Standard'
-  const text = rawString.toLowerCase()
-  if (text.includes('heavy') || text.includes('soft')) return 'Soft/Heavy'
-  if (text.includes('good to firm') || text.includes('firm')) return 'Good to Firm/Firm'
-  if (text.includes('good') && !text.includes('firm')) return 'Good'
-  if (text.includes('yielding') || text.includes('yield')) return 'Yielding'
-  if (text.includes('standard')) return 'Standard'
-  return 'Good'
 }
 
 function logPrediction(race, runner, aiProfile) {
@@ -2561,6 +2551,84 @@ app.get('/api/or-pr-gap', (_req, res) => {
       odds: r.actual_odds,
     })),
   })
+})
+
+app.get('/api/horse-affinity/:horseName', (req, res) => {
+  try {
+    const { horseName } = req.params
+    if (!horseName) {
+      return res.status(400).json({ error: 'Horse name parameter is required.' })
+    }
+
+    const filePath = path.join(process.cwd(), 'data', 'personalAffinity.json')
+    if (!fs.existsSync(filePath)) {
+      return res.json({ horseName, hasDenseData: false, metrics: { track: {}, distance: {}, going: {}, drawStyle: {} }, message: 'UNKNOWN_BLENDED: Hierarchical fallback routing active (k=30).' })
+    }
+
+    const affinityData = JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    const normalizedKey = horseName.trim().toLowerCase()
+    const profile = affinityData.horses?.[normalizedKey]
+
+    if (!profile) {
+      return res.json({ horseName, hasDenseData: false, metrics: { track: {}, distance: {}, going: {}, drawStyle: {} }, message: 'UNKNOWN_BLENDED: Hierarchical fallback routing active (k=30).' })
+    }
+
+    const ap = profile.affinityProfiles || {}
+    const trackCourses = ap.track?.courses || {}
+    const trackArchetypes = ap.track?.archetypes || {}
+    const distanceBuckets = ap.distance || {}
+    const goingBuckets = ap.going || {}
+    const runningStyleBuckets = ap.runningStyle || {}
+
+    const hasDenseData = Object.keys(trackCourses).length > 0
+
+    const bestArchetype = Object.entries(trackArchetypes)
+      .filter(([, v]) => v.effectiveRuns >= 2)
+      .sort((a, b) => (b[1].weightedWins / b[1].effectiveRuns) - (a[1].weightedWins / a[1].effectiveRuns))
+      .map(([k]) => k)[0] || 'Unclassified Grinder'
+
+    const bestTrackEntry = Object.entries(trackCourses)
+      .sort((a, b) => (b[1].wins / b[1].runs) - (a[1].wins / a[1].runs))
+      .map(([k, v]) => ({ track: k, wr: (v.wins / v.runs).toFixed(3), runs: v.runs }))[0]
+
+    const bestDistanceEntry = Object.entries(distanceBuckets)
+      .sort((a, b) => (b[1].wins / b[1].runs) - (a[1].wins / a[1].runs))
+      .map(([k, v]) => ({ distance: k, wr: (v.wins / v.runs).toFixed(3), runs: v.runs }))[0]
+
+    const bestGoingEntry = Object.entries(goingBuckets)
+      .sort((a, b) => (b[1].wins / b[1].runs) - (a[1].wins / a[1].runs))
+      .map(([k, v]) => ({ going: k, wr: (v.wins / v.runs).toFixed(3), runs: v.runs }))[0]
+
+    const styleEntries = Object.entries(runningStyleBuckets)
+      .filter(([, v]) => v.runs >= 1)
+      .sort((a, b) => (b[1].wins / b[1].runs) - (a[1].wins / a[1].runs))
+      .map(([k, v]) => ({ style: k, wr: v.runs > 0 ? (v.wins / v.runs).toFixed(3) : '0', runs: v.runs }))
+
+    const frEntry = styleEntries.find(e => e.style === 'FR')
+    const railLock = !!(frEntry && parseFloat(frEntry.wr) > 0.35)
+
+    const staminaValid = !!(Object.entries(distanceBuckets).some(([, v]) => {
+      const wr = v.runs > 0 ? v.wins / v.runs : 0
+      return wr > 0.20
+    }))
+
+    return res.json({
+      horseName,
+      hasDenseData,
+      archetype: bestArchetype.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+      confidenceScore: profile.macroMetrics?.globalModelConfidence || 0.50,
+      metrics: {
+        track: bestTrackEntry ? { [`${bestTrackEntry.track}`]: parseFloat(bestTrackEntry.wr) } : {},
+        distance: bestDistanceEntry ? { [`${bestDistanceEntry.distance}`]: parseFloat(bestDistanceEntry.wr) } : {},
+        going: bestGoingEntry ? { [`${bestGoingEntry.going}`]: parseFloat(bestGoingEntry.wr) } : {},
+        drawStyle: styleEntries.length > 0 ? Object.fromEntries(styleEntries.map(e => [e.style, parseFloat(e.wr)])) : {},
+      },
+      badges: { railLock, staminaValid },
+    })
+  } catch (error) {
+    console.error(`API Error fetching affinity for ${req.params.horseName}:`, error)
+    return res.status(500).json({ error: 'Internal pipeline error fetching structural affinity records.' })
+  }
 })
 
 app.post('/api/refresh-racecards', async (_req, res) => {

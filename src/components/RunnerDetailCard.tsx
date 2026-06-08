@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import type { Race, Runner } from '../lib/types'
 import { getScore, getScoreColor } from '../lib/engine'
 import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
@@ -229,6 +230,76 @@ function BankrollEngineSection({ be }: { be: NonNullable<Runner['bankrollEngine'
   )
 }
 
+function getGapBadgeClass(gap: number | string | null | undefined): string {
+  if (gap == null || gap === '—') return 'bg-gray-700 text-gray-400'
+  const numGap = typeof gap === 'string' ? parseInt(gap, 10) : gap
+  if (numGap >= 10) return 'bg-emerald-950 text-emerald-400 border border-emerald-500 font-bold'
+  if (numGap >= 5) return 'bg-teal-950 text-teal-400'
+  if (numGap < 0) return 'bg-rose-950 text-rose-400'
+  return 'bg-gray-800 text-gray-300'
+}
+
+function AffinitySection({ horseName }: { horseName: string }) {
+  const [affinity, setAffinity] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    fetch(`/api/horse-affinity/${encodeURIComponent(horseName)}`)
+      .then(r => r.json())
+      .then(data => { if (mounted) { setAffinity(data); setLoading(false) } })
+      .catch(() => { if (mounted) setLoading(false) })
+    return () => { mounted = false }
+  }, [horseName])
+
+  if (loading) return null
+
+  return (
+    <Section>
+      <SectionHeader title='Personal Affinity' />
+      {!affinity?.hasDenseData ? (
+        <div className='text-center py-4 bg-slate-950 rounded-lg border border-white/5'>
+          <span className='text-xs text-zinc-500 font-mono italic block mb-1'>Hierarchical Blended Mode Active</span>
+          <span className='text-xs px-2 py-0.5 bg-white/5 text-zinc-400 rounded-full'>k=30 Fallback Engaged</span>
+        </div>
+      ) : (
+        <div className='space-y-3'>
+          <div className='flex items-center gap-2'>
+            <span className='text-xs text-zinc-500'>Archetype:</span>
+            <span className='text-xs text-amber-400 font-mono font-bold'>{affinity.archetype}</span>
+          </div>
+          <div className='grid grid-cols-2 gap-3 text-xs font-mono'>
+            <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center'>
+              <span className='text-zinc-500 block text-[10px] uppercase mb-1'>Track Factor</span>
+              <span className='text-white text-sm font-bold'>{Object.values(affinity.metrics.track)[0]?.toFixed(3) || '1.000'}</span>
+            </div>
+            <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center'>
+              <span className='text-zinc-500 block text-[10px] uppercase mb-1'>Going Bias</span>
+              <span className='text-white text-sm font-bold'>{Object.values(affinity.metrics.going)[0]?.toFixed(3) || '1.000'}</span>
+            </div>
+          </div>
+          <div className='flex flex-wrap gap-1.5 pt-1'>
+            {affinity.badges?.railLock && (
+              <span className='bg-blue-950 text-blue-400 text-[10px] px-2 py-0.5 rounded-md border border-blue-800 uppercase font-bold tracking-wider'>
+                Rail Lock Asset
+              </span>
+            )}
+            {affinity.badges?.staminaValid && (
+              <span className='bg-purple-950 text-purple-400 text-[10px] px-2 py-0.5 rounded-md border border-purple-800 uppercase font-bold tracking-wider'>
+                Distance Extension
+              </span>
+            )}
+            <div className='ml-auto flex items-center gap-1.5 bg-white/[0.04] px-2 py-0.5 rounded border border-white/5'>
+              <span className='text-[10px] text-zinc-500 uppercase font-mono'>Conf:</span>
+              <span className='text-xs font-bold text-amber-500 font-mono'>{(affinity.confidenceScore * 100).toFixed(0)}%</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </Section>
+  )
+}
+
 interface RunnerDetailCardProps {
   runner: Runner
   race: Race
@@ -272,6 +343,11 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
               <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
               <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+              {runner.classModel?.rprORGap != null && (
+                <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${getGapBadgeClass(runner.classModel.rprORGap)}`}>
+                  GAP: {runner.classModel.rprORGap > 0 ? '+' : ''}{runner.classModel.rprORGap}
+                </span>
+              )}
               {runner.classModel?.rprORSource && runner.classModel.rprORSource !== 'none' && (
                 <span className={`px-2 py-0.5 rounded text-xs font-medium ${runner.classModel.rprORAdj > 0 ? 'bg-green-500/10 text-green-400' : runner.classModel.rprORAdj < 0 ? 'bg-red-500/10 text-red-400' : 'bg-white/5 text-zinc-500'}`}>
                   {runner.classModel.rprORLabel} ({runner.classModel.rprORGap > 0 ? '+' : ''}{runner.classModel.rprORGap})
@@ -321,6 +397,7 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
             {runner.simulation && runner.simulation.winRate > 0 && <SimulationSection sim={runner.simulation} />}
             {runner.valueEngine && runner.valueEngine.edgeLabel && <ValueEngineSection ve={runner.valueEngine} />}
             {runner.bankrollEngine && runner.bankrollEngine.label && <BankrollEngineSection be={runner.bankrollEngine} />}
+            {runner.horse && <AffinitySection horseName={runner.horse} />}
           </>
         )}
       </div>

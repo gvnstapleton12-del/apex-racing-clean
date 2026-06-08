@@ -10,12 +10,17 @@ function computeEdge(modelProb, marketOdds) {
   const marketProb = (1 / marketOdds) * 100
   const edge = modelProb - marketProb
 
+  // Value gate: confidence floor (P >= 10%) + 25% margin over implied probability
+  const implied = (1 / marketOdds) * 100
+  const marginPct = implied > 0 ? ((modelProb - implied) / implied) * 100 : 0
+  const passesGate = modelProb >= 10 && marginPct > 25
+
   let label = 'No Value'
   let bettable = false
 
-  if (edge >= 10) { label = 'Huge Value'; bettable = true }
-  else if (edge >= 5) { label = 'Strong Value'; bettable = true }
-  else if (edge >= 2) { label = 'Value'; bettable = true }
+  if (edge >= 10 && passesGate) { label = 'Huge Value'; bettable = true }
+  else if (edge >= 5 && passesGate) { label = 'Strong Value'; bettable = true }
+  else if (edge >= 2 && passesGate) { label = 'Value'; bettable = true }
   else if (edge >= 0) { label = 'Marginal Value'; bettable = false }
   else if (edge >= -3) { label = 'Slight Overbet' }
   else if (edge >= -7) { label = 'Overbet' }
@@ -24,6 +29,7 @@ function computeEdge(modelProb, marketOdds) {
   return {
     edge: Math.round(edge * 10) / 10,
     marketProb: Math.round(marketProb * 10) / 10,
+    marginPct: Math.round(marginPct * 10) / 10,
     label,
     bettable,
   }

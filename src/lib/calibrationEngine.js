@@ -81,12 +81,16 @@ export function computeCalibrationBuckets(records = [], bucketSize = 10) {
   const filledBuckets = bucketKeys
     .map((key) => buckets[key])
     .filter((b) => b.count > 0)
-    .map((b) => ({
-      ...b,
-      avgPredicted: Math.round((b.predicted / b.count) * 10) / 10,
-      actualRate: Math.round((b.wins / b.count) * 1000) / 10,
-      calibrationError: Math.abs(b.avgPredicted - b.actualRate),
-    }))
+    .map((b) => {
+      const avgPredicted = Math.round((b.predicted / b.count) * 10) / 10
+      const actualRate = Math.round((b.wins / b.count) * 1000) / 10
+      return {
+        ...b,
+        avgPredicted,
+        actualRate,
+        calibrationError: Math.round(Math.abs(avgPredicted - actualRate) * 10) / 10,
+      }
+    })
 
   const totalRecords = records.length
   const totalWins = records.filter((r) => r.actualWon).length
@@ -99,10 +103,14 @@ export function computeCalibrationBuckets(records = [], bucketSize = 10) {
       return sum + Math.pow(prob - outcome, 2)
     }, 0) / totalRecords
 
+  // Only count statistically meaningful buckets (>= 30 records) in reliability calc
+  const meaningfulBuckets = filledBuckets.filter(b => b.count >= 30)
   const avgCalibrationError =
-    filledBuckets.length > 0
-      ? Math.round((filledBuckets.reduce((sum, b) => sum + b.calibrationError, 0) / filledBuckets.length) * 10) / 10
-      : 0
+    meaningfulBuckets.length > 0
+      ? Math.round((meaningfulBuckets.reduce((sum, b) => sum + b.calibrationError, 0) / meaningfulBuckets.length) * 10) / 10
+      : filledBuckets.length > 0
+        ? Math.round((filledBuckets.reduce((sum, b) => sum + b.calibrationError, 0) / filledBuckets.length) * 10) / 10
+        : 0
 
   let reliability = 'UNTESTED'
   if (totalRecords >= 500) {
@@ -283,12 +291,16 @@ export function computePlaceCalibration(records = [], bucketSize = 10) {
   const filledBuckets = bucketKeys
     .map((key) => buckets[key])
     .filter((b) => b.count > 0)
-    .map((b) => ({
-      ...b,
-      avgPredicted: Math.round((b.predicted / b.count) * 10) / 10,
-      actualRate: Math.round((b.places / b.count) * 1000) / 10,
-      calibrationError: Math.abs(b.avgPredicted - b.actualRate),
-    }))
+    .map((b) => {
+      const avgPredicted = Math.round((b.predicted / b.count) * 10) / 10
+      const actualRate = Math.round((b.places / b.count) * 1000) / 10
+      return {
+        ...b,
+        avgPredicted,
+        actualRate,
+        calibrationError: Math.round(Math.abs(avgPredicted - actualRate) * 10) / 10,
+      }
+    })
 
   const totalRecords = records.length
   const totalPlaces = records.filter((r) => r.actualPlaced || r.actualWon).length

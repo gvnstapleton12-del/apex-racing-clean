@@ -262,7 +262,7 @@ export function bayesianWinProbabilities(runners, race) {
   const blendedPriors = modelPriors.map((mp, i) => {
     const componentBlend = normalizedComponents[i]
     const marketBlend = normalizedMarket[i]
-    return mp * 0.40 + componentBlend * 0.25 + marketBlend * 0.35
+    return mp * 0.45 + componentBlend * 0.25 + marketBlend * 0.30
   })
 
   const totalBlended = blendedPriors.reduce((a, b) => a + b, 0)

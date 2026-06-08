@@ -31,7 +31,7 @@ import { detectScenarioFlags } from './scenarioFlags.js'
 import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
 import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
-import { computeCalibrationAdjustment } from './calibrationEngine.js'
+// import { computeCalibrationAdjustment } from './calibrationEngine.js'
 import { computeTrackBiasFactor, getDrawBias, isAW, checkDrawEligibility } from './trackProfile.js'
 import { evaluateAWTransfer } from './awTransfer.js'
 import { classifyClassLevel, computeORFit, computeWeightFit, computeORProfileAdjustment, computeRPRORFit } from './classModel.js'
@@ -61,7 +61,7 @@ function betQuality(probBand, winProb, marketAdj, odds) {
 }
 
 export function runApexEngine(runners, race, options = {}) {
-  console.log('[ENGINE TEST] runApexEngine called for race:', race?.course, race?.off_time, 'runners:', runners?.length)
+
   const goingDb = options.goingDb || {}
   const distanceDb = options.distanceDb || {}
   const replayDb = options.replayDb || {}
@@ -569,15 +569,30 @@ export function runApexEngine(runners, race, options = {}) {
   const winProbs = bayesianWinProbabilities(sorted, race)
   const placeProbs = bayesianPlaceProbabilities(sorted)
 
-  // Apply calibration adjustment — shifts probabilities based on historical accuracy
-  const calAdj = options.calibrationData ? computeCalibrationAdjustment(options.calibrationData) : { winAdj: 0, placeAdj: 0 }
+  /**
+   * Platt Scaling — transforms raw compressed probabilities into calibrated win probabilities
+   * using logit-space linear transformation (A > 1 stretches distribution, B shifts center).
+   * Derived from empirical calibration errors across 2602 records.
+   */
+  function calibrateWinProbability(rawProb) {
+    if (rawProb <= 0 || rawProb >= 1) return rawProb
+    const logit = Math.log(rawProb / (1 - rawProb))
+    const A = 1.10
+    const B = 0.10
+    const calibratedLogit = (A * logit) + B
+    const calibratedProb = 1 / (1 + Math.exp(-calibratedLogit))
+    return Math.max(0.01, Math.min(0.99, calibratedProb))
+  }
+
   const adjustedWinProbs = winProbs.map((p) => {
-    const adjusted = p + calAdj.winAdj
-    return Math.max(0.1, Math.min(99, Math.round(adjusted * 10) / 10))
+    const prob = p / 100
+    const calibrated = calibrateWinProbability(prob)
+    return Math.round(calibrated * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {
-    const adjusted = p + calAdj.placeAdj
-    return Math.max(0.1, Math.min(99, Math.round(adjusted * 10) / 10))
+    const prob = p / 100
+    const calibrated = calibrateWinProbability(prob)
+    return Math.round(calibrated * 1000) / 10
   })
 
   // Engine 2: Race Shape Simulation
@@ -716,7 +731,6 @@ export function runApexEngine(runners, race, options = {}) {
     valueEngine: valueAnalysis.summary,
     bankrollEngine: bankrollAnalysis.summary,
     betFilter,
-    calibrationAdjustment: calAdj,
   }
 }
 
