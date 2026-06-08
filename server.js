@@ -14,10 +14,13 @@ import { selectionQuality } from './src/lib/selectionQuality.js'
 import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchlistPriority, getRecommendedConditions, getAvoidTags, extractTagsFromNotes } from './src/lib/replayTagLibrary.js'
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
-import { fetchAtrRacecards } from './src/lib/scrapers/atrScraper.js'
+import { fetchAtrRacecards, fetchAtrRatings } from './src/lib/scrapers/atrScraper.js'
 import { initHorseDb, createTables, closeHorseDb } from './src/lib/horseMemoryDb.js'
 import { getHorseMemory, calculateHandicapScore, calculateAbilityFromMemory } from './src/lib/horseMemoryEngine.js'
 import { saveHorseRun } from './src/lib/saveHorseRun.js'
+import { recordTrackBiasResult, backfillFromHistorical, getAllTrackBiasStats, saveTrackBiasStore, getTrackBiasStore } from './src/lib/trackBiasLearner.js'
+import { checkRaceExclusion } from './src/lib/trackProfile.js'
+import { recordAffinityPrediction, verifyAffinityResult } from './src/lib/personalAffinity.js'
 
 // Global error handlers to prevent crashes
 process.on('uncaughtException', (error) => {
@@ -53,6 +56,8 @@ import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLif
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
 import { computeTrainerFreshness, getFreshFactor, getTrainerFreshnessProfile, loadFreshnessDb, saveFreshnessDb } from './src/lib/trainerFreshness.js'
 import { buildORHistory } from './src/lib/classModel.js'
+import { recordRun } from './src/lib/conditionDB.js'
+import { computePerformanceRating, updatePerformanceRating, computeActualPerformance, getStoredPR, savePerformanceRatingStore } from './src/lib/performanceRating.js'
 
 dotenv.config()
 
@@ -235,38 +240,41 @@ function classifyEngine(grade, odds) {
 
 function applyEngineRouting(runner, engine, odds) {
   const isCore = engine === 'CORE'
-  const isLongshot = odds >= 10.0
 
   let winProb = runner.winProb
   let placeProb = runner.placeProb
   let stakeType = 'kelly'
   let maxStake = 0.05
+  let betFilterStatus = ''
 
   if (isCore) {
-    // CORE: conservative calibration with progressive shrinkage
     if (odds <= 4.0) {
       winProb *= 0.78
       placeProb *= 0.78
     } else if (odds <= 7.0) {
-      winProb *= 0.85
-      placeProb *= 0.85
+      winProb *= 0.22
+      placeProb *= 0.22
     } else if (odds <= 9.0) {
-      winProb *= 0.90
-      placeProb *= 0.90
+      winProb *= 0.29
+      placeProb *= 0.29
     }
     stakeType = 'kelly'
     maxStake = 0.05
   } else {
-    // CHAOS: experimental side module — small flat stakes
-    if (isLongshot) {
-      winProb *= 1.05
-      placeProb *= 1.05
+    if (odds >= 10.0) {
+      winProb *= 0.85
+      placeProb *= 0.85
+    }
+    if (odds >= 13.0) {
+      winProb *= 0.50
+      placeProb *= 0.50
+      betFilterStatus = 'HIGH RISK'
     }
     stakeType = 'flat'
     maxStake = 0.01
   }
 
-  return { winProb, placeProb, stakeType, maxStake }
+  return { winProb, placeProb, stakeType, maxStake, betFilterStatus }
 }
 
 function storeHistoricalRecord(runner, race, apexResult) {
@@ -317,6 +325,7 @@ function storeHistoricalRecord(runner, race, apexResult) {
     class: race.class || '',
     or: runner.or || 0,
     rpr: runner.rpr || 0,
+    performanceRating: runner.performanceRating || null,
     trainer: runner.trainer || '',
     jockey: runner.jockey || '',
     finalScore: score,
@@ -433,7 +442,10 @@ const HISTORICAL_DATABASE = loadDatabase(HISTORICAL_DB_PATH)?.records
   ? loadDatabase(HISTORICAL_DB_PATH)
   : { records: [] }
 
-let TRAINER_FRESHNESS_DB = loadDatabase(path.join(process.cwd(), 'data', 'trainer-freshness.json')) || { trainers: {}, overall: {}, meta: {} }
+let TRAINER_FRESHNESS_DB = (() => {
+  const loaded = loadDatabase(path.join(process.cwd(), 'data', 'trainer-freshness.json'))
+  return loaded.trainers ? loaded : { trainers: {}, overall: {}, meta: {} }
+})()
 let OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
 
 // Horse Memory SQLite Database
@@ -470,6 +482,17 @@ function findPredictionForRunner(race, runner) {
   )
 }
 
+function normalizeGoingString(rawString) {
+  if (!rawString) return 'Standard'
+  const text = rawString.toLowerCase()
+  if (text.includes('heavy') || text.includes('soft')) return 'Soft/Heavy'
+  if (text.includes('good to firm') || text.includes('firm')) return 'Good to Firm/Firm'
+  if (text.includes('good') && !text.includes('firm')) return 'Good'
+  if (text.includes('yielding') || text.includes('yield')) return 'Yielding'
+  if (text.includes('standard')) return 'Standard'
+  return 'Good'
+}
+
 function logPrediction(race, runner, aiProfile) {
   const raceId = `${race.course}-${race.off_time}-${race.date}`
 
@@ -500,6 +523,7 @@ function logPrediction(race, runner, aiProfile) {
     completeness: aiProfile.completeness,
     grade: aiProfile.grade || '',
     betQuality: aiProfile.betQuality || '',
+    going: normalizeGoingString(race.going || ''),
     breakdown: aiProfile.breakdown || null,
     timestamp: new Date().toISOString(),
   }
@@ -534,6 +558,23 @@ async function processRace(race) {
   const startTime = Date.now()
   try {
     const runners = race.runners || []
+
+    const exclusionReason = checkRaceExclusion(race)
+    if (exclusionReason) {
+      console.log(`[EXCLUDE] ${race.course} - ${race.race_name || ''} - ${exclusionReason}`)
+      return {
+        race_id: race.race_id,
+        course: race.course,
+        race_name: race.race_name,
+        off_time: race.off_time,
+        date: race.date,
+        distance_f: race.distance_f,
+        runners: [],
+        excluded: true,
+        exclusionReason,
+        processingTime: Date.now() - startTime,
+      }
+    }
 
     // NaN Safety Assertions at pipeline entry
     if (runners.length > 0) {
@@ -653,9 +694,12 @@ async function processRace(race) {
         draw: runner.draw,
         position: runner.position,
         headgear: runner.headgear,
+        draw: runner.draw || 0,
         lbs: runner.lbs,
         ofr: runner.ofr,
         or: runner.or,
+        rpr: runner.rpr || 0,
+        bha_trend: runner.bha_trend || 0,
         jockey: runner.jockey,
         last_run: runner.last_run,
         form: runner.form,
@@ -668,6 +712,7 @@ async function processRace(race) {
         engine: engine,
         stakeType: routed.stakeType,
         maxStake: routed.maxStake,
+        betFilterStatus: routed.betFilterStatus || '',
         probBand: runner.probBand,
         probRange: runner.probRange,
         probTier: runner.probTier,
@@ -690,14 +735,30 @@ async function processRace(race) {
         energy: runner.energy || null,
         paceCompat: runner.paceCompat || null,
         trackProfile: runner.trackProfile || null,
+        personalAffinity: runner.personalAffinity || null,
         classModel: runner.classModel || null,
+        performanceRating: runner.classModel?.rprORSource === 'PR' ? {
+          pr: runner.classModel.rprORGap + (runner.or || 0),
+          gap: runner.classModel.rprORGap,
+          source: 'PR',
+        } : (runner.classModel?.rprORSource === 'RPR' && runner.previous_results?.length > 0 ? (() => {
+          const pr = computePerformanceRating(runner.previous_results, runner.or || 0, race.type || '')
+          return pr.runs > 0 ? { pr: pr.pr, gap: pr.gap, source: 'PR' } : null
+        })() : null),
         freshFactor,
         score: runner.finalScore,
         bettingSignals,
         marketMovement,
         elimination: runner.elimination,
+        previous_results: runner.previous_results || [],
       }
     })
+
+    for (const sr of scoredRunners) {
+      try {
+        recordAffinityPrediction(sr.horse, race, sr)
+      } catch { /* silent */ }
+    }
 
     return {
       ...race,
@@ -760,18 +821,41 @@ async function fetchLiveMeetings() {
 
     console.log(`[LiveMeetings] Processing ${rawRaces.length} races from Sporting Life...`)
 
+    // Fetch ATR ratings before scoring so engine can use them
+    let atrRatings = {}
+    try {
+      console.log('[LiveMeetings] Fetching ATR ratings...')
+      atrRatings = await fetchAtrRatings(today, rawRaces)
+      const atrCount = Object.keys(atrRatings).length
+      console.log(`[LiveMeetings] Got ${atrCount} ATR ratings`)
+    } catch (error) {
+      console.error('[LiveMeetings] ATR ratings fetch failed:', error.message)
+    }
+
     const processed = []
     const batchSize = 2
     for (let i = 0; i < rawRaces.length; i += batchSize) {
       const batch = rawRaces.slice(i, i + batchSize)
       console.log(`[LiveMeetings] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(rawRaces.length / batchSize)}`)
       try {
-        const batchResults = await Promise.all(batch.map(race =>
-          Promise.race([
+        const batchResults = await Promise.all(batch.map(race => {
+          const normalizedAtrRatings = {}
+          for (const [name, rating] of Object.entries(atrRatings)) {
+            normalizedAtrRatings[normalizeHorseName(name)] = rating
+          }
+          race.runners = (race.runners || []).map(runner => {
+            const key = normalizeHorseName(runner.horse)
+            const rating = normalizedAtrRatings[key]
+            if (rating && rating > 0 && (!runner.rpr || runner.rpr === 0)) {
+              return { ...runner, rpr: rating }
+            }
+            return runner
+          })
+          return Promise.race([
             processRace(race),
             new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 60000))
           ])
-        ))
+        }))
         processed.push(...batchResults)
       } catch (error) {
         console.error(`[LiveMeetings] Batch ${Math.floor(i / batchSize) + 1} failed:`, error.message)
@@ -820,6 +904,29 @@ async function fetchLiveMeetings() {
 
     API_CACHE.set(cacheKey, processed)
 
+    // Persist enriched racecard data for OR/PR gap backfill
+    try {
+      const enrichedCache = (processed || []).map(race => ({
+        race_id: race.race_id,
+        course: race.course,
+        off_time: race.off_time,
+        date: race.date,
+        going: race.going || '',
+        distance_f: race.distance_f || '',
+        race_class: race.race_class || 0,
+        surface: race.surface || '',
+        runners: (race.runners || []).map(r => ({
+          horse: r.horse,
+          or: r.or,
+          previous_results: r.previous_results || [],
+          performanceRating: r.performanceRating || null,
+        })),
+      }))
+      saveDatabase(path.join(process.cwd(), 'data', 'racecard-enriched.json'), { races: enrichedCache, savedAt: new Date().toISOString() })
+    } catch (e) {
+      console.error('[LiveMeetings] Failed to save enriched cache:', e.message)
+    }
+
     try {
       saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
       saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
@@ -857,6 +964,15 @@ function matchResultsToCalibration(races) {
       const id = `${race.course}-${race.off_time}-${race.date}-${runner.horse}`
       const position = normalizePosition(runner.position)
       const rec = HISTORICAL_DATABASE.records.find((r) => r.id === id)
+
+      // Track OR/PR gap for testing (runs for all runners with OR + PR data)
+      if (rec && rec.or > 0 && rec.orPrGap == null) {
+        const preRacePR = runner.performanceRating?.pr || rec.performanceRating?.pr || 0
+        if (preRacePR > 0) {
+          rec.orPrGap = Math.round((preRacePR - rec.or) * 10) / 10
+        }
+      }
+
       if (rec && !rec.resulted) {
         const spOdds = resolveOdds(runner)
         rec.actual_position = position
@@ -885,17 +1001,59 @@ function matchResultsToCalibration(races) {
         if (!rec.last_run && runner.last_run) rec.last_run = runner.last_run
         if (!rec.trainer && runner.trainer) rec.trainer = runner.trainer
         rec.resulted = true
+        if (runner.finish_distance) rec.finish_distance = runner.finish_distance
+
+        recordTrackBiasResult(race.course, runner.runningStyle, position, rec.field_size)
+
+        const affinityRaceKey = `${race.course}|${race.off_time || ''}|${race.date || ''}`
+        try {
+          verifyAffinityResult(runner.horse, affinityRaceKey, position, runner.finish_distance, runner.runningStyle)
+        } catch { /* silent */ }
+
+        // Update Performance Rating with this result
+        const horseBha = rec.or || runner.or || 0
+        if (horseBha > 0 && position > 0) {
+          const actualPerf = computeActualPerformance(
+            position,
+            rec.field_size || runners.length,
+            horseBha,
+            race.race_class || '',
+            runner.finish_distance
+          )
+          if (actualPerf !== null) {
+            const storedPR = getStoredPR(runner.horse)
+            const currentPR = storedPR?.pr || horseBha
+            const prUpdate = updatePerformanceRating(runner.horse, actualPerf, currentPR)
+            if (prUpdate.delta !== 0) {
+              console.log(`[PerfRating] ${runner.horse}: PR ${currentPR} → ${prUpdate.newPR} (${prUpdate.delta > 0 ? '+' : ''}${prUpdate.delta}, run #${prUpdate.runCount})`)
+            }
+          }
+        }
       }
 
       const prediction = findPredictionForRunner(race, runner)
 
       if (prediction) {
         const calKey = `${prediction.horse}-${prediction.course}-${prediction.date}-${prediction.race}`
-        if (existingCalKeys.has(calKey)) return
+
+        // Update existing calibration record with actual results
+        if (existingCalKeys.has(calKey)) {
+          const existingCal = CALIBRATION_DATABASE.records.find(
+            r => `${r.horse}-${r.course}-${r.date}-${r.race}` === calKey
+          )
+          if (existingCal && !existingCal.actualPosition) {
+            existingCal.actualPosition = position
+            existingCal.actualWon = position === 1
+            existingCal.actualPlaced = position >= 1 && position <= placedPositions(existingCal.fieldSize || 0)
+            existingCal.actualOdds = resolveOdds(runner)
+            if (!existingCal.going) existingCal.going = normalizeGoingString(prediction.going || race.going || '')
+          }
+          return
+        }
 
         const calRecord = createCalibrationRecord({
           ...prediction,
-          going: race.going || '',
+          going: normalizeGoingString(race.going || prediction.going || ''),
           fieldSize: race.field_size || race.fieldSize || 0,
           trainer: runner.trainer || '',
           raceType: race.race_type || race.raceType || '',
@@ -980,8 +1138,52 @@ function matchResultsToCalibration(races) {
     saveDatabase(freshnessPath, TRAINER_FRESHNESS_DB)
     console.log(`[Freshness] Updated trainer freshness: ${Object.keys(TRAINER_FRESHNESS_DB.trainers).length} trainers`)
 
+    // Update trainer form database (last 14 days)
+    const fourteenDaysAgo = new Date()
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14)
+    const cutoffDate = fourteenDaysAgo.toISOString().slice(0, 10)
+    
+    // Build trainer form from all historical results
+    const trainerForm = {}
+    const allRaces = LEARNING_DATABASE.races || []
+    allRaces.forEach(race => {
+      if (!race.date || race.date < cutoffDate) return
+      const runners = race.runners || []
+      runners.forEach(runner => {
+        const trainer = runner.trainer
+        if (!trainer) return
+        if (!trainerForm[trainer]) {
+          trainerForm[trainer] = { runs: 0, wins: 0, places: 0, lastUpdate: race.date }
+        }
+        const pos = normalizePosition(runner.position)
+        if (pos > 0) {
+          trainerForm[trainer].runs++
+          if (pos === 1) trainerForm[trainer].wins++
+          if (pos <= placedPositions(race.field_size || runners.length)) trainerForm[trainer].places++
+        }
+      })
+    })
+    
+    // Calculate win rates
+    Object.keys(trainerForm).forEach(trainer => {
+      const t = trainerForm[trainer]
+      t.winRate = t.runs > 0 ? Math.round((t.wins / t.runs) * 100 * 10) / 10 : 0
+      t.placeRate = t.runs > 0 ? Math.round((t.places / t.runs) * 100 * 10) / 10 : 0
+    })
+    
+    Object.assign(TRAINER_FORM_DATABASE, trainerForm)
+    saveDatabase(TRAINER_FORM_PATH, TRAINER_FORM_DATABASE)
+    console.log(`[TrainerForm] Updated: ${Object.keys(trainerForm).length} trainers in last 14 days`)
+
     OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
     console.log(`[OR History] Built OR profiles for ${Object.keys(OR_HISTORY).length} horses`)
+
+    const trackBiasPath = path.join(process.cwd(), 'data', 'trackBiasLearning.json')
+    saveTrackBiasStore()
+    console.log(`[Track Bias] Saved track bias learning data`)
+
+    savePerformanceRatingStore()
+    console.log(`[PerfRating] Saved performance rating data`)
 
     console.log(`[Calibration] Matched ${matched} runners for calibration, saved learning records`)
   }
@@ -1000,6 +1202,23 @@ async function fetchResultsForDate(dateStr) {
       if (existingDateRaces.length >= 10) {
         console.log(`[Results] Already have ${existingDateRaces.length} races for ${dateStr}, skipping scrape`)
         matchResultsToCalibration(existingDateRaces)
+
+        // Also record runs for condition database on skip path
+        let conditionRecorded = 0
+        for (const race of existingDateRaces) {
+          if (race.runners && race.runners.length > 0 && race.going) {
+            try {
+              recordRun(race)
+              conditionRecorded++
+            } catch (e) {
+              // silently skip
+            }
+          }
+        }
+        if (conditionRecorded > 0) {
+          console.log(`[ConditionDB] Recorded ${conditionRecorded} races with full metadata`)
+        }
+
         return existingDateRaces.length
       }
     }
@@ -1015,10 +1234,55 @@ async function fetchResultsForDate(dateStr) {
     console.log(`[Results] Found ${resultRaces.length} races for ${dateStr}`)
 
     try {
-      const existingIds = new Set((LEARNING_DATABASE.races || []).map(r => r.race_id))
-      const newRaces = resultRaces.filter(r => !existingIds.has(r.race_id))
-      LEARNING_DATABASE.races = [...(LEARNING_DATABASE.races || []), ...newRaces]
-      console.log(`[Results] Stored ${newRaces.length} new races for ${dateStr}`)
+      const existingRaces = LEARNING_DATABASE.races || []
+      const existingById = new Map(existingRaces.map(r => [r.race_id, r]))
+
+      // Load enriched racecard cache for race-level metadata (going, distance, class)
+      let enrichedById = new Map()
+      try {
+        const enrichedDb = loadDatabase(path.join(process.cwd(), 'data', 'racecard-enriched.json'))
+        const enrichedRaces = enrichedDb.races || []
+        enrichedById = new Map(enrichedRaces.map(r => [r.race_id, r]))
+      } catch (e) {
+        // enriched cache may not exist yet
+      }
+
+      const mergedRaces = resultRaces.map(resultRace => {
+        const existing = existingById.get(resultRace.race_id)
+        const enriched = enrichedById.get(resultRace.race_id)
+
+        // Prefer enriched racecard data for race-level metadata (results scraper leaves these empty)
+        const meta = enriched || existing || {}
+
+        // Merge result runners with existing racecard runners to preserve OR/RPR/PR
+        const mergedRunners = resultRace.runners.map(resultRunner => {
+          const existingRunner = existing?.runners?.find(r =>
+            (r.horse || '').toLowerCase().trim() === (resultRunner.horse || '').toLowerCase().trim()
+          )
+          if (existingRunner) {
+            return { ...resultRunner, or: existingRunner.or, rpr: existingRunner.rpr, performanceRating: existingRunner.performanceRating }
+          }
+          return resultRunner
+        })
+
+        // Copy race-level metadata from racecard (going, distance, class) since results scraper doesn't capture these
+        return {
+          ...resultRace,
+          going: resultRace.going || meta.going || '',
+          distance_f: resultRace.distance_f || meta.distance_f || '',
+          race_class: resultRace.race_class || meta.race_class || 0,
+          surface: resultRace.surface || meta.surface || '',
+          distanceFurlongs: parseFloat(meta.distance_f) || 0,
+          raceClass: meta.race_class ? String(meta.race_class) : '',
+          runners: mergedRunners
+        }
+      })
+      
+      // Replace existing races with merged versions, add any new ones
+      const mergedIds = new Set(mergedRaces.map(r => r.race_id))
+      const unchangedRaces = existingRaces.filter(r => !mergedIds.has(r.race_id))
+      LEARNING_DATABASE.races = [...unchangedRaces, ...mergedRaces]
+      console.log(`[Results] Stored/merged ${mergedRaces.length} races for ${dateStr}`)
       saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
     } catch (saveError) {
       console.error(`[Results] Error saving ${dateStr}:`, saveError.message)
@@ -1028,6 +1292,22 @@ async function fetchResultsForDate(dateStr) {
     // Match all scraped results (new + existing) against predictions for calibration
     const dateRaces = (LEARNING_DATABASE.races || []).filter(r => r.date === dateStr && r.off_time)
     matchResultsToCalibration(dateRaces)
+
+    // Populate condition database so conditionAdj factor can activate
+    let conditionRecorded = 0
+    for (const race of dateRaces) {
+      if (race.runners && race.runners.length > 0 && race.going) {
+        try {
+          recordRun(race)
+          conditionRecorded++
+        } catch (e) {
+          // silently skip
+        }
+      }
+    }
+    if (conditionRecorded > 0) {
+      console.log(`[ConditionDB] Recorded ${conditionRecorded} races with full metadata`)
+    }
 
     saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
 
@@ -1091,6 +1371,9 @@ function buildLightweightState() {
       headgear: r.headgear,
       lbs: r.lbs,
       ofr: r.ofr,
+      or: r.or,
+      rpr: r.rpr,
+      bha_trend: r.bha_trend || 0,
       jockey: r.jockey,
       last_run: r.last_run,
       form: r.form,
@@ -1114,6 +1397,8 @@ function buildLightweightState() {
       humanScore: r.humanScore,
       marketScore: r.marketScore,
       score: r.score,
+      performanceRating: r.performanceRating || null,
+      previous_results: r.previous_results || [],
     })),
   }))
 
@@ -1262,10 +1547,21 @@ app.post('/api/daily-picks', (req, res) => {
   }
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+
+  // Immediately match against any existing results
+  const dateResults = (LEARNING_DATABASE.races || []).filter(r => r.date === date && r.off_time)
+  if (dateResults.length > 0) {
+    matchDailyPicksWithResults(dateResults)
+    saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+  }
+
   res.json({ saved: true, date, count: picks.length })
 })
 
 app.get('/api/daily-picks', (_req, res) => {
+  // Re-match against any new results before serving
+  const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
+  matchDailyPicksWithResults(allResultRaces)
   res.json(DAILY_PICKS_DATABASE)
 })
 
@@ -1608,7 +1904,7 @@ app.post('/api/upload-results', (req, res) => {
         if (prediction) {
           const calRecord = createCalibrationRecord({
             ...prediction,
-            going: race.going || '',
+            going: normalizeGoingString(race.going || prediction.going || ''),
             fieldSize: race.field_size || race.fieldSize || 0,
             trainer: runner.trainer || '',
             raceType: race.race_type || race.raceType || '',
@@ -2212,11 +2508,193 @@ app.get('/api/trainer-freshness/:trainer', (req, res) => {
   res.json(profile)
 })
 
+app.get('/api/track-bias-learning', (_req, res) => {
+  res.json(getAllTrackBiasStats())
+})
+
+app.get('/api/track-bias-learning/:course', (req, res) => {
+  const stats = getAllTrackBiasStats()[req.params.course]
+  if (!stats) return res.status(404).json({ error: 'Course not found' })
+  res.json(stats)
+})
+
+app.get('/api/or-pr-gap', (_req, res) => {
+  const records = (HISTORICAL_DATABASE.records || []).filter(r => r.resulted && r.orPrGap != null)
+  
+  const bands = [
+    { label: '-20+', min: -Infinity, max: -20 },
+    { label: '-19 to -15', min: -19, max: -15 },
+    { label: '-14 to -10', min: -14, max: -10 },
+    { label: '-9 to -5', min: -9, max: -5 },
+    { label: '-4 to 0', min: -4, max: 0 },
+    { label: '+1 to +4', min: 1, max: 4 },
+    { label: '+5 to +9', min: 5, max: 9 },
+    { label: '+10 to +14', min: 10, max: 14 },
+    { label: '+15+', min: 15, max: Infinity },
+  ]
+  
+  const stats = bands.map(band => {
+    const inBand = records.filter(r => r.orPrGap >= band.min && r.orPrGap < band.max)
+    const wins = inBand.filter(r => r.actual_position === 1).length
+    const places = inBand.filter(r => r.actual_position >= 1 && r.actual_position <= 3).length
+    return {
+      ...band,
+      total: inBand.length,
+      wins,
+      places,
+      winRate: inBand.length > 0 ? ((wins / inBand.length) * 100).toFixed(1) : null,
+      placeRate: inBand.length > 0 ? ((places / inBand.length) * 100).toFixed(1) : null,
+      avgOdds: inBand.length > 0 ? (inBand.reduce((s, r) => s + (r.actual_odds || 0), 0) / inBand.length).toFixed(2) : null,
+    }
+  })
+  
+  res.json({
+    total: records.length,
+    bands: stats,
+    samples: records.slice(-20).map(r => ({
+      horse: r.horse,
+      course: r.course,
+      or: r.or,
+      pr: r.or + r.orPrGap,
+      gap: r.orPrGap,
+      position: r.actual_position,
+      odds: r.actual_odds,
+    })),
+  })
+})
+
+app.post('/api/refresh-racecards', async (_req, res) => {
+  try {
+    console.log('[API] Manual racecard refresh requested')
+    await fetchLiveMeetings()
+    let backfilled = 0
+    try {
+      const enrichedDb = loadDatabase(path.join(process.cwd(), 'data', 'racecard-enriched.json'))
+      const enrichedRaces = enrichedDb.races || []
+      const racesByKey = new Map()
+      for (const r of enrichedRaces) {
+        const key = `${r.course}-${r.off_time}-${r.date}`
+        racesByKey.set(key, r)
+      }
+      console.log(`[API] Backfill: ${enrichedRaces.length} enriched races, ${racesByKey.size} unique keys`)
+      for (const rec of (HISTORICAL_DATABASE.records || [])) {
+        if (rec.resulted && rec.orPrGap == null && rec.or > 0) {
+          const key = `${rec.course}-${rec.off_time}-${rec.date}`
+          const race = racesByKey.get(key)
+          if (race) {
+            const rr = (race.runners || []).find(r =>
+              (r.horse || '').toLowerCase().trim() === (rec.horse || '').toLowerCase().trim()
+            )
+            if (rr?.performanceRating?.pr > 0) {
+              rec.orPrGap = Math.round((rr.performanceRating.pr - rec.or) * 10) / 10
+              backfilled++
+            }
+          }
+        }
+      }
+      if (backfilled > 0) {
+        saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
+      }
+      console.log(`[API] OR/PR gap backfill complete: ${backfilled} records`)
+    } catch (e) {
+      console.error('[API] Backfill error:', e.message)
+    }
+    res.json({ ok: true, message: 'Racecards refreshed', orPrGapBackfilled: backfilled })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
 server.listen(PORT, () => {
   console.log(`APEX websocket engine running on ${PORT}`)
+  console.log('[STARTUP] APEX_DIAGNOSTIC =', process.env.APEX_DIAGNOSTIC)
+  if (process.env.APEX_DIAGNOSTIC === '1') {
+    console.log('[DIAG TEST] Diagnostic mode ACTIVE - will log signal dilution per race')
+  }
   // Fetch today's data on startup
   fetchLiveMeetings()
   fetchTodayResults()
+
+  // Backfill track bias learning from historical records
+  const trackBiasStore = getTrackBiasStore()
+  const coursesWithRuns = Object.values(trackBiasStore.courses || {}).filter(c => c.runs > 0)
+  if (coursesWithRuns.length === 0) {
+    const backfilled = backfillFromHistorical(HISTORICAL_DATABASE.records || [])
+    console.log(`[Track Bias] Backfilled ${backfilled} historical records`)
+  } else {
+    console.log(`[Track Bias] Loaded existing data for ${coursesWithRuns.length} courses`)
+  }
+
+  // Backfill OR/PR gap for existing resulted records
+  let orPrGapBackfilled = 0
+  const racesById = new Map()
+  try {
+    const enrichedDb = loadDatabase(path.join(process.cwd(), 'data', 'racecard-enriched.json'))
+    const enrichedRaces = enrichedDb.races || []
+    for (const r of enrichedRaces) {
+      const key = `${r.course}-${r.off_time}-${r.date}`
+      racesById.set(key, r)
+    }
+    console.log(`[OR/PR Gap] Loaded ${enrichedRaces.length} enriched racecard records for backfill`)
+  } catch (e) {}
+  for (const rec of (HISTORICAL_DATABASE.records || [])) {
+    if (rec.resulted && rec.orPrGap == null && rec.or > 0) {
+      let pr = 0
+      if (rec.performanceRating?.pr > 0) {
+        pr = rec.performanceRating.pr
+      } else if (rec.previous_results?.length > 0) {
+        const prData = computePerformanceRating(rec.previous_results, rec.or, rec.race_type || '')
+        if (prData.runs > 0) pr = prData.pr
+      } else if (rec.bha_trend && rec.bha_trend !== 0) {
+        pr = rec.or - rec.bha_trend * 2.5
+      } else {
+        const key = `${rec.course}-${rec.off_time}-${rec.date}`
+        const race = racesById.get(key)
+        if (race) {
+          const raceRunner = (race.runners || []).find(r =>
+            (r.horse || '').toLowerCase().trim() === (rec.horse || '').toLowerCase().trim()
+          )
+          if (raceRunner?.performanceRating?.pr > 0) {
+            pr = raceRunner.performanceRating.pr
+          }
+        }
+      }
+      if (pr > 0) {
+        rec.orPrGap = Math.round((pr - rec.or) * 10) / 10
+        orPrGapBackfilled++
+      }
+    }
+  }
+  if (orPrGapBackfilled > 0) {
+    saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
+    console.log(`[OR/PR Gap] Backfilled ${orPrGapBackfilled} historical records`)
+  }
+
+  // Backfill condition database from historical races with metadata
+  try {
+    const conditionDbPath = path.join(process.cwd(), 'data', 'condition_db.json')
+    const conditionDb = loadDatabase(conditionDbPath)
+    const existingHorseCount = Object.keys(conditionDb.horses || {}).length
+    if (existingHorseCount === 0) {
+      let conditionBackfilled = 0
+      const allLearningRaces = LEARNING_DATABASE.races || []
+      for (const race of allLearningRaces) {
+        if (race.runners && race.runners.length > 0 && race.going) {
+          try {
+            recordRun(race)
+            conditionBackfilled++
+          } catch (e) {
+            // skip
+          }
+        }
+      }
+      console.log(`[ConditionDB] Backfilled ${conditionBackfilled} historical races with full metadata`)
+    } else {
+      console.log(`[ConditionDB] Loaded existing data for ${existingHorseCount} horses`)
+    }
+  } catch (e) {
+    console.error('[ConditionDB] Backfill error:', e.message)
+  }
 
   // Schedule daily racecard fetch at 8am UK time
   function scheduleNext8am() {

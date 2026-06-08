@@ -97,34 +97,61 @@ export function computeORFit(horseOR, currentOR, raceClass) {
   return { fit, label, diff }
 }
 
-export function computeRPRORFit(rpr, or, isHandicap) {
-  if (!rpr || !or || rpr <= 0 || or <= 0) return { gap: 0, adjustment: 0, label: 'No data' }
+export function computeRPRORFit(rpr, or, isHandicap, bhaTrend = 0, previousResults = [], computePerformanceRatingFn = null, raceType = '') {
+  const hasRPR = rpr && or && rpr > 0 && or > 0
+  const hasBHATrend = or > 0 && bhaTrend !== 0
+  const hasPrevResults = previousResults && previousResults.length > 0
 
-  const gap = rpr - or
+  if (!hasRPR && !hasBHATrend && !hasPrevResults) {
+    return { gap: 0, adjustment: 0, label: 'No data', source: 'none' }
+  }
+
+  let gap, source
+
+  if (hasRPR) {
+    gap = rpr - or
+    source = 'RPR'
+  } else if (hasPrevResults && or > 0 && computePerformanceRatingFn) {
+    const pr = computePerformanceRatingFn(previousResults, or, raceType)
+    if (pr.runs > 0) {
+      gap = pr.gap
+      source = 'PR'
+    }
+  }
+
+  if (!source) {
+    if (hasBHATrend) {
+      gap = -bhaTrend * 2.5
+      source = 'BHA trend'
+    } else {
+      return { gap: 0, adjustment: 0, label: 'No data', source: 'none' }
+    }
+  }
+
   let adjustment = 0
   let label = 'Even'
 
   if (gap >= 15) {
-    adjustment = isHandicap ? 4 : 2
+    adjustment = isHandicap ? 5 : 3
     label = 'Well ahead of mark'
   } else if (gap >= 10) {
-    adjustment = isHandicap ? 3 : 1.5
+    adjustment = isHandicap ? 4 : 2
     label = 'Ahead of mark'
   } else if (gap >= 5) {
-    adjustment = isHandicap ? 1.5 : 0.5
+    adjustment = isHandicap ? 2.5 : 1.5
     label = 'Slightly ahead'
   } else if (gap >= -5) {
     adjustment = 0
     label = 'Even'
   } else if (gap >= -10) {
-    adjustment = isHandicap ? -1.5 : -0.5
+    adjustment = isHandicap ? -2 : -1
     label = 'Behind mark'
   } else {
-    adjustment = isHandicap ? -3 : -1
+    adjustment = isHandicap ? -4 : -2
     label = 'Well behind mark'
   }
 
-  return { gap, adjustment, label }
+  return { gap, adjustment, label, source }
 }
 
 export function computeWeightFit(lbs, fieldSize) {

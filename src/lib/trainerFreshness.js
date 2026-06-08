@@ -34,6 +34,8 @@ function bayesianAdjust(wins, runs, leagueWinRate) {
 
 export function computeTrainerFreshness(races = [], existingDb = null) {
   const db = existingDb || { trainers: {}, overall: {}, meta: {} }
+  if (!db.trainers) db.trainers = {}
+  if (!db.overall) db.overall = {}
 
   for (const race of races) {
     for (const runner of (race.runners || [])) {

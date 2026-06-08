@@ -1,4 +1,5 @@
 import { eliminationGate } from './eliminationGate.js'
+import { calculatePersonalAffinityBonus } from './personalAffinity.js'
 import { corePowerScore } from './powerScore.js'
 import { classifyRunningStyle, generatePaceMap, paceMatrixScore, computePacePressure, computeEarlyPaceScore, detectRaceShape } from './paceEngine.js'
 import { humanIntelligenceLayer } from './humanIntelligence.js'
@@ -31,8 +32,12 @@ import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
 import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
 import { computeCalibrationAdjustment } from './calibrationEngine.js'
-import { computeTrackBiasFactor, getDrawBias, isAW } from './trackProfile.js'
+import { computeTrackBiasFactor, getDrawBias, isAW, checkDrawEligibility } from './trackProfile.js'
+import { evaluateAWTransfer } from './awTransfer.js'
 import { classifyClassLevel, computeORFit, computeWeightFit, computeORProfileAdjustment, computeRPRORFit } from './classModel.js'
+import { computePerformanceRating } from './performanceRating.js'
+import { writeFileSync, appendFileSync } from 'fs'
+import { join } from 'path'
 
 function probBand(winProb) {
   if (winProb >= 30) return { label: 'High Probability', range: '30%+', tier: 1 }
@@ -56,6 +61,7 @@ function betQuality(probBand, winProb, marketAdj, odds) {
 }
 
 export function runApexEngine(runners, race, options = {}) {
+  console.log('[ENGINE TEST] runApexEngine called for race:', race?.course, race?.off_time, 'runners:', runners?.length)
   const goingDb = options.goingDb || {}
   const distanceDb = options.distanceDb || {}
   const replayDb = options.replayDb || {}
@@ -117,13 +123,17 @@ export function runApexEngine(runners, race, options = {}) {
   const orValues = runners.map(r => Number(r.or || 0)).filter(n => n > 0)
   const fieldAvgOR = orValues.length > 0 ? orValues.reduce((s, v) => s + v, 0) / orValues.length : 0
 
+  const fieldFRCount = styles.filter(s => s === 'Front Runner').length
+
   const results = runners.map((runner, idx) => {
     const runnerStart = Date.now()
     const runningStyle = styles[idx]
-    const draw = Number(runner.draw || 0)
+    const rawDraw = Number(runner.draw || 0)
     const fieldSize = runners.length
     const horseId = runner.horse_id || runner.horse
     const earlyPaceScore = earlyScores[idx]
+    const drawEligibility = checkDrawEligibility(race.course, race.type, rawDraw)
+    const draw = drawEligibility.eligible ? rawDraw : 0
     const replayKey = `${runner.horse}|${race.course}`
     const replayNote = replayDb[replayKey] || Object.entries(replayDb || {}).find(([key]) => key.startsWith(`${runner.horse}|`))?.[1] || {}
 
@@ -174,10 +184,45 @@ export function runApexEngine(runners, race, options = {}) {
 
     // Track profile — draw bias + surface/pace suitability
     const distanceF = parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0
-    const trackBiasFactor = computeTrackBiasFactor(race.course, distanceF, runningStyle)
-    const drawBias = getDrawBias(race.course, distanceF)
+    const courseType = race.courseType
+      || (race.surface
+        ? (race.surface.toLowerCase().includes('turf') ? 'Turf'
+          : race.surface.toLowerCase().includes('aw') || race.surface.toLowerCase().includes('poly') || race.surface.toLowerCase().includes('tapeta') ? 'AW'
+          : null)
+        : null)
+    const stallNumber = drawEligibility.eligible ? (Number(runner.draw) || 0) : 0
+    const trackBiasFactor = computeTrackBiasFactor(
+      race.course,
+      distanceF,
+      runningStyle,
+      race.going || '',
+      stallNumber,
+      (runnersWithScores || runners).length,
+      courseType,
+      race.type || null,
+      (() => {
+        const hg = runner.headgear
+        if (!hg) return null
+        if (Array.isArray(hg)) return hg
+        if (typeof hg === 'object') return hg.firstTimeItems || null
+        return null
+      })(),
+      (() => {
+        const hg = runner.headgear
+        if (!hg) return null
+        if (Array.isArray(hg)) return hg
+        if (typeof hg === 'object') return hg.items || null
+        return null
+      })(),
+      race.race_name || ''
+    )
+    const drawBias = drawEligibility.eligible ? getDrawBias(race.course, distanceF) : null
     const isAllWeather = isAW(race.course)
     const trackAdj = (trackBiasFactor - 1.0) * 100
+
+    // AW transfer — flag only, no score adjustment
+    const awTransfer = !isAllWeather ? evaluateAWTransfer(runner.previous_results || [], race.course, race.going, distanceF, runner.or) : { hasAWForm: false, adjustment: 0, label: 'AW race' }
+    const awTransferAdj = 0 // Disabled as score modifier, kept for flags
 
     // Class model — class fit + OR fit
     const raceClass = classifyClassLevel(race.race_class, race.race_class)
@@ -202,7 +247,7 @@ export function runApexEngine(runners, race, options = {}) {
       : { adjustment: 0, label: 'No data', profile: null }
 
     // RPR vs OR gap — horse ahead of or behind handicapper's mark
-    const rprORFit = computeRPRORFit(runner.rpr, runner.or, isHandicap)
+    const rprORFit = computeRPRORFit(runner.rpr, runner.or, isHandicap, runner.bha_trend || 0, runner.previous_results || [], computePerformanceRating, race.type || race.race_name || '')
 
     const humanAdj = humanIntelligenceLayer(replayNote, race.course)
     const profileAdj = options.horseProfiles?.[horseId]?.profile_adjustment || 0
@@ -221,7 +266,8 @@ export function runApexEngine(runners, race, options = {}) {
     // Trainer/jockey form tracking
     const trainerForm = options.trainerForm?.[runner.trainer] || { winRate: 0, runs: 0 }
     const jockeyForm = options.jockeyForm?.[runner.jockey] || { winRate: 0, runs: 0 }
-    const trainerAdj = trainerForm.runs >= 5 ? (trainerForm.winRate - 15) * 0.3 : 0
+
+    const trainerAdj = trainerForm.runs >= 5 ? (trainerForm.winRate - 15) * 0.1 : 0
     const jockeyAdj = jockeyForm.runs >= 5 ? (jockeyForm.winRate - 15) * 0.2 : 0
 
     const features = buildSyndicateFeatures(runner, race, {
@@ -309,7 +355,20 @@ export function runApexEngine(runners, race, options = {}) {
       : 0
 
     const layeredWithChaos = withMovement * chaosSuppression
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment)))
+
+    const personalAffinity = calculatePersonalAffinityBonus(runner.previous_results, {
+      trackName: race.course,
+      distanceF: parseFloat(String(race.distance_f || '').replace(/[^0-9.]/g, '')) || 0,
+      going: race.going || '',
+      draw: runner.draw,
+      predictedRunStyle: runningStyle,
+      horseName: runner.horse,
+      fieldFRCount,
+      pacePressure: pacePressure || 0,
+    })
+    const personalAffinityAdj = (personalAffinity.factor - 1.0) * 100
+
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + awTransferAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment + personalAffinityAdj)))
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.50 +
@@ -410,6 +469,10 @@ export function runApexEngine(runners, race, options = {}) {
       runningStyle,
       earlyPaceScore,
       elimination,
+      paceCompatAdj,
+      formAdj,
+      conditionAdj,
+      energyAdj: energy.energyAdj,
       power: {
         total: powerScore,
         raw: rawPower,
@@ -423,11 +486,34 @@ export function runApexEngine(runners, race, options = {}) {
       improver,
       stableIntent,
       conditionMatch,
+      personalAffinity: {
+        factor: Math.round(personalAffinity.factor * 1000) / 1000,
+        confidence: Math.round(personalAffinity.confidence * 100) / 100,
+        adjustment: Math.round(personalAffinityAdj * 10) / 10,
+        breakdown: personalAffinity.breakdown,
+        note: personalAffinity.note,
+      },
       trackProfile: {
         trackBiasFactor: Math.round(trackBiasFactor * 1000) / 1000,
         drawBias,
         isAllWeather,
         trackAdj: Math.round(trackAdj * 10) / 10,
+      },
+      awTransfer: {
+        hasAWForm: awTransfer.hasAWForm || false,
+        adjustment: 0, // Flag only, no score adjustment
+        label: awTransfer.label || '',
+        awRuns: awTransfer.awRuns || 0,
+        awWins: awTransfer.awWins || 0,
+        awWinRate: awTransfer.awWinRate || 0,
+        primarySurface: awTransfer.primarySurface || '',
+        goingCompatible: awTransfer.goingCompatible || false,
+        goingNote: awTransfer.goingNote || '',
+        trackNote: awTransfer.trackNote || '',
+        isAWSpecialist: awTransfer.isAWSpecialist || false,
+        specialistNote: awTransfer.specialistNote || '',
+        surfaceSwitch: (awTransfer.hasAWForm || false) && !isAllWeather,
+        provenBothSurfaces: (awTransfer.awWins || 0) > 0 && (awTransfer.turfWins || 0) > 0,
       },
       classModel: {
         raceClass: raceClass.label,
@@ -440,6 +526,7 @@ export function runApexEngine(runners, race, options = {}) {
         rprORGap: rprORFit.gap,
         rprORLabel: rprORFit.label,
         rprORAdj: rprORFit.adjustment,
+        rprORSource: rprORFit.source || 'unknown',
       },
       components,
       newComponents,
@@ -472,6 +559,11 @@ export function runApexEngine(runners, race, options = {}) {
       interactions,
     }
   })
+
+  if (process.env.APEX_DIAGNOSTIC === '1') {
+    console.log('[DIAG CHECK] APEX_DIAGNOSTIC is 1, calling diagnostic for race:', race?.course, race?.off_time)
+    logSignalDilutionDiagnostic(race, results, interactionResults)
+  }
 
   const sorted = interactionResults.sort((a, b) => b.finalScore - a.finalScore)
   const winProbs = bayesianWinProbabilities(sorted, race)
@@ -626,4 +718,109 @@ export function runApexEngine(runners, race, options = {}) {
     betFilter,
     calibrationAdjustment: calAdj,
   }
+}
+
+let diagnosticRaceCount = 0
+function logSignalDilutionDiagnostic(race, rawResults, finalResults) {
+  console.log('[DIAG TEST] logSignalDilutionDiagnostic called for race:', race?.course, race?.off_time)
+  diagnosticRaceCount++
+
+  const rawFinalScores = rawResults.map(r => {
+    const fs = r.finalScore
+    const hq = r.horseQuality?.finalScore || 0
+    const rs = r.raceShapeSuitability || 0
+    return {
+      horse: r.horse,
+      finalScore: fs,
+      horseQuality: hq,
+      raceShape: rs,
+      qualityAdjusted: Math.round(hq * 0.50 + fs * 0.20 + rs * 0.30),
+      trackAdj: r.trackProfile?.trackAdj || 0,
+      classAdj: r.classModel?.classAdj || 0,
+      orProfileAdj: r.classModel?.orProfileAdj || 0,
+      rprORAdj: r.classModel?.rprORAdj || 0,
+      paceCompatAdj: r.paceCompatAdj || 0,
+      formAdj: r.formAdj || 0,
+      conditionAdj: r.conditionAdj || 0,
+    }
+  })
+
+  const fsRange = rangeOf(rawFinalScores.map(r => r.finalScore))
+  const qaRange = rangeOf(rawFinalScores.map(r => r.qualityAdjusted))
+  const hqRange = rangeOf(rawFinalScores.map(r => r.horseQuality))
+  const rsRange = rangeOf(rawFinalScores.map(r => r.raceShape))
+
+  const finalRanges = finalResults.map(r => r.finalScore)
+  const finalRange = rangeOf(finalRanges)
+
+  console.log(`\n[DIAGNOSTIC] Race ${diagnosticRaceCount}: ${race.course} ${race.off_time} ${race.race_name || ''}`)
+  console.log(`  Runners: ${rawResults.length}`)
+  console.log(`  Ranges (min-max):`)
+  console.log(`    finalScore (pre-quality):  ${fsRange.min.toFixed(1)} - ${fsRange.max.toFixed(1)} (spread: ${fsRange.spread.toFixed(1)})`)
+  console.log(`    horseQuality:              ${hqRange.min.toFixed(1)} - ${hqRange.max.toFixed(1)} (spread: ${hqRange.spread.toFixed(1)})`)
+  console.log(`    raceShapeSuitability:      ${rsRange.min.toFixed(1)} - ${rsRange.max.toFixed(1)} (spread: ${rsRange.spread.toFixed(1)})`)
+  console.log(`    qualityAdjustedScore:      ${qaRange.min.toFixed(1)} - ${qaRange.max.toFixed(1)} (spread: ${qaRange.spread.toFixed(1)})`)
+  console.log(`    after interactionAdj:      ${finalRange.min.toFixed(1)} - ${finalRange.max.toFixed(1)} (spread: ${finalRange.spread.toFixed(1)})`)
+
+  const trackAdjRange = rangeOf(rawFinalScores.map(r => r.trackAdj))
+  const classAdjRange = rangeOf(rawFinalScores.map(r => r.classAdj))
+  const rprORRange = rangeOf(rawFinalScores.map(r => r.rprORAdj))
+  const orProfileRange = rangeOf(rawFinalScores.map(r => r.orProfileAdj))
+  const paceCompatRange = rangeOf(rawFinalScores.map(r => r.paceCompatAdj))
+  const formRange = rangeOf(rawFinalScores.map(r => r.formAdj))
+  const conditionRange = rangeOf(rawFinalScores.map(r => r.conditionAdj))
+
+  console.log(`  Adjustment ranges (min-max):`)
+  console.log(`    trackAdj:       ${trackAdjRange.min.toFixed(2)} - ${trackAdjRange.max.toFixed(2)}`)
+  console.log(`    classAdj:       ${classAdjRange.min.toFixed(2)} - ${classAdjRange.max.toFixed(2)}`)
+  console.log(`    rprORAdj:       ${rprORRange.min.toFixed(2)} - ${rprORRange.max.toFixed(2)}`)
+  console.log(`    orProfileAdj:   ${orProfileRange.min.toFixed(2)} - ${orProfileRange.max.toFixed(2)}`)
+  console.log(`    paceCompatAdj:  ${paceCompatRange.min.toFixed(2)} - ${paceCompatRange.max.toFixed(2)}`)
+  console.log(`    formAdj:        ${formRange.min.toFixed(2)} - ${formRange.max.toFixed(2)}`)
+  console.log(`    conditionAdj:   ${conditionRange.min.toFixed(2)} - ${conditionRange.max.toFixed(2)}`)
+
+  const sorted = [...rawFinalScores].sort((a, b) => b.finalScore - a.finalScore).slice(0, 5)
+  console.log(`  Top 5 by finalScore:`)
+  for (const r of sorted) {
+    console.log(`    ${r.horse.padEnd(20)} fs=${r.finalScore.toFixed(0).padStart(3)} hq=${r.horseQuality.toFixed(0).padStart(3)} rs=${r.raceShape.toFixed(0).padStart(3)} qa=${r.qualityAdjusted.toFixed(0).padStart(3)} track=${r.trackAdj.toFixed(1).padStart(5)} class=${r.classAdj.toFixed(1).padStart(5)} rprOR=${r.rprORAdj.toFixed(1).padStart(5)}`)
+  }
+
+  if (qaRange.spread < fsRange.spread * 0.5) {
+    console.log(`  ⚠ SMOOTHING DETECTED: qualityAdjusted spread (${qaRange.spread.toFixed(1)}) is less than half of finalScore spread (${fsRange.spread.toFixed(1)})`)
+  }
+
+  // Dump all runners to file for backtest analysis
+  try {
+    const dumpFile = join(process.cwd(), 'data', 'diagnostic-dump.jsonl')
+    const dumpLine = JSON.stringify({
+      race: `${race.course} ${race.off_time}`,
+      raceName: race.race_name,
+      runners: rawResults.map(r => ({
+        horse: r.horse,
+        finalScore: r.finalScore,
+        horseQuality: r.horseQuality?.finalScore || 0,
+        raceShape: r.raceShapeSuitability || 0,
+        qualityAdjusted: Math.round((r.horseQuality?.finalScore || 0) * 0.50 + r.finalScore * 0.20 + (r.raceShapeSuitability || 0) * 0.30),
+        winProb: r.winProb,
+        odds: r.odds,
+        trackAdj: r.trackProfile?.trackAdj || 0,
+        classAdj: r.classModel?.classAdj || 0,
+        rprORAdj: r.classModel?.rprORAdj || 0,
+        orProfileAdj: r.classModel?.orProfileAdj || 0,
+        paceCompatAdj: r.paceCompatAdj || 0,
+        formAdj: r.formAdj || 0,
+        conditionAdj: r.conditionAdj || 0,
+      }))
+    })
+    appendFileSync(dumpFile, dumpLine + '\n')
+  } catch (e) {
+    console.error('[DIAG DUMP ERROR]', e.message)
+  }
+}
+
+function rangeOf(arr) {
+  if (arr.length === 0) return { min: 0, max: 0, spread: 0 }
+  const min = Math.min(...arr)
+  const max = Math.max(...arr)
+  return { min, max, spread: max - min }
 }

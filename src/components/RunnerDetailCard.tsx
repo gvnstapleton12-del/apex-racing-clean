@@ -268,6 +268,32 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               {runner.horse}
             </a>
 
+            <div className='flex gap-3 mt-1 flex-wrap'>
+              <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
+              <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
+              <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+              {runner.classModel?.rprORSource && runner.classModel.rprORSource !== 'none' && (
+                <span className={`px-2 py-0.5 rounded text-xs font-medium ${runner.classModel.rprORAdj > 0 ? 'bg-green-500/10 text-green-400' : runner.classModel.rprORAdj < 0 ? 'bg-red-500/10 text-red-400' : 'bg-white/5 text-zinc-500'}`}>
+                  {runner.classModel.rprORLabel} ({runner.classModel.rprORGap > 0 ? '+' : ''}{runner.classModel.rprORGap})
+                </span>
+              )}
+              {runner.awTransfer?.isAWSpecialist && (
+                <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>AW specialist</span>
+              )}
+              {runner.awTransfer?.surfaceSwitch && !runner.awTransfer?.isAWSpecialist && (
+                <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>AW to turf</span>
+              )}
+              {runner.awTransfer?.provenBothSurfaces && (
+                <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>Proven both surfaces</span>
+              )}
+              {runner.codeMatch && runner.codeMatch.matchedRuns === 0 && (
+                <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>Code switch</span>
+              )}
+              {runner.codeMatch && runner.codeMatch.matchedRuns > 0 && runner.codeMatch.matchedRuns < 3 && (
+                <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>Limited code form</span>
+              )}
+            </div>
+
             <p className='text-zinc-400 text-sm mt-1'>
               {runner.jockey}{runner.jockey && runner.trainer && ' · '}{runner.trainer}
             </p>

@@ -1,6 +1,9 @@
 import { chromium } from 'playwright'
+import { readFileSync, writeFileSync, mkdirSync } from 'fs'
+import { resolve, dirname } from 'path'
 
 const ATR_BASE = 'https://www.attheraces.com'
+const RATINGS_CACHE_PATH = resolve('data/atrRatings.json')
 
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -10,6 +13,21 @@ const USER_AGENTS = [
 
 function randomAgent() {
   return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)]
+}
+
+function loadRatingsCache() {
+  try {
+    return JSON.parse(readFileSync(RATINGS_CACHE_PATH, 'utf8'))
+  } catch {
+    return {}
+  }
+}
+
+function saveRatingsCache(cache) {
+  try {
+    mkdirSync(dirname(RATINGS_CACHE_PATH), { recursive: true })
+    writeFileSync(RATINGS_CACHE_PATH, JSON.stringify(cache, null, 2))
+  } catch (e) {}
 }
 
 async function fetchAtr(url, timeoutMs = 15000) {
@@ -137,4 +155,89 @@ export async function fetchAtrRacecards(dateStr) {
     console.error(`[ATR Racecards] Failed for ${dateStr}:`, err.message)
     return []
   }
+}
+
+export async function fetchAtrRatings(dateStr, races = []) {
+  const cache = loadRatingsCache()
+  const todayKey = dateStr
+  if (cache[todayKey] && Object.keys(cache[todayKey]).length > 0) {
+    console.log(`[ATR Ratings] Loaded ${Object.keys(cache[todayKey]).length} cached ratings for ${dateStr}`)
+    return cache[todayKey]
+  }
+
+  const ratings = {}
+  let browser
+
+  const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+  const raceUrls = races.map(r => {
+    const courseSlug = (r.course || '').toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
+    const dateParts = (r.date || dateStr).split('-')
+    const dateFormatted = `${dateParts[2]}-${MONTHS[parseInt(dateParts[1])]}-${dateParts[0]}`
+    return `${ATR_BASE}/racecard/${courseSlug}/${dateFormatted}/${(r.off_time || '').replace(':', '')}`
+  })
+
+  if (raceUrls.length === 0) {
+    console.log(`[ATR Ratings] No race URLs to scrape`)
+    return ratings
+  }
+
+  try {
+    browser = await chromium.launch({ headless: true })
+    console.log(`[ATR Ratings] Scraping ${raceUrls.length} race pages...`)
+
+    const CONCURRENCY = 4
+    for (let i = 0; i < raceUrls.length; i += CONCURRENCY) {
+      const batch = raceUrls.slice(i, i + CONCURRENCY)
+      const results = await Promise.allSettled(batch.map(async (url) => {
+        const ctx = await browser.newContext({ userAgent: randomAgent(), viewport: { width: 1920, height: 1080 } })
+        const pg = await ctx.newPage()
+        try {
+          await pg.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 })
+          await pg.waitForTimeout(4000)
+          const raceRatings = await pg.evaluate(() => {
+            const result = {}
+            const cells = [...document.querySelectorAll('[class*="card-cell--timeform"]')]
+            for (const cell of cells) {
+              const text = cell.textContent?.trim()
+              if (!text || !/^\d{2,3}$/.test(text)) continue
+              const rating = parseInt(text)
+              if (rating < 50 || rating > 120) continue
+              let parent = cell
+              for (let i = 0; i < 20 && parent; i++) {
+                const horseLink = parent.querySelector('a[href*="/horse/"]')
+                if (horseLink) {
+                  const name = horseLink.textContent?.trim()?.replace(/\s+/g, ' ')
+                  if (name) result[name] = rating
+                  break
+                }
+                parent = parent.parentElement
+              }
+            }
+            return result
+          })
+          return raceRatings
+        } finally {
+          await ctx.close()
+        }
+      }))
+      for (const r of results) {
+        if (r.status === 'fulfilled') Object.assign(ratings, r.value)
+      }
+      if (i + CONCURRENCY < raceUrls.length) await new Promise(r => setTimeout(r, 500))
+    }
+
+    console.log(`[ATR Ratings] Scraped ${Object.keys(ratings).length} horse ratings`)
+  } catch (err) {
+    console.error(`[ATR Ratings] Failed: ${err.message}`)
+  } finally {
+    if (browser) await browser.close()
+  }
+
+  if (Object.keys(ratings).length > 0) {
+    cache[todayKey] = ratings
+    saveRatingsCache(cache)
+  }
+
+  return ratings
 }

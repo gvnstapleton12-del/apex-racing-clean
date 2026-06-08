@@ -2,6 +2,7 @@
 // Individual scores for each factor that contribute to FINAL_PROBABILITY
 
 import { analyzeForm } from './formEngine.js'
+import { checkDrawEligibility } from './trackProfile.js'
 
 function parseFurlongs(distanceF) {
   if (!distanceF) return 0
@@ -66,11 +67,15 @@ function computePaceScore(runner, race, paceMap) {
 }
 
 function computeDrawScore(runner, race) {
-  const draw = Number(runner.draw || 0)
+  const rawDraw = Number(runner.draw || 0)
   const fieldSize = (race.runners || []).length
   const distanceF = parseFurlongs(race.distance_f || '')
   const course = (race.course || '').toLowerCase()
 
+  const drawEligibility = checkDrawEligibility(race.course, race.type || race.race_type, rawDraw)
+  if (!drawEligibility.eligible) return 50
+
+  const draw = rawDraw
   if (draw === 0 || fieldSize < 5) return 50
 
   let score = 50

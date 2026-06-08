@@ -259,6 +259,11 @@ function RaceResultCard({ race }: { race: any }) {
                         {runner.horse || runner.name || '-'}
                       </button>
                     </span>
+                    <div className='flex gap-3 mt-1 flex-wrap'>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+                    </div>
                     <p className='text-slate-200 text-sm mt-0.5'>{runner.jockey || '-'}</p>
                   </div>
                 </div>
@@ -296,6 +301,11 @@ function RaceResultCard({ race }: { race: any }) {
                         {runner.horse || runner.name || '-'}
                       </button>
                     </span>
+                    <div className='flex gap-3 mt-1 flex-wrap'>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+                    </div>
                     <p className='text-slate-200 text-sm mt-0.5'>{runner.jockey || '-'}</p>
                   </div>
                 </div>
@@ -318,6 +328,11 @@ function RaceResultCard({ race }: { race: any }) {
                       {runner.horse || runner.name || '-'}
                     </button>
                   </span>
+                  <div className='flex gap-3 mt-1 flex-wrap'>
+                    <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
+                    <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
+                    <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+                  </div>
                   <p className='text-slate-200 text-sm mt-0.5'>{runner.jockey || '-'}</p>
                 </div>
               </div>
