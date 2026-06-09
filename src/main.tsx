@@ -444,41 +444,62 @@ function Home() {
 
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
-      <section className='dashboard-hero'>
-        <div className='hero-copy'>
-          <span className='eyebrow text-amber-400 text-sm font-medium uppercase tracking-[0.35em]'>Racing Intelligence System</span>
-          <h1 className='text-7xl font-black tracking-tight mt-4'>APEX</h1>
-          <p className='text-zinc-400 text-lg mt-4 max-w-2xl'>
-            The top-rated runners from today&apos;s UK and Ireland racecards, ranked by APEX confidence score.
-          </p>
-        </div>
-
-        <div className='hero-metrics grid grid-cols-2 sm:grid-cols-5 gap-4'>
-          <div className='apex-card p-5'>
-            <span className='text-zinc-400 text-sm block mb-2'>UK/IRE races</span>
-            <strong className='text-3xl font-bold text-amber-400'>{ukIreRaces.length}</strong>
+      <section className='dashboard-hero' style={{ padding: '24px 32px' }}>
+        <div className='flex items-center justify-between gap-8'>
+          <div>
+            <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
+            <h1 className='text-4xl font-black tracking-tight mt-2'>Today's Picks</h1>
           </div>
-          <div className='apex-card p-5'>
-            <span className='text-zinc-400 text-sm block mb-2'>Total runners</span>
-            <strong className='text-3xl font-bold text-amber-400'>{totalRunners}</strong>
-          </div>
-          <div className='apex-card p-5'>
-            <span className='text-zinc-400 text-sm block mb-2'>Top score</span>
-            <strong className='text-3xl font-bold text-amber-400'>{topScore || '--'}</strong>
-          </div>
-          <div className='apex-card p-5'>
-            <span className='text-zinc-400 text-sm block mb-2'>System picks</span>
-            <strong className='text-3xl font-bold text-amber-400'>{allPicks.length}</strong>
-          </div>
-          {overallRate && (
-            <div className='apex-card p-5'>
-              <span className='text-zinc-400 text-sm block mb-2'>Historical SR</span>
-              <strong className={`text-3xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
-                {overallRate}%
-              </strong>
+          
+          <div className='flex items-center gap-6'>
+            <div className='text-center'>
+              <div className='text-3xl font-bold text-amber-400'>{ukIreRaces.length}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
             </div>
-          )}
+            <div className='text-center'>
+              <div className='text-3xl font-bold text-amber-400'>{totalRunners}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Runners</div>
+            </div>
+            <div className='text-center'>
+              <div className='text-3xl font-bold text-amber-400'>{topScore || '--'}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Top Score</div>
+            </div>
+            <div className='text-center'>
+              <div className='text-3xl font-bold text-amber-400'>{allPicks.length}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Picks</div>
+            </div>
+            {overallRate && (
+              <div className='text-center'>
+                <div className={`text-3xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
+                  {overallRate}%
+                </div>
+                <div className='text-xs text-zinc-400 uppercase tracking-wider'>Win Rate</div>
+              </div>
+            )}
+          </div>
         </div>
+      </section>
+
+      {/* Top Pick Hero */}
+      {bestBet && (
+        <section className='apex-card p-8 mb-6'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.3em] mb-2'>Today's Best Bet</div>
+              <h2 className='text-5xl font-black text-white mb-2'>{bestBet.horse}</h2>
+              <div className='text-lg text-zinc-400'>
+                {bestBet.course} · {bestBet.offTime} · {bestBet.raceName}
+              </div>
+            </div>
+            <div className='flex items-center gap-8'>
+              <div className='text-center'>
+                <div className='text-6xl font-black text-amber-400'>{bestBet.score}</div>
+                <div className='text-xs text-zinc-400 uppercase tracking-wider mt-1'>APEX Score</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
         {valuePicksStats && (
           <div className='mt-8 pt-8 border-t border-white/5'>
@@ -508,7 +529,6 @@ function Home() {
             </div>
           </div>
         )}
-      </section>
 
       {isLoading ? (
         <div className='loading-card bg-white/[0.02] rounded-2xl border border-white/5 p-12 flex items-center gap-4'>
@@ -719,7 +739,7 @@ function App() {
 
   return (
     <div className='layout bg-gradient-to-br from-[#071018] to-[#0b1220]'>
-      <aside className='sidebar bg-[#0a1118] border-r border-white/5'>
+      <aside className='sidebar'>
         <div className='brand'>
           <div className='brand-mark'>A</div>
 
@@ -729,24 +749,69 @@ function App() {
           </div>
         </div>
 
-        <nav className='space-y-1'>
-          {tabs.map((tab) => (
-            <button
-              key={tab}
-              type='button'
-              className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                activeTab === tab
-                  ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                  : 'text-zinc-400 hover:bg-white/5 hover:text-white border border-transparent'
-              }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+        <nav>
+          <div className='mb-6'>
+            <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Main</div>
+            <div className='space-y-1'>
+              {['Home', 'Racecards', 'Intelligence'].map((tab) => (
+                <button
+                  key={tab}
+                  type='button'
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                    activeTab === tab
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className='mb-6'>
+            <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Tools</div>
+            <div className='space-y-1'>
+              {['Results', 'Proof', 'OR/PR Gap', 'Upload', 'Replays', 'Analytics'].map((tab) => (
+                <button
+                  key={tab}
+                  type='button'
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                    activeTab === tab
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>System</div>
+            <div className='space-y-1'>
+              {['Calibration'].map((tab) => (
+                <button
+                  key={tab}
+                  type='button'
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                    activeTab === tab
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
         </nav>
 
-        <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5'>
+        <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5 mt-auto'>
           <span className='text-zinc-500 text-xs uppercase tracking-wider'>APEX Racing</span>
           <strong className='text-zinc-400 text-sm'>v1.1.0</strong>
         </div>
