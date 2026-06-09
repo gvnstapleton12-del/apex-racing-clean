@@ -235,6 +235,7 @@ interface DailyPicksEntry {
 function Home() {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
   const [abandoned, setAbandoned] = useState<any[]>([])
+  const [valuePicksStats, setValuePicksStats] = useState<{ count: number; wr: number; roi: number; kellyRoi: number } | null>(null)
   const {
     data: races = [],
     isLoading,
@@ -277,6 +278,47 @@ function Home() {
         .catch(() => {})
     }, 60000)
     return () => clearInterval(interval)
+  }, [])
+
+  // Fetch value picks ROI from calibration
+  useEffect(() => {
+    fetch('/api/calibration')
+      .then((r) => r.json())
+      .then((data) => {
+        const records = data.records || []
+        function passesValueGate(prob: number, odds: number, apexScore: number) {
+          if (!odds || odds <= 1 || !prob) return false
+          if (apexScore > 0 && apexScore < 40) return false
+          const implied = (1 / odds) * 100
+          const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
+          return prob >= 10 && marginPct > 25
+        }
+        const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0)))
+        if (vp.length === 0) return
+        const vpWins = vp.filter((r: any) => r.actualWon).length
+        const vpPL = vp.reduce((s: number, r: any) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
+        const vpROI = (vpPL / vp.length) * 100
+        // Simulate eighth-Kelly
+        let kellyBankroll = 1000
+        vp.forEach((r: any) => {
+          const p = Number(r.predictedWinProb) / 100
+          const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
+          const implied = 1 / odds
+          const margin = (p - implied) / implied
+          if (p >= 0.10 && margin > 0.25) {
+            const b = odds - 1
+            const edge = p * b - (1 - p)
+            if (edge > 0) {
+              const kelly = (edge / b) * 0.125
+              const stake = kellyBankroll * Math.min(kelly, 0.05)
+              kellyBankroll += r.actualWon ? stake * (odds - 1) : -stake
+            }
+          }
+        })
+        const kellyRoi = ((kellyBankroll - 1000) / 1000) * 100
+        setValuePicksStats({ count: vp.length, wr: (vpWins / vp.length) * 100, roi: vpROI, kellyRoi })
+      })
+      .catch(() => {})
   }, [])
 
   const today = new Date().toISOString().split('T')[0]
@@ -472,6 +514,33 @@ function Home() {
             </div>
           )}
         </div>
+
+        {valuePicksStats && (
+          <div className='mt-6 bg-gradient-to-r from-green-500/5 to-emerald-500/5 border border-green-500/20 rounded-xl p-4'>
+            <div className='flex items-center justify-between mb-3'>
+              <span className='text-green-400 text-xs font-bold uppercase tracking-wider'>Value Picks Performance</span>
+              <span className='text-zinc-500 text-xs'>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</span>
+            </div>
+            <div className='grid grid-cols-4 gap-4'>
+              <div>
+                <span className='text-zinc-400 text-xs block'>Bets</span>
+                <strong className='text-xl font-bold text-white'>{valuePicksStats.count}</strong>
+              </div>
+              <div>
+                <span className='text-zinc-400 text-xs block'>Win Rate</span>
+                <strong className={`text-xl font-bold ${valuePicksStats.wr >= 10 ? 'text-green-400' : 'text-amber-400'}`}>{valuePicksStats.wr.toFixed(1)}%</strong>
+              </div>
+              <div>
+                <span className='text-zinc-400 text-xs block'>Level ROI</span>
+                <strong className={`text-xl font-bold ${valuePicksStats.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.roi >= 0 ? '+' : ''}{valuePicksStats.roi.toFixed(1)}%</strong>
+              </div>
+              <div>
+                <span className='text-zinc-400 text-xs block'>Eighth-Kelly ROI</span>
+                <strong className={`text-xl font-bold ${valuePicksStats.kellyRoi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.kellyRoi >= 0 ? '+' : ''}{valuePicksStats.kellyRoi.toFixed(1)}%</strong>
+              </div>
+            </div>
+          </div>
+        )}
       </section>
 
       {isLoading ? (
