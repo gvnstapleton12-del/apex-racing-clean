@@ -71,34 +71,64 @@ export default function Racecards() {
     )
   }
 
+  // Find top opportunity across all races
+  const allRunners = todayRaces.flatMap(race => 
+    (race.runners || []).map(runner => ({ ...runner, race }))
+  )
+  const topOpportunity = allRunners.length > 0 
+    ? allRunners.reduce((best, runner) => {
+        const score = getScore(runner)
+        return score > getScore(best) ? runner : best
+      })
+    : null
+
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
-      <section className='dashboard-hero'>
-        <div className='hero-copy'>
-          <span className={`text-sm font-medium uppercase tracking-wider px-3 py-1 rounded-full border ${todayRaces.length ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
-            {todayRaces.length ? 'UK & Ireland live feed' : 'UK & Ireland archive'}
-          </span>
-          <h1 className='text-6xl font-black tracking-tight mt-4'>Racecards command centre</h1>
-          <p className='text-zinc-400 text-lg mt-4 max-w-2xl'>
-            Live runners, confidence scores, market positions and race-level signals in one focused workspace.
-          </p>
-        </div>
-
-        <div className='hero-metrics grid grid-cols-3 gap-4'>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
-            <span className='text-zinc-400 text-sm block mb-2'>Races</span>
-            <strong className='text-4xl font-bold text-amber-400'>{races.length}</strong>
+      {/* Compact Hero */}
+      <section className='dashboard-hero' style={{ padding: '24px 32px' }}>
+        <div className='flex items-center justify-between gap-8'>
+          <div>
+            <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
+            <h1 className='text-4xl font-black tracking-tight mt-2'>Racecards</h1>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
-            <span className='text-zinc-400 text-sm block mb-2'>Runners</span>
-            <strong className='text-4xl font-bold text-amber-400'>{totalRunners}</strong>
-          </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
-            <span className='text-zinc-400 text-sm block mb-2'>Next off</span>
-            <strong className='text-2xl font-bold text-amber-400'>{nextRace ? formatOffTime(nextRace) : 'No more races'}</strong>
+          
+          <div className='flex items-center gap-6'>
+            <div className='text-center'>
+              <div className='text-3xl font-bold text-amber-400'>{races.length}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
+            </div>
+            <div className='text-center'>
+              <div className='text-3xl font-bold text-amber-400'>{totalRunners}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Runners</div>
+            </div>
+            <div className='text-center'>
+              <div className='text-2xl font-bold text-amber-400'>{nextRace ? formatOffTime(nextRace) : '--:--'}</div>
+              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Next Off</div>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Top Opportunity Hero */}
+      {topOpportunity && (
+        <section className='apex-card p-8 mb-6'>
+          <div className='flex items-center justify-between'>
+            <div>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.3em] mb-2'>Today's Best Opportunity</div>
+              <h2 className='text-5xl font-black text-white mb-2'>{topOpportunity.horse}</h2>
+              <div className='text-lg text-zinc-400'>
+                {topOpportunity.race.course} · {formatOffTime(topOpportunity.race)} · {topOpportunity.race.race_name}
+              </div>
+            </div>
+            <div className='flex items-center gap-8'>
+              <div className='text-center'>
+                <div className='text-6xl font-black text-amber-400'>{getScore(topOpportunity)}</div>
+                <div className='text-xs text-zinc-400 uppercase tracking-wider mt-1'>APEX Score</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {!todayRaces.length && (
         <div className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
@@ -114,7 +144,7 @@ export default function Racecards() {
             placeholder='Search course or race name...'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className='flex-1 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-green-500/40 transition'
+            className='flex-1 bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-500/40 transition'
           />
           {search && (
             <button
@@ -137,77 +167,93 @@ export default function Racecards() {
           </div>
         )}
 
-        {filtered.map((race, index) => {
-          const runners = scoreRunners(race.runners || [])
-          const topRated = sortByScore(runners)[0]
+        {/* Race Cards Grid */}
+        <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6'>
+          {filtered.map((race, index) => {
+            const runners = scoreRunners(race.runners || [])
+            const topRated = sortByScore(runners)[0]
 
-          return (
-            <article
-              key={race.race_id || index}
-              id={`race-${race.course ? race.course.replace(/\s+/g, '-') : ''}-${(race.off_time || '').replace(':', '')}`}
-              className='race-card-2'
-            >
-              <div className='race-card-2-header'>
-                <div>
-                  <div className='race-card-2-time'>{formatOffTime(race)}</div>
-                  <div className='race-card-2-course'>{race.course}</div>
-                  <h2 className='race-card-2-name'>{race.race_name}</h2>
-                </div>
-                <button
-                  type='button'
-                  onClick={() => setSelectedRace(race)}
-                  className='race-card-2-action'
-                  style={{ width: 'auto', padding: '10px 20px' }}
-                >
-                  Open Race
-                </button>
-              </div>
-
-              {topRated && (
-                <div className='race-card-2-top-pick'>
-                  <div className='race-card-2-top-label'>Top Pick</div>
-                  <a
-                    href={getAtTheRacesHorseUrl(topRated, race)}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='race-card-2-top-name hover:text-amber-400 transition'
+            return (
+              <article
+                key={race.race_id || index}
+                id={`race-${race.course ? race.course.replace(/\s+/g, '-') : ''}-${(race.off_time || '').replace(':', '')}`}
+                className='race-card-2'
+              >
+                <div className='race-card-2-header'>
+                  <div>
+                    <div className='race-card-2-time'>{formatOffTime(race)}</div>
+                    <div className='race-card-2-course'>{race.course}</div>
+                    <h2 className='race-card-2-name'>{race.race_name}</h2>
+                  </div>
+                  <button
+                    type='button'
+                    onClick={() => setSelectedRace(race)}
+                    className='race-card-2-action'
+                    style={{ width: 'auto', padding: '10px 20px' }}
                   >
-                    {topRated.horse}
-                  </a>
-                  <div className='flex items-center gap-6'>
-                    <ScoreRing score={getScore(topRated)} size={70} strokeWidth={5} />
-                    <div className='race-card-2-metrics' style={{ flex: 1, marginBottom: 0 }}>
-                      <MetricCard label='OR' value={topRated.or} color='amber' />
-                      <MetricCard label='RPR' value={topRated.rpr} color='violet' />
-                      <MetricCard label='PR' value={topRated.performanceRating?.pr ? Math.round(topRated.performanceRating.pr) : null} color='cyan' />
+                    Open Race
+                  </button>
+                </div>
+
+                {topRated && (
+                  <div className='race-card-2-top-pick'>
+                    <div className='race-card-2-top-label'>Top Pick</div>
+                    <a
+                      href={getAtTheRacesHorseUrl(topRated, race)}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='race-card-2-top-name hover:text-amber-400 transition'
+                    >
+                      {topRated.horse}
+                    </a>
+                    <div className='flex items-center gap-6'>
+                      <div className='text-5xl font-black text-amber-400'>{getScore(topRated)}</div>
+                      <div className='flex-1 space-y-2'>
+                        <div className='flex justify-between items-center'>
+                          <span className='text-xs text-zinc-400 uppercase tracking-wider'>Confidence</span>
+                          <span className='text-sm font-bold text-white'>{topRated.winProb ? `${(topRated.winProb * 100).toFixed(0)}%` : '—'}</span>
+                        </div>
+                        <div className='flex justify-between items-center'>
+                          <span className='text-xs text-zinc-400 uppercase tracking-wider'>Value</span>
+                          <span className={`text-sm font-bold ${topRated.valueEdge > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {topRated.valueEdge ? `${topRated.valueEdge > 0 ? '+' : ''}${(topRated.valueEdge * 100).toFixed(0)}%` : '—'}
+                          </span>
+                        </div>
+                        <div className='flex justify-between items-center'>
+                          <span className='text-xs text-zinc-400 uppercase tracking-wider'>Pace Edge</span>
+                          <span className={`text-sm font-bold ${topRated.paceScore > 5 ? 'text-green-400' : topRated.paceScore > 0 ? 'text-amber-400' : 'text-zinc-400'}`}>
+                            {topRated.paceScore ? (topRated.paceScore > 5 ? 'Strong' : topRated.paceScore > 0 ? 'Moderate' : 'Neutral') : '—'}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <div className='race-card-2-stats'>
-                <div className='race-card-2-stat'>
-                  <span className='race-card-2-stat-label'>Runners</span>
-                  <span className='race-card-2-stat-value'>{race.field_size}</span>
+                <div className='race-card-2-stats'>
+                  <div className='race-card-2-stat'>
+                    <span className='race-card-2-stat-label'>Runners</span>
+                    <span className='race-card-2-stat-value'>{race.field_size}</span>
+                  </div>
+                  {race.paceMap && (
+                    <div className='race-card-2-stat'>
+                      <span className='race-card-2-stat-label'>Pace</span>
+                      <span className={`race-card-2-stat-value ${race.paceMap.projectedTempo === 'FAST' ? 'text-red-400' : race.paceMap.projectedTempo === 'SLOW' ? 'text-blue-400' : 'text-amber-400'}`}>
+                        {race.paceMap.projectedTempo}
+                      </span>
+                    </div>
+                  )}
+                  {race.going && (
+                    <div className='race-card-2-stat'>
+                      <span className='race-card-2-stat-label'>Going</span>
+                      <span className='race-card-2-stat-value text-green-400'>{race.going}</span>
+                    </div>
+                  )}
                 </div>
-                {race.paceMap && (
-                  <div className='race-card-2-stat'>
-                    <span className='race-card-2-stat-label'>Pace</span>
-                    <span className={`race-card-2-stat-value ${race.paceMap.projectedTempo === 'FAST' ? 'text-red-400' : race.paceMap.projectedTempo === 'SLOW' ? 'text-blue-400' : 'text-amber-400'}`}>
-                      {race.paceMap.projectedTempo}
-                    </span>
-                  </div>
-                )}
-                {race.going && (
-                  <div className='race-card-2-stat'>
-                    <span className='race-card-2-stat-label'>Going</span>
-                    <span className='race-card-2-stat-value text-green-400'>{race.going}</span>
-                  </div>
-                )}
-              </div>
-            </article>
-          )
-        })}
+              </article>
+            )
+          })}
+        </div>
       </section>
     </div>
   )
