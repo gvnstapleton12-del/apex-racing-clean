@@ -150,6 +150,31 @@ export default function CalibrationDashboard() {
   const vpPL = valuePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
   const vpROI = valuePicks.length ? ((vpPL / valuePicks.length) * 100).toFixed(1) : '0.0'
 
+  // Eighth-Kelly simulation
+  let kellyBankroll = 1000
+  valuePicks.forEach(r => {
+    const p = Number(r.predictedWinProb) / 100
+    const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
+    const b = odds - 1
+    const edge = p * b - (1 - p)
+    if (edge > 0) {
+      const kelly = (edge / b) * 0.125
+      const stake = kellyBankroll * Math.min(kelly, 0.05)
+      kellyBankroll += r.actualWon ? stake * (odds - 1) : -stake
+    }
+  })
+  const kellyRoi = ((kellyBankroll - 1000) / 1000) * 100
+
+  // Dense vs sparse breakdown
+  const densePicks = valuePicks.filter(r => (r.interactionCount || 0) >= 5)
+  const sparsePicks = valuePicks.filter(r => (r.interactionCount || 0) < 5)
+  const denseWR = densePicks.length ? ((densePicks.filter(r => r.actualWon).length / densePicks.length) * 100).toFixed(1) : '0.0'
+  const densePL = densePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
+  const denseROI = densePicks.length ? ((densePL / densePicks.length) * 100).toFixed(1) : '0.0'
+  const sparseWR = sparsePicks.length ? ((sparsePicks.filter(r => r.actualWon).length / sparsePicks.length) * 100).toFixed(1) : '0.0'
+  const sparsePL = sparsePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
+  const sparseROI = sparsePicks.length ? ((sparsePL / sparsePicks.length) * 100).toFixed(1) : '0.0'
+
   return (
     <div className='calibration-dashboard'>
       <div className='cal-header'>
@@ -193,13 +218,49 @@ export default function CalibrationDashboard() {
       </div>
 
       {valuePicks.length > 0 && (
-        <div className='cal-value-summary' style={{ display: 'flex', gap: '1rem', padding: '0.75rem 1rem', margin: '0 1rem', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: '0.75rem' }}>
-          <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Value Picks</span>
-          <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong>{valuePicks.length}</strong> bets</span>
-          <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: vpWins > 0 ? '#22c55e' : '#ef4444' }}>{vpWR}%</strong> WR</span>
-          <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: Number(vpROI) >= 0 ? '#22c55e' : '#ef4444' }}>{Number(vpROI) >= 0 ? '+' : ''}{vpROI}%</strong> ROI</span>
-          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>|</span>
-          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>Gate: P ≥ 10% + 25% margin</span>
+        <div className='cal-value-summary' style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', padding: '1rem', margin: '0 1rem', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.15)', borderRadius: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ color: '#22c55e', fontWeight: 600, fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Value Picks Performance</span>
+            <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+            <div>
+              <span style={{ color: '#94a3b8', fontSize: '0.7rem', display: 'block' }}>Bets</span>
+              <strong style={{ color: '#e2e8f0', fontSize: '1.1rem' }}>{valuePicks.length}</strong>
+            </div>
+            <div>
+              <span style={{ color: '#94a3b8', fontSize: '0.7rem', display: 'block' }}>Win Rate</span>
+              <strong style={{ color: Number(vpWR) >= 10 ? '#22c55e' : '#eab308', fontSize: '1.1rem' }}>{vpWR}%</strong>
+            </div>
+            <div>
+              <span style={{ color: '#94a3b8', fontSize: '0.7rem', display: 'block' }}>Level ROI</span>
+              <strong style={{ color: Number(vpROI) >= 0 ? '#22c55e' : '#ef4444', fontSize: '1.1rem' }}>{Number(vpROI) >= 0 ? '+' : ''}{vpROI}%</strong>
+            </div>
+            <div>
+              <span style={{ color: '#94a3b8', fontSize: '0.7rem', display: 'block' }}>Eighth-Kelly ROI</span>
+              <strong style={{ color: kellyRoi >= 0 ? '#22c55e' : '#ef4444', fontSize: '1.1rem' }}>{kellyRoi >= 0 ? '+' : ''}{kellyRoi.toFixed(1)}%</strong>
+            </div>
+          </div>
+          {(densePicks.length > 0 || sparsePicks.length > 0) && (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(34,197,94,0.1)' }}>
+              <div>
+                <span style={{ color: '#94a3b8', fontSize: '0.7rem', display: 'block', marginBottom: '0.25rem' }}>Dense Data (5+ runs)</span>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong>{densePicks.length}</strong> bets</span>
+                  <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: Number(denseWR) >= 10 ? '#22c55e' : '#eab308' }}>{denseWR}%</strong> WR</span>
+                  <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: Number(denseROI) >= 0 ? '#22c55e' : '#ef4444' }}>{Number(denseROI) >= 0 ? '+' : ''}{denseROI}%</strong> ROI</span>
+                </div>
+              </div>
+              <div>
+                <span style={{ color: '#94a3b8', fontSize: '0.7rem', display: 'block', marginBottom: '0.25rem' }}>Sparse Data (&lt;5 runs)</span>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong>{sparsePicks.length}</strong> bets</span>
+                  <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: Number(sparseWR) >= 10 ? '#22c55e' : '#eab308' }}>{sparseWR}%</strong> WR</span>
+                  <span style={{ color: '#e2e8f0', fontSize: '0.85rem' }}><strong style={{ color: Number(sparseROI) >= 0 ? '#22c55e' : '#ef4444' }}>{Number(sparseROI) >= 0 ? '+' : ''}{sparseROI}%</strong> ROI</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
