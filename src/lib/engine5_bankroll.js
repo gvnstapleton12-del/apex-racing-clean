@@ -15,8 +15,9 @@ function computeKellyFraction(modelProb, marketOdds) {
   return edge / b
 }
 
-function passesValueGate(modelProb, marketOdds, apexScore = 0) {
-  if (apexScore > 0 && apexScore < 40) return false
+function passesValueGate(modelProb, marketOdds, apexScore = 0, previousRuns = 0) {
+  const requiredApexFloor = previousRuns < 5 ? 50 : 40
+  if (apexScore > 0 && apexScore < requiredApexFloor) return false
   const implied = (1 / marketOdds) * 100
   const marginPct = implied > 0 ? ((modelProb - implied) / implied) * 100 : 0
   return modelProb >= 10 && marginPct > 25
@@ -32,6 +33,7 @@ function computeStake(modelProb, marketOdds, options = {}) {
     confidence = 'Medium',
     engine = 'CORE',
     apexScore = 0,
+    previousRuns = 0,
   } = options
 
   if (!marketOdds || marketOdds <= 1 || !modelProb) {
@@ -46,7 +48,7 @@ function computeStake(modelProb, marketOdds, options = {}) {
   }
 
   const edge = modelProb - (1 / marketOdds) * 100
-  const gatePassed = passesValueGate(modelProb, marketOdds, apexScore)
+  const gatePassed = passesValueGate(modelProb, marketOdds, apexScore, previousRuns)
 
   // CHAOS engine: flat stakes for longshot overlays
   if (engine === 'CHAOS') {
@@ -184,6 +186,7 @@ export function computeBankroll(runners, race, options = {}) {
     const uncertainty = runner.uncertainty?.uncertainty || 0
     const confidence = runner.probBand || 'Medium'
     const apexScore = runner.finalScore || runner.apexScore || 0
+    const previousRuns = (runner.previous_results || []).length
 
     // Determine engine based on grade and odds
     const coreGrades = ['S', 'A', 'B', 'B+']
@@ -199,6 +202,7 @@ export function computeBankroll(runners, race, options = {}) {
       confidence,
       engine,
       apexScore,
+      previousRuns,
     })
 
     return {

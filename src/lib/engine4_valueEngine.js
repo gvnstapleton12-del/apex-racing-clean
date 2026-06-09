@@ -2,7 +2,7 @@
 // Where is the edge?
 // Formula: Value = ModelProbability - MarketProbability
 
-function computeEdge(modelProb, marketOdds, apexScore = 0) {
+function computeEdge(modelProb, marketOdds, apexScore = 0, previousRuns = 0) {
   if (!marketOdds || marketOdds <= 1 || !modelProb) {
     return { edge: 0, label: 'No Data', bettable: false }
   }
@@ -10,8 +10,9 @@ function computeEdge(modelProb, marketOdds, apexScore = 0) {
   const marketProb = (1 / marketOdds) * 100
   const edge = modelProb - marketProb
 
-  // Structural conviction gate: APEX score must be >= 40
-  if (apexScore > 0 && apexScore < 40) {
+  // Dynamic structural gate: sparse data requires higher APEX score
+  const requiredApexFloor = previousRuns < 5 ? 50 : 40
+  if (apexScore > 0 && apexScore < requiredApexFloor) {
     return {
       edge: Math.round(edge * 10) / 10,
       marketProb: Math.round(marketProb * 10) / 10,
@@ -79,8 +80,9 @@ export function computeValue(runners, race) {
     const modelProb = runner.modelProb || runner.winProb || 0
     const marketOdds = Number(runner.odds || runner.price || 0)
     const apexScore = runner.finalScore || runner.apexScore || 0
+    const previousRuns = (runner.previous_results || []).length
 
-    const edge = computeEdge(modelProb, marketOdds, apexScore)
+    const edge = computeEdge(modelProb, marketOdds, apexScore, previousRuns)
     const ev = computeExpectedValue(modelProb, marketOdds)
     const grade = computeValueGrade(edge.edge, modelProb)
 
@@ -97,6 +99,7 @@ export function computeValue(runners, race) {
       roi: ev.roi,
       valueGrade: grade,
       apexScore,
+      previousRuns,
     }
   })
 

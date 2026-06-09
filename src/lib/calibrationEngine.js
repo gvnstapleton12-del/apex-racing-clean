@@ -20,6 +20,7 @@ export function createCalibrationRecord(prediction, result) {
     actualOdds: result.spOdds || result.odds || 0,
     interactionAdjustment: prediction.interactions?.totalAdjustment || 0,
     interactionCount: prediction.interactions?.interactions?.length || 0,
+    previousRuns: prediction.previousRuns || 0,
     timestamp: new Date().toISOString(),
   }
 }
