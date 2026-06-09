@@ -284,7 +284,7 @@ function Home() {
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections
-    .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0 && (s.winProb || 0) >= 0.08)
+    .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0 && (s.winProb || 0) >= 0.08 && (s.score || 0) >= 40)
   const upcoming = bettable
     .filter((s) => {
       if (!s.offTime) return true
