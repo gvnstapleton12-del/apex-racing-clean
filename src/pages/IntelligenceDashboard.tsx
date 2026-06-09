@@ -42,11 +42,11 @@ export default function IntelligenceDashboard() {
     <div className='p-6 space-y-6'>
       <div className='flex items-center justify-between'>
         <div>
-          <h1 className='text-5xl font-black tracking-tight'>
-            APEX Intelligence
+          <h1 className='text-7xl font-black tracking-tight'>
+            APEX
           </h1>
-          <p className='text-muted-foreground mt-2'>
-            Live race intelligence operating system
+          <p className='uppercase tracking-[0.35em] text-amber-400 text-sm mt-2'>
+            Racing Intelligence System
           </p>
         </div>
 
@@ -74,109 +74,139 @@ export default function IntelligenceDashboard() {
         <ErrorBoundary name='LiveStatsBar'><LiveStatsBar races={filteredRaces} /></ErrorBoundary>
       )}
 
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='card' lines={3} />
-            <WidgetSkeleton variant='list' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='BestBetCard'><BestBetCard races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='LiveAlertsFeed'><LiveAlertsFeed races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
+      {/* Command Center Section */}
+      <div className='mb-8'>
+        <h2 className='text-sm uppercase tracking-[0.3em] text-zinc-500 mb-4'>
+          Command Center
+        </h2>
+        <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
+          {isLoading ? (
+            <>
+              <WidgetSkeleton variant='card' lines={3} />
+              <WidgetSkeleton variant='list' lines={3} />
+            </>
+          ) : (
+            <>
+              <ErrorBoundary name='BestBetCard'><BestBetCard races={filteredRaces} /></ErrorBoundary>
+              <ErrorBoundary name='LiveAlertsFeed'><LiveAlertsFeed races={filteredRaces} /></ErrorBoundary>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='list' lines={3} />
-            <WidgetSkeleton variant='list' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='TopRatedBoard'><TopRatedBoard races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='PredictionConsensus'><PredictionConsensus races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
+      {/* Race Intelligence Section */}
+      <div className='mb-8'>
+        <div className='border-t border-white/10 pt-8'>
+          <h2 className='text-sm uppercase tracking-[0.3em] text-zinc-500 mb-4'>
+            Race Intelligence
+          </h2>
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
+            {isLoading ? (
+              <>
+                <WidgetSkeleton variant='list' lines={3} />
+                <WidgetSkeleton variant='list' lines={3} />
+              </>
+            ) : (
+              <>
+                <ErrorBoundary name='TopRatedBoard'><TopRatedBoard races={filteredRaces} /></ErrorBoundary>
+                <ErrorBoundary name='PredictionConsensus'><PredictionConsensus races={filteredRaces} /></ErrorBoundary>
+              </>
+            )}
+          </div>
+
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6'>
+            {isLoading ? (
+              <>
+                <WidgetSkeleton variant='list' lines={3} />
+                <WidgetSkeleton variant='list' lines={3} />
+              </>
+            ) : (
+              <>
+                <ErrorBoundary name='ReplayWatchlist'><ReplayWatchlist races={filteredRaces} /></ErrorBoundary>
+                <ErrorBoundary name='HiddenValueBoard'><HiddenValueBoard races={filteredRaces} /></ErrorBoundary>
+              </>
+            )}
+          </div>
+
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6'>
+            {isLoading ? (
+              <>
+                <WidgetSkeleton variant='list' lines={3} />
+                <WidgetSkeleton variant='card' lines={3} />
+              </>
+            ) : (
+              <>
+                <ErrorBoundary name='SmartMoneyTracker'><SmartMoneyTracker races={filteredRaces} /></ErrorBoundary>
+                <ErrorBoundary name='VolatilityGauge'><VolatilityGauge races={filteredRaces} /></ErrorBoundary>
+              </>
+            )}
+          </div>
+
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6'>
+            {isLoading ? (
+              <>
+                <WidgetSkeleton variant='list' lines={3} />
+                <WidgetSkeleton variant='list' lines={3} />
+              </>
+            ) : (
+              <>
+                <ErrorBoundary name='ConfidenceHeatmap'><ConfidenceHeatmap races={filteredRaces} /></ErrorBoundary>
+                <ErrorBoundary name='ValueIndex'><ValueIndex races={filteredRaces} /></ErrorBoundary>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='list' lines={3} />
-            <WidgetSkeleton variant='list' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='ReplayWatchlist'><ReplayWatchlist races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='HiddenValueBoard'><HiddenValueBoard races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
+      {/* Trainer/Jockey Section */}
+      <div className='mb-8'>
+        <div className='border-t border-white/10 pt-8'>
+          <h2 className='text-sm uppercase tracking-[0.3em] text-zinc-500 mb-4'>
+            Trainer/Jockey
+          </h2>
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
+            {isLoading ? (
+              <>
+                <WidgetSkeleton variant='list' lines={3} />
+                <WidgetSkeleton variant='list' lines={3} />
+              </>
+            ) : (
+              <>
+                <ErrorBoundary name='TrainerFormBoard'><TrainerFormBoard races={filteredRaces} /></ErrorBoundary>
+                <ErrorBoundary name='JockeyTracker'><JockeyTracker races={filteredRaces} /></ErrorBoundary>
+              </>
+            )}
+          </div>
+
+          <div className='grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6'>
+            {isLoading ? (
+              <>
+                <WidgetSkeleton variant='list' lines={3} />
+                <WidgetSkeleton variant='list' lines={3} />
+              </>
+            ) : (
+              <>
+                <ErrorBoundary name='StableAlerts'><StableAlerts races={filteredRaces} /></ErrorBoundary>
+                <ErrorBoundary name='AIInsightFeed'><AIInsightFeed races={filteredRaces} /></ErrorBoundary>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='list' lines={3} />
-            <WidgetSkeleton variant='card' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='SmartMoneyTracker'><SmartMoneyTracker races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='VolatilityGauge'><VolatilityGauge races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
+      {/* Research Section */}
+      <div className='mb-8'>
+        <div className='border-t border-white/10 pt-8'>
+          <h2 className='text-sm uppercase tracking-[0.3em] text-zinc-500 mb-4'>
+            Research
+          </h2>
+          {isLoading ? (
+            <WidgetSkeleton variant='stats' cols={4} />
+          ) : (
+            <ErrorBoundary name='ROITracker'><ROITracker /></ErrorBoundary>
+          )}
+        </div>
       </div>
-
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='list' lines={3} />
-            <WidgetSkeleton variant='list' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='ConfidenceHeatmap'><ConfidenceHeatmap races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='ValueIndex'><ValueIndex races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
-      </div>
-
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='list' lines={3} />
-            <WidgetSkeleton variant='list' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='TrainerFormBoard'><TrainerFormBoard races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='JockeyTracker'><JockeyTracker races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
-      </div>
-
-      <div className='grid grid-cols-1 xl:grid-cols-2 gap-6'>
-        {isLoading ? (
-          <>
-            <WidgetSkeleton variant='list' lines={3} />
-            <WidgetSkeleton variant='list' lines={3} />
-          </>
-        ) : (
-          <>
-            <ErrorBoundary name='StableAlerts'><StableAlerts races={filteredRaces} /></ErrorBoundary>
-            <ErrorBoundary name='AIInsightFeed'><AIInsightFeed races={filteredRaces} /></ErrorBoundary>
-          </>
-        )}
-      </div>
-
-      {isLoading ? (
-        <WidgetSkeleton variant='stats' cols={4} />
-      ) : (
-        <ErrorBoundary name='ROITracker'><ROITracker /></ErrorBoundary>
-      )}
     </div>
   )
 }

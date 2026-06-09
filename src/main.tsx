@@ -87,7 +87,7 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
   const isNR = result === 'nr'
   const label = resultLabel(result, position)
   return (
-    <article className={`${isNap ? 'lg:col-span-2' : ''} ${isNap ? 'nap-card' : 'bg-[#0f1720]'} border ${isNap ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.15)]' : 'border-green-500/10'} rounded-2xl ${isNap ? 'p-8' : 'p-6'} ${isNap ? 'hover:border-amber-400/50' : 'hover:border-green-400/30'} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}${isNR ? ' opacity-40' : ''}`}>
+    <article className={`apex-card ${isNap ? 'lg:col-span-2' : ''} ${isNap ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.15)]' : ''} ${isNap ? 'p-8' : 'p-6'} ${isNap ? 'hover:border-amber-400/50' : ''} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}${isNR ? ' opacity-40' : ''}`}>
       {isNap && <div className='nap-glow' />}
       {!isNap && <div className='pick-card-glow' />}
       {label && (
@@ -112,15 +112,6 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             ) : (
               <span className='px-2 py-1 rounded-md text-xs font-medium bg-red-500/10 text-red-400'>LOW</span>
             )}
-            {selection.fairOdds && (
-              <span className='px-2 py-1 rounded-md text-xs font-medium bg-blue-500/10 text-blue-300'>{selection.fairOdds.toFixed(1)}</span>
-            )}
-            {selection.kellyStake != null && selection.kellyStake > 0 && (
-              <span className='px-2 py-1 rounded-md text-xs font-medium bg-purple-500/10 text-purple-300'>K{selection.kellyStake.toFixed(2)}</span>
-            )}
-            {(selection as any).betType && (
-              <span className={`px-2 py-1 rounded-md text-xs font-bold ${(selection as any).betType === 'PLACE' ? 'bg-blue-500/15 text-blue-300' : 'bg-green-500/15 text-green-300'}`}>{(selection as any).betType}</span>
-            )}
             <span className='text-zinc-500 text-xs'>{selection.offTime}</span>
           </div>
           <a
@@ -134,70 +125,34 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
           >
             {selection.horse}
           </a>
-          <div className='flex gap-3 mt-1 flex-wrap'>
-            <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${selection.or != null && selection.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {selection.or != null && selection.or > 0 ? selection.or : '—'}</span>
-            <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${selection.rpr != null && selection.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {selection.rpr != null && selection.rpr > 0 ? selection.rpr : '—'}</span>
-            <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${selection.performanceRating?.pr != null && selection.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {selection.performanceRating?.pr != null && selection.performanceRating.pr > 0 ? Math.round(selection.performanceRating.pr) : '—'}</span>
-            {!isNR && selection.awTransfer?.isAWSpecialist && (
-              <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>AW specialist</span>
-            )}
-            {!isNR && selection.awTransfer?.surfaceSwitch && !selection.awTransfer?.isAWSpecialist && (
-              <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>AW to turf</span>
-            )}
-            {!isNR && selection.awTransfer?.provenBothSurfaces && (
-              <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>Proven both surfaces</span>
-            )}
-            {!isNR && selection.codeMatch?.matchedRuns === 0 && (
-              <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>Code switch</span>
-            )}
-            {!isNR && selection.codeMatch?.matchedRuns > 0 && selection.codeMatch?.matchedRuns < 3 && (
-              <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>Limited code form</span>
-            )}
-            {isNR && (
-              <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>NR</span>
-            )}
-          </div>
           <p className='text-zinc-400 text-sm mt-2'>
             <span className='font-medium'>{selection.course}</span>
             <span className='mx-2'>&middot;</span>
             <span className='truncate'>{selection.raceName}</span>
           </p>
-          <div className='flex gap-2 mt-4 flex-wrap'>
-            {selection.form && (
-              <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Form {selection.form}</span>
-            )}
-            {selection.odds != null && (
-              <span className={`px-2 py-1 rounded-lg text-xs font-bold ${isNap ? 'bg-amber-500/15 text-amber-200' : 'bg-white/[0.06] text-white'}`}>{selection.odds}</span>
-            )}
-            {selection.draw && (
-              <span className='px-2 py-1 bg-white/5 text-zinc-400 rounded-lg text-xs font-medium'>Draw {selection.draw}</span>
-            )}
+          
+          {/* Essential metrics only */}
+          <div className='flex gap-3 mt-4 flex-wrap'>
             {selection.valueEdge != null && selection.valueEdge > 0 ? (
-              <span className={`px-2 py-1 rounded-lg text-xs font-medium ${isNap ? 'bg-green-500/15 text-green-300' : 'bg-green-500/10 text-green-400'}`}>+{(selection.valueEdge * 100).toFixed(1)}% edge</span>
+              <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-green-500/15 text-green-300' : 'bg-green-500/10 text-green-400'}`}>+{(selection.valueEdge * 100).toFixed(1)}% edge</span>
             ) : selection.valueEdge != null && selection.valueEdge < 0 ? (
-              <span className='px-2 py-1 bg-red-500/10 text-red-400 rounded-lg text-xs font-medium'>{(selection.valueEdge * 100).toFixed(1)}% edge</span>
+              <span className='px-3 py-1.5 bg-red-500/10 text-red-400 rounded-lg text-sm font-bold'>{(selection.valueEdge * 100).toFixed(1)}% edge</span>
             ) : null}
-            {selection.selectionQuality && (
-              <span className={`px-2 py-1 rounded-lg text-xs font-medium ${selection.selectionQuality.grade === 'A+' || selection.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
-                {selection.selectionQuality.grade}
-              </span>
+            {selection.odds != null && (
+              <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-amber-500/15 text-amber-200' : 'bg-white/[0.06] text-white'}`}>{selection.odds}</span>
             )}
           </div>
+          
+          {/* View Analysis button */}
+          <button className='mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition text-zinc-400 hover:text-white'>
+            View Analysis
+          </button>
         </div>
-
-        <div className='shrink-0 rounded-2xl flex items-center gap-3'>
-          <div className={`${isNap ? 'w-32 h-32' : 'w-28 h-28'} rounded-2xl ${isNap ? 'bg-amber-500/10 border-amber-400' : 'bg-[#0a1a14] border-green-400'} border-2 flex flex-col items-center justify-center`}>
-            <span className={`${isNap ? 'text-amber-300' : 'text-zinc-400'} text-xs font-medium uppercase tracking-wider`}>APEX</span>
-            <strong className={`${isNap ? 'text-4xl text-amber-300' : 'text-3xl text-green-400'} font-black`}>{selection.score}</strong>
-            <div className='flex gap-2 mt-1'>
-              {selection.winProb != null && (
-                <span className={`${isNap ? 'text-amber-300' : 'text-green-400'} text-xs font-medium`}>W:{(selection.winProb * 100).toFixed(1)}%</span>
-              )}
-              {selection.placeProb != null && (
-                <span className={`${isNap ? 'text-amber-400' : 'text-blue-400'} text-xs font-medium`}>P:{(selection.placeProb * 100).toFixed(0)}%</span>
-              )}
-            </div>
-          </div>
+        
+        {/* Large score display */}
+        <div className='w-36 h-36 rounded-3xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/30 flex flex-col items-center justify-center flex-shrink-0'>
+          <strong className='text-5xl font-black text-amber-300'>{selection.score}</strong>
+          <span className='text-xs text-amber-400/70 uppercase tracking-wider mt-1'>APEX</span>
         </div>
       </div>
     </article>
@@ -491,32 +446,32 @@ function Home() {
     <div className='dashboard-page max-w-7xl mx-auto'>
       <section className='dashboard-hero'>
         <div className='hero-copy'>
-          <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>UK &amp; Ireland selections</span>
-          <h1 className='text-6xl font-black tracking-tight mt-4'>Today&apos;s best picks</h1>
+          <span className='eyebrow text-amber-400 text-sm font-medium uppercase tracking-[0.35em]'>Racing Intelligence System</span>
+          <h1 className='text-7xl font-black tracking-tight mt-4'>APEX</h1>
           <p className='text-zinc-400 text-lg mt-4 max-w-2xl'>
             The top-rated runners from today&apos;s UK and Ireland racecards, ranked by APEX confidence score.
           </p>
         </div>
 
         <div className='hero-metrics grid grid-cols-2 sm:grid-cols-5 gap-4'>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+          <div className='apex-card p-5'>
             <span className='text-zinc-400 text-sm block mb-2'>UK/IRE races</span>
             <strong className='text-3xl font-bold text-amber-400'>{ukIreRaces.length}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+          <div className='apex-card p-5'>
             <span className='text-zinc-400 text-sm block mb-2'>Total runners</span>
             <strong className='text-3xl font-bold text-amber-400'>{totalRunners}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+          <div className='apex-card p-5'>
             <span className='text-zinc-400 text-sm block mb-2'>Top score</span>
             <strong className='text-3xl font-bold text-amber-400'>{topScore || '--'}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+          <div className='apex-card p-5'>
             <span className='text-zinc-400 text-sm block mb-2'>System picks</span>
             <strong className='text-3xl font-bold text-amber-400'>{allPicks.length}</strong>
           </div>
           {overallRate && (
-            <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <div className='apex-card p-5'>
               <span className='text-zinc-400 text-sm block mb-2'>Historical SR</span>
               <strong className={`text-3xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
                 {overallRate}%
