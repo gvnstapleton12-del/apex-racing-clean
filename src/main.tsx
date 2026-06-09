@@ -526,27 +526,27 @@ function Home() {
         </div>
 
         {valuePicksStats && (
-          <div className='mt-6 bg-gradient-to-r from-green-500/5 to-emerald-500/5 border border-green-500/20 rounded-xl p-4'>
+          <div className='mt-6'>
             <div className='flex items-center justify-between mb-3'>
               <span className='text-green-400 text-xs font-bold uppercase tracking-wider'>Value Picks Performance</span>
               <span className='text-zinc-500 text-xs'>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</span>
             </div>
-            <div className='grid grid-cols-4 gap-4'>
-              <div>
-                <span className='text-zinc-400 text-xs block'>Bets</span>
-                <strong className='text-xl font-bold text-white'>{valuePicksStats.count}</strong>
+            <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
+              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+                <span className='text-zinc-400 text-sm block'>Bets</span>
+                <strong className='text-2xl font-bold text-white'>{valuePicksStats.count}</strong>
               </div>
-              <div>
-                <span className='text-zinc-400 text-xs block'>Win Rate</span>
-                <strong className={`text-xl font-bold ${valuePicksStats.wr >= 10 ? 'text-green-400' : 'text-amber-400'}`}>{valuePicksStats.wr.toFixed(1)}%</strong>
+              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+                <span className='text-zinc-400 text-sm block'>Win Rate</span>
+                <strong className={`text-2xl font-bold ${valuePicksStats.wr >= 10 ? 'text-green-400' : valuePicksStats.wr >= 7 ? 'text-amber-400' : 'text-red-400'}`}>{valuePicksStats.wr.toFixed(1)}%</strong>
               </div>
-              <div>
-                <span className='text-zinc-400 text-xs block'>Level ROI</span>
-                <strong className={`text-xl font-bold ${valuePicksStats.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.roi >= 0 ? '+' : ''}{valuePicksStats.roi.toFixed(1)}%</strong>
+              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+                <span className='text-zinc-400 text-sm block'>Level ROI</span>
+                <strong className={`text-2xl font-bold ${valuePicksStats.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.roi >= 0 ? '+' : ''}{valuePicksStats.roi.toFixed(1)}%</strong>
               </div>
-              <div>
-                <span className='text-zinc-400 text-xs block'>Eighth-Kelly ROI</span>
-                <strong className={`text-xl font-bold ${valuePicksStats.kellyRoi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.kellyRoi >= 0 ? '+' : ''}{valuePicksStats.kellyRoi.toFixed(1)}%</strong>
+              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
+                <span className='text-zinc-400 text-sm block'>Eighth-Kelly ROI</span>
+                <strong className={`text-2xl font-bold ${valuePicksStats.kellyRoi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.kellyRoi >= 0 ? '+' : ''}{valuePicksStats.kellyRoi.toFixed(1)}%</strong>
               </div>
             </div>
           </div>
