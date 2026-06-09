@@ -663,7 +663,7 @@ async function processRace(race) {
 
       const routed = applyEngineRouting(runner, engine, odds)
 
-      logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: routed.winProb, placeProb: routed.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.selectionQuality?.label || runner.betQuality || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
+      logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: routed.winProb, placeProb: routed.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.betQuality || runner.selectionQuality?.label || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
       storeHistoricalRecord(runner, race, apexResult)
 
       return {
