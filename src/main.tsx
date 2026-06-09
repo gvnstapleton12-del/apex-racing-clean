@@ -492,33 +492,33 @@ function Home() {
       <section className='dashboard-hero'>
         <div className='hero-copy'>
           <span className='eyebrow text-zinc-500 text-sm font-medium uppercase tracking-wider'>UK &amp; Ireland selections</span>
-          <h1 className='text-5xl font-black tracking-tight'>Today&apos;s best picks</h1>
-          <p className='text-zinc-400 text-lg mt-3'>
+          <h1 className='text-6xl font-black tracking-tight mt-4'>Today&apos;s best picks</h1>
+          <p className='text-zinc-400 text-lg mt-4 max-w-2xl'>
             The top-rated runners from today&apos;s UK and Ireland racecards, ranked by APEX confidence score.
           </p>
         </div>
 
         <div className='hero-metrics grid grid-cols-2 sm:grid-cols-5 gap-4'>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>UK/IRE races</span>
-            <strong className='text-2xl font-bold text-amber-400'>{ukIreRaces.length}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>UK/IRE races</span>
+            <strong className='text-3xl font-bold text-amber-400'>{ukIreRaces.length}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>Total runners</span>
-            <strong className='text-2xl font-bold text-amber-400'>{totalRunners}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>Total runners</span>
+            <strong className='text-3xl font-bold text-amber-400'>{totalRunners}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>Top score</span>
-            <strong className='text-2xl font-bold text-amber-400'>{topScore || '--'}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>Top score</span>
+            <strong className='text-3xl font-bold text-amber-400'>{topScore || '--'}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>System picks</span>
-            <strong className='text-2xl font-bold text-amber-400'>{allPicks.length}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>System picks</span>
+            <strong className='text-3xl font-bold text-amber-400'>{allPicks.length}</strong>
           </div>
           {overallRate && (
-            <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-              <span className='text-zinc-400 text-sm block'>Historical SR</span>
-              <strong className={`text-2xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
+            <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+              <span className='text-zinc-400 text-sm block mb-2'>Historical SR</span>
+              <strong className={`text-3xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
                 {overallRate}%
               </strong>
             </div>

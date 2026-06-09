@@ -7,6 +7,8 @@ import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
 import { filterGBIRE, filterToday, filterUnfinished, sortByOffTime, sortByScore, getScore, scoreRunners, countRunners } from '../lib/engine'
 import RacePage from './RacePage'
 import RacePressureGraph from '../components/RacePressureGraph'
+import ScoreRing from '../components/ScoreRing'
+import MetricCard from '../components/MetricCard'
 
 export default function Racecards() {
   const [selectedRace, setSelectedRace] = useState<Race | null>(null)
@@ -76,24 +78,24 @@ export default function Racecards() {
           <span className={`text-sm font-medium uppercase tracking-wider px-3 py-1 rounded-full border ${todayRaces.length ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-white/5 border-white/10 text-zinc-500'}`}>
             {todayRaces.length ? 'UK & Ireland live feed' : 'UK & Ireland archive'}
           </span>
-          <h1 className='text-5xl font-black tracking-tight'>Racecards command centre</h1>
-          <p className='text-zinc-400 text-lg mt-3'>
+          <h1 className='text-6xl font-black tracking-tight mt-4'>Racecards command centre</h1>
+          <p className='text-zinc-400 text-lg mt-4 max-w-2xl'>
             Live runners, confidence scores, market positions and race-level signals in one focused workspace.
           </p>
         </div>
 
         <div className='hero-metrics grid grid-cols-3 gap-4'>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>Races</span>
-            <strong className='text-3xl font-bold text-amber-400'>{races.length}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>Races</span>
+            <strong className='text-4xl font-bold text-amber-400'>{races.length}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>Runners</span>
-            <strong className='text-3xl font-bold text-amber-400'>{totalRunners}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>Runners</span>
+            <strong className='text-4xl font-bold text-amber-400'>{totalRunners}</strong>
           </div>
-          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-            <span className='text-zinc-400 text-sm block'>Next off</span>
-            <strong className='text-xl font-bold text-amber-400'>{nextRace ? formatOffTime(nextRace) : 'No more races'}</strong>
+          <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-5 border border-white/5'>
+            <span className='text-zinc-400 text-sm block mb-2'>Next off</span>
+            <strong className='text-2xl font-bold text-amber-400'>{nextRace ? formatOffTime(nextRace) : 'No more races'}</strong>
           </div>
         </div>
       </section>
@@ -143,169 +145,66 @@ export default function Racecards() {
             <article
               key={race.race_id || index}
               id={`race-${race.course ? race.course.replace(/\s+/g, '-') : ''}-${(race.off_time || '').replace(':', '')}`}
-              className='race-card bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 hover:border-green-400/30 transition-all duration-300 overflow-hidden'
+              className='race-card-2'
             >
-              <div className='race-card-header flex flex-wrap justify-between items-start gap-4 mb-4'>
-                <div className='space-y-2 min-w-0 flex-1'>
-                  <div className='race-meta-row flex items-center gap-2 flex-wrap'>
-                    <span className='live-badge px-3 py-1 rounded-lg text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20'>LIVE</span>
-                    <span className='text-zinc-400 text-sm'>{race.field_size} runners</span>
-                    {race.paceMap && (
-                      <span className={`pace-tempo px-2 py-1 rounded-md text-xs font-medium ${race.paceMap.projectedTempo === 'FAST' ? 'bg-red-500/10 text-red-400' : race.paceMap.projectedTempo === 'SLOW' ? 'bg-blue-500/10 text-blue-400' : 'bg-amber-500/10 text-amber-400'}`}>
-                        {race.paceMap.projectedTempo}
-                        {race.paceMap.collapseRisk === 'HIGH' ? ' ⚡' : ''}
-                      </span>
-                    )}
-                    {race.betFilter && (
-                      <span className={`bet-filter-badge px-2 py-1 rounded-md text-xs font-medium ${race.betFilter.verdict === 'AUTO SKIP' ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-                        {race.betFilter.verdict}
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className='text-xl font-bold text-white break-words'>{race.race_name}</h2>
-                  <p className='text-zinc-400 text-sm'>
-                    {race.course} &middot; {formatOffTime(race)}
-                    {race.distance_f && <span> &middot; {race.distance_f}</span>}
-                    {race.going && <span> &middot; {race.going}</span>}
-                    {race.surface && <span> &middot; {race.surface}</span>}
-                  </p>
+              <div className='race-card-2-header'>
+                <div>
+                  <div className='race-card-2-time'>{formatOffTime(race)}</div>
+                  <div className='race-card-2-course'>{race.course}</div>
+                  <h2 className='race-card-2-name'>{race.race_name}</h2>
                 </div>
-
                 <button
                   type='button'
                   onClick={() => setSelectedRace(race)}
-                  className='primary-button bg-amber-500/10 border border-amber-500/30 text-amber-300 px-5 py-2.5 rounded-xl font-bold hover:bg-amber-500/20 transition-all duration-200 whitespace-nowrap'
+                  className='race-card-2-action'
+                  style={{ width: 'auto', padding: '10px 20px' }}
                 >
-                  View Race
+                  Open Race
                 </button>
               </div>
 
               {topRated && (
-                <div className='top-rated-strip flex justify-between items-center bg-white/[0.02] rounded-xl p-4 mb-4 border border-white/5'>
-                  <p className='text-zinc-500 text-sm font-medium'>Top Rated</p>
-                  <div className='flex items-center gap-4'>
-                    <a
-                      href={getAtTheRacesHorseUrl(topRated, race)}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-lg font-bold hover:text-amber-300 transition'
-                    >
-                      {topRated.horse}
-                    </a>
-                    <div className='flex gap-3 flex-wrap'>
-                      <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${topRated.or != null && topRated.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {topRated.or != null && topRated.or > 0 ? topRated.or : '—'}</span>
-                      <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${topRated.rpr != null && topRated.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {topRated.rpr != null && topRated.rpr > 0 ? topRated.rpr : '—'}</span>
-                      <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${topRated.performanceRating?.pr != null && topRated.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {topRated.performanceRating?.pr != null && topRated.performanceRating.pr > 0 ? Math.round(topRated.performanceRating.pr) : '—'}</span>
-                      {topRated.awTransfer?.isAWSpecialist && (
-                        <span className='px-1.5 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>AW specialist</span>
-                      )}
-                      {topRated.awTransfer?.surfaceSwitch && !topRated.awTransfer?.isAWSpecialist && (
-                        <span className='px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>AW to turf</span>
-                      )}
-                      {topRated.awTransfer?.provenBothSurfaces && (
-                        <span className='px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>Proven both</span>
-                      )}
-                      {topRated.codeMatch?.matchedRuns === 0 && (
-                        <span className='px-1.5 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>Code switch</span>
-                      )}
+                <div className='race-card-2-top-pick'>
+                  <div className='race-card-2-top-label'>Top Pick</div>
+                  <a
+                    href={getAtTheRacesHorseUrl(topRated, race)}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='race-card-2-top-name hover:text-amber-400 transition'
+                  >
+                    {topRated.horse}
+                  </a>
+                  <div className='flex items-center gap-6'>
+                    <ScoreRing score={getScore(topRated)} size={70} strokeWidth={5} />
+                    <div className='race-card-2-metrics' style={{ flex: 1, marginBottom: 0 }}>
+                      <MetricCard label='OR' value={topRated.or} color='amber' />
+                      <MetricCard label='RPR' value={topRated.rpr} color='violet' />
+                      <MetricCard label='PR' value={topRated.performanceRating?.pr ? Math.round(topRated.performanceRating.pr) : null} color='cyan' />
                     </div>
-                    <strong className='text-2xl font-black text-amber-400'>{getScore(topRated)}</strong>
                   </div>
                 </div>
               )}
 
-              <div className='runner-list space-y-3'>
-                {runners.filter(r => r.horse !== topRated?.horse).slice(0, 5).map((runner, runnerIndex) => (
-                  <div
-                    key={runnerIndex}
-                    className='runner-row flex flex-wrap justify-between items-center gap-3 p-4 rounded-xl border border-white/5 bg-white/[0.01] hover:border-white/10 transition-all duration-200'
-                  >
-                    <div className='flex items-center gap-3 flex-1 min-w-0 flex-wrap'>
-                      <a
-                        href={getAtTheRacesHorseUrl(runner, race)}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='text-lg font-bold hover:text-amber-300 transition truncate'
-                      >
-                        {runner.horse}
-                      </a>
-                      <div className='flex gap-3 flex-wrap flex-shrink-0'>
-                        <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
-                        <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
-                        <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
-                        {runner.awTransfer?.isAWSpecialist && (
-                          <span className='px-1.5 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>AW specialist</span>
-                        )}
-                        {runner.awTransfer?.surfaceSwitch && !runner.awTransfer?.isAWSpecialist && (
-                          <span className='px-1.5 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>AW to turf</span>
-                        )}
-                        {runner.awTransfer?.provenBothSurfaces && (
-                          <span className='px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>Proven both</span>
-                        )}
-                        {runner.codeMatch?.matchedRuns === 0 && (
-                          <span className='px-1.5 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>Code switch</span>
-                        )}
-                      </div>
-                      {runner.odds && (
-                        <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold flex-shrink-0'>{runner.odds}</span>
-                      )}
-                      <div className='flex gap-2 flex-wrap'>
-                        {runner.runningStyle && (
-                          <span className={`pace-badge px-2 py-1 rounded-md text-xs font-medium ${runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}`}>
-                            {runner.runningStyle}
-                            {runner.paceScore ? ` ${runner.paceScore > 0 ? '+' : ''}${runner.paceScore}` : ''}
-                          </span>
-                        )}
-                        {runner.horseQuality && (
-                          <span className={`hq-badge px-2 py-1 rounded-md text-xs font-medium ${runner.horseQuality.label === 'Elite' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                            {runner.horseQuality.label}
-                          </span>
-                        )}
-                        {runner.probBand && (
-                          <span className={`conf-badge px-2 py-1 rounded-md text-xs font-medium ${runner.probBand === 'A+' || runner.probBand === 'A' ? 'bg-green-500/10 text-green-400' : runner.probBand === 'B' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                            {runner.probBand}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className='runner-score flex items-center gap-3 flex-shrink-0 min-w-0'>
-                      <div className='text-right'>
-                        <strong className='text-xl font-black text-amber-400'>{getScore(runner)}</strong>
-                        <div className='flex gap-2 mt-1'>
-                          {runner.winProb && (
-                            <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded-md text-xs font-medium'>W:{runner.winProb.toFixed(1)}%</span>
-                          )}
-                          {runner.placeProb && (
-                            <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded-md text-xs font-medium'>P:{runner.placeProb.toFixed(1)}%</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className='text-right'>
-                        <span className='text-lg font-bold'>{runner.odds ? `${runner.odds}` : '-'}</span>
-                        <div className='flex gap-1 mt-1 flex-wrap justify-end'>
-                          {runner.betQuality && runner.betQuality !== 'NO BET' && (
-                            <span className='bet-quality px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded-md text-xs font-medium'>{runner.betQuality}</span>
-                          )}
-                          {runner.selectionQuality && runner.selectionQuality.grade && (
-                            <span className={`sel-grade px-2 py-0.5 rounded-md text-xs font-medium ${runner.selectionQuality.grade === 'A+' || runner.selectionQuality.grade === 'A' ? 'bg-green-500/10 text-green-400' : 'bg-white/5 text-zinc-400'}`}>
-                              {runner.selectionQuality.grade}
-                            </span>
-                          )}
-                          {runner.confidenceTier && (
-                            <span className={`tier-badge px-2 py-0.5 rounded-md text-xs font-medium ${runner.confidenceTier.tier === 'S' || runner.confidenceTier.tier === 'A' ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-400'}`}>
-                              T{runner.confidenceTier.tier}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+              <div className='race-card-2-stats'>
+                <div className='race-card-2-stat'>
+                  <span className='race-card-2-stat-label'>Runners</span>
+                  <span className='race-card-2-stat-value'>{race.field_size}</span>
+                </div>
+                {race.paceMap && (
+                  <div className='race-card-2-stat'>
+                    <span className='race-card-2-stat-label'>Pace</span>
+                    <span className={`race-card-2-stat-value ${race.paceMap.projectedTempo === 'FAST' ? 'text-red-400' : race.paceMap.projectedTempo === 'SLOW' ? 'text-blue-400' : 'text-amber-400'}`}>
+                      {race.paceMap.projectedTempo}
+                    </span>
                   </div>
-                ))}
+                )}
+                {race.going && (
+                  <div className='race-card-2-stat'>
+                    <span className='race-card-2-stat-label'>Going</span>
+                    <span className='race-card-2-stat-value text-green-400'>{race.going}</span>
+                  </div>
+                )}
               </div>
-
-              <RacePressureGraph race={race} />
             </article>
           )
         })}
