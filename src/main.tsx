@@ -526,10 +526,12 @@ function Home() {
         </div>
 
         {valuePicksStats && (
-          <div className='mt-6'>
-            <div className='flex items-center justify-between mb-3'>
-              <span className='text-green-400 text-xs font-bold uppercase tracking-wider'>Value Picks Performance</span>
-              <span className='text-zinc-500 text-xs'>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</span>
+          <div className='mt-8 pt-8 border-t border-white/5'>
+            <div className='flex items-center justify-between mb-6'>
+              <div>
+                <h3 className='text-lg font-semibold text-white'>Value Picks Performance</h3>
+                <p className='text-xs text-zinc-500 mt-1'>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</p>
+              </div>
             </div>
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
               <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
