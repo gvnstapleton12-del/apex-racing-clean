@@ -286,14 +286,15 @@ function Home() {
       .then((r) => r.json())
       .then((data) => {
         const records = data.records || []
-        function passesValueGate(prob: number, odds: number, apexScore: number) {
+        function passesValueGate(prob: number, odds: number, apexScore: number, previousRuns: number) {
           if (!odds || odds <= 1 || !prob) return false
-          if (apexScore > 0 && apexScore < 40) return false
+          const requiredApexFloor = previousRuns < 5 ? 50 : 40
+          if (apexScore > 0 && apexScore < requiredApexFloor) return false
           const implied = (1 / odds) * 100
           const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
           return prob >= 10 && marginPct > 25
         }
-        const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0)))
+        const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0)))
         if (vp.length === 0) return
         const vpWins = vp.filter((r: any) => r.actualWon).length
         const vpPL = vp.reduce((s: number, r: any) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
@@ -326,7 +327,16 @@ function Home() {
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
   const bettable = allSelections
-    .filter((s) => !s.noBet && (s.valueEdge || 0) > 0.03 && parseOddsToNum(s.odds) >= 2.0 && (s.winProb || 0) >= 0.08 && (s.score || 0) >= 40)
+    .filter((s) => {
+      if (s.noBet) return false
+      if ((s.valueEdge || 0) <= 0.03) return false
+      if (parseOddsToNum(s.odds) < 2.0) return false
+      if ((s.winProb || 0) < 0.08) return false
+      const apexScore = s.score || 0
+      const previousRuns = ((s as any).previous_results || []).length
+      const requiredApexFloor = previousRuns < 5 ? 50 : 40
+      return apexScore >= requiredApexFloor
+    })
   const upcoming = bettable
     .filter((s) => {
       if (!s.offTime) return true

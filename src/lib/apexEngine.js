@@ -618,6 +618,7 @@ export function runApexEngine(runners, race, options = {}) {
   const sortedWithModelProb = sorted.map((r, i) => ({
     ...r,
     modelProb: adjustedWinProbs[i],
+    previousRuns: (r.previous_results || []).length,
   }))
   const valueAnalysis = computeValue(sortedWithModelProb, race)
   const valueMap = {}

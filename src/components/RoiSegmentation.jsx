@@ -72,14 +72,15 @@ export default function RoiSegmentation() {
 
   // Compute value picks from calibration records
   const records = calibration?.records || []
-  function passesValueGate(prob, odds, apexScore = 0) {
+  function passesValueGate(prob, odds, apexScore = 0, previousRuns = 0) {
     if (!odds || odds <= 1 || !prob) return false
-    if (apexScore > 0 && apexScore < 40) return false
+    const requiredApexFloor = previousRuns < 5 ? 50 : 40
+    if (apexScore > 0 && apexScore < requiredApexFloor) return false
     const implied = (1 / odds) * 100
     const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
     return prob >= 10 && marginPct > 25
   }
-  const valuePicks = records.filter(r => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0)))
+  const valuePicks = records.filter(r => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0)))
 
   // Build value picks segmentation
   function buildValuePicksSegmentation(groupBy) {
