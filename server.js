@@ -842,29 +842,34 @@ async function fetchLiveMeetings() {
 
     console.time('[Startup] processRaces')
     const processed = []
-    const batchSize = 2
+
+    // Build ATR lookup once, not per race
+    const normalizedAtrRatings = {}
+    for (const [name, rating] of Object.entries(atrRatings)) {
+      normalizedAtrRatings[normalizeHorseName(name)] = rating
+    }
+    for (const race of rawRaces) {
+      race.runners = (race.runners || []).map(runner => {
+        const key = normalizeHorseName(runner.horse)
+        const rating = normalizedAtrRatings[key]
+        if (rating && rating > 0 && (!runner.rpr || runner.rpr === 0)) {
+          return { ...runner, rpr: rating }
+        }
+        return runner
+      })
+    }
+
+    const batchSize = 6
     for (let i = 0; i < rawRaces.length; i += batchSize) {
       const batch = rawRaces.slice(i, i + batchSize)
       console.log(`[LiveMeetings] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(rawRaces.length / batchSize)}`)
       try {
-        const batchResults = await Promise.all(batch.map(race => {
-          const normalizedAtrRatings = {}
-          for (const [name, rating] of Object.entries(atrRatings)) {
-            normalizedAtrRatings[normalizeHorseName(name)] = rating
-          }
-          race.runners = (race.runners || []).map(runner => {
-            const key = normalizeHorseName(runner.horse)
-            const rating = normalizedAtrRatings[key]
-            if (rating && rating > 0 && (!runner.rpr || runner.rpr === 0)) {
-              return { ...runner, rpr: rating }
-            }
-            return runner
-          })
-          return Promise.race([
+        const batchResults = await Promise.all(batch.map(race =>
+          Promise.race([
             processRace(race),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 60000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 20000))
           ])
-        }))
+        ))
         processed.push(...batchResults)
         const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
         console.log(`[LiveMeetings] Batch done: ${processed.length}/${rawRaces.length} races, ${totalRunners} runners scored`)
