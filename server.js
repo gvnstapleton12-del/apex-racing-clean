@@ -209,12 +209,16 @@ async function fetchAtrHorseLinks(race = {}) {
   const cached = ATR_LINK_CACHE.get(url)
   if (cached) return cached
   try {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 8000)
     const res = await fetch(url, {
+      signal: controller.signal,
       headers: {
         accept: 'text/html',
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
       },
     })
+    clearTimeout(timeout)
     if (!res.ok) return {}
     const html = await res.text()
     const links = {}
@@ -557,12 +561,13 @@ function cleanRaceName(name = '') {
 
 async function processRace(race) {
   const startTime = Date.now()
+  const raceLabel = `${race.course} ${race.off_time}`
   try {
     const runners = race.runners || []
 
     const exclusionReason = checkRaceExclusion(race)
     if (exclusionReason) {
-      console.log(`[EXCLUDE] ${race.course} - ${race.race_name || ''} - ${exclusionReason}`)
+      console.log(`[EXCLUDE] ${raceLabel} - ${race.race_name || ''} - ${exclusionReason}`)
       return {
         race_id: race.race_id,
         course: race.course,
@@ -600,6 +605,7 @@ async function processRace(race) {
       }
     }
 
+    console.time(`[processRace] ${raceLabel} horseMemory`)
     const enrichedRunners = await Promise.all((race.runners || []).map(async runner => {
       if (HORSE_MEMORY_DB && runner.horse) {
         try {
@@ -620,7 +626,9 @@ async function processRace(race) {
       }
       return runner
     }))
+    console.timeEnd(`[processRace] ${raceLabel} horseMemory`)
 
+    console.time(`[processRace] ${raceLabel} apexEngine`)
     const apexResult = runApexEngine(enrichedRunners, race, {
       goingDb: GOING_DATABASE,
       distanceDb: DISTANCE_DATABASE,
@@ -637,13 +645,17 @@ async function processRace(race) {
       orHistory: OR_HISTORY,
       trackProfiles: TRACK_PROFILES,
     })
+    console.timeEnd(`[processRace] ${raceLabel} apexEngine`)
 
+    console.time(`[processRace] ${raceLabel} atrLinks`)
     const atrLinks = await fetchAtrHorseLinks(race)
+    console.timeEnd(`[processRace] ${raceLabel} atrLinks`)
     const enriched = (apexResult.racecards || []).map(r => ({
       ...r,
       atrUrl: atrLinks[String(r.horse || '').toLowerCase().trim()] || r.atrUrl,
     }))
 
+    console.time(`[processRace] ${raceLabel} enrich`)
     const scoredRunners = enriched.map((runner) => {
       const horseId = runner.horse_id || runner.horse
       if (!HORSE_DATABASE[horseId]) {
@@ -762,6 +774,7 @@ async function processRace(race) {
         recordAffinityPrediction(sr.horse, race, sr)
       } catch { /* silent */ }
     }
+    console.timeEnd(`[processRace] ${raceLabel} enrich`)
 
     return {
       ...race,
