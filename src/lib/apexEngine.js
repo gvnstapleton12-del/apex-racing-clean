@@ -30,7 +30,7 @@ import { generateExplanation } from './explainability.js'
 import { detectScenarioFlags } from './scenarioFlags.js'
 import { computeConfidenceTier } from './confidenceTiers.js'
 import { computeReplayFlags } from './replayFlagEngine.js'
-import { computeAllComponents, computeComponentScores, computeFinalProbability } from './componentScores.js'
+import { computeAllComponents, computeComponentScores, computeFinalProbability, computeClassDrop } from './componentScores.js'
 // import { computeCalibrationAdjustment } from './calibrationEngine.js'
 import { computeTrackBiasFactor, getDrawBias, isAW, checkDrawEligibility } from './trackProfile.js'
 import { evaluateAWTransfer } from './awTransfer.js'
@@ -313,6 +313,7 @@ export function runApexEngine(runners, race, options = {}) {
       trainerForm: options.trainerForm || {},
       jockeyForm: options.jockeyForm || {},
     })
+    newComponents.classDrop = computeClassDrop(runner, race)
 
     // Engine 1: Horse Quality Model — pure racing merit, ignores odds
     const horseQuality = computeHorseQuality(runner, race, paceMap)
@@ -469,6 +470,7 @@ export function runApexEngine(runners, race, options = {}) {
         ground: newComponents.ground || 50,
         distance: newComponents.distance || 50,
         classMove: newComponents.classMove || 50,
+        classDrop: newComponents.classDrop || 0,
         lastRunTrouble: newComponents.lastRunTrouble || 50,
         trainerForm: newComponents.trainerForm || 50,
         jockeyCourseSR: newComponents.jockeyCourseSR || 50,
@@ -743,7 +745,7 @@ export function runApexEngine(runners, race, options = {}) {
       probRange: band.range,
       probTier: band.tier,
       confidenceScore: r.finalScore,
-      betQuality: betQuality(band, adjustedWinProbs[i], r.market.score, odds),
+      betQuality: (r.personalAffinity?.adjustment ?? 0) <= 0 ? 'NO BET' : betQuality(band, adjustedWinProbs[i], r.market.score, odds),
       selectionQuality: selectionQuality(
         adjustedWinProbs[i],
         odds,

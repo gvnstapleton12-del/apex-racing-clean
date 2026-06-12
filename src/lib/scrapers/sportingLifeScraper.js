@@ -176,12 +176,6 @@ export async function fetchMeetingRaces(meetingId) {
 
     console.log(`[SL] Meeting ${meetingId} status: ${meeting?.status || meeting?.meeting_status || 'none'}, course: ${meeting?.course_name || 'unknown'}`)
 
-    // Dump one complete meeting object to find where course data lives
-    if (!global.__slMeetingDumped) {
-      global.__slMeetingDumped = true
-      console.log('[SL] === RAW MEETING OBJECT:', JSON.stringify(meeting, null, 2))
-    }
-
     // Skip abandoned meetings (case-insensitive)
     const status = (meeting?.status || meeting?.meeting_status || '').toUpperCase()
     if (status === 'ABANDONED') {
@@ -223,23 +217,6 @@ async function fetchRaceRunners(raceId) {
     const data = await fetchJson(`${SL_API}/race/${raceId}`)
     const rides = data.rides || []
 
-    if (rides.length > 0 && !global.__slRideDumped) {
-      global.__slRideDumped = true
-      const sample = rides[0]
-      console.log('[SL] Horse keys:', Object.keys(sample.horse || {}))
-      console.log('[SL] Horse form summary keys:', Object.keys(sample.horse?.formsummary || {}))
-      console.log('[SL] Full ride sample keys:', Object.keys(sample))
-
-      // Dump hidden SL fields for one runner across the whole session
-      console.log('[SL] === HIDDEN FIELDS DUMP ===')
-      console.log(JSON.stringify({
-        horse: sample.horse?.name,
-        insights: sample.insights,
-        raceHistory: sample.race_history_stats,
-        lifetime: sample.horse_lifetime_stats,
-        movements: sample.bet_movements,
-      }, null, 2))
-    }
     return rides
       .filter(ride => {
         const status = (ride.ride_status || '').toUpperCase()
@@ -536,29 +513,32 @@ export async function fetchSlResults(dateStr) {
 
       console.log(`[SL] Found ${uniqueLinks.length} individual race links for ${dateStr}`)
 
+      // Close listing page; reuse context for parallel race scraping
+      await page.close()
+
       const allRaces = []
-      
-      for (const race of uniqueLinks) {
-        console.log(`Navigating to race: ${race.url}`)
-        await page.goto(race.url, { waitUntil: 'domcontentloaded', timeout: 30000 })
-        await page.waitForTimeout(2000)
+      const CONCURRENCY = 6
 
-        const isRaceFinished = await page.evaluate(() => {
-          const headerText = document.querySelector('[class*="RaceHeader__"], [class*="HeaderSummary__"]')?.textContent || ''
-          const bodyText = document.body.textContent || ''
-          return headerText.toLowerCase().includes('weighed in') || 
-                 headerText.toLowerCase().includes('result') ||
-                 bodyText.toLowerCase().includes('weighed in')
-        })
+      async function scrapeRace(race) {
+        const racePage = await context.newPage()
+        try {
+          await racePage.goto(race.url, { waitUntil: 'domcontentloaded', timeout: 30000 })
+          await racePage.waitForTimeout(2000)
 
-        if (isRaceFinished) {
-          console.log(`Race is finished. Scraping results...`)
+          const isRaceFinished = await racePage.evaluate(() => {
+            const headerText = document.querySelector('[class*="RaceHeader__"], [class*="HeaderSummary__"]')?.textContent || ''
+            const bodyText = document.body.textContent || ''
+            return headerText.toLowerCase().includes('weighed in') || 
+                   headerText.toLowerCase().includes('result') ||
+                   bodyText.toLowerCase().includes('weighed in')
+          })
 
-          const finalResults = await page.evaluate(() => {
+          if (!isRaceFinished) return null
+
+          const finalResults = await racePage.evaluate(() => {
             const results = []
             const seenHorses = new Set()
 
-            // Find all horse links on the page — each runner has one
             const horseLinks = document.querySelectorAll('a[href*="/horse/"]')
             
             for (const horseLink of horseLinks) {
@@ -566,21 +546,17 @@ export async function fetchSlResults(dateStr) {
               if (!horseName || seenHorses.has(horseName)) continue
               seenHorses.add(horseName)
 
-              // Walk up to find the runner container (StyledRow only — skip NextRaceLine/other widgets)
               const container = horseLink.closest('[class*="ResultRunner__StyledRow"]')
               if (!container) continue
 
-              // The detail row (trainer/jockey) is the next sibling
               const detailRow = container.nextElementSibling
 
-              // Get odds — look for fractional odds text near the horse
               let oddsRaw = 'SP'
               const oddsSpan = container.querySelector('[class*="BetLink"] span')
               if (oddsSpan) {
                 const t = oddsSpan.textContent.trim()
                 if (/^\d+\/\d+f?$/.test(t) || /^\d+\/\d+$/.test(t)) oddsRaw = t
               }
-              // Fallback: search all text in container
               if (oddsRaw === 'SP') {
                 const allText = container.querySelectorAll('*')
                 for (let j = allText.length - 1; j >= 0; j--) {
@@ -621,42 +597,51 @@ export async function fetchSlResults(dateStr) {
           
           const offTime = (race.title || '').match(/^(\d{2}:\d{2})/)?.[1] || ''
           
-          if (finalResults.length > 0 && isUkIre(course)) {
-            allRaces.push({
-              race_id: `${course}-${raceId}`,
-              course,
-              off_time: offTime,
-              off_dt: offTime ? `${dateStr}T${offTime}:00` : '',
-              date: dateStr,
-              region: 'GB',
-              race_name: race.title,
-              type: race.title.toLowerCase().includes('hurdle') ? 'Hurdle' : race.title.toLowerCase().includes('chase') ? 'Chase' : 'Flat',
-              going: '',
-              surface: '',
-              field_size: finalResults.length,
-              race_class: 0,
-              distance_f: '',
-              runners: finalResults.map(r => ({
-                horse_id: '',
-                horse: r.horse,
-                atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(r.horse)}`,
-                position: parseInt(r.position) || 0,
-                jockey: r.jockey,
-                trainer: r.trainer,
-                odds: 0,
-                sp: parseFractionalOdds(r.rawOdds),
-                draw: 0,
-                lbs: '',
-                form: '',
-                age: 0,
-                sex: '',
-                commentary: '',
-              })).sort((a, b) => a.position - b.position),
-            })
+          if (finalResults.length === 0 || !isUkIre(course)) return null
+
+          return {
+            race_id: `${course}-${raceId}`,
+            course,
+            off_time: offTime,
+            off_dt: offTime ? `${dateStr}T${offTime}:00` : '',
+            date: dateStr,
+            region: 'GB',
+            race_name: race.title,
+            type: race.title.toLowerCase().includes('hurdle') ? 'Hurdle' : race.title.toLowerCase().includes('chase') ? 'Chase' : 'Flat',
+            going: '',
+            surface: '',
+            field_size: finalResults.length,
+            race_class: 0,
+            distance_f: '',
+            runners: finalResults.map(r => ({
+              horse_id: '',
+              horse: r.horse,
+              atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(r.horse)}`,
+              position: parseInt(r.position) || 0,
+              jockey: r.jockey,
+              trainer: r.trainer,
+              odds: 0,
+              sp: parseFractionalOdds(r.rawOdds),
+              draw: 0,
+              lbs: '',
+              form: '',
+              age: 0,
+              sex: '',
+              commentary: '',
+            })).sort((a, b) => a.position - b.position),
           }
-        } else {
-          console.log("Race hasn't run yet.")
+        } finally {
+          await racePage.close()
         }
+      }
+
+      for (let i = 0; i < uniqueLinks.length; i += CONCURRENCY) {
+        const batch = uniqueLinks.slice(i, i + CONCURRENCY)
+        const batchResults = await Promise.all(batch.map(scrapeRace))
+        for (const r of batchResults) {
+          if (r) allRaces.push(r)
+        }
+        console.log(`[SL] Results batch ${Math.floor(i / CONCURRENCY) + 1}/${Math.ceil(uniqueLinks.length / CONCURRENCY)}: ${batchResults.filter(Boolean).length}/${batch.length} races scraped`)
       }
 
       console.log(`[SL] Found ${allRaces.length} races with results`)

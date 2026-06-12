@@ -454,6 +454,11 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
                 })}
               </div>
             )}
+            {runner.personalAffinity?.adjustment !== undefined && (
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${(runner.personalAffinity.adjustment ?? 0) > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                {(runner.personalAffinity.adjustment ?? 0) > 0 ? '✓' : '✗'} PA {(runner.personalAffinity.adjustment ?? 0) >= 5 ? 'Strong' : (runner.personalAffinity.adjustment ?? 0) >= 2 ? 'Positive' : (runner.personalAffinity.adjustment ?? 0) > 0 ? 'Weak' : 'Negative'}
+              </span>
+            )}
 
             <div className='flex gap-2 mt-2 flex-wrap'>
               {runner.odds && <span className='px-2 py-0.5 bg-white/[0.06] text-white rounded text-xs font-bold'>{runner.odds}</span>}

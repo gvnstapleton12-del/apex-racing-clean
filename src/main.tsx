@@ -45,7 +45,7 @@ const tabs = [
   'Racecards',
   'Results',
   'Intelligence',
-  'Proof',
+  'Evidence',
   'Calibration',
   'Rating Edge',
   'Upload',
@@ -805,7 +805,7 @@ function App() {
       return <TrackDirectory />
     }
 
-    if (activeTab === 'Proof') {
+    if (activeTab === 'Evidence') {
       return <Proof />
     }
   }
@@ -846,7 +846,7 @@ function App() {
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Tools</div>
             <div className='space-y-1'>
-              {['Results', 'Proof', 'Rating Edge', 'Upload', 'Replays', 'Analytics', 'Tracks'].map((tab) => (
+              {['Results', 'Evidence', 'Rating Edge', 'Upload', 'Replays', 'Analytics', 'Tracks'].map((tab) => (
                 <button
                   key={tab}
                   type='button'

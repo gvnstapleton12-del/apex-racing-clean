@@ -52,6 +52,8 @@ export async function createTables(db) {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `)
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_horse_name ON horse_runs(horse_name)`)
+  await db.exec(`CREATE INDEX IF NOT EXISTS idx_horse_runs_date ON horse_runs(horse_name, race_date DESC)`)
 }
 
 export async function closeHorseDb(db) {
