@@ -222,6 +222,43 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
         </div>
       )}
 
+      {/* Derived Stats — from historical results */}
+      {(track as any).derivedStats && (
+        <div>
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Historical Data</h4>
+          <div className="text-[10px] text-zinc-500 mb-1">{(track as any).derivedStats.raceCount} races · {(track as any).derivedStats.runnerCount} runners</div>
+          {/* Draw bias */}
+          {(track as any).derivedStats.drawBias && (
+            <div className="mb-2">
+              <span className="text-[10px] text-zinc-400">Draw Bias: </span>
+              <span className="text-[10px] text-blue-400">Low {(track as any).derivedStats.drawBias.low}%</span>
+              <span className="text-[10px] text-zinc-600"> · </span>
+              <span className="text-[10px] text-zinc-400">Mid {(track as any).derivedStats.drawBias.mid}%</span>
+              <span className="text-[10px] text-zinc-600"> · </span>
+              <span className="text-[10px] text-amber-400">High {(track as any).derivedStats.drawBias.high}%</span>
+            </div>
+          )}
+          {/* Going bias */}
+          {(track as any).derivedStats.goingBias && Object.keys((track as any).derivedStats.goingBias).length > 0 && (
+            <div className="mb-1">
+              <span className="text-[10px] text-zinc-400">Going: </span>
+              {Object.entries((track as any).derivedStats.goingBias).map(([going, v]: [string, any]) => (
+                <span key={going} className="text-[10px] text-zinc-300">{going} {v.wr}% ({v.runs}r) · </span>
+              ))}
+            </div>
+          )}
+          {/* Distance bias */}
+          {(track as any).derivedStats.distanceBias && Object.keys((track as any).derivedStats.distanceBias).length > 0 && (
+            <div>
+              <span className="text-[10px] text-zinc-400">Distance: </span>
+              {Object.entries((track as any).derivedStats.distanceBias).map(([dist, v]: [string, any]) => (
+                <span key={dist} className="text-[10px] text-zinc-300">{dist} {v.wr}% · </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* System Exclusions */}
       {(track.systemExclusions?.length || 0) > 0 && (
         <div>
@@ -269,7 +306,7 @@ export default function TrackDirectory() {
   const [filterHandedness, setFilterHandedness] = useState('ALL')
   const [filterLayout, setFilterLayout] = useState('ALL')
   const [filterCategory, setFilterCategory] = useState('ALL')
-  const [expanded, setExpanded] = useState<string | null>(null)
+  const [expandedAll, setExpandedAll] = useState(true)
 
   const trackEntries = useMemo(() => {
     return Object.entries(tracks).filter(([name, track]) => {
@@ -342,16 +379,10 @@ export default function TrackDirectory() {
 
           return (
           <div key={name}>
-            {expanded === name ? (
-              <div className="relative">
-                <button onClick={() => setExpanded(null)}
-                  className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-full bg-zinc-800 border border-zinc-600 text-zinc-400 text-xs flex items-center justify-center hover:text-white hover:border-zinc-400 transition">
-                  ×
-                </button>
-                <TrackCard name={name} track={track} />
-              </div>
+            {expandedAll ? (
+              <TrackCard name={name} track={track} />
             ) : (
-              <button onClick={() => setExpanded(name)}
+              <button onClick={() => setExpandedAll(true)}
                 className="apex-card p-4 w-full text-left hover:border-amber-500/30 transition cursor-pointer">
                 {/* Track name + handedness */}
                 <div className="flex items-center justify-between mb-3">
@@ -418,11 +449,20 @@ export default function TrackDirectory() {
                     ))}
                   </div>
                 )}
+                <div className="mt-2 text-[10px] text-amber-400">Click to expand all tracks →</div>
               </button>
             )}
           </div>
           )
         })}
+      </div>
+
+      {/* Expand/Collapse toggle */}
+      <div className="flex justify-center">
+        <button onClick={() => setExpandedAll(!expandedAll)}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:border-amber-500/30 transition">
+          {expandedAll ? '↑ Collapse All' : '↓ Expand All'}
+        </button>
       </div>
 
       {trackEntries.length === 0 && (

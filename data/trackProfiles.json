@@ -344,7 +344,55 @@
         "draw": 4
       },
       "isJumps": false,
-      "discipline": "All-Weather (Tapeta) + Flat"
+      "discipline": "All-Weather (Tapeta) + Flat",
+      "derivedStats": {
+        "raceCount": 15,
+        "runnerCount": 117,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "25.0",
+          "mid": "75.0",
+          "high": "0.0",
+          "byDistance": {
+            "2m+": {
+              "low": "29",
+              "mid": "71",
+              "high": "0",
+              "wins": 7
+            }
+          }
+        },
+        "goingBias": {
+          "Standard": {
+            "wr": "10.5",
+            "runs": 76
+          },
+          "Soft": {
+            "wr": "17.1",
+            "runs": 41
+          }
+        },
+        "distanceBias": {
+          "1m4f": {
+            "wr": "12.5",
+            "runs": 8
+          },
+          "2m+": {
+            "wr": "12.8",
+            "runs": 109
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.3",
+            "runs": 78
+          },
+          "small": {
+            "wr": "17.9",
+            "runs": 39
+          }
+        }
+      }
     },
     "Wolverhampton": {
       "handedness": "Left",
@@ -774,7 +822,61 @@
         "draw": 4
       },
       "isJumps": false,
-      "discipline": "All-Weather (Tapeta)"
+      "discipline": "All-Weather (Tapeta)",
+      "derivedStats": {
+        "raceCount": 21,
+        "runnerCount": 203,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "42.9",
+          "mid": "14.3",
+          "high": "42.9",
+          "byDistance": {
+            "1m6f": {
+              "low": "0",
+              "mid": "67",
+              "high": "33",
+              "wins": 3
+            },
+            "2m+": {
+              "low": "50",
+              "mid": "6",
+              "high": "44",
+              "wins": 16
+            }
+          }
+        },
+        "goingBias": {
+          "Standard": {
+            "wr": "10.3",
+            "runs": 203
+          }
+        },
+        "distanceBias": {
+          "1m6f": {
+            "wr": "12.5",
+            "runs": 24
+          },
+          "2m+": {
+            "wr": "10.1",
+            "runs": 158
+          },
+          "1m2f": {
+            "wr": "9.5",
+            "runs": 21
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.6",
+            "runs": 187
+          },
+          "small": {
+            "wr": "18.8",
+            "runs": 16
+          }
+        }
+      }
     },
     "Worcester": {
       "aka": "Worcester Racecourse (The Pitchcroft, Worcestershire)",
@@ -1021,7 +1123,35 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 110,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "12.7",
+            "runs": 110
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "12.7",
+            "runs": 110
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "17.1",
+            "runs": 41
+          },
+          "medium": {
+            "wr": "10.1",
+            "runs": 69
+          }
+        }
+      }
     },
     "Newcastle": {
       "handedness": "Left",
@@ -1376,7 +1506,59 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "All-Weather (Tapeta) + Flat"
+      "discipline": "All-Weather (Tapeta) + Flat",
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 64,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "16.7",
+          "mid": "83.3",
+          "high": "0.0",
+          "byDistance": {
+            "1m6f": {
+              "low": "33",
+              "mid": "67",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Standard": {
+            "wr": "9.4",
+            "runs": 64
+          }
+        },
+        "distanceBias": {
+          "1m4f": {
+            "wr": "7.7",
+            "runs": 13
+          },
+          "1m6f": {
+            "wr": "8.3",
+            "runs": 36
+          },
+          "5f": {
+            "wr": "13.3",
+            "runs": 15
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "7.7",
+            "runs": 26
+          },
+          "medium": {
+            "wr": "9.4",
+            "runs": 32
+          },
+          "small": {
+            "wr": "16.7",
+            "runs": 6
+          }
+        }
+      }
     },
     "Pontefract": {
       "handedness": "Right",
@@ -1577,7 +1759,69 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 12,
+        "runnerCount": 94,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "50.0",
+          "mid": "8.3",
+          "high": "41.7",
+          "byDistance": {
+            "6f": {
+              "low": "40",
+              "mid": "0",
+              "high": "60",
+              "wins": 5
+            },
+            "2m+": {
+              "low": "33",
+              "mid": "0",
+              "high": "67",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Soft": {
+            "wr": "11.8",
+            "runs": 51
+          },
+          "Good to Firm": {
+            "wr": "14.0",
+            "runs": 43
+          }
+        },
+        "distanceBias": {
+          "6f": {
+            "wr": "12.2",
+            "runs": 41
+          },
+          "2m+": {
+            "wr": "12.5",
+            "runs": 24
+          },
+          "1m6f": {
+            "wr": "11.8",
+            "runs": 17
+          },
+          "1m4f": {
+            "wr": "16.7",
+            "runs": 12
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "11.3",
+            "runs": 62
+          },
+          "small": {
+            "wr": "15.6",
+            "runs": 32
+          }
+        }
+      }
     },
     "Newmarket": {
       "handedness": "Right",
@@ -2206,7 +2450,60 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 105,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "42.9",
+          "mid": "14.3",
+          "high": "42.9",
+          "byDistance": {}
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "6.7",
+            "runs": 105
+          }
+        },
+        "distanceBias": {
+          "6f": {
+            "wr": "7.1",
+            "runs": 28
+          },
+          "5f": {
+            "wr": "5.6",
+            "runs": 18
+          },
+          "1m6f": {
+            "wr": "14.3",
+            "runs": 7
+          },
+          "7f": {
+            "wr": "4.8",
+            "runs": 42
+          },
+          "1m4f": {
+            "wr": "10.0",
+            "runs": 10
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "5.0",
+            "runs": 80
+          },
+          "medium": {
+            "wr": "11.1",
+            "runs": 18
+          },
+          "small": {
+            "wr": "14.3",
+            "runs": 7
+          }
+        }
+      }
     },
     "Doncaster": {
       "handedness": "Left/Straight",
@@ -3043,7 +3340,93 @@
         "draw": 4
       },
       "isJumps": false,
-      "discipline": "All-Weather (Polytrack) + Flat (dual surface)"
+      "discipline": "All-Weather (Polytrack) + Flat (dual surface)",
+      "derivedStats": {
+        "raceCount": 131,
+        "runnerCount": 1203,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "52.6",
+          "mid": "10.5",
+          "high": "36.8",
+          "byDistance": {
+            "1m2f": {
+              "low": "50",
+              "mid": "25",
+              "high": "25",
+              "wins": 4
+            },
+            "6f": {
+              "low": "33",
+              "mid": "0",
+              "high": "67",
+              "wins": 3
+            },
+            "2m+": {
+              "low": "50",
+              "mid": "25",
+              "high": "25",
+              "wins": 4
+            },
+            "7f": {
+              "low": "80",
+              "mid": "0",
+              "high": "20",
+              "wins": 5
+            }
+          }
+        },
+        "goingBias": {
+          "Standard": {
+            "wr": "0.3",
+            "runs": 1087
+          },
+          "Good to Firm": {
+            "wr": "13.8",
+            "runs": 116
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "0.6",
+            "runs": 684
+          },
+          "1m2f": {
+            "wr": "0.9",
+            "runs": 436
+          },
+          "1m6f": {
+            "wr": "25.0",
+            "runs": 4
+          },
+          "6f": {
+            "wr": "12.0",
+            "runs": 25
+          },
+          "7f": {
+            "wr": "12.8",
+            "runs": 39
+          },
+          "1m4f": {
+            "wr": "13.3",
+            "runs": 15
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "0.9",
+            "runs": 762
+          },
+          "small": {
+            "wr": "4.5",
+            "runs": 246
+          },
+          "large": {
+            "wr": "0.5",
+            "runs": 195
+          }
+        }
+      }
     },
     "Huntingdon": {
       "aka": "Huntingdon Racecourse (Cambridgeshire)",
@@ -3269,7 +3652,31 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 26,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "23.1",
+            "runs": 26
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "23.1",
+            "runs": 26
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "23.1",
+            "runs": 26
+          }
+        }
+      }
     },
     "Kempton": {
       "handedness": "Left",
@@ -3496,7 +3903,67 @@
         "draw": 4
       },
       "isJumps": false,
-      "discipline": "All-Weather (Polytrack) + Flat"
+      "discipline": "All-Weather (Polytrack) + Flat",
+      "derivedStats": {
+        "raceCount": 8,
+        "runnerCount": 86,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "37.5",
+          "mid": "62.5",
+          "high": "0.0",
+          "byDistance": {
+            "7f": {
+              "low": "0",
+              "mid": "100",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Standard": {
+            "wr": "9.3",
+            "runs": 86
+          }
+        },
+        "distanceBias": {
+          "1m": {
+            "wr": "7.1",
+            "runs": 14
+          },
+          "6f": {
+            "wr": "20.0",
+            "runs": 5
+          },
+          "7f": {
+            "wr": "9.1",
+            "runs": 33
+          },
+          "1m4f": {
+            "wr": "8.7",
+            "runs": 23
+          },
+          "2m+": {
+            "wr": "9.1",
+            "runs": 11
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "7.5",
+            "runs": 40
+          },
+          "small": {
+            "wr": "20.0",
+            "runs": 5
+          },
+          "medium": {
+            "wr": "9.8",
+            "runs": 41
+          }
+        }
+      }
     },
     "Listowel": {
       "handedness": "Left",
@@ -4018,7 +4485,71 @@
         "draw": 1
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 21,
+        "runnerCount": 218,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "85.7",
+          "mid": "0.0",
+          "high": "14.3",
+          "byDistance": {
+            "2m+": {
+              "low": "100",
+              "mid": "0",
+              "high": "0",
+              "wins": 4
+            }
+          }
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "9.0",
+            "runs": 122
+          },
+          "Other": {
+            "wr": "10.9",
+            "runs": 55
+          },
+          "Soft": {
+            "wr": "9.8",
+            "runs": 41
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.4",
+            "runs": 192
+          },
+          "1m": {
+            "wr": "20.0",
+            "runs": 5
+          },
+          "7f": {
+            "wr": "6.7",
+            "runs": 15
+          },
+          "1m6f": {
+            "wr": "16.7",
+            "runs": 6
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.4",
+            "runs": 106
+          },
+          "large": {
+            "wr": "6.7",
+            "runs": 89
+          },
+          "small": {
+            "wr": "17.4",
+            "runs": 23
+          }
+        }
+      }
     },
     "Kilbeggan": {
       "handedness": "Right",
@@ -4322,7 +4853,43 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 77,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "9.2",
+            "runs": 65
+          },
+          "Other": {
+            "wr": "8.3",
+            "runs": 12
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.1",
+            "runs": 77
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "7.3",
+            "runs": 41
+          },
+          "small": {
+            "wr": "25.0",
+            "runs": 4
+          },
+          "medium": {
+            "wr": "9.4",
+            "runs": 32
+          }
+        }
+      }
     },
     "Windsor": {
       "handedness": "Fig-8",
@@ -4540,7 +5107,71 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 23,
+        "runnerCount": 227,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "34.8",
+          "mid": "26.1",
+          "high": "39.1",
+          "byDistance": {
+            "2m+": {
+              "low": "33",
+              "mid": "20",
+              "high": "47",
+              "wins": 15
+            },
+            "1m2f": {
+              "low": "50",
+              "mid": "25",
+              "high": "25",
+              "wins": 4
+            },
+            "1m4f": {
+              "low": "25",
+              "mid": "50",
+              "high": "25",
+              "wins": 4
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "10.1",
+            "runs": 227
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.7",
+            "runs": 154
+          },
+          "1m2f": {
+            "wr": "10.0",
+            "runs": 40
+          },
+          "1m4f": {
+            "wr": "12.1",
+            "runs": 33
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "6.9",
+            "runs": 72
+          },
+          "medium": {
+            "wr": "10.0",
+            "runs": 130
+          },
+          "small": {
+            "wr": "20.0",
+            "runs": 25
+          }
+        }
+      }
     },
     "Nottingham": {
       "handedness": "Left",
@@ -4732,7 +5363,65 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 13,
+        "runnerCount": 110,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "69.2",
+          "mid": "7.7",
+          "high": "23.1",
+          "byDistance": {
+            "2m+": {
+              "low": "67",
+              "mid": "0",
+              "high": "33",
+              "wins": 9
+            },
+            "1m4f": {
+              "low": "67",
+              "mid": "33",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "13.2",
+            "runs": 53
+          },
+          "Soft": {
+            "wr": "10.5",
+            "runs": 57
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "11.3",
+            "runs": 80
+          },
+          "1m6f": {
+            "wr": "14.3",
+            "runs": 7
+          },
+          "1m4f": {
+            "wr": "13.0",
+            "runs": 23
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.7",
+            "runs": 62
+          },
+          "small": {
+            "wr": "14.6",
+            "runs": 48
+          }
+        }
+      }
     },
     "Perth": {
       "handedness": "Right",
@@ -5187,7 +5876,79 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 128,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "42.9",
+          "mid": "14.3",
+          "high": "42.9",
+          "byDistance": {
+            "5f": {
+              "low": "67",
+              "mid": "0",
+              "high": "33",
+              "wins": 3
+            },
+            "2m+": {
+              "low": "40",
+              "mid": "0",
+              "high": "60",
+              "wins": 5
+            },
+            "1m4f": {
+              "low": "33",
+              "mid": "67",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "10.9",
+            "runs": 128
+          }
+        },
+        "distanceBias": {
+          "5f": {
+            "wr": "12.0",
+            "runs": 25
+          },
+          "2m+": {
+            "wr": "10.4",
+            "runs": 48
+          },
+          "7f": {
+            "wr": "8.3",
+            "runs": 24
+          },
+          "1m4f": {
+            "wr": "10.7",
+            "runs": 28
+          },
+          "1m6f": {
+            "wr": "33.3",
+            "runs": 3
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "18.2",
+            "runs": 22
+          },
+          "medium": {
+            "wr": "9.7",
+            "runs": 93
+          },
+          "large": {
+            "wr": "7.7",
+            "runs": 13
+          }
+        }
+      }
     },
     "Ludlow": {
       "aka": "Ludlow Racecourse (Shropshire)",
@@ -5640,7 +6401,35 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 39,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "15.4",
+            "runs": 39
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "15.4",
+            "runs": 39
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "12.5",
+            "runs": 16
+          },
+          "small": {
+            "wr": "17.4",
+            "runs": 23
+          }
+        }
+      }
     },
     "Musselburgh": {
       "handedness": "Right",
@@ -5865,7 +6654,51 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 47,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "42.9",
+          "mid": "57.1",
+          "high": "0.0",
+          "byDistance": {
+            "2m+": {
+              "low": "50",
+              "mid": "50",
+              "high": "0",
+              "wins": 6
+            }
+          }
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "14.9",
+            "runs": 47
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "14.6",
+            "runs": 41
+          },
+          "1m6f": {
+            "wr": "16.7",
+            "runs": 6
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "17.4",
+            "runs": 23
+          },
+          "medium": {
+            "wr": "12.5",
+            "runs": 24
+          }
+        }
+      }
     },
     "Taunton": {
       "aka": "Taunton Racecourse (Somerset)",
@@ -6313,7 +7146,56 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 89,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "42.9",
+          "mid": "42.9",
+          "high": "14.3",
+          "byDistance": {}
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "7.9",
+            "runs": 89
+          }
+        },
+        "distanceBias": {
+          "7f": {
+            "wr": "10.0",
+            "runs": 10
+          },
+          "5f": {
+            "wr": "6.9",
+            "runs": 29
+          },
+          "1m6f": {
+            "wr": "8.3",
+            "runs": 12
+          },
+          "6f": {
+            "wr": "7.1",
+            "runs": 14
+          },
+          "2m+": {
+            "wr": "8.3",
+            "runs": 24
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "8.9",
+            "runs": 45
+          },
+          "large": {
+            "wr": "6.8",
+            "runs": 44
+          }
+        }
+      }
     },
     "Goodwood": {
       "handedness": "Right",
@@ -6559,7 +7441,89 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 122,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "50.0",
+          "mid": "28.6",
+          "high": "21.4",
+          "byDistance": {
+            "5f": {
+              "low": "67",
+              "mid": "33",
+              "high": "0",
+              "wins": 3
+            },
+            "1m2f": {
+              "low": "33",
+              "mid": "33",
+              "high": "33",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Soft": {
+            "wr": "14.3",
+            "runs": 35
+          },
+          "Good": {
+            "wr": "10.0",
+            "runs": 70
+          },
+          "Good to Firm": {
+            "wr": "11.8",
+            "runs": 17
+          }
+        },
+        "distanceBias": {
+          "6f": {
+            "wr": "16.7",
+            "runs": 12
+          },
+          "5f": {
+            "wr": "10.3",
+            "runs": 29
+          },
+          "2m+": {
+            "wr": "20.0",
+            "runs": 5
+          },
+          "1m4f": {
+            "wr": "15.4",
+            "runs": 13
+          },
+          "1m2f": {
+            "wr": "12.0",
+            "runs": 25
+          },
+          "7f": {
+            "wr": "6.5",
+            "runs": 31
+          },
+          "1m6f": {
+            "wr": "14.3",
+            "runs": 7
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "21.1",
+            "runs": 19
+          },
+          "medium": {
+            "wr": "11.1",
+            "runs": 72
+          },
+          "large": {
+            "wr": "6.5",
+            "runs": 31
+          }
+        }
+      }
     },
     "Chepstow": {
       "handedness": "Left",
@@ -6777,7 +7741,65 @@
         "draw": 1
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 110,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "20.0",
+          "mid": "13.3",
+          "high": "66.7",
+          "byDistance": {
+            "2m+": {
+              "low": "10",
+              "mid": "10",
+              "high": "80",
+              "wins": 10
+            },
+            "1m2f": {
+              "low": "25",
+              "mid": "25",
+              "high": "50",
+              "wins": 4
+            }
+          }
+        },
+        "goingBias": {
+          "Soft": {
+            "wr": "13.8",
+            "runs": 58
+          },
+          "Good to Firm": {
+            "wr": "13.5",
+            "runs": 52
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "13.5",
+            "runs": 74
+          },
+          "1m2f": {
+            "wr": "14.3",
+            "runs": 28
+          },
+          "1m4f": {
+            "wr": "12.5",
+            "runs": 8
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.1",
+            "runs": 69
+          },
+          "small": {
+            "wr": "19.5",
+            "runs": 41
+          }
+        }
+      }
     },
     "Leicester": {
       "handedness": "Right",
@@ -6997,7 +8019,75 @@
         "draw": 1
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 114,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "14.3",
+          "mid": "28.6",
+          "high": "57.1",
+          "byDistance": {
+            "6f": {
+              "low": "0",
+              "mid": "0",
+              "high": "100",
+              "wins": 5
+            },
+            "1m2f": {
+              "low": "25",
+              "mid": "75",
+              "high": "0",
+              "wins": 4
+            },
+            "7f": {
+              "low": "0",
+              "mid": "33",
+              "high": "67",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "12.3",
+            "runs": 114
+          }
+        },
+        "distanceBias": {
+          "6f": {
+            "wr": "10.9",
+            "runs": 46
+          },
+          "1m2f": {
+            "wr": "12.9",
+            "runs": 31
+          },
+          "7f": {
+            "wr": "11.5",
+            "runs": 26
+          },
+          "1m4f": {
+            "wr": "14.3",
+            "runs": 7
+          },
+          "2m+": {
+            "wr": "25.0",
+            "runs": 4
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.5",
+            "runs": 86
+          },
+          "small": {
+            "wr": "17.9",
+            "runs": 28
+          }
+        }
+      }
     },
     "Carlisle": {
       "handedness": "Right",
@@ -7200,7 +8290,75 @@
         "draw": 1
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 15,
+        "runnerCount": 141,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "26.7",
+          "mid": "33.3",
+          "high": "40.0",
+          "byDistance": {
+            "5f": {
+              "low": "0",
+              "mid": "0",
+              "high": "100",
+              "wins": 3
+            },
+            "2m+": {
+              "low": "13",
+              "mid": "50",
+              "high": "38",
+              "wins": 8
+            },
+            "1m4f": {
+              "low": "100",
+              "mid": "0",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "10.6",
+            "runs": 141
+          }
+        },
+        "distanceBias": {
+          "1m2f": {
+            "wr": "11.1",
+            "runs": 9
+          },
+          "5f": {
+            "wr": "12.0",
+            "runs": 25
+          },
+          "2m+": {
+            "wr": "9.9",
+            "runs": 81
+          },
+          "1m4f": {
+            "wr": "11.5",
+            "runs": 26
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.9",
+            "runs": 92
+          },
+          "small": {
+            "wr": "14.3",
+            "runs": 21
+          },
+          "large": {
+            "wr": "7.1",
+            "runs": 28
+          }
+        }
+      }
     },
     "Ripon": {
       "handedness": "Right",
@@ -7423,7 +8581,83 @@
         "draw": 4
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 13,
+        "runnerCount": 108,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "38.5",
+          "mid": "7.7",
+          "high": "53.8",
+          "byDistance": {
+            "6f": {
+              "low": "25",
+              "mid": "0",
+              "high": "75",
+              "wins": 4
+            },
+            "1m": {
+              "low": "0",
+              "mid": "33",
+              "high": "67",
+              "wins": 3
+            },
+            "5f": {
+              "low": "67",
+              "mid": "0",
+              "high": "33",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Soft": {
+            "wr": "12.1",
+            "runs": 58
+          },
+          "Good": {
+            "wr": "12.0",
+            "runs": 50
+          }
+        },
+        "distanceBias": {
+          "6f": {
+            "wr": "10.8",
+            "runs": 37
+          },
+          "1m": {
+            "wr": "10.3",
+            "runs": 29
+          },
+          "1m2f": {
+            "wr": "10.0",
+            "runs": 10
+          },
+          "1m6f": {
+            "wr": "20.0",
+            "runs": 5
+          },
+          "5f": {
+            "wr": "13.0",
+            "runs": 23
+          },
+          "1m4f": {
+            "wr": "25.0",
+            "runs": 4
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "17.4",
+            "runs": 23
+          },
+          "medium": {
+            "wr": "10.6",
+            "runs": 85
+          }
+        }
+      }
     },
     "Hamilton": {
       "handedness": "Right",
@@ -7642,7 +8876,65 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 119,
+        "runnerCount": 727,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "4.9",
+          "mid": "39.0",
+          "high": "56.1",
+          "byDistance": {
+            "2m+": {
+              "low": "3",
+              "mid": "48",
+              "high": "48",
+              "wins": 33
+            },
+            "1m2f": {
+              "low": "14",
+              "mid": "0",
+              "high": "86",
+              "wins": 7
+            }
+          }
+        },
+        "goingBias": {
+          "Soft": {
+            "wr": "5.0",
+            "runs": 686
+          },
+          "Good to Firm": {
+            "wr": "17.1",
+            "runs": 41
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.4",
+            "runs": 352
+          },
+          "1m2f": {
+            "wr": "5.9",
+            "runs": 119
+          },
+          "1m6f": {
+            "wr": "0.4",
+            "runs": 256
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "6.1",
+            "runs": 327
+          },
+          "medium": {
+            "wr": "5.3",
+            "runs": 400
+          }
+        }
+      }
     },
     "Ayr": {
       "handedness": "Left",
@@ -7990,7 +9282,57 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 35,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "66.7",
+          "mid": "0.0",
+          "high": "33.3",
+          "byDistance": {
+            "1m4f": {
+              "low": "100",
+              "mid": "0",
+              "high": "0",
+              "wins": 3
+            },
+            "2m+": {
+              "low": "33",
+              "mid": "0",
+              "high": "67",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "17.1",
+            "runs": 35
+          }
+        },
+        "distanceBias": {
+          "1m4f": {
+            "wr": "20.0",
+            "runs": 15
+          },
+          "2m+": {
+            "wr": "15.0",
+            "runs": 20
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "22.2",
+            "runs": 18
+          },
+          "medium": {
+            "wr": "11.8",
+            "runs": 17
+          }
+        }
+      }
     },
     "Cartmel": {
       "aka": "Cartmel Racecourse (Cumbria)",
@@ -8217,7 +9559,43 @@
         "draw": 1,
         "jumping": 5
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 20,
+        "runnerCount": 155,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Soft": {
+            "wr": "10.0",
+            "runs": 10
+          },
+          "Good": {
+            "wr": "13.1",
+            "runs": 145
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "12.9",
+            "runs": 155
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.2",
+            "runs": 98
+          },
+          "small": {
+            "wr": "20.5",
+            "runs": 44
+          },
+          "large": {
+            "wr": "7.7",
+            "runs": 13
+          }
+        }
+      }
     },
     "Catterick": {
       "handedness": "Left",
@@ -8416,7 +9794,59 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 99,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "57.1",
+          "mid": "14.3",
+          "high": "28.6",
+          "byDistance": {
+            "2m+": {
+              "low": "50",
+              "mid": "10",
+              "high": "40",
+              "wins": 10
+            }
+          }
+        },
+        "goingBias": {
+          "Soft": {
+            "wr": "13.5",
+            "runs": 52
+          },
+          "Good to Firm": {
+            "wr": "14.9",
+            "runs": 47
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "13.9",
+            "runs": 72
+          },
+          "1m6f": {
+            "wr": "18.2",
+            "runs": 11
+          },
+          "5f": {
+            "wr": "12.5",
+            "runs": 16
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "16.9",
+            "runs": 59
+          },
+          "medium": {
+            "wr": "10.0",
+            "runs": 40
+          }
+        }
+      }
     },
     "Bath": {
       "handedness": "Left",
@@ -8545,7 +9975,73 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 110,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "7.1",
+          "mid": "42.9",
+          "high": "50.0",
+          "byDistance": {
+            "2m+": {
+              "low": "13",
+              "mid": "38",
+              "high": "50",
+              "wins": 8
+            },
+            "1m": {
+              "low": "0",
+              "mid": "0",
+              "high": "100",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "10.8",
+            "runs": 74
+          },
+          "Firm": {
+            "wr": "16.7",
+            "runs": 36
+          }
+        },
+        "distanceBias": {
+          "1m6f": {
+            "wr": "10.0",
+            "runs": 10
+          },
+          "1m4f": {
+            "wr": "12.5",
+            "runs": 16
+          },
+          "2m+": {
+            "wr": "12.1",
+            "runs": 66
+          },
+          "1m": {
+            "wr": "16.7",
+            "runs": 18
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.4",
+            "runs": 48
+          },
+          "small": {
+            "wr": "19.4",
+            "runs": 36
+          },
+          "large": {
+            "wr": "7.7",
+            "runs": 26
+          }
+        }
+      }
     },
     "Brighton": {
       "handedness": "Left",
@@ -8741,7 +10237,55 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 58,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "14.3",
+          "mid": "42.9",
+          "high": "42.9",
+          "byDistance": {
+            "2m+": {
+              "low": "17",
+              "mid": "50",
+              "high": "33",
+              "wins": 6
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "12.1",
+            "runs": 58
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "11.8",
+            "runs": 51
+          },
+          "1m4f": {
+            "wr": "14.3",
+            "runs": 7
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "16.0",
+            "runs": 25
+          },
+          "medium": {
+            "wr": "10.0",
+            "runs": 20
+          },
+          "large": {
+            "wr": "7.7",
+            "runs": 13
+          }
+        }
+      }
     },
     "Salisbury": {
       "handedness": "Right",
@@ -8955,7 +10499,60 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 78,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "28.6",
+          "mid": "28.6",
+          "high": "42.9",
+          "byDistance": {}
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "9.0",
+            "runs": 78
+          }
+        },
+        "distanceBias": {
+          "5f": {
+            "wr": "11.1",
+            "runs": 9
+          },
+          "1m": {
+            "wr": "9.1",
+            "runs": 11
+          },
+          "6f": {
+            "wr": "9.1",
+            "runs": 22
+          },
+          "2m+": {
+            "wr": "7.1",
+            "runs": 14
+          },
+          "1m2f": {
+            "wr": "8.3",
+            "runs": 12
+          },
+          "1m6f": {
+            "wr": "10.0",
+            "runs": 10
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.4",
+            "runs": 64
+          },
+          "large": {
+            "wr": "7.1",
+            "runs": 14
+          }
+        }
+      }
     },
     "Beverley": {
       "handedness": "Right",
@@ -9185,7 +10782,71 @@
         "draw": 4
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 107,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "28.6",
+          "mid": "28.6",
+          "high": "42.9",
+          "byDistance": {
+            "5f": {
+              "low": "50",
+              "mid": "0",
+              "high": "50",
+              "wins": 4
+            },
+            "2m+": {
+              "low": "40",
+              "mid": "40",
+              "high": "20",
+              "wins": 5
+            },
+            "1m2f": {
+              "low": "0",
+              "mid": "33",
+              "high": "67",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "13.1",
+            "runs": 107
+          }
+        },
+        "distanceBias": {
+          "5f": {
+            "wr": "11.8",
+            "runs": 34
+          },
+          "2m+": {
+            "wr": "10.4",
+            "runs": 48
+          },
+          "1m2f": {
+            "wr": "18.8",
+            "runs": 16
+          },
+          "1m6f": {
+            "wr": "22.2",
+            "runs": 9
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "17.9",
+            "runs": 39
+          },
+          "medium": {
+            "wr": "10.3",
+            "runs": 68
+          }
+        }
+      }
     },
     "Haydock": {
       "aka": "Haydock Park Racecourse (Merseyside, England)",
@@ -9520,7 +11181,85 @@
         "draw": 2,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 18,
+        "runnerCount": 155,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "33.3",
+          "mid": "27.8",
+          "high": "38.9",
+          "byDistance": {
+            "2m+": {
+              "low": "0",
+              "mid": "40",
+              "high": "60",
+              "wins": 5
+            },
+            "1m4f": {
+              "low": "60",
+              "mid": "40",
+              "high": "0",
+              "wins": 5
+            },
+            "6f": {
+              "low": "20",
+              "mid": "0",
+              "high": "80",
+              "wins": 5
+            },
+            "5f": {
+              "low": "67",
+              "mid": "33",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Heavy": {
+            "wr": "12.7",
+            "runs": 55
+          },
+          "Soft": {
+            "wr": "11.0",
+            "runs": 100
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "13.2",
+            "runs": 38
+          },
+          "1m4f": {
+            "wr": "11.6",
+            "runs": 43
+          },
+          "6f": {
+            "wr": "10.4",
+            "runs": 48
+          },
+          "5f": {
+            "wr": "11.5",
+            "runs": 26
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "17.5",
+            "runs": 40
+          },
+          "medium": {
+            "wr": "10.0",
+            "runs": 100
+          },
+          "large": {
+            "wr": "6.7",
+            "runs": 15
+          }
+        }
+      }
     },
     "Hexham": {
       "aka": "Hexham Racecourse (High Yarridge, Northumberland)",
@@ -10829,7 +12568,59 @@
         "draw": 1
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 78,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "71.4",
+          "mid": "14.3",
+          "high": "14.3",
+          "byDistance": {
+            "2m+": {
+              "low": "50",
+              "mid": "25",
+              "high": "25",
+              "wins": 4
+            }
+          }
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "9.0",
+            "runs": 78
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.5",
+            "runs": 42
+          },
+          "7f": {
+            "wr": "7.7",
+            "runs": 13
+          },
+          "1m2f": {
+            "wr": "8.7",
+            "runs": 23
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "11.8",
+            "runs": 17
+          },
+          "small": {
+            "wr": "14.3",
+            "runs": 14
+          },
+          "large": {
+            "wr": "6.4",
+            "runs": 47
+          }
+        }
+      }
     },
     "Clonmel": {
       "handedness": "Right",
@@ -11383,7 +13174,51 @@
         "draw": 2
       },
       "isJumps": false,
-      "discipline": "Flat only"
+      "discipline": "Flat only",
+      "derivedStats": {
+        "raceCount": 98,
+        "runnerCount": 1106,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "0.0",
+            "runs": 1106
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "0.0",
+            "runs": 308
+          },
+          "1m4f": {
+            "wr": "0.0",
+            "runs": 56
+          },
+          "1m2f": {
+            "wr": "0.0",
+            "runs": 518
+          },
+          "1m": {
+            "wr": "0.0",
+            "runs": 224
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "0.0",
+            "runs": 308
+          },
+          "small": {
+            "wr": "0.0",
+            "runs": 154
+          },
+          "large": {
+            "wr": "0.0",
+            "runs": 644
+          }
+        }
+      }
     },
     "Navan": {
       "handedness": "Left",
@@ -11881,7 +13716,43 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "derivedStats": {
+        "raceCount": 13,
+        "runnerCount": 87,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "15.2",
+            "runs": 46
+          },
+          "Good": {
+            "wr": "15.2",
+            "runs": 33
+          },
+          "Soft": {
+            "wr": "12.5",
+            "runs": 8
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "14.9",
+            "runs": 87
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.7",
+            "runs": 56
+          },
+          "small": {
+            "wr": "22.6",
+            "runs": 31
+          }
+        }
+      }
     },
     "Dundalk": {
       "aka": "Dundalk Stadium",
@@ -12250,7 +14121,59 @@
         "positioning": 4,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 78,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "57.1",
+          "mid": "14.3",
+          "high": "28.6",
+          "byDistance": {
+            "1m4f": {
+              "low": "67",
+              "mid": "33",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Standard": {
+            "wr": "9.0",
+            "runs": 78
+          }
+        },
+        "distanceBias": {
+          "1m": {
+            "wr": "10.0",
+            "runs": 10
+          },
+          "7f": {
+            "wr": "9.1",
+            "runs": 11
+          },
+          "5f": {
+            "wr": "9.5",
+            "runs": 21
+          },
+          "1m4f": {
+            "wr": "8.3",
+            "runs": 36
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.4",
+            "runs": 64
+          },
+          "large": {
+            "wr": "7.1",
+            "runs": 14
+          }
+        }
+      }
     },
     "Bellewstown": {
       "aka": "Bellewstown Racecourse",
@@ -13011,7 +14934,55 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 8,
+        "runnerCount": 105,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "62.5",
+          "mid": "37.5",
+          "high": "0.0",
+          "byDistance": {
+            "1m2f": {
+              "low": "60",
+              "mid": "40",
+              "high": "0",
+              "wins": 5
+            }
+          }
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "7.6",
+            "runs": 105
+          }
+        },
+        "distanceBias": {
+          "1m": {
+            "wr": "7.4",
+            "runs": 27
+          },
+          "1m6f": {
+            "wr": "6.3",
+            "runs": 16
+          },
+          "1m2f": {
+            "wr": "8.1",
+            "runs": 62
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.7",
+            "runs": 31
+          },
+          "large": {
+            "wr": "6.8",
+            "runs": 74
+          }
+        }
+      }
     },
     "Fakenham": {
       "aka": "Fakenham Racecourse (Norfolk)",
@@ -13274,7 +15245,31 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 27,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "22.2",
+            "runs": 27
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "22.2",
+            "runs": 27
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "22.2",
+            "runs": 27
+          }
+        }
+      }
     },
     "Ffos Las": {
       "aka": "Ffos Las Racecourse (Carmarthenshire, Wales)",
@@ -13538,7 +15533,47 @@
         "positioning": 3,
         "draw": 1
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 168,
+        "runnerCount": 630,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Soft": {
+            "wr": "0.0",
+            "runs": 630
+          }
+        },
+        "distanceBias": {
+          "5f": {
+            "wr": "0.0",
+            "runs": 112
+          },
+          "2m+": {
+            "wr": "0.0",
+            "runs": 70
+          },
+          "1m": {
+            "wr": "0.0",
+            "runs": 154
+          },
+          "1m4f": {
+            "wr": "0.0",
+            "runs": 294
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "0.0",
+            "runs": 392
+          },
+          "small": {
+            "wr": "0.0",
+            "runs": 238
+          }
+        }
+      }
     },
     "Fontwell": {
       "aka": "Fontwell Park Racecourse (West Sussex)",
@@ -13788,7 +15823,35 @@
         "draw": 1,
         "jumping": 5
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 42,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Soft": {
+            "wr": "16.7",
+            "runs": 42
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "16.7",
+            "runs": 42
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "12.5",
+            "runs": 8
+          },
+          "small": {
+            "wr": "17.6",
+            "runs": 34
+          }
+        }
+      }
     },
     "Galway": {
       "aka": "Galway Racecourse (Ballybrit)",
@@ -15480,7 +17543,35 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 43,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "16.3",
+            "runs": 43
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "16.3",
+            "runs": 43
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "18.2",
+            "runs": 33
+          },
+          "medium": {
+            "wr": "10.0",
+            "runs": 10
+          }
+        }
+      }
     },
     "Sligo": {
       "aka": "Sligo Racecourse (Cleveragh)",
@@ -16462,7 +18553,35 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 31,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Soft": {
+            "wr": "21.7",
+            "runs": 23
+          },
+          "Good": {
+            "wr": "25.0",
+            "runs": 8
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "22.6",
+            "runs": 31
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "22.6",
+            "runs": 31
+          }
+        }
+      }
     },
     "Punchestown": {
       "aka": "Punchestown Racecourse",
@@ -17449,7 +19568,61 @@
         "draw": 2,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 56,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "42.9",
+          "mid": "14.3",
+          "high": "42.9",
+          "byDistance": {
+            "2m+": {
+              "low": "33",
+              "mid": "0",
+              "high": "67",
+              "wins": 3
+            },
+            "1m": {
+              "low": "67",
+              "mid": "33",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "12.5",
+            "runs": 56
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "13.0",
+            "runs": 23
+          },
+          "1m": {
+            "wr": "11.1",
+            "runs": 27
+          },
+          "1m2f": {
+            "wr": "16.7",
+            "runs": 6
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "11.1",
+            "runs": 36
+          },
+          "small": {
+            "wr": "15.0",
+            "runs": 20
+          }
+        }
+      }
     },
     "Newbury": {
       "aka": "Newbury Racecourse (Berkshire, England)",
@@ -17807,7 +19980,59 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 53,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "50.0",
+          "mid": "50.0",
+          "high": "0.0",
+          "byDistance": {
+            "2m+": {
+              "low": "33",
+              "mid": "67",
+              "high": "0",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "11.3",
+            "runs": 53
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "11.1",
+            "runs": 27
+          },
+          "1m": {
+            "wr": "8.3",
+            "runs": 12
+          },
+          "6f": {
+            "wr": "14.3",
+            "runs": 7
+          },
+          "1m2f": {
+            "wr": "14.3",
+            "runs": 7
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.4",
+            "runs": 32
+          },
+          "small": {
+            "wr": "14.3",
+            "runs": 21
+          }
+        }
+      }
     },
     "Chester": {
       "aka": "Chester Racecourse (The Roodee)",
@@ -18089,7 +20314,47 @@
         "positioning": 5,
         "draw": 5
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 75,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "57.1",
+          "mid": "0.0",
+          "high": "42.9",
+          "byDistance": {
+            "2m+": {
+              "low": "50",
+              "mid": "0",
+              "high": "50",
+              "wins": 6
+            }
+          }
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "9.3",
+            "runs": 75
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.2",
+            "runs": 65
+          },
+          "1m4f": {
+            "wr": "10.0",
+            "runs": 10
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.3",
+            "runs": 75
+          }
+        }
+      }
     },
     "Tramore": {
       "aka": "Tramore Racecourse (County Waterford, Ireland)",
@@ -18318,7 +20583,39 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 14,
+        "runnerCount": 151,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "9.3",
+            "runs": 151
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.3",
+            "runs": 151
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.0",
+            "runs": 80
+          },
+          "large": {
+            "wr": "6.8",
+            "runs": 59
+          },
+          "small": {
+            "wr": "16.7",
+            "runs": 12
+          }
+        }
+      }
     },
     "Downpatrick": {
       "aka": "Downpatrick Racecourse (County Down, Northern Ireland)",
@@ -18542,7 +20839,39 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 76,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "9.2",
+            "runs": 76
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.2",
+            "runs": 76
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "6.8",
+            "runs": 44
+          },
+          "medium": {
+            "wr": "11.1",
+            "runs": 18
+          },
+          "small": {
+            "wr": "14.3",
+            "runs": 14
+          }
+        }
+      }
     },
     "Limerick": {
       "aka": "Limerick Racecourse (Greenmount Park)",
@@ -18838,7 +21167,47 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 16,
+        "runnerCount": 178,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "11.4",
+            "runs": 70
+          },
+          "Other": {
+            "wr": "6.1",
+            "runs": 33
+          },
+          "Soft": {
+            "wr": "8.0",
+            "runs": 75
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.0",
+            "runs": 178
+          }
+        },
+        "fieldSizeBias": {
+          "large": {
+            "wr": "6.5",
+            "runs": 93
+          },
+          "small": {
+            "wr": "21.4",
+            "runs": 14
+          },
+          "medium": {
+            "wr": "9.9",
+            "runs": 71
+          }
+        }
+      }
     },
     "Down Royal": {
       "aka": "Down Royal Racecourse (Maze, near Belfast, NI)",
@@ -19175,7 +21544,63 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 8,
+        "runnerCount": 94,
+        "sufficientData": false,
+        "drawBias": {
+          "low": "25.0",
+          "mid": "25.0",
+          "high": "50.0",
+          "byDistance": {
+            "7f": {
+              "low": "0",
+              "mid": "33",
+              "high": "67",
+              "wins": 3
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "8.5",
+            "runs": 94
+          }
+        },
+        "distanceBias": {
+          "5f": {
+            "wr": "10.0",
+            "runs": 10
+          },
+          "7f": {
+            "wr": "7.1",
+            "runs": 42
+          },
+          "2m+": {
+            "wr": "10.5",
+            "runs": 19
+          },
+          "1m4f": {
+            "wr": "8.7",
+            "runs": 23
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "9.1",
+            "runs": 33
+          },
+          "large": {
+            "wr": "7.1",
+            "runs": 56
+          },
+          "small": {
+            "wr": "20.0",
+            "runs": 5
+          }
+        }
+      }
     },
     "Wetherby": {
       "aka": "Wetherby Racecourse (The Jewel of West Yorkshire)",
@@ -19477,7 +21902,59 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 168,
+        "runnerCount": 1017,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "66.7",
+          "mid": "33.3",
+          "high": "0.0",
+          "byDistance": {
+            "2m+": {
+              "low": "67",
+              "mid": "33",
+              "high": "0",
+              "wins": 42
+            }
+          }
+        },
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "4.1",
+            "runs": 1017
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "7.7",
+            "runs": 546
+          },
+          "7f": {
+            "wr": "0.0",
+            "runs": 350
+          },
+          "1m2f": {
+            "wr": "0.0",
+            "runs": 121
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "16.7",
+            "runs": 168
+          },
+          "medium": {
+            "wr": "2.2",
+            "runs": 639
+          },
+          "large": {
+            "wr": "0.0",
+            "runs": 210
+          }
+        }
+      }
     },
     "Warwick": {
       "aka": "Warwick Racecourse (Warwickshire)",
@@ -19865,7 +22342,35 @@
         "positioning": 3,
         "draw": 1
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 6,
+        "runnerCount": 37,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good to Firm": {
+            "wr": "16.2",
+            "runs": 37
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "16.2",
+            "runs": 37
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "17.2",
+            "runs": 29
+          },
+          "medium": {
+            "wr": "12.5",
+            "runs": 8
+          }
+        }
+      }
     },
     "Wexford": {
       "aka": "Wexford Racecourse (Bettyville, County Wexford)",
@@ -20076,7 +22581,39 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 8,
+        "runnerCount": 86,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "9.3",
+            "runs": 86
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "9.3",
+            "runs": 86
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.0",
+            "runs": 20
+          },
+          "small": {
+            "wr": "18.2",
+            "runs": 11
+          },
+          "large": {
+            "wr": "7.3",
+            "runs": 55
+          }
+        }
+      }
     },
     "Tipperary": {
       "aka": "Tipperary Racecourse (Saratoga of Ireland, Baronstown)",
@@ -20630,7 +23167,47 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 105,
+        "runnerCount": 594,
+        "sufficientData": true,
+        "drawBias": {
+          "low": "100.0",
+          "mid": "0.0",
+          "high": "0.0",
+          "byDistance": {
+            "2m+": {
+              "low": "100",
+              "mid": "0",
+              "high": "0",
+              "wins": 42
+            }
+          }
+        },
+        "goingBias": {
+          "Good": {
+            "wr": "8.2",
+            "runs": 594
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "8.2",
+            "runs": 594
+          }
+        },
+        "fieldSizeBias": {
+          "small": {
+            "wr": "8.2",
+            "runs": 583
+          },
+          "medium": {
+            "wr": "9.1",
+            "runs": 11
+          }
+        }
+      }
     },
     "Kelso": {
       "aka": "Kelso Racecourse (Scottish Borders)",
@@ -20828,7 +23405,35 @@
         "draw": 1,
         "jumping": 3
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 49,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "14.3",
+            "runs": 49
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "14.3",
+            "runs": 49
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.3",
+            "runs": 29
+          },
+          "small": {
+            "wr": "20.0",
+            "runs": 20
+          }
+        }
+      }
     },
     "Bangor-on-Dee": {
       "aka": "Bangor-on-Dee Racecourse (Wrexham, Wales)",
@@ -21025,7 +23630,35 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 7,
+        "runnerCount": 56,
+        "sufficientData": false,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "12.5",
+            "runs": 56
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "12.5",
+            "runs": 56
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "11.4",
+            "runs": 35
+          },
+          "small": {
+            "wr": "14.3",
+            "runs": 21
+          }
+        }
+      }
     },
     "Thurles": {
       "aka": "Thurles Racecourse (County Tipperary, Ireland)",
@@ -21421,7 +24054,39 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true
+      "isJumps": true,
+      "derivedStats": {
+        "raceCount": 15,
+        "runnerCount": 184,
+        "sufficientData": true,
+        "drawBias": null,
+        "goingBias": {
+          "Good": {
+            "wr": "8.2",
+            "runs": 184
+          }
+        },
+        "distanceBias": {
+          "2m+": {
+            "wr": "8.2",
+            "runs": 184
+          }
+        },
+        "fieldSizeBias": {
+          "medium": {
+            "wr": "10.2",
+            "runs": 59
+          },
+          "large": {
+            "wr": "6.7",
+            "runs": 120
+          },
+          "small": {
+            "wr": "20.0",
+            "runs": 5
+          }
+        }
+      }
     },
     "Laytown": {
       "aka": "Laytown Strand Racecourse (County Meath, Ireland)",
