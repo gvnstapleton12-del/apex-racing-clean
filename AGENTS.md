@@ -48,6 +48,17 @@ Three-layer separation:
 - ✅ README updated with full architecture
 - ✅ Sporting Life results scraper fixed — correctly extracts finish positions, SP odds, jockey/trainer
 - ✅ Code-match penalty — horses penalised when form is from different race code (Flat vs Hurdle/Chase)
+- ✅ Horse Profiles database (`6981 profiles from 1056 races`) — career/course/distance/going/CD win rates with deltas vs career WR
+- ✅ Horse profile cards displayed in RunnerDetailCard (compact 4-column grid with ▲▼ delta indicators)
+- ✅ 23 insight/handedness mismatches fixed in trackProfiles.json (Gowran Park: left→right)
+- ✅ 36 missing jumping ratings added for jumps tracks in trackProfiles.json
+- ✅ Promotion Source Audit — decomposed 99.4% "Other" bucket into trainerForm 26%, personalAffinity 24%, ground 22%, rprORGap 12%, distance 9%
+- ✅ A/B test (power×0.667, ground×2.667) — null result, engine multi-pathway architecture absorbs single-component scaling
+- ✅ Component Delta Audit — re-ran engine on 339 close misses to extract actual component deltas
+- ✅ Promotion Source Audit — decomposed 99.4% "Other" bucket into trainerForm 26%, personalAffinity 24%, ground 22%, rprORGap 12%, distance 9%
+- ✅ specialistIndex tested — 25% winner better, zero median delta, adds nothing beyond personalAffinity
+- ✅ Interaction Trace — personalAffinity + trainerForm co-occur in 31% of promotions; PA present in 89% of trainerForm-driven and 99% of ground-driven promotions
+- ✅ PersonalAffinity Decomposition v2 — PA is 86% a course-win-rate signal (trackAdj 90% winner better, 291/339 primary driver); distanceAdj 3%, goingAdj/drawStyleAdj 0%
 
 ### Pending / Future
 - [ ] Further engine extraction from dashboard widgets (some inline calculations remain)
@@ -56,6 +67,98 @@ Three-layer separation:
 - [ ] Better loading states for individual widgets
 - [ ] RaceModal — convert to use same Tailwind card pattern as RacePage
 - [ ] Speed up results scraper (5+ min per date is slow; consider parallel fetching)
+- [ ] Replace template paceBiasByGoing with calculated historical data
+
+## Validated Findings
+
+### Strong Signals
+
+| Signal | Winner Better | Avg Delta | Med Delta | Notes |
+|--------|:-:|:-:|:-:|-------|
+| **personalAffinity** | 89% | +4.47 | +5.0 | Bayesian position-based. Keep as-is. |
+| **ground** | 25% | +6.59 | 0.0 | Rare (25% of promotions) but highest avg delta when it fires. Keep. |
+| **trainerForm** | 35% (driver: 26%) | +0.25 | 0.0 | Frequent small positive. Promoted 87/339 races. |
+| **rprORGap** | 55% | +1.32 | +0.7 | Moderate consistent signal. RPR says winner > OR. |
+
+### Weak / Null Signals
+
+| Signal | Winner Better | Avg Delta | Med Delta | Verdict |
+|--------|:-:|:-:|:-:|---------|
+| **specialistIndex** | 25% | +11.4pp | 0.0pp | Noise — adds nothing beyond personalAffinity |
+| **courseAffinity** | 86% | +0.38 | +0.4 | Everywhere but tiny. Not a standalone driver. |
+| **paceCompat** | 3% | +0.13 | 0.0 | Barely differentiates |
+| **raceShape** | 1% | +0.01 | 0.0 | Effectively dead |
+| **power** | 6% (driver: 2%) | −1.29 | 0.0 | Pick has MORE power than winner. Over-rewarded but single-component scaling has no effect. |
+| **distanceAffinity** | 31% | +0.07 | 0.0 | Too sparse to matter |
+| **goingAffinity** | 0% | 0.00 | 0.0 | Dead (gated by runs≥3) |
+
+### ×2.5 Mystery — RESOLVED
+
+The ×2.5 course multiplier improves backtest metrics (+133% Kelly, 52.4% Top Pick WR) but courseAffinity itself (BHA-based `computeCourseAffinity`) is tiny (+0.38 avg delta, 86% winner better but never the primary driver). The improvement comes from **amplifying personalAffinity's track subcomponent** — which is a course win rate signal (86% of PA, 90% winner better, 291/339 primary driver). Since PA is the backbone supporting every other feature (present in 89% of trainerForm-driven and 99% of ground-driven promotions), the multiplier interacts with the entire feature network. Not from BHA-based courseAffinity directly.
+
+### Open Questions
+
+- Why does ×2.5 improve backtests if courseAffinity itself is tiny?
+  - **Resolved**: PA's track subcomponent (win-rate-based, not BHA-based) is the real driver
+- Is personalAffinity benefiting from interaction effects with trainerForm?
+  - **Yes**: PA + trainerForm both positive in 31% of promotions
+- Are trainerForm and personalAffinity jointly responsible for the majority of promotions?
+  - **Yes**: together with ground they constitute 72% of promotions
+- Is promotion attribution still missing second-order interactions?
+  - Potential, but PA decomposition shows course win rate dominates (86%)
+- The A/B test showed single-component weight scaling has no effect — only multi-component interaction shifts produce metric changes.
+  - **Confirmed**: power×0.667 and ground×2.667 produced zero ranking change
+
+## Key Decisions
+- **×2.5 stays**: The improvement is real, even if the source isn't course affinity alone
+- **Do not elevate specialistIndex**: 25% winner better is noise; personalAffinity already captures this
+- **Do not touch weights**: A/B test proved single-component scaling is absorbed by multi-pathway architecture
+- **Model frozen**: courseMultiplier=2.5, disableGoing=true, distanceAffinity=1.0 locked. The engine is now an interaction system (PA + trainerForm + ground) where single-coefficient tuning has proven ineffective. Any new scoring change must be judged against the validated baseline (52.4% Top Pick WR, +133% Kelly ROI, Brier 0.0854).
+
+## Roadmap
+
+### Phase 1 — Freeze the model ✅ (current state)
+courseMultiplier=2.5, disableGoing=true, distanceAffinity=1.0 exactly as-is.
+
+### Phase 2 — Forward test (next)
+Run 200-500 live races tracking: Top Pick WR, Top 3 WR, Kelly ROI, Brier, specialist track WR.
+Biggest risk: overfitting historical data.
+
+### Phase 3 — Improve data quality
+Remaining bottlenecks (more impactful than scoring tweaks):
+- RPR coverage (52%)
+- Jockey database (nearly empty)
+- Going database (weak)
+- Personal affinity store (sparse)
+
+### Phase 4 — Stop
+No new scoring features. No weight tuning. The model's edge comes from interactions (PA + trainerForm + ground), not from finding magic weights.
+
+## Signal Tiers
+
+### Tier 1 — Proven (embedded in WinnerScore)
+| Signal | Source | Why |
+|--------|--------|-----|
+| `personalAffinity.trackAdj` | PA track component | 90% winner better, 86% of promotions |
+| `trainerForm` | componentScores | 26% primary driver, frequent small positive |
+| `ground` | componentScores | +6.59 avg delta when it fires |
+| `rprORGap` | classModel | 55% winner better, +1.32 avg delta |
+
+### Tier 2 — Useful but secondary
+| Signal | Source | Why |
+|--------|--------|-----|
+| `distanceAdj` | PA distance component | 32% winner better, 72% when ungated |
+
+### Tier 3 — Effectively inactive
+| Signal | Reason |
+|--------|--------|
+| `goingAdj` | 0% winner better, 99% gated (runs < 3) |
+| `drawStyleAdj` | 5% winner better, avg delta ≈ 0 |
+| `paceCompat` | 3% winner better |
+| `raceShape` | 1% winner better |
+| `specialistIndex` | 25% at chance, median 0 |
+
+Stop spending time on Tier 3 until a future audit proves otherwise.
 
 ## Conventions
 

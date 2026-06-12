@@ -418,9 +418,15 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
     }
   }
 
-  const rawTrack = (trackAff.winRate - LEAGUE_AVG_WR) * 0.35
-  const rawDist = (distAff.winRate - LEAGUE_AVG_WR) * 0.30
-  const rawGoing = (goingAff.winRate - LEAGUE_AVG_WR) * 0.25
+  // Gate distance/going by data availability — no runs means no signal
+  const MIN_AFFINITY_RUNS = 3
+  const distGated = distAff.runs < MIN_AFFINITY_RUNS
+  const goingGated = goingAff.runs < MIN_AFFINITY_RUNS || options.disableGoing
+
+  const courseMultiplier = options.courseMultiplier || 1.0
+  const rawTrack = (trackAff.winRate - LEAGUE_AVG_WR) * 0.35 * courseMultiplier
+  const rawDist = distGated ? 0 : (distAff.winRate - LEAGUE_AVG_WR) * 0.30
+  const rawGoing = goingGated ? 0 : (goingAff.winRate - LEAGUE_AVG_WR) * 0.25
   const rawDS = dsAff.bonus * 0.10
 
   const rawBonus = rawTrack + rawDist + rawGoing + rawDS
@@ -448,6 +454,7 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
         confidence: distAff.confidence,
         runs: distAff.runs,
         adjustment: rawDist,
+        gated: distGated,
         persisted: !!persisted?.affinityProfiles?.distance?.[getDistanceBand(target.distanceF || 0)],
       },
       going: {
@@ -456,6 +463,7 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
         runs: goingAff.runs,
         surfaceMismatch: goingAff.surfaceMismatch || false,
         adjustment: rawGoing,
+        gated: goingGated,
         persisted: !!persisted?.affinityProfiles?.going?.[getGoingPool(target.going || '')],
       },
       drawStyle: {

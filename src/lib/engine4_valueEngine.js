@@ -22,10 +22,10 @@ function computeEdge(modelProb, marketOdds, apexScore = 0, previousRuns = 0) {
     }
   }
 
-  // Value gate: confidence floor (P >= 10%) + 25% margin over implied probability
+  // Value gate: confidence floor (P >= 10%) + 15% margin over implied probability
   const implied = (1 / marketOdds) * 100
   const marginPct = implied > 0 ? ((modelProb - implied) / implied) * 100 : 0
-  const passesGate = modelProb >= 10 && marginPct > 25
+  const passesGate = modelProb >= 10 && marginPct > 15
 
   let label = 'No Value'
   let bettable = false

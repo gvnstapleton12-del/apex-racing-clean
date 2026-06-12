@@ -106,6 +106,8 @@ const HISTORICAL_DB_PATH = path.join(process.cwd(), 'data', 'historical.json')
 const TRAINER_FORM_PATH = path.join(process.cwd(), 'data', 'trainer-form.json')
 const JOCKEY_FORM_PATH = path.join(process.cwd(), 'data', 'jockey-form.json')
 const HORSE_MEMORY_DB_PATH = path.join(process.cwd(), 'data', 'apex-horses.db')
+const TRACK_PROFILES_PATH = path.join(process.cwd(), 'data', 'trackProfiles.json')
+const HORSE_PROFILES_PATH = path.join(process.cwd(), 'data', 'horseProfiles.json')
 
 let HORSE_MEMORY_DB = null
 
@@ -448,6 +450,15 @@ let TRAINER_FRESHNESS_DB = (() => {
   return loaded.trainers ? loaded : { trainers: {}, overall: {}, meta: {} }
 })()
 let OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
+const TRACK_PROFILES = loadDatabase(TRACK_PROFILES_PATH) || {}
+
+let HORSE_PROFILES_DATABASE = {}
+try {
+  HORSE_PROFILES_DATABASE = JSON.parse(fs.readFileSync(HORSE_PROFILES_PATH, 'utf8'))
+  console.log(`[Init] Loaded ${Object.keys(HORSE_PROFILES_DATABASE).length} horse profiles`)
+} catch (e) {
+  console.warn('[Init] No horseProfiles.json found, profiles disabled:', e.message)
+}
 
 // Horse Memory SQLite Database
 async function initHorseMemory() {
@@ -616,6 +627,7 @@ async function processRace(race) {
       replayDb: REPLAY_NOTES_DATABASE,
       bucketDb: BUCKET_DATABASE,
       horseProfiles: HORSE_DATABASE,
+      horseProfileDb: HORSE_PROFILES_DATABASE,
       races: LEARNING_DATABASE.races || [],
       trainerForm: TRAINER_FORM_DATABASE,
       jockeyForm: JOCKEY_FORM_DATABASE,
@@ -623,6 +635,7 @@ async function processRace(race) {
       calibrationData: CALIBRATION_DATABASE.analytics || null,
       horseMemoryDb: HORSE_MEMORY_DB,
       orHistory: OR_HISTORY,
+      trackProfiles: TRACK_PROFILES,
     })
 
     const atrLinks = await fetchAtrHorseLinks(race)
@@ -847,16 +860,29 @@ async function fetchLiveMeetings() {
           ])
         }))
         processed.push(...batchResults)
+        const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
+        console.log(`[LiveMeetings] Batch done: ${processed.length}/${rawRaces.length} races, ${totalRunners} runners scored`)
       } catch (error) {
         console.error(`[LiveMeetings] Batch ${Math.floor(i / batchSize) + 1} failed:`, error.message)
       }
       await new Promise(resolve => setTimeout(resolve, 100))
     }
 
-    // Fetch ATR odds as secondary source
+    // Broadcast scored races IMMEDIATELY — don't wait for ATR odds
+    LIVE_STATE.racecards = processed
+    LIVE_STATE.updatedAt = new Date().toISOString()
+    LIVE_STATE.loading = false
+    API_CACHE.set(cacheKey, processed)
+    io.emit('live-update', buildLightweightState())
+    console.log(`[LiveMeetings] Broadcasted ${processed.length} races (pre-ATR odds)`)
+
+    // Fetch ATR odds as secondary source (non-blocking with 30s hard timeout)
     try {
-      console.log('[LiveMeetings] Fetching ATR odds...')
-      const atrRaces = await fetchAtrRacecards(today)
+      console.log('[LiveMeetings] Fetching ATR odds (background)...')
+      const atrRaces = await Promise.race([
+        fetchAtrRacecards(today),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('ATR odds timeout (30s)')), 30000))
+      ])
       if (atrRaces && atrRaces.length > 0) {
         let oddsMerged = 0
         processed.forEach((race) => {
@@ -883,16 +909,14 @@ async function fetchLiveMeetings() {
           }
         })
         console.log(`[LiveMeetings] Merged ${oddsMerged} ATR odds`)
+        // Re-broadcast with updated ATR odds
+        LIVE_STATE.racecards = processed
+        API_CACHE.set(cacheKey, processed)
+        io.emit('live-update', buildLightweightState())
       }
     } catch (error) {
       console.error('[LiveMeetings] ATR odds fetch failed:', error.message)
     }
-
-    LIVE_STATE.racecards = processed
-    LIVE_STATE.updatedAt = new Date().toISOString()
-    LIVE_STATE.loading = false
-
-    API_CACHE.set(cacheKey, processed)
 
     // Persist enriched racecard data for OR/PR gap backfill
     try {
@@ -1389,6 +1413,7 @@ function buildLightweightState() {
       score: r.score,
       performanceRating: r.performanceRating || null,
       previous_results: r.previous_results || [],
+      horseProfile: r.horseProfile || null,
     })),
   }))
 
