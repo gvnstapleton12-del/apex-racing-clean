@@ -343,7 +343,8 @@
         "positioning": 5,
         "draw": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "All-Weather (Tapeta) + Flat"
     },
     "Wolverhampton": {
       "handedness": "Left",
@@ -772,7 +773,8 @@
         "positioning": 5,
         "draw": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "All-Weather (Tapeta)"
     },
     "Worcester": {
       "aka": "Worcester Racecourse (The Pitchcroft, Worcestershire)",
@@ -1373,7 +1375,8 @@
         "positioning": 3,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "All-Weather (Tapeta) + Flat"
     },
     "Pontefract": {
       "handedness": "Right",
@@ -1573,7 +1576,8 @@
         "positioning": 2,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Newmarket": {
       "handedness": "Right",
@@ -1658,7 +1662,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Newmarket (Rowley Mile)": {
       "handedness": "Right",
@@ -1851,7 +1856,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Newmarket (July Course)": {
       "handedness": "Right",
@@ -2044,7 +2050,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "York": {
       "handedness": "Left",
@@ -2198,7 +2205,8 @@
         "positioning": 2,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Doncaster": {
       "handedness": "Left/Straight",
@@ -2311,7 +2319,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Chelmsford": {
       "handedness": "Left",
@@ -2501,7 +2510,8 @@
         "positioning": 4,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "All-Weather (Polytrack)"
     },
     "Lingfield": {
       "handedness": "Left",
@@ -3032,7 +3042,8 @@
         "positioning": 5,
         "draw": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "All-Weather (Polytrack) + Flat (dual surface)"
     },
     "Huntingdon": {
       "aka": "Huntingdon Racecourse (Cambridgeshire)",
@@ -3484,7 +3495,8 @@
         "positioning": 5,
         "draw": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "All-Weather (Polytrack) + Flat"
     },
     "Listowel": {
       "handedness": "Left",
@@ -4005,7 +4017,8 @@
         "positioning": 4,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Kilbeggan": {
       "handedness": "Right",
@@ -4526,7 +4539,8 @@
         "positioning": 4,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Nottingham": {
       "handedness": "Left",
@@ -4717,7 +4731,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Perth": {
       "handedness": "Right",
@@ -4960,7 +4975,8 @@
         "positioning": 2,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "National Hunt only (Chase, Hurdle, NH Flat)"
     },
     "Redcar": {
       "handedness": "Left",
@@ -5170,7 +5186,8 @@
         "positioning": 3,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Ludlow": {
       "aka": "Ludlow Racecourse (Shropshire)",
@@ -5847,7 +5864,8 @@
         "positioning": 3,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Taunton": {
       "aka": "Taunton Racecourse (Somerset)",
@@ -6294,7 +6312,8 @@
         "positioning": 3,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Goodwood": {
       "handedness": "Right",
@@ -6539,7 +6558,8 @@
         "positioning": 5,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Chepstow": {
       "handedness": "Left",
@@ -6756,7 +6776,8 @@
         "positioning": 3,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Leicester": {
       "handedness": "Right",
@@ -6975,7 +6996,8 @@
         "positioning": 3,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Carlisle": {
       "handedness": "Right",
@@ -7177,7 +7199,8 @@
         "positioning": 2,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Ripon": {
       "handedness": "Right",
@@ -7399,7 +7422,8 @@
         "positioning": 4,
         "draw": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Hamilton": {
       "handedness": "Right",
@@ -7617,7 +7641,8 @@
         "positioning": 3,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Ayr": {
       "handedness": "Left",
@@ -7821,7 +7846,8 @@
         "positioning": 2,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Yarmouth": {
       "handedness": "Left",
@@ -7963,7 +7989,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Cartmel": {
       "aka": "Cartmel Racecourse (Cumbria)",
@@ -8388,7 +8415,8 @@
         "positioning": 4,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Bath": {
       "handedness": "Left",
@@ -8516,7 +8544,8 @@
         "positioning": 4,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Brighton": {
       "handedness": "Left",
@@ -8711,7 +8740,8 @@
         "positioning": 4,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Salisbury": {
       "handedness": "Right",
@@ -8924,7 +8954,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Beverley": {
       "handedness": "Right",
@@ -9153,7 +9184,8 @@
         "positioning": 5,
         "draw": 4
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Haydock": {
       "aka": "Haydock Park Racecourse (Merseyside, England)",
@@ -9962,7 +9994,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Cheltenham": {
       "handedness": "Left",
@@ -10145,7 +10178,8 @@
         "positioning": 4,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "National Hunt only (Chase, Hurdle, NH Flat)"
     },
     "Aintree": {
       "handedness": "Left",
@@ -10328,7 +10362,8 @@
         "positioning": 3,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Epsom": {
       "handedness": "Left",
@@ -10564,7 +10599,8 @@
         "positioning": 5,
         "draw": 3
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Fairyhouse": {
       "handedness": "Right",
@@ -10792,7 +10828,8 @@
         "positioning": 4,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Clonmel": {
       "handedness": "Right",
@@ -11115,7 +11152,8 @@
         "positioning": 4,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Leopardstown": {
       "handedness": "Left",
@@ -11344,7 +11382,8 @@
         "positioning": 3,
         "draw": 2
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Flat only"
     },
     "Navan": {
       "handedness": "Left",
@@ -11562,7 +11601,8 @@
         "positioning": 3,
         "draw": 1
       },
-      "isJumps": false
+      "isJumps": false,
+      "discipline": "Dual-purpose (Flat + National Hunt)"
     },
     "Newton Abbot": {
       "aka": "Newton Abbot Racecourse",
@@ -17774,7 +17814,7 @@
       "surface": "Turf",
       "surfaceType": "turf",
       "country": "UK",
-      "discipline": "Flat only (pure)",
+      "discipline": "Flat only",
       "handedness": "Left",
       "circuitLengthF": 9,
       "straight": "Microscopic 230-yard (1f) home straight. Tiny, sharp, completely flat, circular left-handed loop. Continuous never-ending left-hand turn. Almost entirely one giant sharp left-hand bend.",
@@ -18509,7 +18549,7 @@
       "surface": "Dual",
       "surfaceType": "dual",
       "country": "IRE",
-      "discipline": "Dual-purpose (Flat + Jumps + AW)",
+      "discipline": "Dual-purpose (Flat + National Hunt)",
       "handedness": "Right",
       "circuitLengthF": 11,
       "straight": "Broad, continuous 3f uphill home straight with steady punishing incline. Right-handed uniform galloping oval 11f circumference. Separate inner all-weather Tapeta track (first in Ireland, installed 2018).",
@@ -18528,7 +18568,7 @@
         "Large field 14+ outer track fanning deficit",
         "Tests baseline engine capacity and clean wind"
       ],
-      "aw": true,
+      "aw": false,
       "turf": true,
       "galloping": true,
       "sharp": false,
