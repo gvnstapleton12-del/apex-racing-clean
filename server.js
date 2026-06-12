@@ -801,8 +801,10 @@ async function fetchLiveMeetings() {
       return
     }
 
+    console.time('[Startup] fetchSlRacecards')
     const today = new Date().toISOString().split('T')[0]
     const scrapeResult = await retry(() => fetchSlRacecards(today), 2, 2000)
+    console.timeEnd('[Startup] fetchSlRacecards')
     const rawRaces = scrapeResult?.races || scrapeResult || []
     const abandonedMeetings = scrapeResult?.abandoned || []
 
@@ -827,14 +829,18 @@ async function fetchLiveMeetings() {
     // Fetch ATR ratings before scoring so engine can use them
     let atrRatings = {}
     try {
+      console.time('[Startup] fetchAtrRatings')
       console.log('[LiveMeetings] Fetching ATR ratings...')
-      atrRatings = await fetchAtrRatings(today, rawRaces)
+      atrRatings = await retry(() => fetchAtrRatings(today, rawRaces), 2, 2000)
       const atrCount = Object.keys(atrRatings).length
+      console.timeEnd('[Startup] fetchAtrRatings')
       console.log(`[LiveMeetings] Got ${atrCount} ATR ratings`)
     } catch (error) {
+      console.timeEnd('[Startup] fetchAtrRatings')
       console.error('[LiveMeetings] ATR ratings fetch failed:', error.message)
     }
 
+    console.time('[Startup] processRaces')
     const processed = []
     const batchSize = 2
     for (let i = 0; i < rawRaces.length; i += batchSize) {
@@ -869,6 +875,7 @@ async function fetchLiveMeetings() {
     }
 
     // Broadcast scored races IMMEDIATELY — don't wait for ATR odds
+    console.timeEnd('[Startup] processRaces')
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
@@ -1336,8 +1343,12 @@ async function fetchTodayResults() {
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
 
-  await fetchResultsForDate(yesterday)
-  await fetchResultsForDate(today)
+  console.time('[Results] fetchTodayResults')
+  await Promise.all([
+    fetchResultsForDate(yesterday),
+    fetchResultsForDate(today),
+  ])
+  console.timeEnd('[Results] fetchTodayResults')
 }
 
 function buildLightweightState() {
