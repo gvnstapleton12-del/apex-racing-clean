@@ -437,7 +437,9 @@ async function fetchResultsMeetingList(dateStr) {
 export async function fetchSlRacecards(dateStr) {
   try {
     console.log(`[SL] Fetching racecards for ${dateStr}...`)
+    console.time('[SL] fetchMeetingList')
     const result = await fetchMeetingList(dateStr)
+    console.timeEnd('[SL] fetchMeetingList')
     const meetings = result?.meetings || result || []
     const abandoned = result?.abandoned || []
 
@@ -445,6 +447,7 @@ export async function fetchSlRacecards(dateStr) {
 
     const allRaces = []
 
+    console.time('[SL] fetchMeetingRaces')
     for (const meeting of meetings) {
       console.log(`[SL] Fetching ${meeting.name}...`)
       const races = await fetchMeetingRaces(meeting.id)
@@ -452,17 +455,32 @@ export async function fetchSlRacecards(dateStr) {
       allRaces.push(...races)
       await new Promise(r => setTimeout(r, 500))
     }
+    console.timeEnd('[SL] fetchMeetingRaces')
 
     console.log(`[SL] Total ${allRaces.length} UK/IRE races`)
 
-    // Fetch runners for ALL races
-    for (let i = 0; i < allRaces.length; i++) {
-      if (allRaces[i]._apiUrl) {
-        console.log(`[SL] Fetching runners ${i + 1}/${allRaces.length}: ${allRaces[i].course} ${allRaces[i].off_time}...`)
-        allRaces[i].runners = await fetchRaceRunners(allRaces[i].race_id)
-        await new Promise(r => setTimeout(r, 500))
-      }
+    // Fetch runners for ALL races — parallel batches of 8
+    const CONCURRENCY = 8
+    let runnerCount = 0
+    console.time('[SL] fetchAllRunners')
+    for (let i = 0; i < allRaces.length; i += CONCURRENCY) {
+      const batch = allRaces.slice(i, i + CONCURRENCY)
+      const results = await Promise.all(
+        batch.map(race =>
+          race._apiUrl
+            ? fetchRaceRunners(race.race_id).then(runners => {
+                console.log(`[SL] Fetched ${race.course} ${race.off_time} (${runners.length} runners)`)
+                return runners
+              })
+            : Promise.resolve([])
+        )
+      )
+      results.forEach((runners, j) => { allRaces[i + j].runners = runners })
+      runnerCount += results.reduce((s, r) => s + r.length, 0)
+      // Brief pause between batches to avoid rate limiting
+      await new Promise(r => setTimeout(r, 200))
     }
+    console.timeEnd('[SL] fetchAllRunners')
 
     return { races: allRaces, abandoned }
   } catch (err) {
