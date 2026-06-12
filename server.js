@@ -56,7 +56,7 @@ import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLif
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
 import { computeTrainerFreshness, getFreshFactor, getTrainerFreshnessProfile, loadFreshnessDb, saveFreshnessDb } from './src/lib/trainerFreshness.js'
 import { buildORHistory } from './src/lib/classModel.js'
-import { recordRun } from './src/lib/conditionDB.js'
+import { recordRun, recordRunBatch } from './src/lib/conditionDB.js'
 import { computePerformanceRating, updatePerformanceRating, computeActualPerformance, getStoredPR, savePerformanceRatingStore } from './src/lib/performanceRating.js'
 import { normalizeGoingString } from './src/lib/normalizeGoing.js'
 
@@ -470,6 +470,7 @@ function logPrediction(race, runner, aiProfile) {
     completeness: aiProfile.completeness,
     grade: aiProfile.grade || '',
     betQuality: aiProfile.betQuality || '',
+    personalAffinity: runner.personalAffinity?.adjustment ?? null,
     going: normalizeGoingString(race.going || ''),
     breakdown: aiProfile.breakdown || null,
     timestamp: new Date().toISOString(),
@@ -551,7 +552,12 @@ async function processRace(race) {
     const enrichedRunners = await Promise.all((race.runners || []).map(async runner => {
       if (HORSE_MEMORY_DB && runner.horse) {
         try {
-          const memory = await getHorseMemory(HORSE_MEMORY_DB, runner.horse, runner.or || 0)
+          if (!global.__horseMemCache) global.__horseMemCache = new Map()
+          let memory = global.__horseMemCache.get(runner.horse)
+          if (memory === undefined) {
+            memory = await getHorseMemory(HORSE_MEMORY_DB, runner.horse, runner.or || 0)
+            global.__horseMemCache.set(runner.horse, memory === null ? null : memory)
+          }
           if (memory) {
             const handicapScore = calculateHandicapScore(memory, runner.or || 0)
             const abilityScore = calculateAbilityFromMemory(memory, runner.or || 0, runner.rpr || 0)
@@ -2626,6 +2632,54 @@ app.get('/api/horse-affinity/:horseName', (req, res) => {
   }
 })
 
+// ── PA Gate Live Monitor ──
+app.get('/api/pa-gate-monitor', (_req, res) => {
+  try {
+    const db = PREDICTIONS_DATABASE || {}
+    const races = LEARNING_DATABASE.races || []
+    const resultMap = {}
+    for (const race of races) {
+      if (!race.runners) continue
+      for (const r of race.runners) {
+        const key = `${race.course}|${race.off_time}|${race.date}|${(r.horse||'').toLowerCase()}`
+        resultMap[key] = r.position
+      }
+    }
+
+    let passed = 0, passedWins = 0, passedPL = 0
+    let paRejected = 0, paRejectedWins = 0, paRejectedPL = 0
+    let otherRejected = 0, otherRejectedWins = 0, otherRejectedPL = 0
+
+    for (const racePreds of Object.values(db)) {
+      if (!Array.isArray(racePreds)) continue
+      for (const p of racePreds) {
+        const key = `${p.course}|${p.offTime}|${p.date}|${(p.horse||'').toLowerCase()}`
+        const pos = resultMap[key]
+        if (!pos) continue
+        const won = pos === 1
+        const odds = p.odds || 2
+        const pl = won ? (odds - 1) : -1
+
+        if (p.betQuality && p.betQuality !== 'NO BET') {
+          passed++; if (won) passedWins++; passedPL += pl
+        } else if (p.personalAffinity !== null && p.personalAffinity <= 0) {
+          paRejected++; if (won) paRejectedWins++; paRejectedPL += pl
+        } else {
+          otherRejected++; if (won) otherRejectedWins++; otherRejectedPL += pl
+        }
+      }
+    }
+
+    res.json({
+      passed: { count: passed, wins: passedWins, roi: passed ? (passedPL / passed * 100) : 0 },
+      paRejected: { count: paRejected, wins: paRejectedWins, roi: paRejected ? (paRejectedPL / paRejected * 100) : 0 },
+      otherRejected: { count: otherRejected, wins: otherRejectedWins, roi: otherRejected ? (otherRejectedPL / otherRejected * 100) : 0 },
+    })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
 app.post('/api/refresh-racecards', async (_req, res) => {
   try {
     console.log('[API] Manual racecard refresh requested')
@@ -2674,6 +2728,9 @@ server.listen(PORT, () => {
   if (process.env.APEX_DIAGNOSTIC === '1') {
     console.log('[DIAG TEST] Diagnostic mode ACTIVE - will log signal dilution per race')
   }
+  const picksDates = Object.keys(DAILY_PICKS_DATABASE)
+  const picksCount = Object.values(DAILY_PICKS_DATABASE).reduce((sum, d) => sum + (d.picks?.length || 0), 0)
+  console.log(`[STARTUP] DAILY_PICKS_DATABASE has ${picksDates.length} dates, ${picksCount} total picks`)
   // Fetch today's data on startup
   fetchLiveMeetings()
   fetchTodayResults()
@@ -2739,19 +2796,11 @@ server.listen(PORT, () => {
     const conditionDb = loadDatabase(conditionDbPath)
     const existingHorseCount = Object.keys(conditionDb.horses || {}).length
     if (existingHorseCount === 0) {
-      let conditionBackfilled = 0
-      const allLearningRaces = LEARNING_DATABASE.races || []
-      for (const race of allLearningRaces) {
-        if (race.runners && race.runners.length > 0 && race.going) {
-          try {
-            recordRun(race)
-            conditionBackfilled++
-          } catch (e) {
-            // skip
-          }
-        }
+      const allLearningRaces = (LEARNING_DATABASE.races || []).filter(r => r.runners && r.runners.length > 0)
+      if (allLearningRaces.length > 0) {
+        recordRunBatch(allLearningRaces)
       }
-      console.log(`[ConditionDB] Backfilled ${conditionBackfilled} historical races with full metadata`)
+      console.log(`[ConditionDB] Backfilled ${allLearningRaces.length} historical races with full metadata`)
     } else {
       console.log(`[ConditionDB] Loaded existing data for ${existingHorseCount} horses`)
     }

@@ -340,6 +340,47 @@ function computeJockeyCourseSR(runner, race, jockeyFormDb) {
   return Math.max(0, Math.min(100, score))
 }
 
+export function computeClassDrop(runner, race) {
+  const todayClass = Number(race.race_class || 0)
+  if (todayClass < 1 || todayClass > 7) return 0
+
+  // Determine today's race code
+  const raceType = (race.type || race.race_name || '').toLowerCase()
+  const isJumps = /(hurdle|chase|nh\s*flat|national hunt)/.test(raceType)
+  const todayCode = isJumps ? 'JUMPS' : 'FLAT'
+
+  // Filter previous results by same code, take last 5
+  const prev = (runner.previous_results || []).filter(pr => {
+    const rt = (pr.run_type || '').toUpperCase()
+    if (todayCode === 'JUMPS') return ['HURDLE', 'CHASE', 'NH_FLAT'].includes(rt)
+    return rt === 'FLAT'
+  }).slice(0, 5)
+
+  if (prev.length < 2) return 0
+
+  // Confidence gate: at least 2 of last 3 same-code runs at higher class
+  const last3 = prev.slice(0, 3)
+  const atHigherClass = last3.filter(pr => {
+    const prClass = Number(pr.race_class || 0)
+    return prClass >= 1 && prClass <= 7 && prClass < todayClass
+  })
+  if (atHigherClass.length < 2) return 0
+
+  // Average class of last 5 relevant runs
+  const avgRecentClass = prev.reduce((s, pr) => {
+    const pc = Number(pr.race_class || 0)
+    return s + (pc >= 1 && pc <= 7 ? pc : todayClass)
+  }, 0) / prev.length
+
+  const classDrop = todayClass - avgRecentClass
+  if (classDrop <= 0) return 0
+
+  if (classDrop >= 3) return 95
+  if (classDrop >= 2) return 80
+  if (classDrop >= 1) return 65
+  return 55
+}
+
 export function computeComponentScores(runner, race, options = {}) {
   const paceMap = options.paceMap || {}
   const goingDb = options.goingDb || {}

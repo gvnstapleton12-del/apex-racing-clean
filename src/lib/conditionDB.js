@@ -63,8 +63,8 @@ function normalizeClass(raceClass) {
 export function recordRun(race) {
   const db = loadDB()
   const going = normalizeGoing(race.going)
-  const dist = normalizeDistance(race.distanceFurlongs)
-  const cls = normalizeClass(race.raceClass)
+  const dist = normalizeDistance(race.distanceFurlongs ?? race.distance_f)
+  const cls = normalizeClass(race.raceClass ?? race.race_class)
   const runners = race.runners ?? []
 
   for (const runner of runners) {
@@ -156,6 +156,97 @@ export function recordRun(race) {
     }
   }
 
+  saveDB(db)
+  return db
+}
+
+export function recordRunBatch(races) {
+  const db = loadDB()
+  for (const race of races) {
+    const going = normalizeGoing(race.going)
+    const dist = normalizeDistance(race.distanceFurlongs ?? race.distance_f)
+    const cls = normalizeClass(race.raceClass ?? race.race_class)
+    const runners = race.runners ?? []
+
+    for (const runner of runners) {
+      const horseId = runner.horse?.toLowerCase().replace(/\s+/g, '_')
+      if (!horseId) continue
+
+      if (!db.horses[horseId]) {
+        db.horses[horseId] = {
+          name: runner.horse,
+          runs: [],
+          wins: [],
+          places: [],
+          stats: { total: 0, wins: 0, places: 0 },
+          conditions: { going: {}, distance: {}, class: {}, weight: {} },
+        }
+      }
+
+      const horse = db.horses[horseId]
+      const position = runner.position || 0
+      const fieldSize = runners.length
+
+      const run = {
+        date: race.date,
+        course: race.course,
+        going,
+        distance: dist,
+        class: cls,
+        position,
+        fieldSize,
+        or: runner.or || 0,
+        rpr: runner.rpr || 0,
+        weight: runner.weight || '',
+        odds: runner.odds || 0,
+        comments: runner.comments || '',
+      }
+
+      horse.runs.push(run)
+      horse.stats.total++
+
+      if (!horse.conditions.going[going]) {
+        horse.conditions.going[going] = { runs: 0, wins: 0, places: 0, avgPos: 0, positions: [] }
+      }
+      horse.conditions.going[going].runs++
+      horse.conditions.going[going].positions.push(position)
+
+      if (!horse.conditions.distance[dist]) {
+        horse.conditions.distance[dist] = { runs: 0, wins: 0, places: 0, avgPos: 0, positions: [] }
+      }
+      horse.conditions.distance[dist].runs++
+      horse.conditions.distance[dist].positions.push(position)
+
+      if (!horse.conditions.class[cls]) {
+        horse.conditions.class[cls] = { runs: 0, wins: 0, places: 0, avgPos: 0, positions: [] }
+      }
+      horse.conditions.class[cls].runs++
+      horse.conditions.class[cls].positions.push(position)
+
+      const weightBucket = runner.weight ? runner.weight.replace(/\s+/g, '') : 'unknown'
+      if (!horse.conditions.weight[weightBucket]) {
+        horse.conditions.weight[weightBucket] = { runs: 0, wins: 0, places: 0, avgPos: 0, positions: [] }
+      }
+      horse.conditions.weight[weightBucket].runs++
+      horse.conditions.weight[weightBucket].positions.push(position)
+
+      if (position === 1) {
+        horse.wins.push(run)
+        horse.stats.wins++
+        horse.conditions.going[going].wins++
+        horse.conditions.distance[dist].wins++
+        horse.conditions.class[cls].wins++
+        horse.conditions.weight[weightBucket].wins++
+      } else if (position >= 2 && position <= 3) {
+        horse.places.push(run)
+        horse.stats.places++
+        horse.conditions.going[going].places++
+        horse.conditions.distance[dist].places++
+        horse.conditions.class[cls].places++
+        horse.conditions.weight[weightBucket].places++
+      }
+    }
+  }
   saveDB(db)
   return db
 }

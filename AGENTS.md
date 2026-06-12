@@ -59,8 +59,18 @@ Three-layer separation:
 - ✅ specialistIndex tested — 25% winner better, zero median delta, adds nothing beyond personalAffinity
 - ✅ Interaction Trace — personalAffinity + trainerForm co-occur in 31% of promotions; PA present in 89% of trainerForm-driven and 99% of ground-driven promotions
 - ✅ PersonalAffinity Decomposition v2 — PA is 86% a course-win-rate signal (trackAdj 90% winner better, 291/339 primary driver); distanceAdj 3%, goingAdj/drawStyleAdj 0%
+- ✅ **PA > 0 value gate shipped** — `betQuality` set to `'NO BET'` for any runner with `personalAffinity <= 0` (apexEngine.js:748). Ranking/Top Pick WR unaffected.
+- ✅ **PA > 0 gate confirmed by A/B backtest** — `--pa-gate` flag on `backtest_historical.mjs`. Value WR 30.3%→37.9%, Value ROI +138%→+198%, Kelly ROI +551%→+706%. Top Pick WR unchanged.
+- ✅ **No temporal leakage** — Persisted store had 0 blendable horses. All PA from `previous_results` (racecard form history). Debutant bias negligible.
+- ✅ **Value Pick Audit** — `analysis/valuePickAudit.mjs` analyzes why value picks changed between baseline and current. Confirmed personalAffinity is the dominant separator (+7.07 delta between added winners and removed losers).
+- ✅ **Calibration audit added to backtest** — Fine-grained 5% probability buckets, MACE metric, saved to `data/calibration-audit.json`.
+- ✅ **PA Gate Monitor API** — `GET /api/pa-gate-monitor` tracks passed vs PA-rejected vs other-rejected performance across live predictions.
+- ✅ **PA visual indicator in RunnerDetailCard** — Color-coded badge: ✓ PA Strong/Positive/Weak or ✗ PA Negative.
+- ✅ **Three permanent benchmarks saved** — `backtest-baseline-pa25.json` (orig), `backtest-results-current.json` (current), `backtest-baseline-pa-gate.json` (PA gate shipped).
 
 ### Pending / Future
+- [ ] **Paper-track PA gate live** — Run 200-500 live races collecting PA > 0 vs PA ≤ 0 performance via `/api/pa-gate-monitor`
+- [ ] **Ranking gate (exploratory only)** — Revisit `finalScore -= 999` for PA ≤ 0 after live validation. Do NOT ship yet.
 - [ ] Further engine extraction from dashboard widgets (some inline calculations remain)
 - [ ] Add zod/valibot for schema validation if data shape issues arise
 - [x] Convert `main.jsx` → `main.tsx` for full type coverage
@@ -70,6 +80,13 @@ Three-layer separation:
 - [ ] Replace template paceBiasByGoing with calculated historical data
 
 ## Validated Findings
+
+### Provable Rules (backtest-confirmed, no trade-offs)
+
+| Rule | Evidence | Impact |
+|-------|----------|--------|
+| **PA > 0 for value bets** | A/B backtest (--pa-gate): Value WR +7.6pp, Value ROI +60pp, Kelly +155pp. No ranking change. | **SHIPPED** |
+| **PA ≤ 0 is a near-total non-contender filter** | Backtest: 1 winner from 3642 PA ≤ 0 selections (0.03% WR). Top picks with PA ≤ 0: 0/25. | **Value gate only for now** |
 
 ### Strong Signals
 

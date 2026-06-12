@@ -623,11 +623,13 @@ function HistoryTab() {
 export default function Proof() {
   const [stats, setStats] = useState<any>(null)
   const [preds, setPreds] = useState<any>(null)
+  const [paGate, setPaGate] = useState<any>(null)
   const [tab, setTab] = useState<'overview' | 'samples' | 'calibration' | 'history'>('overview')
 
   useEffect(() => {
     fetch(apiUrl('/api/learning-stats')).then(r => r.json()).then(setStats).catch(() => {})
     fetch(apiUrl('/api/predictions')).then(r => r.json()).then(setPreds).catch(() => {})
+    fetch(apiUrl('/api/pa-gate-monitor')).then(r => r.json()).then(setPaGate).catch(() => {})
   }, [])
 
   const recentPreds = preds ? Object.entries(preds).slice(-20).flatMap(([, v]: any) => v).slice(0, 50) : []
@@ -683,23 +685,55 @@ export default function Proof() {
             </div>
           )}
 
-          {stats.profitableSignals && stats.profitableSignals.length > 0 && (
-            <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-6'>
-              <h2 className='text-lg font-bold mb-4'>Performance by Signal Source</h2>
-              <div className='grid grid-cols-1 gap-3'>
-                {stats.profitableSignals.map((s: any) => (
-                  <div key={s.signal} className='flex items-center justify-between bg-white/[0.02] rounded-xl p-4'>
-                    <span className='font-medium'>{s.signal}</span>
-                    <div className='flex gap-6'>
-                      <span className='text-zinc-400'>{s.runs} runs</span>
-                      <span className='text-green-400 font-bold'>{s.wins} wins</span>
-                      <span className='font-bold'>{s.strikeRate.toFixed(1)}%</span>
+          <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6'>
+            <h2 className='text-lg font-bold mb-4'>PA Gate Monitor</h2>
+            <p className='text-zinc-500 text-sm mb-4'>Value selections: PA {'>'} 0 passes gate, PA {'<='} 0 rejected.</p>
+            {paGate ? (
+              <div className='grid grid-cols-3 gap-4'>
+                <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
+                  <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA Passed</span>
+                  <div className='mt-2 space-y-1'>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.passed.count}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.passed.wins}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.passed.count ? (paGate.passed.wins / paGate.passed.count * 100).toFixed(1) : '0'}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.passed.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.passed.roi >= 0 ? '+' : ''}{paGate.passed.roi.toFixed(1)}%</span></div>
+                  </div>
+                </div>
+                <div className='bg-red-500/5 rounded-xl p-4 border border-red-500/10'>
+                  <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA Rejected</span>
+                  <div className='mt-2 space-y-1'>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.paRejected.count}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.paRejected.wins}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.paRejected.count ? (paGate.paRejected.wins / paGate.paRejected.count * 100).toFixed(1) : '0'}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.paRejected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.paRejected.roi >= 0 ? '+' : ''}{paGate.paRejected.roi.toFixed(1)}%</span></div>
+                  </div>
+                </div>
+                <div className='bg-zinc-500/5 rounded-xl p-4 border border-zinc-500/10'>
+                  <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>Other Rejected</span>
+                  <div className='mt-2 space-y-1'>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.otherRejected.count}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.otherRejected.wins}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.otherRejected.count ? (paGate.otherRejected.wins / paGate.otherRejected.count * 100).toFixed(1) : '0'}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.otherRejected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.otherRejected.roi >= 0 ? '+' : ''}{paGate.otherRejected.roi.toFixed(1)}%</span></div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className='grid grid-cols-3 gap-4'>
+                {['PA Passed', 'PA Rejected', 'Other Rejected'].map(label => (
+                  <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse'>
+                    <span className='text-zinc-600 text-xs font-medium uppercase tracking-wider'>{label}</span>
+                    <div className='mt-2 space-y-2'>
+                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>Bets</span><span className='bg-zinc-700/50 rounded h-4 w-12' /></div>
+                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>Wins</span><span className='bg-zinc-700/50 rounded h-4 w-8' /></div>
+                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>WR</span><span className='bg-zinc-700/50 rounded h-4 w-10' /></div>
+                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>ROI</span><span className='bg-zinc-700/50 rounded h-4 w-14' /></div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           <div className='bg-[#0f1720]/80 border border-amber-500/10 rounded-2xl p-6'>
             <h2 className='text-lg font-bold mb-2'>How It Works</h2>

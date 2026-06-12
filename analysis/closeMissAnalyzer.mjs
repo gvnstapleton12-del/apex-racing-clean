@@ -85,6 +85,7 @@ const EFFECTIVE_WEIGHTS = {
   courseAffinity:   0.0105,
   distanceAffinity: 0.009,
   goingAffinity:    0.0075,
+  classDrop:        0.015,
   uncertainty:      0.000,
 }
 
@@ -110,6 +111,7 @@ function extractFeature(runner) {
     courseAffinity:   (paBreak.track?.adjustment ?? 0) * 100,
     distanceAffinity: (paBreak.distance?.adjustment ?? 0) * 100,
     goingAffinity:    (paBreak.going?.adjustment ?? 0) * 100,
+    classDrop:        nc.classDrop ?? 0,
     personalAffinity: pa.adjustment ?? 0,
     uncertainty:      unc.uncertainty ?? 0,
   }
