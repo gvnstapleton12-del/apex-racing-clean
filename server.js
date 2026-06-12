@@ -1468,7 +1468,12 @@ app.get('/api/predictions', (_req, res) => {
 })
 
 function normalizeCourse(name = '') {
-  return String(name).toLowerCase().replace(/\(.*?\)/g, '').trim()
+  return String(name)
+    .toLowerCase()
+    .replace(/\(.*?\)/g, '')
+    .replace(/\b(july|rowley|mile|course|racecourse)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function normalizePosition(val) {
