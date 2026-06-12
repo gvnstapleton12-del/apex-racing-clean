@@ -179,14 +179,14 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
     fairOdds = parseOdds(sq.fairOdds)
     marketOdds = parseOdds(sq.marketOdds)
     winProb = fairOdds > 0 ? 1 / fairOdds : 0.01
-    edge = marketOdds > 0 ? (fairOdds - marketOdds) / marketOdds : 0
+    edge = marketOdds > 0 ? (winProb * marketOdds) - 1 : 0
     confidence = runner.aiProfile?.confidence ?? Math.min(Math.max(winProb * 4, 0.2), 0.85)
     placeProb = winProb * 2.5
   } else if (runner.winProb != null && runner.winProb > 0) {
     winProb = runner.winProb / 100
     fairOdds = winProb > 0 ? 1 / winProb : 100
     marketOdds = parseOdds(runner.odds)
-    edge = marketOdds > 0 ? (fairOdds - marketOdds) / marketOdds : 0
+    edge = marketOdds > 0 ? (winProb * marketOdds) - 1 : 0
     confidence = runner.aiProfile?.confidence ?? Math.min(Math.max(winProb * 4, 0.2), 0.85)
     placeProb = runner.placeProb != null ? runner.placeProb / 100 : winProb * 2.5
   } else {
@@ -215,7 +215,7 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
     confidence = Math.min(Math.max(1 - Math.sqrt(variance) / 50, 0.1), 0.95)
     fairOdds = winProb > 0 ? 1 / winProb : 100
     marketOdds = parseOdds(runner.odds)
-    edge = marketOdds > 0 ? (fairOdds - marketOdds) / marketOdds : 0
+    edge = marketOdds > 0 ? (winProb * marketOdds) - 1 : 0
   }
 
   const kellyFraction = confidence * edge * 0.25
@@ -223,8 +223,8 @@ export function estimateWinProb(runner: Runner, race: Race): ProbabilityEstimate
 
   const reasons: string[] = []
   if (winProb < 0.06) reasons.push('win probability too low')
-  if (edge < -0.5) reasons.push('negative edge exceeds threshold')
-  const noBet = reasons.length > 0 && (winProb < 0.06 || edge < -0.3)
+  if (edge < -0.15) reasons.push('negative edge exceeds threshold')
+  const noBet = reasons.length > 0 && (winProb < 0.06 || edge < -0.15)
   const simCollapse = runner.simulation?.collapseRate ?? 0
   if (simCollapse > 0.4 && !noBet) {
     reasons.push('high collapse rate in simulation')
@@ -420,9 +420,30 @@ export function formatSelection(race: Race, runner: Runner) {
   const betFilter = race.betFilter || {}
   if (betFilter.verdict === 'AUTO SKIP') return null
 
-  const prob = estimateWinProb(runner, race)
-
   const odds = parseOddsNum(runner.odds) || 0
+
+  // Prefer server-computed values when available — avoids edge mismatch between pages
+  let winProb: number
+  let edge: number
+  let fairOdds: number
+  let placeProb: number
+  let confidence: number
+
+  if (runner.winProb != null && runner.winProb > 0) {
+    winProb = runner.winProb / 100
+    fairOdds = runner.fairOdds || (winProb > 0 ? 1 / winProb : 100)
+    edge = odds > 0 ? (winProb * odds) - 1 : 0
+    placeProb = runner.placeProb != null ? runner.placeProb / 100 : winProb * 2.5
+    confidence = runner.confidenceScore ? runner.confidenceScore / 100 : Math.min(Math.max(winProb * 4, 0.2), 0.85)
+  } else {
+    const prob = estimateWinProb(runner, race)
+    winProb = prob.winProb
+    edge = prob.edge
+    fairOdds = prob.fairOdds
+    placeProb = prob.placeProb
+    confidence = prob.confidence
+  }
+
   const isFavourite = odds > 0 && odds <= 3.0
   const hasRating = (runner.or || 0) > 0 || (runner.rpr || 0) > 0
 
@@ -430,17 +451,15 @@ export function formatSelection(race: Race, runner: Runner) {
   const codePenalty = 0 // Disabled as score modifier, kept for flags
 
   let betType: string | null = null
-  if (prob.winProb >= 0.10 && odds >= 2.0) {
-    if (isFavourite && prob.winProb >= 0.30) {
+  if (winProb >= 0.10 && odds >= 2.0) {
+    if (isFavourite && winProb >= 0.30) {
       betType = 'PLACE'
-    } else if (prob.edge > 0.05) {
+    } else if (edge > 0.05) {
       betType = 'WIN'
     } else if (isFavourite) {
       betType = 'PLACE'
     }
   }
-
-  const adjustedWinProb = prob.winProb // No code penalty
 
   return {
     ...runner,
@@ -449,14 +468,14 @@ export function formatSelection(race: Race, runner: Runner) {
     course: race.course,
     offTime: formatOffTime(race),
     score: getScore(runner),
-    winProb: adjustedWinProb,
-    placeProb: prob.placeProb,
-    fairOdds: adjustedWinProb > 0 ? 1 / adjustedWinProb : 100,
-    probConfidence: prob.confidence,
-    valueEdge: prob.edge,
-    kellyStake: prob.kellyStake,
-    noBet: prob.noBet,
-    noBetReason: prob.noBetReason,
+    winProb,
+    placeProb,
+    fairOdds,
+    probConfidence: confidence,
+    valueEdge: edge,
+    kellyStake: confidence * Math.max(edge, 0) * 0.25,
+    noBet: winProb < 0.06 || edge < -0.15,
+    noBetReason: winProb < 0.06 ? 'win probability too low' : edge < -0.15 ? 'negative edge exceeds threshold' : null,
     probBand: runner.probBand || '',
     probRange: runner.probRange || '',
     confidenceTier: '',
@@ -476,13 +495,7 @@ export function getHomeSelections(races: Race[]) {
         .map((runner) => formatSelection(race, runner))
         .filter(Boolean)
     )
-    .sort((a: any, b: any) => {
-      const aScore = (a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25
-      const bScore = (b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25
-      const diff = bScore - aScore
-      if (Math.abs(diff) > 0.001) return diff
-      return (b.score || 0) - (a.score || 0)
-    })
+    .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
 }
 
 export function calculateRaceVolatility(runners: Runner[]): number {

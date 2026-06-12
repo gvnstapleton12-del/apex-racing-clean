@@ -28,22 +28,26 @@ export default function RacePage({ race, onBack }: RacePageProps) {
       </button>
 
       <div className='apex-card overflow-hidden'>
-        <div className='p-8 pb-6 border-b border-white/5'>
-          <div className='flex items-center gap-3 mb-4'>
-            <span className='px-3 py-1 rounded-lg text-xs font-bold bg-green-500/10 text-green-400 border border-green-500/20'>LIVE</span>
-            <span className='text-zinc-500 text-sm'>{race.field_size || runners.length} runners</span>
-            {race.going && <span className='text-zinc-500 text-sm'>· {race.going}</span>}
-            {race.surface && <span className='text-zinc-500 text-sm'>· {race.surface}</span>}
+        <div className='relative p-6 pb-5 border-b border-white/5 overflow-hidden'>
+          <img src='/images/racecourse-grandstand.jpg' alt='' className='absolute inset-0 w-full h-full object-cover opacity-15' />
+          <div className='absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/70' />
+          <div className='relative z-10'>
+            <div className='flex items-center gap-2 mb-3'>
+              <span className='px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-green-500 text-black'>LIVE</span>
+              <span className='text-zinc-300 text-sm font-medium'>{race.field_size || runners.length} runners</span>
+              {race.going && <span className='text-zinc-300 text-sm'>· {race.going}</span>}
+              {race.surface && <span className='text-zinc-300 text-sm'>· {race.surface}</span>}
+            </div>
+            <h1 className='text-2xl xl:text-3xl font-black tracking-tight leading-tight max-w-5xl'>{race.race_name}</h1>
+            <p className='text-zinc-200 text-base mt-1.5 font-medium'>
+              {race.course} · {formatOffTime(race)}
+              {race.distance_f && <span> · {race.distance_f}</span>}
+            </p>
           </div>
-          <h1 className='text-5xl font-black tracking-tight'>{race.race_name}</h1>
-          <p className='text-zinc-400 text-lg mt-2'>
-            {race.course} · {formatOffTime(race)}
-            {race.distance_f && <span> · {race.distance_f}</span>}
-          </p>
         </div>
 
-        <div className='p-8 pt-6'>
-          <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6'>
+        <div className='p-5 pt-4'>
+          <div className='grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4'>
             {runners.map((runner, index) => (
               <RunnerDetailCard key={index} runner={runner} race={race} rank={index + 1} />
             ))}

@@ -11,7 +11,6 @@ Live racing intelligence platform for UK & Ireland horse racing. Provides real-t
 | Styling | Tailwind CSS + custom CSS |
 | State | React Query (`@tanstack/react-query`) |
 | Backend | Express.js (Node) |
-| Scraping | Playwright (headless Chromium) |
 | Deploy | Static build (dist/) served by Express |
 
 ## Project Structure
@@ -34,10 +33,6 @@ src/
 │   ├── formatTime.ts         # 24hr time formatter
 │   ├── horseLinks.ts         # ATR horse form URL builder
 │   └── parseOdds.ts          # Fractional → decimal odds parser
-│   ├── scrapers/
-│   │   ├── sportingLifeScraper.js  # SL results scraper (Playwright)
-│   │   ├── atrScraper.js          # ATR racecard scraper
-│   │   └── browserPool.js         # Shared browser instance pool
 ├── components/
 │   ├── RunnerDetailCard.tsx   # Shared runner detail (RacePage + RaceModal)
 │   ├── RacePressureGraph.jsx  # Pace map visualisation
@@ -47,9 +42,12 @@ src/
 │   ├── RacePage.tsx           # Full race detail (uses RunnerDetailCard)
 │   ├── Racecards.tsx          # Live racecard listing
 │   ├── Results.tsx            # Results upload + display
-│   ├── IntelligenceDashboard.tsx  # Multi-board hub
+│   ├── IntelligenceDashboard.tsx  # Multi-board hub (error-boundary-wrapped)
 │   ├── Replays.jsx            # Replay note management
-│   └── Analytics.tsx          # Analytics views
+│   ├── Analytics.tsx          # Analytics views
+│   ├── TrackDirectory.tsx     # 83 UK/IRE course profiles
+│   ├── Proof.tsx              # Performance evidence dashboard
+│   └── OrPrGapAnalysis.tsx    # RPR/OR gap analysis
 ├── main.tsx                   # App entry, routing, home page PickCards
 └── styles.css                 # Global styles + utility classes
 ```
@@ -58,7 +56,7 @@ src/
 
 Three-layer separation:
 
-1. **Data Layer** (`src/lib/`) — API clients, type definitions, scrapers, validation
+1. **Data Layer** (`src/lib/`) — API clients, type definitions, validation schemas
 2. **Intelligence Engine** (`src/lib/`) — Pure functions for scoring, pace mapping, energy, track profiles
 3. **Presentation Layer** (`src/pages/`, `src/components/`) — React components with typed props
 
@@ -115,25 +113,16 @@ Each runner is scored by multiple engines, combined into a final APEX score:
 
 ## Data Pipeline
 
-### Results Scraping
-
-- Sporting Life scraper uses Playwright (headless Chromium)
-- Auto-dismisses cookie consent, navigates to each race page
-- Extracts: horse, position, jockey, trainer, SP odds, run comments
-- Filters to UK/IRE courses only
-- Re-scrapes past dates if data is incomplete (<10 races)
-
 ### Learning Engine
 
 - Results matched against predictions for calibration
 - SP odds replace pre-race odds when results arrive
 - Anti-overfit protection with protected weight adjustment
-- 2,602 calibration records, 275 wins (10.6%), 550 placed (31.7%), Brier 0.0901 — NEEDS CALIBRATION
+- 2,919+ calibration records, Brier 0.0854
 
 ### Scheduled Tasks
 
 - Racecard refresh every 60 seconds
-- Results re-scrape every 30 minutes
 - 8am daily racecard fetch
 - Learning engine runs after each results batch
 
@@ -144,7 +133,6 @@ Each runner is scored by multiple engines, combined into a final APEX score:
 - **APEX Scoring** — Multi-component confidence scoring (6 engines)
 - **Intelligence Dashboard** — 15+ boards: Value Index, Volatility, Top Rated, Smart Money, etc.
 - **Race Detail** — Per-runner breakdown of all engines
-- **Results Scraping** — Automated SL results with SP odds extraction
 - **Learning System** — Self-improving calibration from historical results
 - **Trainer Freshness** — Layoff impact on runner fitness
 - **Track Profiles** — Course-specific biases and surface data

@@ -9,9 +9,9 @@ const UK_IRE_COURSES = new Set([
   'kelso', 'kempton', 'leicester', 'lingfield', 'market-rasen', 'newbury', 'newcastle', 'newmarket',
   'newton-abbot', 'northam', 'nottingham', 'plumpton', 'pontefract', 'redcar', 'ripon', 'sandown', 'sedgefield',
   'southwell', 'stratford', 'taunton', 'thirsk', 'uttoxeter', 'wetherby', 'wolverhampton', 'worcester',
-  'great-yarmouth', 'york', 'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney',
+  'great-yarmouth', 'yarmouth', 'york', 'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney',
   'laytown', 'leopardstown', 'listowel', 'naas', 'navan', 'punchestown', 'roscommon', 'sligo',
-  'tipperary', 'tramore', 'wexford',
+  'tipperary', 'tramore', 'wexford', 'gowran-park',
   'aintree', 'bangor-on-dee', 'chelmsford-city', 'exeter', 'fakenham', 'ffos-las', 'fontwell-park', 'ludlow', 'musselburgh', 'perth', 'salisbury', 'warwick', 'wincanton', 'windsor',
   'bellewstown', 'clonmel', 'cork', 'downpatrick', 'kilbeggan', 'limerick', 'thurles',
 ])
@@ -222,6 +222,13 @@ async function fetchRaceRunners(raceId) {
       console.log('[SL] Horse keys:', Object.keys(sample.horse || {}))
       console.log('[SL] Horse form summary keys:', Object.keys(sample.horse?.formsummary || {}))
       console.log('[SL] Full ride sample keys:', Object.keys(sample))
+
+      // Dump hidden SL fields
+      console.log('[SL] === race_history_stats:', JSON.stringify(rides[0].race_history_stats, null, 2))
+      console.log('[SL] === horse_lifetime_stats:', JSON.stringify(rides[0].horse_lifetime_stats, null, 2))
+      console.log('[SL] === insights:', JSON.stringify(rides[0].insights, null, 2))
+      console.log('[SL] === bet_movements:', JSON.stringify(rides[0].bet_movements, null, 2))
+
       rides[0]._logged = true
     }
     return rides
@@ -277,6 +284,10 @@ async function fetchRaceRunners(raceId) {
         return { items, firstTimeItems }
       })(),
       previous_results: (ride.horse?.previous_results || []).slice(0, 6),
+      race_history_stats: ride.race_history_stats || null,
+      horse_lifetime_stats: ride.horse_lifetime_stats || null,
+      insights: ride.insights || null,
+      bet_movements: ride.bet_movements || null,
     }
     })
   } catch (err) {
@@ -502,7 +513,8 @@ export async function fetchSlResults(dateStr) {
       
       for (const race of uniqueLinks) {
         console.log(`Navigating to race: ${race.url}`)
-        await page.goto(race.url, { waitUntil: 'networkidle', timeout: 30000 })
+        await page.goto(race.url, { waitUntil: 'domcontentloaded', timeout: 30000 })
+        await page.waitForTimeout(2000)
 
         const isRaceFinished = await page.evaluate(() => {
           const headerText = document.querySelector('[class*="RaceHeader__"], [class*="HeaderSummary__"]')?.textContent || ''

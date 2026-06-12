@@ -160,11 +160,12 @@ export function checkRaceExclusion(race) {
 
   for (const ex of exclusions) {
     if (ex.type === 'race_type_exclusion') {
-      if (ex.raceType && ex.raceType.toLowerCase() === raceType) {
-        return ex.note || `Race type ${ex.raceType} excluded at ${course}`
-      }
-      if (ex.raceNameContains && raceName.includes(ex.raceNameContains.toLowerCase())) {
-        return ex.note || `Race name contains "${ex.raceNameContains}" excluded at ${course}`
+      // When both raceType AND raceNameContains are set, BOTH must match (AND logic)
+      // When only one is set, only that one needs to match
+      const raceTypeMatch = ex.raceType ? ex.raceType.toLowerCase() === raceType : true
+      const raceNameMatch = ex.raceNameContains ? raceName.includes(ex.raceNameContains.toLowerCase()) : true
+      if (raceTypeMatch && raceNameMatch) {
+        return ex.note || `Race type ${ex.raceType || ''} excluded at ${course}`
       }
     } else if (ex.type === 'class_handicap_field_size') {
       const isHcap = raceName.includes('handicap') || raceType === 'hurdle' || raceType === 'chase' || raceType === 'national hunt flat'

@@ -145,7 +145,7 @@ const WEIGHT_PROFILES = {
     power: 0.40,
     pace: 0.30,
     human: 0.05,
-    market: 0.05,
+    market: 0.03,
     trainer: 0.20,
     elimination: {
       paceThreshold: 'FAST',
@@ -158,7 +158,7 @@ const WEIGHT_PROFILES = {
     power: 0.65,
     pace: 0.05,
     human: 0.10,
-    market: 0.05,
+    market: 0.03,
     trainer: 0.15,
     elimination: {
       paceThreshold: 'SLOW',
@@ -171,20 +171,20 @@ const WEIGHT_PROFILES = {
     power: 0.30,
     pace: 0.08,
     human: 0.12,
-    market: 0.15,
+    market: 0.05,
     trainer: 0.35,
     elimination: {
       paceThreshold: 'ANY',
       drawPenalty: 0.3,
       formRecency: 999,
     },
-    notes: 'Huge uncertainty. Trainer intent and market intelligence matter most.',
+    notes: 'Huge uncertainty. Trainer intent matters most. Minimal market influence.',
   },
   NOVICE_RACE: {
     power: 0.35,
     pace: 0.10,
     human: 0.10,
-    market: 0.12,
+    market: 0.05,
     trainer: 0.33,
     elimination: {
       paceThreshold: 'ANY',
@@ -197,7 +197,7 @@ const WEIGHT_PROFILES = {
     power: 0.35,
     pace: 0.25,
     human: 0.12,
-    market: 0.06,
+    market: 0.03,
     trainer: 0.22,
     elimination: {
       paceThreshold: 'ANY',
@@ -210,7 +210,7 @@ const WEIGHT_PROFILES = {
     power: 0.50,
     pace: 0.12,
     human: 0.10,
-    market: 0.06,
+    market: 0.03,
     trainer: 0.22,
     elimination: {
       paceThreshold: 'ANY',
@@ -223,7 +223,7 @@ const WEIGHT_PROFILES = {
     power: 0.45,
     pace: 0.15,
     human: 0.10,
-    market: 0.08,
+    market: 0.03,
     trainer: 0.22,
     elimination: {
       paceThreshold: 'ANY',
@@ -236,20 +236,20 @@ const WEIGHT_PROFILES = {
     power: 0.30,
     pace: 0.10,
     human: 0.10,
-    market: 0.20,
+    market: 0.05,
     trainer: 0.30,
     elimination: {
       paceThreshold: 'ANY',
       drawPenalty: 0.5,
       formRecency: 999,
     },
-    notes: 'Bumper races. Pure uncertainty — market and trainer dominate.',
+    notes: 'Bumper races. Minimal form — trainer dominates. Tiny market signal.',
   },
   PATTERN: {
     power: 0.55,
     pace: 0.12,
     human: 0.08,
-    market: 0.10,
+    market: 0.03,
     trainer: 0.15,
     elimination: {
       paceThreshold: 'ANY',
@@ -262,7 +262,7 @@ const WEIGHT_PROFILES = {
     power: 0.55,
     pace: 0.15,
     human: 0.10,
-    market: 0.05,
+    market: 0.03,
     trainer: 0.15,
     elimination: {
       paceThreshold: 'ANY',
@@ -277,9 +277,9 @@ const FIELD_SIZE_ADJUSTMENTS = {
   TINY: {
     powerMod: 0.10,
     paceMod: -0.05,
-    marketMod: 0.05,
+    marketMod: 0.0,
     trainerMod: -0.05,
-    notes: 'Small fields — favourite wins more often. Market intelligence matters.',
+    notes: 'Small fields — favourite wins more often. Trainer matters.',
   },
   SMALL: {
     powerMod: 0.05,
@@ -298,7 +298,7 @@ const FIELD_SIZE_ADJUSTMENTS = {
   LARGE: {
     powerMod: -0.05,
     paceMod: 0.10,
-    marketMod: -0.05,
+    marketMod: 0.0,
     trainerMod: 0.05,
     notes: 'Large fields — chaos factor increases. Pace and draw critical.',
   },
@@ -331,17 +331,17 @@ export function getModifierAdjustments(modifiers) {
   }
 
   if (modifiers.includes('field_small')) {
-    adjustments.marketAdj += 0.05
+    adjustments.marketAdj += 0.0
   }
 
   if (modifiers.includes('field_tiny')) {
-    adjustments.marketAdj += 0.08
+    adjustments.marketAdj += 0.0
     adjustments.paceAdj -= 0.05
   }
 
   if (modifiers.includes('young_horses')) {
     adjustments.trainerAdj += 0.05
-    adjustments.marketAdj += 0.05
+    adjustments.marketAdj += 0.0
   }
 
   if (modifiers.includes('artificial_surface')) {

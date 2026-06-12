@@ -19,6 +19,7 @@ import { getAtTheRacesHorseUrl } from './lib/horseLinks'
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import Replays from './pages/Replays'
 import Analytics from './pages/Analytics'
+import TrackDirectory from './pages/TrackDirectory'
 import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
 import OrPrGapAnalysis from './pages/OrPrGapAnalysis'
@@ -46,10 +47,11 @@ const tabs = [
   'Intelligence',
   'Proof',
   'Calibration',
-  'OR/PR Gap',
+  'Rating Edge',
   'Upload',
   'Replays',
   'Analytics',
+  'Tracks',
 ]
 
 interface Selection extends Runner {
@@ -144,7 +146,12 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
           </div>
           
           {/* View Analysis button */}
-          <button className='mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition text-zinc-400 hover:text-white'>
+          <button
+            className='mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition text-zinc-400 hover:text-white'
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('select-horse', { detail: { horse: selection.horse, course: selection.course, offTime: selection.race?.off_time } }))
+            }}
+          >
             View Analysis
           </button>
         </div>
@@ -247,7 +254,7 @@ function Home() {
           if (apexScore > 0 && apexScore < requiredApexFloor) return false
           const implied = (1 / odds) * 100
           const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
-          return prob >= 10 && marginPct > 25
+          return prob >= 10 && marginPct > 15
         }
         const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0)))
         if (vp.length === 0) return
@@ -261,7 +268,7 @@ function Home() {
           const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
           const implied = 1 / odds
           const margin = (p - implied) / implied
-          if (p >= 0.10 && margin > 0.25) {
+          if (p >= 0.10 && margin > 0.15) {
             const b = odds - 1
             const edge = p * b - (1 - p)
             if (edge > 0) {
@@ -281,13 +288,95 @@ function Home() {
   const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
+
+  // Comprehensive diagnostics — always log when we have data
+  if (allSelections.length > 0) {
+    // Score distribution
+    const scores = allSelections.map((s: any) => s.score || 0).filter((s: number) => s > 0)
+    if (scores.length > 0) {
+      console.log('[SCORE DIST]', {
+        min: Math.min(...scores),
+        max: Math.max(...scores),
+        avg: Math.round(scores.reduce((a: number, b: number) => a + b, 0) / scores.length),
+        count: scores.length,
+        total: allSelections.length,
+      })
+    }
+
+    // Filter breakdown
+    const reasons: Record<string, number> = { PASS: 0 }
+    allSelections.forEach((s: any) => {
+      let r = 'PASS'
+      if (s.noBet) r = '1_noBet'
+      else if ((s.valueEdge || 0) <= 0.03) r = `2_valueEdge<=3%`
+      else if (parseOddsToNum(s.odds) < 2.0) r = '3_odds<2'
+      else if ((s.winProb || 0) < 0.10) r = `4_winProb<10%`
+      else {
+        const apexScore = s.score || 0
+        const previousRuns = (s.previous_results || []).length
+        const requiredApex = previousRuns < 5 ? 50 : 40
+        if (apexScore < requiredApex) r = `5_APEX ${apexScore}<${requiredApex}`
+      }
+      reasons[r] = (reasons[r] || 0) + 1
+    })
+    console.log('[APEX FILTER DIAGNOSTICS]', JSON.stringify(reasons, null, 2))
+
+    // Top 20 that PASS all filters — ranked by WinnerScore
+    const passing = allSelections.filter((s: any) => {
+      if (s.noBet) return false
+      if ((s.valueEdge || 0) <= 0.03) return false
+      if (parseOddsToNum(s.odds) < 2.0) return false
+      if ((s.winProb || 0) < 0.10) return false
+      const apexScore = s.score || 0
+      if (apexScore === 0) return true
+      const previousRuns = (s.previous_results || []).length
+      const requiredApexFloor = previousRuns < 5 ? 50 : 40
+      return apexScore >= requiredApexFloor
+    })
+    console.table('[TOP 20 PASS]', passing.slice(0, 20).map((s: any) => ({
+      horse: s.horse,
+      score: s.score,
+      valueEdge: (s.valueEdge || 0).toFixed(3),
+      winProb: ((s.winProb || 0) * 100).toFixed(1) + '%',
+      odds: s.odds,
+      race: s.course + ' ' + s.offTime,
+    })))
+
+    // Top 20 that FAIL — showing which gate killed them
+    const failing = allSelections.filter((s: any) => {
+      if (s.noBet) return true
+      if ((s.valueEdge || 0) <= 0.03) return true
+      if (parseOddsToNum(s.odds) < 2.0) return true
+      if ((s.winProb || 0) < 0.10) return true
+      const apexScore = s.score || 0
+      if (apexScore > 0) {
+        const previousRuns = (s.previous_results || []).length
+        const requiredApex = previousRuns < 5 ? 50 : 40
+        if (apexScore < requiredApex) return true
+      }
+      return false
+    }).sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+    console.table('[TOP 20 FAIL]', failing.slice(0, 20).map((s: any) => ({
+      horse: s.horse,
+      score: s.score,
+      valueEdge: (s.valueEdge || 0).toFixed(3),
+      winProb: ((s.winProb || 0) * 100).toFixed(1) + '%',
+      odds: s.odds,
+      failValue: (s.valueEdge || 0) <= 0.03,
+      failProb: (s.winProb || 0) < 0.10,
+      failScore: (s.score || 0) > 0 && (s.score || 0) < ((s.previous_results || []).length < 5 ? 50 : 40),
+      failNoBet: s.noBet,
+    })))
+  }
+
   const bettable = allSelections
     .filter((s) => {
       if (s.noBet) return false
       if ((s.valueEdge || 0) <= 0.03) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
-      if ((s.winProb || 0) < 0.08) return false
+      if ((s.winProb || 0) < 0.10) return false
       const apexScore = s.score || 0
+      if (apexScore === 0) return true
       const previousRuns = ((s as any).previous_results || []).length
       const requiredApexFloor = previousRuns < 5 ? 50 : 40
       return apexScore >= requiredApexFloor
@@ -299,23 +388,18 @@ function Home() {
       const nowTime = ukNow.replace(':', '')
       return raceTime > nowTime
     })
+  const expectedValue = (s: any) => (s.winProb || 0) * (parseOddsToNum(s.odds) || 0) - 1
   const core = bettable
     .filter((s) => parseOddsToNum(s.odds) < 10)
-    .sort((a, b) => {
-      const aVal = (a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25
-      const bVal = (b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25
-      const diff = bVal - aVal
-      if (Math.abs(diff) > 0.001) return diff
-      return (b.score || 0) - (a.score || 0)
-    })
-  const bombs = bettable.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
-  const bestBet = [...core, ...bombs].sort((a, b) => ((b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25) - ((a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25))[0]
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+  const bombs = bettable.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.score || 0) - (a.score || 0))
+  const bestBet = [...core, ...bombs].sort((a, b) => (b.score || 0) - (a.score || 0))[0]
   const sortedByTime = [...core, ...bombs].sort((a, b) => {
     const aTime = (a.offTime || '').replace(':', '')
     const bTime = (b.offTime || '').replace(':', '')
     return aTime.localeCompare(bTime)
   })
-  // One pick per race — keep the best per course+offTime
+  // One pick per race — keep the best per course+offTime, max 5 total
   const seenRaces = new Set<string>()
   if (bestBet) seenRaces.add(`${bestBet.course}-${bestBet.offTime}`)
   const onePerRace = sortedByTime.filter((s) => {
@@ -325,20 +409,14 @@ function Home() {
     seenRaces.add(raceKey)
     return true
   })
-  const allPicks = bestBet ? [bestBet, ...onePerRace] : onePerRace
+  const allPicks = bestBet ? [bestBet, ...onePerRace].slice(0, 15) : onePerRace.slice(0, 15)
 
   // Upcoming picks for live display only
   const upcomingCore = upcoming
     .filter((s) => parseOddsToNum(s.odds) < 10)
-    .sort((a, b) => {
-      const aVal = (a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25
-      const bVal = (b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25
-      const diff = bVal - aVal
-      if (Math.abs(diff) > 0.001) return diff
-      return (b.score || 0) - (a.score || 0)
-    })
-  const upcomingBombs = upcoming.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.valueEdge || 0) - (a.valueEdge || 0))
-  const upcomingBest = [...upcomingCore, ...upcomingBombs].sort((a, b) => ((b.winProb || 0) * 0.75 + (b.valueEdge || 0) * 0.25) - ((a.winProb || 0) * 0.75 + (a.valueEdge || 0) * 0.25))[0]
+    .sort((a, b) => (b.score || 0) - (a.score || 0))
+  const upcomingBombs = upcoming.filter((s) => parseOddsToNum(s.odds) >= 10).sort((a, b) => (b.score || 0) - (a.score || 0))
+  const upcomingBest = [...upcomingCore, ...upcomingBombs].sort((a, b) => (b.score || 0) - (a.score || 0))[0]
   const upcomingSorted = [...upcomingCore, ...upcomingBombs].sort((a, b) => {
     const aTime = (a.offTime || '').replace(':', '')
     const bTime = (b.offTime || '').replace(':', '')
@@ -353,7 +431,8 @@ function Home() {
     seenUpcoming.add(raceKey)
     return true
   })
-  const picks = upcomingBest ? [upcomingBest, ...upcomingOnePerRace] : upcomingOnePerRace
+  const picks = upcomingBest ? [upcomingBest, ...upcomingOnePerRace].slice(0, 15) : upcomingOnePerRace.slice(0, 15)
+  console.log('[FINAL PICKS]', picks.length, picks.map((p: any) => `${p.horse} (${p.course} ${p.offTime}) score=${p.score} ev=${((p.winProb || 0) * (parseOddsToNum(p.odds) || 0) - 1).toFixed(2)}`))
   const picksKey = allPicks.map((p) => p.horse + p.course).join('|')
   const topScore = allPicks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
@@ -555,45 +634,6 @@ function Home() {
         </section>
           ) : (
         <section className='home-picks-section space-y-6'>
-          {todayResults.length > 0 && (
-            <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
-              <div className='flex items-center justify-between mb-3'>
-                <h3 className='text-sm font-bold text-zinc-400 uppercase tracking-wider'>Today&apos;s Full Card</h3>
-                {todayStats && (todayStats.won + todayStats.placed + todayStats.lost) > 0 && (
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${todayStats.won > 0 ? 'bg-green-500/10 text-green-400' : 'bg-zinc-500/10 text-zinc-400'}`}>
-                    {todayStats.won}W {todayStats.placed}P {todayStats.lost}L
-                  </span>
-                )}
-              </div>
-              <div className='space-y-1'>
-                {todayResults.sort((a, b) => (a.offTime || '').localeCompare(b.offTime || '')).map((p, i) => {
-                  const resultColor = p.result === 'won' ? 'text-green-400' : p.result === 'placed' ? 'text-amber-400' : p.result === 'lost' ? 'text-red-400' : 'text-zinc-500'
-                  const resultBadge = p.result === 'won' ? 'W' : p.result === 'placed' ? 'P' : p.result === 'lost' ? 'L' : p.result === 'nr' ? 'NR' : '-'
-                  const badgeBg = p.result === 'won' ? 'bg-green-500/20 text-green-400' : p.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : p.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
-                  return (
-                    <div key={i} className='flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02]'>
-                      <div className='flex items-center gap-3'>
-                        <span className='text-zinc-500 text-xs w-10'>{p.offTime}</span>
-                        <span className='text-zinc-600 text-xs w-20 truncate'>{p.course}</span>
-                        <span className='text-white text-sm font-medium'>{p.horse}</span>
-                        {(p as any).or != null && (p as any).or > 0 && (
-                          <span className='px-2 py-0.5 bg-zinc-800 text-zinc-100 rounded text-xs font-bold border border-zinc-600'>OR {(p as any).or}</span>
-                        )}
-                        {(p as any).rpr != null && (p as any).rpr > 0 && (
-                          <span className='px-2 py-0.5 bg-violet-900/40 text-violet-200 rounded text-xs font-bold border border-violet-500/40'>RPR {(p as any).rpr}</span>
-                        )}
-                        {(p as any).performanceRating?.pr != null && (p as any).performanceRating.pr > 0 && (
-                          <span className='px-2 py-0.5 bg-cyan-900/40 text-cyan-200 rounded text-xs font-bold border border-cyan-500/40'>PR {Math.round((p as any).performanceRating.pr)}</span>
-                        )}
-                        <span className='text-zinc-600 text-xs'>{p.odds}</span>
-                      </div>
-                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
           {abandoned.length > 0 && (
             <div className='abandoned-alert bg-red-500/5 border border-red-500/20 rounded-xl p-4'>
               <div className='flex items-center gap-2 mb-2'>
@@ -630,6 +670,35 @@ function Home() {
               )
             })}
           </div>
+          {todayResults.length > 0 && (
+            <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+              <div className='flex items-center justify-between mb-3'>
+                <h3 className='text-sm font-bold text-zinc-400 uppercase tracking-wider'>Today&apos;s Full Card</h3>
+                {todayStats && (todayStats.won + todayStats.placed + todayStats.lost) > 0 && (
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${todayStats.won > 0 ? 'bg-green-500/10 text-green-400' : 'bg-zinc-500/10 text-zinc-400'}`}>
+                    {todayStats.won}W {todayStats.placed}P {todayStats.lost}L
+                  </span>
+                )}
+              </div>
+              <div className='space-y-1'>
+                {todayResults.sort((a, b) => (a.offTime || '').localeCompare(b.offTime || '')).map((p, i) => {
+                  const resultBadge = p.result === 'won' ? 'W' : p.result === 'placed' ? 'P' : p.result === 'lost' ? 'L' : p.result === 'nr' ? 'NR' : '-'
+                  const badgeBg = p.result === 'won' ? 'bg-green-500/20 text-green-400' : p.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : p.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
+                  return (
+                    <div key={i} className='flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02]'>
+                      <div className='flex items-center gap-3'>
+                        <span className='text-zinc-500 text-xs w-10'>{p.offTime}</span>
+                        <span className='text-zinc-600 text-xs w-20 truncate'>{p.course}</span>
+                        <span className='text-white text-sm font-medium'>{p.horse}</span>
+                        <span className='text-zinc-600 text-xs'>{p.odds}</span>
+                      </div>
+                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </section>
       )}
     </div>
@@ -720,7 +789,7 @@ function App() {
       return <CalibrationDashboard />
     }
 
-    if (activeTab === 'OR/PR Gap') {
+    if (activeTab === 'Rating Edge') {
       return <OrPrGapAnalysis />
     }
 
@@ -730,6 +799,10 @@ function App() {
 
     if (activeTab === 'Analytics') {
       return <Analytics />
+    }
+
+    if (activeTab === 'Tracks') {
+      return <TrackDirectory />
     }
 
     if (activeTab === 'Proof') {
@@ -773,7 +846,7 @@ function App() {
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Tools</div>
             <div className='space-y-1'>
-              {['Results', 'Proof', 'OR/PR Gap', 'Upload', 'Replays', 'Analytics'].map((tab) => (
+              {['Results', 'Proof', 'Rating Edge', 'Upload', 'Replays', 'Analytics', 'Tracks'].map((tab) => (
                 <button
                   key={tab}
                   type='button'
@@ -818,6 +891,17 @@ function App() {
       </aside>
 
       <main className='main'>
+        <section className='dashboard-hero mb-6'>
+          <img src='/images/racecourse-grandstand.jpg' alt='' className='dashboard-hero-img' />
+          <div className='dashboard-hero-gradient' />
+          <div className='dashboard-hero-glow' />
+          <div className='dashboard-hero-content'>
+            <div>
+              <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
+              <h1 className='text-4xl font-black tracking-tight mt-2'>{activeTab}</h1>
+            </div>
+          </div>
+        </section>
         {renderPage()}
       </main>
     </div>

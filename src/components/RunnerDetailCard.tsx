@@ -258,9 +258,11 @@ function AffinitySection({ horseName }: { horseName: string }) {
     <Section>
       <SectionHeader title='Personal Affinity' />
       {!affinity?.hasDenseData ? (
-        <div className='text-center py-4 bg-slate-950 rounded-lg border border-white/5'>
-          <span className='text-xs text-zinc-500 font-mono italic block mb-1'>Hierarchical Blended Mode Active</span>
-          <span className='text-xs px-2 py-0.5 bg-white/5 text-zinc-400 rounded-full'>k=30 Fallback Engaged</span>
+        <div className='flex items-center gap-3 py-2'>
+          <div className='flex-1 h-2 bg-white/5 rounded-full overflow-hidden'>
+            <div className='h-full rounded-full bg-amber-400/60' style={{ width: `${(affinity?.confidenceScore || 0.3) * 100}%` }} />
+          </div>
+          <span className='text-xs text-zinc-400 font-mono shrink-0'>{((affinity?.confidenceScore || 0.3) * 100).toFixed(0)}%</span>
         </div>
       ) : (
         <div className='space-y-3'>
@@ -312,12 +314,13 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
   const isFirst = rank === 1
 
   return (
-    <div className={`rounded-xl border overflow-hidden ${isFirst ? 'border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent' : 'border-white/5 bg-white/[0.03]'}`}>
-      <div className='p-6'>
-        <div className='flex items-start justify-between gap-6'>
+    <div className={`rounded-xl border overflow-hidden ${isFirst ? 'border-amber-400/40 shadow-[0_0_40px_rgba(245,158,11,.12)] bg-gradient-to-br from-amber-500/8 to-transparent' : 'border-white/5 bg-white/[0.03]'}`}>
+      <div className='p-5'>
+        <div className='flex items-start justify-between gap-4'>
           <div className='flex-1 min-w-0'>
-            <div className='flex items-center gap-3 mb-2'>
-              <span className={`text-xs font-bold px-2 py-0.5 rounded ${isFirst ? 'bg-amber-500/10 text-amber-400' : 'bg-white/5 text-zinc-500'}`}>#{rank}</span>
+            <div className='flex items-center gap-2 mb-1.5'>
+              {isFirst && <span className='px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-amber-400 text-black'>Top Pick</span>}
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${isFirst ? 'bg-amber-500/15 text-amber-400' : 'bg-white/5 text-zinc-500'}`}>#{rank}</span>
               {runner.confidenceTier && (
                 <Badge className={runner.confidenceTier.tier === 'S' || runner.confidenceTier.tier === 'A' ? 'bg-amber-500/10 text-amber-400' : ''}>
                   T{runner.confidenceTier.tier}
@@ -339,10 +342,10 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               {runner.horse}
             </a>
 
-            <div className='flex gap-3 mt-1 flex-wrap'>
-              <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
-              <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
-              <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+            <div className='flex gap-2 mt-0.5 flex-wrap'>
+              <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
+              <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
+              <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
               {runner.classModel?.rprORGap != null && (
                 <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${getGapBadgeClass(runner.classModel.rprORGap)}`}>
                   GAP: {runner.classModel.rprORGap > 0 ? '+' : ''}{runner.classModel.rprORGap}
@@ -370,21 +373,99 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               )}
             </div>
 
-            <p className='text-zinc-400 text-sm mt-1'>
+            <p className='text-zinc-400 text-xs mt-0.5'>
               {runner.jockey}{runner.jockey && runner.trainer && ' · '}{runner.trainer}
             </p>
 
-            <div className='flex gap-2 mt-3 flex-wrap'>
-              {runner.odds && <span className='px-2 py-1 bg-white/[0.06] text-white rounded-lg text-xs font-bold'>{runner.odds}</span>}
-              {runner.draw && <span className='px-2 py-1 bg-white/[0.04] text-zinc-400 rounded-lg text-xs'>Draw {runner.draw}</span>}
-              {runner.winProb && <span className='px-2 py-1 bg-green-500/10 text-green-400 rounded-lg text-xs font-bold'>W:{runner.winProb.toFixed(1)}%</span>}
-              {runner.placeProb && <span className='px-2 py-1 bg-blue-500/10 text-blue-400 rounded-lg text-xs font-bold'>P:{runner.placeProb.toFixed(1)}%</span>}
+            {runner.horseProfile && (
+              <div className='mt-2 grid grid-cols-4 gap-1.5 text-[10px]'>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>Course</div>
+                  {runner.horseProfile.course ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.course.runs}/{runner.horseProfile.course.wins} ({Math.round(runner.horseProfile.course.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.course.delta > 0.02 ? 'text-green-400' : runner.horseProfile.course.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.course.delta > 0 ? '▲' : runner.horseProfile.course.delta < 0 ? '▼' : '▸'} {runner.horseProfile.course.delta >= 0 ? '+' : ''}{(runner.horseProfile.course.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>Distance</div>
+                  {runner.horseProfile.distance ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.distance.runs}/{runner.horseProfile.distance.wins} ({Math.round(runner.horseProfile.distance.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.distance.delta > 0.02 ? 'text-green-400' : runner.horseProfile.distance.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.distance.delta > 0 ? '▲' : runner.horseProfile.distance.delta < 0 ? '▼' : '▸'} {runner.horseProfile.distance.delta >= 0 ? '+' : ''}{(runner.horseProfile.distance.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>Going</div>
+                  {runner.horseProfile.going ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.going.runs}/{runner.horseProfile.going.wins} ({Math.round(runner.horseProfile.going.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.going.delta > 0.02 ? 'text-green-400' : runner.horseProfile.going.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.going.delta > 0 ? '▲' : runner.horseProfile.going.delta < 0 ? '▼' : '▸'} {runner.horseProfile.going.delta >= 0 ? '+' : ''}{(runner.horseProfile.going.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>C&D</div>
+                  {runner.horseProfile.courseDistance ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.courseDistance.runs}/{runner.horseProfile.courseDistance.wins} ({Math.round(runner.horseProfile.courseDistance.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.courseDistance.delta > 0.02 ? 'text-green-400' : runner.horseProfile.courseDistance.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.courseDistance.delta > 0 ? '▲' : runner.horseProfile.courseDistance.delta < 0 ? '▼' : '▸'} {runner.horseProfile.courseDistance.delta >= 0 ? '+' : ''}{(runner.horseProfile.courseDistance.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {runner.personalAffinity?.breakdown && (
+              <div className='mt-2 flex gap-2 text-[10px] flex-wrap'>
+                <span className='text-zinc-500 font-medium uppercase tracking-wider'>PA:</span>
+                {Object.entries({
+                  Track: runner.personalAffinity.breakdown.track?.adjustment,
+                  Distance: runner.personalAffinity.breakdown.distance?.adjustment,
+                  Going: runner.personalAffinity.breakdown.going?.adjustment,
+                  'Draw/Style': runner.personalAffinity.breakdown.drawStyle?.adjustment,
+                }).map(([label, val]) => {
+                  const num = typeof val === 'number' ? Math.round(val * 10) / 10 : 0
+                  const isPos = num > 0.1
+                  const isNeg = num < -0.1
+                  return (
+                    <span key={label} className={`px-1.5 py-0.5 rounded font-bold ${isPos ? 'bg-green-500/10 text-green-400' : isNeg ? 'bg-red-500/10 text-red-400' : 'bg-white/[0.04] text-zinc-500'}`}>
+                      {label} {num > 0 ? '+' : ''}{num.toFixed(1)}
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+
+            <div className='flex gap-2 mt-2 flex-wrap'>
+              {runner.odds && <span className='px-2 py-0.5 bg-white/[0.06] text-white rounded text-xs font-bold'>{runner.odds}</span>}
+              {runner.draw && <span className='px-2 py-0.5 bg-white/[0.04] text-zinc-400 rounded text-xs'>Draw {runner.draw}</span>}
+              {runner.winProb && <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>W:{runner.winProb.toFixed(1)}%</span>}
+              {runner.placeProb && <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded text-xs font-bold'>P:{runner.placeProb.toFixed(1)}%</span>}
             </div>
           </div>
 
-          <div className={`flex-shrink-0 w-24 h-24 rounded-2xl flex flex-col items-center justify-center ${isFirst ? 'bg-amber-500/10 border-2 border-amber-500/30' : 'bg-green-500/10 border border-green-500/20'}`}>
-            <span className='text-zinc-500 text-xs font-medium uppercase tracking-wider'>APEX</span>
-            <strong className={`text-3xl font-black ${isFirst ? 'text-amber-400' : 'text-green-400'}`}>{score}</strong>
+          <div className={`flex-shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center ${isFirst ? 'bg-amber-500/10 border-2 border-amber-500/30' : 'bg-green-500/10 border border-green-500/20'}`}>
+            <span className='text-zinc-500 text-[10px] font-medium uppercase tracking-wider'>APEX</span>
+            <strong className={`text-2xl font-black ${isFirst ? 'text-amber-400' : 'text-green-400'}`}>{score > 0 ? score : '—'}</strong>
           </div>
         </div>
 

@@ -67,6 +67,21 @@ export function runApexEngine(runners, race, options = {}) {
   const replayDb = options.replayDb || {}
   const bucketDb = options.bucketDb || {}
 
+  // Track category lookup for per-category course affinity multipliers
+  const trackProfiles = options.trackProfiles || null
+  const CATEGORY_MULTIPLIERS = {
+    tactical: 3.0,
+    specialist: 3.0,
+    stamina: 2.5,
+    galloping: 2.0,
+  }
+  let trackCategory = 'galloping'
+  if (trackProfiles?.tracks?.[race.course]) {
+    trackCategory = trackProfiles.tracks[race.course].trackCategory || 'galloping'
+  }
+  const baseCourseMult = options.courseMultiplier ?? 2.5
+  const courseMultiplier = options.courseMultipliers?.[trackCategory] ?? baseCourseMult
+
   const archetype = classifyRaceArchetype(race)
   const archetypeWeights = getRaceWeights(archetype.archetype)
 
@@ -88,13 +103,13 @@ export function runApexEngine(runners, race, options = {}) {
   }
 
   // Apply learned multiplier weights from learning engine
-  // Maps: class→power, stride→pace, traffic→market, clv→human, trainer→trainer
+  // Maps: class→power, stride→pace, clv→human, trainer→trainer
+  // traffic→market DISABLED for WinnerScore — market influence kept minimal
   const multiplier = options.multiplier || {}
-  if (multiplier.class || multiplier.stride || multiplier.trainer || multiplier.traffic || multiplier.clv) {
+  if (multiplier.class || multiplier.stride || multiplier.trainer || multiplier.clv) {
     adjustedWeights.power *= (multiplier.class || 1)
     adjustedWeights.pace *= (multiplier.stride || 1)
     adjustedWeights.human *= (multiplier.clv || 1)
-    adjustedWeights.market *= (multiplier.traffic || 1)
     adjustedWeights.trainer *= (multiplier.trainer || 1)
   }
 
@@ -337,8 +352,9 @@ export function runApexEngine(runners, race, options = {}) {
       legacyLayeredScore * 0.35
     )
 
-    // Apply market movement multiplier
-    const withMovement = componentBlend * movementMultiplier
+    // Movement multiplier — kept for ValueScore, NOT applied to WinnerScore
+    // const withMovement = componentBlend * movementMultiplier
+    const withMovement = componentBlend
 
     // Chaotic race suppression — high volatility fields cap max confidence
     const chaosSuppression = volatility.chaos > 0.7 ? 0.75 :
@@ -365,15 +381,53 @@ export function runApexEngine(runners, race, options = {}) {
       horseName: runner.horse,
       fieldFRCount,
       pacePressure: pacePressure || 0,
+    }, {
+      courseMultiplier,
+      disableGoing: options.disableGoing ?? true,
     })
     const personalAffinityAdj = (personalAffinity.factor - 1.0) * 100
 
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + awTransferAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment + personalAffinityAdj)))
+    // Expose individual affinity components as separate score adjustments
+    const courseAffinityAdj = personalAffinity.breakdown?.track?.adjustment
+      ? Math.round(personalAffinity.breakdown.track.adjustment * 100) / 10 : 0
+    const distanceAffinityAdj = personalAffinity.breakdown?.distance?.adjustment
+      ? Math.round(personalAffinity.breakdown.distance.adjustment * 100) / 10 : 0
+    const goingAffinityAdj = personalAffinity.breakdown?.going?.adjustment
+      ? Math.round(personalAffinity.breakdown.going.adjustment * 100) / 10 : 0
+
+    // Course Affinity Score — avgBHA at this course vs avg career BHA
+    // Capped at ±8 to nudge rankings, not dominate them
+    function computeCourseAffinity(prevResults, currentCourse) {
+      if (!prevResults || prevResults.length === 0) return 0
+      const courseRuns = prevResults.filter(r => r.course_name === currentCourse && r.bha > 0)
+      if (courseRuns.length < 2) return 0
+      const avgCourseBHA = courseRuns.reduce((s, r) => s + r.bha, 0) / courseRuns.length
+      const allBHA = prevResults.filter(r => r.bha > 0)
+      if (allBHA.length === 0) return 0
+      const avgCareerBHA = allBHA.reduce((s, r) => s + r.bha, 0) / allBHA.length
+      const affinity = avgCourseBHA - avgCareerBHA
+      return Math.max(-8, Math.min(8, Math.round(affinity)))
+    }
+    const courseAffinity = computeCourseAffinity(runner.previous_results, race.course)
+
+    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + awTransferAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment + personalAffinityAdj + courseAffinity)))
+
+    // Store courseAffinity on runner for output
+    runner.courseAffinity = courseAffinity
+    runner.trackCategory = trackCategory
+    runner.courseMultiplierUsed = courseMultiplier
 
     const qualityAdjustedScore = Math.round(
       horseQuality.finalScore * 0.50 +
-      finalScore * 0.20 +
-      raceShapeSuitability * 0.30
+      finalScore * 0.30 +
+      raceShapeSuitability * 0.20
+    )
+
+    // Spread multiplier — widen compressed 32-60 band back to 20-80
+    const SCORE_SPREAD_MULTIPLIER = 1.6
+    const centered = qualityAdjustedScore - 50
+    const rescaledScore = Math.round(
+      Math.max(1, Math.min(99, 50 + centered * SCORE_SPREAD_MULTIPLIER))
     )
 
     // Chaos detection: widen probability distributions for high-volatility races
@@ -384,7 +438,7 @@ export function runApexEngine(runners, race, options = {}) {
 
     const uncertainty = calculateUncertainty({
       ...runner,
-      finalScore: qualityAdjustedScore,
+      finalScore: rescaledScore,
       raceShapeSuitability,
       chaosWidening,
     }, race, {
@@ -452,8 +506,18 @@ export function runApexEngine(runners, race, options = {}) {
       componentBlend: Math.round(components.finalScore * 0.65 + (withMovement) * 0.35),
       marketAdjustment: Math.round(marketAdj * 10) / 10,
       volatilityAdjustment: Math.round(chaosSuppression * 100) / 100,
-      finalScore: qualityAdjustedScore,
+      finalScore: rescaledScore,
     }
+
+    // Horse Profile — career, course, distance, going, C&D stats from results history
+    const hp = options.horseProfileDb?.[runner.horse]
+    const horseProfile = hp ? {
+      career: hp.career,
+      course: hp.course?.[race.course] || null,
+      distance: hp.distance?.[race.distance_f] || null,
+      going: hp.going?.[race.going] || null,
+      courseDistance: race.course && race.distance_f ? hp.courseDistance?.[`${race.course}|${race.distance_f}`] || null : null,
+    } : null
 
     const commentary = buildNarrative(signals, scoreSnapshot, runner, race)
 
@@ -490,6 +554,9 @@ export function runApexEngine(runners, race, options = {}) {
         factor: Math.round(personalAffinity.factor * 1000) / 1000,
         confidence: Math.round(personalAffinity.confidence * 100) / 100,
         adjustment: Math.round(personalAffinityAdj * 10) / 10,
+        courseAdj: courseAffinityAdj,
+        distanceAdj: distanceAffinityAdj,
+        goingAdj: goingAffinityAdj,
         breakdown: personalAffinity.breakdown,
         note: personalAffinity.note,
       },
@@ -543,10 +610,12 @@ export function runApexEngine(runners, race, options = {}) {
       },
       trainerScore,
       volatility: volatility.chaos,
-      finalScore: qualityAdjustedScore,
+      winnerScore: rescaledScore,
+      finalScore: rescaledScore,
       horseQuality,
       features,
       snapshot,
+      horseProfile,
     }
   })
 
@@ -577,8 +646,8 @@ export function runApexEngine(runners, race, options = {}) {
   function calibrateWinProbability(rawProb) {
     if (rawProb <= 0 || rawProb >= 1) return rawProb
     const logit = Math.log(rawProb / (1 - rawProb))
-    const A = 1.10
-    const B = 0.10
+    const A = 1.440
+    const B = 1.321
     const calibratedLogit = (A * logit) + B
     const calibratedProb = 1 / (1 + Math.exp(-calibratedLogit))
     return Math.max(0.01, Math.min(0.99, calibratedProb))
@@ -667,6 +736,7 @@ export function runApexEngine(runners, race, options = {}) {
 
     return {
       ...r,
+      courseAffinity: r.courseAffinity || 0,
       winProb: Math.round(adjustedWinProbs[i] * 10) / 10,
       placeProb: Math.round(adjustedPlaceProbs[i] * 10) / 10,
       probBand: band.label,

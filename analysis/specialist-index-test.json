@@ -1,0 +1,8554 @@
+{
+  "summary": {
+    "races": 334,
+    "withProfile": 334,
+    "engineErrors": 0,
+    "matchFailures": 0,
+    "noProfile": 5,
+    "specialistIndex": {
+      "winnerBetter": 83,
+      "winnerBetterPct": 25,
+      "avgAdvantage": 0.114,
+      "medianAdvantage": 0,
+      "min": -0.1,
+      "max": 1.167
+    },
+    "componentComparison": {
+      "power": {
+        "avg": -1.302,
+        "median": 0,
+        "min": -20,
+        "max": 15,
+        "winnerBetter": 22,
+        "winnerBetterPct": 7
+      },
+      "paceCompat": {
+        "avg": 0.135,
+        "median": 0,
+        "min": -15,
+        "max": 15,
+        "winnerBetter": 10,
+        "winnerBetterPct": 3
+      },
+      "raceShape": {
+        "avg": 0.012,
+        "median": 0,
+        "min": 0,
+        "max": 1,
+        "winnerBetter": 4,
+        "winnerBetterPct": 1
+      },
+      "ground": {
+        "avg": 6.587,
+        "median": 0,
+        "min": -35,
+        "max": 50,
+        "winnerBetter": 84,
+        "winnerBetterPct": 25
+      },
+      "trainerForm": {
+        "avg": 0.254,
+        "median": 0,
+        "min": -45,
+        "max": 35,
+        "winnerBetter": 116,
+        "winnerBetterPct": 35
+      },
+      "distance": {
+        "avg": 2.216,
+        "median": 0,
+        "min": -25,
+        "max": 25,
+        "winnerBetter": 60,
+        "winnerBetterPct": 18
+      },
+      "courseAffinity": {
+        "avg": 0.386,
+        "median": 0.4,
+        "min": -0.7,
+        "max": 1.1,
+        "winnerBetter": 286,
+        "winnerBetterPct": 86
+      },
+      "personalAffinity": {
+        "avg": 4.48,
+        "median": 5,
+        "min": -7.5,
+        "max": 17.2,
+        "winnerBetter": 296,
+        "winnerBetterPct": 89
+      },
+      "rprORGap": {
+        "avg": 1.324,
+        "median": 0.7,
+        "min": -8.7,
+        "max": 13.3,
+        "winnerBetter": 183,
+        "winnerBetterPct": 55
+      },
+      "finalScore": {
+        "avg": 1.689,
+        "median": 2,
+        "min": -8,
+        "max": 12,
+        "winnerBetter": 229,
+        "winnerBetterPct": 69
+      },
+      "qualityScore": {
+        "avg": 0,
+        "median": 0,
+        "min": 0,
+        "max": 0,
+        "winnerBetter": 0,
+        "winnerBetterPct": 0
+      }
+    },
+    "agreement": {
+      "power": {
+        "agree": 243,
+        "agreePct": 73,
+        "bothPositive": 7,
+        "bothNegative": 236,
+        "specialistWinsCompLoses": 76,
+        "specialistLosesCompWins": 15
+      },
+      "paceCompat": {
+        "agree": 249,
+        "agreePct": 75,
+        "bothPositive": 4,
+        "bothNegative": 245,
+        "specialistWinsCompLoses": 79,
+        "specialistLosesCompWins": 6
+      },
+      "raceShape": {
+        "agree": 247,
+        "agreePct": 74,
+        "bothPositive": 0,
+        "bothNegative": 247,
+        "specialistWinsCompLoses": 83,
+        "specialistLosesCompWins": 4
+      },
+      "ground": {
+        "agree": 199,
+        "agreePct": 60,
+        "bothPositive": 16,
+        "bothNegative": 183,
+        "specialistWinsCompLoses": 67,
+        "specialistLosesCompWins": 68
+      },
+      "trainerForm": {
+        "agree": 187,
+        "agreePct": 56,
+        "bothPositive": 26,
+        "bothNegative": 161,
+        "specialistWinsCompLoses": 57,
+        "specialistLosesCompWins": 90
+      },
+      "distance": {
+        "agree": 225,
+        "agreePct": 67,
+        "bothPositive": 17,
+        "bothNegative": 208,
+        "specialistWinsCompLoses": 66,
+        "specialistLosesCompWins": 43
+      },
+      "courseAffinity": {
+        "agree": 105,
+        "agreePct": 31,
+        "bothPositive": 70,
+        "bothNegative": 35,
+        "specialistWinsCompLoses": 13,
+        "specialistLosesCompWins": 216
+      },
+      "personalAffinity": {
+        "agree": 93,
+        "agreePct": 28,
+        "bothPositive": 69,
+        "bothNegative": 24,
+        "specialistWinsCompLoses": 14,
+        "specialistLosesCompWins": 227
+      },
+      "rprORGap": {
+        "agree": 170,
+        "agreePct": 51,
+        "bothPositive": 51,
+        "bothNegative": 119,
+        "specialistWinsCompLoses": 32,
+        "specialistLosesCompWins": 132
+      },
+      "finalScore": {
+        "agree": 124,
+        "agreePct": 37,
+        "bothPositive": 51,
+        "bothNegative": 73,
+        "specialistWinsCompLoses": 32,
+        "specialistLosesCompWins": 178
+      },
+      "qualityScore": {
+        "agree": 251,
+        "agreePct": 75,
+        "bothPositive": 0,
+        "bothNegative": 251,
+        "specialistWinsCompLoses": 83,
+        "specialistLosesCompWins": 0
+      }
+    },
+    "dataCoverage": {
+      "course": 334,
+      "distance": 334,
+      "cd": 334
+    }
+  },
+  "records": [
+    {
+      "raceId": "918099",
+      "course": "Haydock",
+      "winner": "Torcello",
+      "pick": "Dreams Adozen",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -1.3,
+        "rprORGap": 8.6,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918100",
+      "course": "Haydock",
+      "winner": "Outback Legend",
+      "pick": "Scarlet Legend",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918102",
+      "course": "Haydock",
+      "winner": "Euphonia",
+      "pick": "Lion of Mali",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.1,
+        "personalAffinity": -0.6,
+        "rprORGap": -0.5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918103",
+      "course": "Haydock",
+      "winner": "Persian Land",
+      "pick": "Charted Course",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918105",
+      "course": "Haydock",
+      "winner": "Trilby",
+      "pick": "Wheels Of Fire",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 3.3,
+        "rprORGap": 5,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918071",
+      "course": "Musselburgh",
+      "winner": "Gallus Norman",
+      "pick": "Bronte Beach",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.9,
+        "rprORGap": 4.4,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918073",
+      "course": "Musselburgh",
+      "winner": "Blakefell",
+      "pick": "Whernside",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.8,
+        "rprORGap": 6,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918076",
+      "course": "Musselburgh",
+      "winner": "Alpine Sierra",
+      "pick": "Spirit Catcher",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 25,
+        "distance": -10,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.2,
+        "rprORGap": -2.7,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918077",
+      "course": "Musselburgh",
+      "winner": "Canaria Queen",
+      "pick": "Classy Clarets",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.75,
+        "pick": 0,
+        "delta": 0.75
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.4,
+        "rprORGap": 1.4,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918085",
+      "course": "Catterick",
+      "winner": "The Tunguska Event",
+      "pick": "Yachtsman",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.2,
+        "rprORGap": -3.2,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918087",
+      "course": "Catterick",
+      "winner": "Evocative Spark",
+      "pick": "Safari Dream",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.1,
+        "pick": 0,
+        "delta": 0.1
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -5,
+        "distance": 0,
+        "courseAffinity": 0.9,
+        "personalAffinity": 9.5,
+        "rprORGap": -1.1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918089",
+      "course": "Catterick",
+      "winner": "Lope Y Linda",
+      "pick": "Musical Soldier",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.8,
+        "rprORGap": 3.4,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918092",
+      "course": "Chepstow",
+      "winner": "My A'ali Baba",
+      "pick": "Green Titan",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918093",
+      "course": "Chepstow",
+      "winner": "Betsen",
+      "pick": "Em Four",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -0.1,
+        "rprORGap": 5.3,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918096",
+      "course": "Chepstow",
+      "winner": "Autumn Angel",
+      "pick": "Dragon God",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.3,
+        "pick": 0,
+        "delta": 0.3
+      },
+      "componentDeltas": {
+        "power": -4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.5,
+        "rprORGap": -0.6,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918097",
+      "course": "Chepstow",
+      "winner": "Battle Of Maldon",
+      "pick": "Windbreaker",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -10,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.1,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918098",
+      "course": "Chepstow",
+      "winner": "The Green Mile",
+      "pick": "River King",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": -0.667,
+        "delta": 1.167
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -10,
+        "distance": -25,
+        "courseAffinity": 0,
+        "personalAffinity": 2,
+        "rprORGap": -2,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918687",
+      "course": "Southwell",
+      "winner": "It's Only Fun",
+      "pick": "Arth's Gold",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 25,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.7,
+        "rprORGap": 4.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918078",
+      "course": "Southwell",
+      "winner": "Dream Camp",
+      "pick": "Royal Fanfare",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.6,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918081",
+      "course": "Southwell",
+      "winner": "Choreography",
+      "pick": "Crown Ranger",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918082",
+      "course": "Southwell",
+      "winner": "Fort Augustus",
+      "pick": "Adelaide Bay",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.8,
+        "personalAffinity": 8.2,
+        "rprORGap": -1.5,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918084",
+      "course": "Southwell",
+      "winner": "Albert Cee",
+      "pick": "Bomb Squad",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.3,
+        "rprORGap": 3.4,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "917866",
+      "course": "Limerick",
+      "winner": "Shadow Paddy",
+      "pick": "Le Coq Hardi",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -17,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -45,
+        "distance": 15,
+        "courseAffinity": 0.9,
+        "personalAffinity": 16.5,
+        "rprORGap": -7.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "917867",
+      "course": "Limerick",
+      "winner": "Toon Town",
+      "pick": "General Clermont",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 20,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.1,
+        "rprORGap": 4.2,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "917868",
+      "course": "Limerick",
+      "winner": "Sporting Glance",
+      "pick": "Ad Caelum",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -17,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 35,
+        "distance": 15,
+        "courseAffinity": 1,
+        "personalAffinity": 17.2,
+        "rprORGap": -5.3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "917869",
+      "course": "Limerick",
+      "winner": "Zolpharine",
+      "pick": "Jukebox Johnny",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": -45,
+        "distance": -10,
+        "courseAffinity": 0.6,
+        "personalAffinity": 11,
+        "rprORGap": -0.4,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "917870",
+      "course": "Limerick",
+      "winner": "A Year Older",
+      "pick": "Oneforgonzo",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 11.5,
+        "rprORGap": 2.8,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918248",
+      "course": "Goodwood",
+      "winner": "Pershaada",
+      "pick": "Lazurite",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 20,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 7.1,
+        "rprORGap": 0,
+        "finalScore": 8,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918250",
+      "course": "Goodwood",
+      "winner": "Orionis",
+      "pick": "Venetia",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.3,
+        "delta": 0.3
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 20,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.2,
+        "rprORGap": -4.8,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918251",
+      "course": "Goodwood",
+      "winner": "Boiling Point",
+      "pick": "Ice Max",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.7,
+        "rprORGap": -0.4,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918255",
+      "course": "Haydock",
+      "winner": "Sea Venture",
+      "pick": "Minzelle",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918256",
+      "course": "Haydock",
+      "winner": "Rosy Affair",
+      "pick": "Sky Majesty",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -45,
+        "distance": 15,
+        "courseAffinity": 0.1,
+        "personalAffinity": 3,
+        "rprORGap": -3.6,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918260",
+      "course": "Haydock",
+      "winner": "Paroda Diva",
+      "pick": "Hambelton",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0.667,
+        "pick": 0,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.4,
+        "rprORGap": 2.2,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918261",
+      "course": "Bath",
+      "winner": "Two Plus Two",
+      "pick": "Basilette",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.542,
+        "pick": 0,
+        "delta": 0.542
+      },
+      "componentDeltas": {
+        "power": 5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.3,
+        "personalAffinity": -1.7,
+        "rprORGap": -0.9,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918263",
+      "course": "Bath",
+      "winner": "Flight Signal",
+      "pick": "Jaan Ki Tukri",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 6.9,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918264",
+      "course": "Bath",
+      "winner": "Toolatetonegotiate",
+      "pick": "Silver Wraith",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.3,
+        "personalAffinity": -3.6,
+        "rprORGap": 0.5,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918265",
+      "course": "Bath",
+      "winner": "Double Naughty",
+      "pick": "Escape Plan",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -0.4,
+        "rprORGap": 3.8,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918266",
+      "course": "Bath",
+      "winner": "Legendsoftheland",
+      "pick": "Southbank",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7.2,
+        "rprORGap": -1.1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918836",
+      "course": "Bath",
+      "winner": "Dappled Light",
+      "pick": "Eutropia",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": -15,
+        "courseAffinity": -0.7,
+        "personalAffinity": -7.5,
+        "rprORGap": 6.2,
+        "finalScore": -7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918242",
+      "course": "Pontefract",
+      "winner": "Green Sovereign",
+      "pick": "Ricky Punting",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 7.4,
+        "rprORGap": 0,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918243",
+      "course": "Pontefract",
+      "winner": "Changeofmind",
+      "pick": "Jojo Rabbit",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.667,
+        "pick": 0,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.6,
+        "rprORGap": 4.4,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918268",
+      "course": "Worcester",
+      "winner": "Karnaval Point",
+      "pick": "Jet Smart",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 10.7,
+        "rprORGap": 4.7,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918269",
+      "course": "Worcester",
+      "winner": "Teleleo",
+      "pick": "Mossy Moon",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918270",
+      "course": "Worcester",
+      "winner": "L'amalric",
+      "pick": "Premier Tenor",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -7,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918271",
+      "course": "Worcester",
+      "winner": "Kind Intention",
+      "pick": "Crest of Arms",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.8,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918272",
+      "course": "Worcester",
+      "winner": "Dexperts Opinion",
+      "pick": "Twist Of Fatecatch",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 11.1,
+        "rprORGap": -0.2,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918501",
+      "course": "Downpatrick",
+      "winner": "Bruant",
+      "pick": "Tell Us This",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": -0.3,
+        "rprORGap": 2.3,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918502",
+      "course": "Downpatrick",
+      "winner": "Joya Del Mar",
+      "pick": "Scary Askari",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.4,
+        "rprORGap": 3.9,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918503",
+      "course": "Downpatrick",
+      "winner": "Driveonwill",
+      "pick": "Saunton Surf",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.4,
+        "rprORGap": 2.1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918504",
+      "course": "Downpatrick",
+      "winner": "Everest The Brave",
+      "pick": "West Of Idaho",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 6.1,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918505",
+      "course": "Downpatrick",
+      "winner": "Asphalt Cowboy",
+      "pick": "Cause For Comment",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 8.1,
+        "rprORGap": 0,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918560",
+      "course": "Haydock",
+      "winner": "Noble Vow",
+      "pick": "Bintaryana",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.542,
+        "pick": 0,
+        "delta": 0.542
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 4.1,
+        "rprORGap": 1.6,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918523",
+      "course": "Goodwood",
+      "winner": "Dark Issue",
+      "pick": "Wondervision",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918524",
+      "course": "Goodwood",
+      "winner": "Inis Mor",
+      "pick": "Earth Shot",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -30,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 6.7,
+        "rprORGap": 8.6,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918525",
+      "course": "Goodwood",
+      "winner": "Mother Dear",
+      "pick": "Evening Fades",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918569",
+      "course": "York",
+      "winner": "Lord Roxby",
+      "pick": "Almarada Prince",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.7,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918570",
+      "course": "York",
+      "winner": "Possessive",
+      "pick": "Cuban Heels",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -20,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.8,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918571",
+      "course": "York",
+      "winner": "Partisan Hero",
+      "pick": "Fortification",
+      "rank": 12,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": -0.1,
+        "personalAffinity": -2.8,
+        "rprORGap": 3.6,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918573",
+      "course": "York",
+      "winner": "Reliable Ricki",
+      "pick": "Moscow Power",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 13.2,
+        "rprORGap": 3.1,
+        "finalScore": 8,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918574",
+      "course": "York",
+      "winner": "Pearl River",
+      "pick": "Bridge Of Eagles",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 20,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": 1.4,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918575",
+      "course": "York",
+      "winner": "Golden Strike",
+      "pick": "Leadman",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 11.5,
+        "rprORGap": 1.3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918536",
+      "course": "Cartmel",
+      "winner": "My Chiquita",
+      "pick": "Belle Le Grand",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.2,
+        "rprORGap": 4.7,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918537",
+      "course": "Cartmel",
+      "winner": "Tread Softly Now",
+      "pick": "Keep On Cobbling",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -2.2,
+        "rprORGap": 0,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918541",
+      "course": "Cartmel",
+      "winner": "Imperial Rule",
+      "pick": "Line Of Descent",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.9,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918543",
+      "course": "Bangor-on-Dee",
+      "winner": "Le Gentleman",
+      "pick": "Bobbarelli",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 5,
+        "courseAffinity": 0.6,
+        "personalAffinity": 9.5,
+        "rprORGap": 1.9,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918544",
+      "course": "Bangor-on-Dee",
+      "winner": "Crystal Glance",
+      "pick": "Orange Diamond",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 7.6,
+        "rprORGap": 2.8,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918545",
+      "course": "Bangor-on-Dee",
+      "winner": "Gris Majeur",
+      "pick": "Nibras Gold",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 3.8,
+        "rprORGap": 1.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918549",
+      "course": "Salisbury",
+      "winner": "Shimmering Sun",
+      "pick": "Call Me Tomorrow",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 8.3,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918550",
+      "course": "Salisbury",
+      "winner": "Dovey Moon",
+      "pick": "Great Dream",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -30,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 8.4,
+        "rprORGap": -0.1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918553",
+      "course": "Salisbury",
+      "winner": "Starlight Sami",
+      "pick": "Lovers Leap",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.1,
+        "rprORGap": 1.9,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918555",
+      "course": "Salisbury",
+      "winner": "Masterinthewoods",
+      "pick": "Shayhana",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": 4.3,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919015",
+      "course": "Windsor",
+      "winner": "Distant Rumble",
+      "pick": "Moonhall Lass",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -0.2,
+        "rprORGap": 10.5,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918562",
+      "course": "Windsor",
+      "winner": "Agitator",
+      "pick": "Printing Money",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918563",
+      "course": "Windsor",
+      "winner": "Satellite Of Love",
+      "pick": "Rex Regum",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918565",
+      "course": "Windsor",
+      "winner": "Bintola",
+      "pick": "Marengo Storm",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -5,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.9,
+        "rprORGap": 0.9,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918566",
+      "course": "Windsor",
+      "winner": "Pride Of Nepal",
+      "pick": "Night Bear",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 10.6,
+        "rprORGap": 4.3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918567",
+      "course": "Windsor",
+      "winner": "Lady Dora Mae",
+      "pick": "Proposal",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.75,
+        "pick": 0,
+        "delta": 0.75
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -45,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": 1.8,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918568",
+      "course": "Windsor",
+      "winner": "Darn Hot Dame",
+      "pick": "Worlington",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": 1.4,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918731",
+      "course": "Curragh",
+      "winner": "Purview",
+      "pick": "Trustyourinstinct",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -5,
+        "distance": 15,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.1,
+        "rprORGap": -0.5,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918732",
+      "course": "Curragh",
+      "winner": "Perry Mason",
+      "pick": "Perfect Your Craft",
+      "rank": 11,
+      "specialistIndex": {
+        "winner": 0.4,
+        "pick": 0,
+        "delta": 0.4
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 5,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.5,
+        "rprORGap": 1.3,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918734",
+      "course": "Curragh",
+      "winner": "Invincible Will",
+      "pick": "Gavoo",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.8,
+        "personalAffinity": 10.3,
+        "rprORGap": 0.9,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918735",
+      "course": "Curragh",
+      "winner": "Headmaster",
+      "pick": "Aviatrice",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6,
+        "rprORGap": 1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919247",
+      "course": "Kelso",
+      "winner": "Nobotheratall",
+      "pick": "Chemistry",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.7,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918509",
+      "course": "Kelso",
+      "winner": "Heart Above",
+      "pick": "Travis Wheatley",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.6,
+        "rprORGap": 5.7,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918510",
+      "course": "Kelso",
+      "winner": "Dunkerque",
+      "pick": "Looking Splendid",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 12.6,
+        "rprORGap": 5.2,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918512",
+      "course": "Kelso",
+      "winner": "Scots Poet",
+      "pick": "Double Digits",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 5.8,
+        "rprORGap": -0.1,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918513",
+      "course": "Kelso",
+      "winner": "You Be Lucky Jean",
+      "pick": "Boy Aaron",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918514",
+      "course": "Fontwell",
+      "winner": "Shalfa",
+      "pick": "Hiero Sport",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.3,
+        "personalAffinity": 3.7,
+        "rprORGap": 0.1,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918519",
+      "course": "Fontwell",
+      "winner": "Footloose Man",
+      "pick": "Lunar Ocean",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 11,
+        "rprORGap": 1.7,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918520",
+      "course": "Fontwell",
+      "winner": "Kentford Legacy",
+      "pick": "La Dame Ecarlate",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918528",
+      "course": "Uttoxeter",
+      "winner": "Pigeon Forge",
+      "pick": "First Candidate",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 4.1,
+        "rprORGap": -2.9,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919249",
+      "course": "Uttoxeter",
+      "winner": "Sir Galahad",
+      "pick": "Service Minimum",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": -15,
+        "courseAffinity": -0.3,
+        "personalAffinity": -5,
+        "rprORGap": 13.3,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919250",
+      "course": "Uttoxeter",
+      "winner": "Glengouly",
+      "pick": "Riskintheground",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.5,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 7.2,
+        "rprORGap": 0.1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918533",
+      "course": "Uttoxeter",
+      "winner": "Grand Clermont",
+      "pick": "Mr Griffiths",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 2.7,
+        "rprORGap": 5.6,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "909814",
+      "course": "Curragh",
+      "winner": "Almaqam",
+      "pick": "Minnie Hauk",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": -15,
+        "courseAffinity": -0.3,
+        "personalAffinity": -3.2,
+        "rprORGap": -1.4,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "884359",
+      "course": "Curragh",
+      "winner": "Precise",
+      "pick": "True Love",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.8,
+        "personalAffinity": 6.1,
+        "rprORGap": -0.8,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918741",
+      "course": "Curragh",
+      "winner": "Pretty Omagh Girl",
+      "pick": "Spanish Temptress",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -10,
+        "distance": 25,
+        "courseAffinity": 0.8,
+        "personalAffinity": 7.3,
+        "rprORGap": 9.4,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918742",
+      "course": "Curragh",
+      "winner": "Westminster Moon",
+      "pick": "Kingstonian",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": -15,
+        "distance": 15,
+        "courseAffinity": 0,
+        "personalAffinity": 0.6,
+        "rprORGap": 4.3,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918706",
+      "course": "Redcar",
+      "winner": "Brain Freeze",
+      "pick": "Fille Unique",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.5,
+        "rprORGap": 2.3,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918707",
+      "course": "Redcar",
+      "winner": "Danger Bay",
+      "pick": "Clouds Hill",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.7,
+        "rprORGap": 2.9,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919391",
+      "course": "Redcar",
+      "winner": "Badri",
+      "pick": "Artagnan",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1,
+        "rprORGap": 0.8,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918718",
+      "course": "Leicester",
+      "winner": "Snapback",
+      "pick": "Spiritoftheblues",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.6,
+        "rprORGap": -5.4,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919386",
+      "course": "Leicester",
+      "winner": "Fenlander",
+      "pick": "Spirit Of Jenny",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.7,
+        "rprORGap": 3.1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919387",
+      "course": "Leicester",
+      "winner": "Rockin' The Boat",
+      "pick": "Qitaal",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.1,
+        "rprORGap": 0.3,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919388",
+      "course": "Leicester",
+      "winner": "Jazl",
+      "pick": "Pilu",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 1,
+        "rprORGap": 2.3,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919389",
+      "course": "Leicester",
+      "winner": "Clipsham Noble",
+      "pick": "Moon Over The Sea",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": -0.3,
+        "personalAffinity": -2,
+        "rprORGap": 0.1,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918712",
+      "course": "Windsor",
+      "winner": "Mythical Valentine",
+      "pick": "Sea Canary",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -20,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.6,
+        "rprORGap": 4.7,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918713",
+      "course": "Windsor",
+      "winner": "Justcallmepete",
+      "pick": "Trefor",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": -1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918714",
+      "course": "Windsor",
+      "winner": "Serengeti",
+      "pick": "Auld Toon Loon",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.8,
+        "rprORGap": 3.4,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918716",
+      "course": "Windsor",
+      "winner": "Buckland Belle",
+      "pick": "Takeitorleaveit",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0.3,
+        "pick": 0,
+        "delta": 0.3
+      },
+      "componentDeltas": {
+        "power": -4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.4,
+        "rprORGap": 5.2,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918726",
+      "course": "Cartmel",
+      "winner": "Path Of Stars",
+      "pick": "Belvedere Bhoy",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.7,
+        "rprORGap": 4.3,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918728",
+      "course": "Cartmel",
+      "winner": "Stratagem",
+      "pick": "Tommie Beau",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.3,
+        "pick": 0,
+        "delta": 0.3
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 15,
+        "distance": 15,
+        "courseAffinity": 0.2,
+        "personalAffinity": 4.8,
+        "rprORGap": -1.1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919390",
+      "course": "Cartmel",
+      "winner": "Sean Og",
+      "pick": "Pony Soprano",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.7,
+        "rprORGap": 7.4,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918838",
+      "course": "Ballinrobe",
+      "winner": "Tinto De Verano",
+      "pick": "De Jour En Jour",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -17,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -5,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 5.9,
+        "rprORGap": -5.2,
+        "finalScore": -4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918839",
+      "course": "Ballinrobe",
+      "winner": "Billy Lee Swagger",
+      "pick": "Toll Stone",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 15,
+        "courseAffinity": 0.9,
+        "personalAffinity": 13.6,
+        "rprORGap": 2.1,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918840",
+      "course": "Ballinrobe",
+      "winner": "Net Boy",
+      "pick": "Sony Bill",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -10,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 13.3,
+        "rprORGap": 0,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918600",
+      "course": "Ballinrobe",
+      "winner": "Native Speaker",
+      "pick": "He's Gorgeous",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 1,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 5,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.3,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918841",
+      "course": "Ballinrobe",
+      "winner": "Jetoile",
+      "pick": "Happy Jacky",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 1,
+        "rprORGap": 6.9,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918850",
+      "course": "Leicester",
+      "winner": "Libertango",
+      "pick": "Victory Gold",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918853",
+      "course": "Leicester",
+      "winner": "Escape Magic",
+      "pick": "Hatamoto",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.4,
+        "rprORGap": 1.2,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918854",
+      "course": "Leicester",
+      "winner": "Study Up",
+      "pick": "Happy Chandler",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.667,
+        "pick": 0,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -1.3,
+        "rprORGap": 3.5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918855",
+      "course": "Leicester",
+      "winner": "Polka Blue",
+      "pick": "Frantic",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -30,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 7,
+        "rprORGap": 0.6,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918864",
+      "course": "Redcar",
+      "winner": "Hoseki",
+      "pick": "Cape Fear",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 20,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.8,
+        "rprORGap": -6.4,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918867",
+      "course": "Redcar",
+      "winner": "Rousham",
+      "pick": "Positive Thoughts",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.1,
+        "rprORGap": 4.7,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918871",
+      "course": "Bath",
+      "winner": "Acclamation Star",
+      "pick": "Arabica Queen",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.8,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918872",
+      "course": "Bath",
+      "winner": "Early Release",
+      "pick": "Strike",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.9,
+        "personalAffinity": 9.6,
+        "rprORGap": -5.9,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918873",
+      "course": "Bath",
+      "winner": "Aces Wild",
+      "pick": "Correspondence",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": 4.7,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918874",
+      "course": "Bath",
+      "winner": "Show Biz Kid",
+      "pick": "Annexation",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": 1.6,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918859",
+      "course": "Lingfield",
+      "winner": "Ken Brulee",
+      "pick": "Tickettothestars",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.7,
+        "rprORGap": -0.3,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918860",
+      "course": "Lingfield",
+      "winner": "Ascending Star",
+      "pick": "Weffaag",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.1,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918861",
+      "course": "Lingfield",
+      "winner": "Summer Heat",
+      "pick": "Bella Bisbee",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.9,
+        "rprORGap": 2.1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918862",
+      "course": "Lingfield",
+      "winner": "Mighty Vega",
+      "pick": "Lohoobb",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 10.7,
+        "rprORGap": -0.7,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "918849",
+      "course": "Plumpton",
+      "winner": "Scotto",
+      "pick": "Getmyfriend",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -7,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -20,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 1.8,
+        "rprORGap": 0,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919030",
+      "course": "Ballinrobe",
+      "winner": "Porcupine Bank",
+      "pick": "Kai Lung",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 7,
+        "rprORGap": -2,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919032",
+      "course": "Ballinrobe",
+      "winner": "Joe Cool",
+      "pick": "Marco Du Seuil",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.6,
+        "rprORGap": 0,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919033",
+      "course": "Ballinrobe",
+      "winner": "Paul's Dream",
+      "pick": "Eye Of A Tiger",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 10.7,
+        "rprORGap": 0.3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919034",
+      "course": "Ballinrobe",
+      "winner": "Can Happen",
+      "pick": "Piccolo Player",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.4,
+        "rprORGap": 1.4,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919035",
+      "course": "Ballinrobe",
+      "winner": "Jisco Du Brem",
+      "pick": "Lady Bluebird",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 1.3,
+        "rprORGap": 2.5,
+        "finalScore": -4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919036",
+      "course": "Ballinrobe",
+      "winner": "Fiveandahalf",
+      "pick": "Brother Walfrid",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.5,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.7,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919018",
+      "course": "Dundalk",
+      "winner": "Lamar Canyon",
+      "pick": "Cool Azul",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919019",
+      "course": "Dundalk",
+      "winner": "Cuban Grey",
+      "pick": "Lethimfly",
+      "rank": 11,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.6,
+        "rprORGap": -1,
+        "finalScore": -4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919021",
+      "course": "Dundalk",
+      "winner": "Grey Fable",
+      "pick": "Copper Craft",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.2,
+        "rprORGap": -1.9,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919022",
+      "course": "Dundalk",
+      "winner": "Kilcrea Rock",
+      "pick": "Mano Chicago",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4,
+        "rprORGap": -4.5,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919051",
+      "course": "Hamilton",
+      "winner": "Sogniamo",
+      "pick": "Bearish",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": -15,
+        "courseAffinity": 0.3,
+        "personalAffinity": 3.3,
+        "rprORGap": -5.7,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919062",
+      "course": "Beverley",
+      "winner": "Lairy Mary",
+      "pick": "Penny Arcade",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.3,
+        "rprORGap": 0,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919064",
+      "course": "Beverley",
+      "winner": "This Farh",
+      "pick": "Woodstock",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.8,
+        "personalAffinity": 7.6,
+        "rprORGap": -3.6,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919065",
+      "course": "Beverley",
+      "winner": "Mao Shang Wong",
+      "pick": "Hibernate",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": 7.2,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919066",
+      "course": "Beverley",
+      "winner": "Penny Ghent",
+      "pick": "Hostelry",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.1,
+        "pick": 0,
+        "delta": 0.1
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7,
+        "rprORGap": 2.4,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919067",
+      "course": "Beverley",
+      "winner": "Sisterandbrother",
+      "pick": "Freddy Robinson",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.667,
+        "pick": 0,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.1,
+        "rprORGap": 0.3,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919068",
+      "course": "Beverley",
+      "winner": "King Of The Jungle",
+      "pick": "Thornaby Pearl",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.8,
+        "rprORGap": 0.4,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919079",
+      "course": "Newton Abbot",
+      "winner": "Makinbecon",
+      "pick": "Reel Orange",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.4,
+        "personalAffinity": -6,
+        "rprORGap": 6.3,
+        "finalScore": -5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919080",
+      "course": "Newton Abbot",
+      "winner": "American Sniper",
+      "pick": "Ellerton",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": -15,
+        "courseAffinity": -0.1,
+        "personalAffinity": -3.8,
+        "rprORGap": 7.5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919729",
+      "course": "Kempton",
+      "winner": "Rhythm N Rock",
+      "pick": "Kit Gabriel",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4,
+        "rprORGap": 2.4,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919069",
+      "course": "Kempton",
+      "winner": "Moonrise",
+      "pick": "Phalanx Nation",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919071",
+      "course": "Kempton",
+      "winner": "Masked Warrior",
+      "pick": "Storming Point",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 12,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 30,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.7,
+        "rprORGap": 9,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919073",
+      "course": "Kempton",
+      "winner": "Lord Britain",
+      "pick": "Ya Karim",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.7,
+        "rprORGap": -1.7,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919058",
+      "course": "Cartmel",
+      "winner": "Alvesta",
+      "pick": "Book of Secrets",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 5.8,
+        "rprORGap": 1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919059",
+      "course": "Cartmel",
+      "winner": "Dickens",
+      "pick": "Musique De Fee",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": -25,
+        "distance": 10,
+        "courseAffinity": 0.9,
+        "personalAffinity": 12.6,
+        "rprORGap": 1.1,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919728",
+      "course": "Cartmel",
+      "winner": "Kingofthegame",
+      "pick": "Evenwood Sonofagun",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.3,
+        "pick": -0.3,
+        "delta": 0.6
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.5,
+        "rprORGap": -2.4,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919061",
+      "course": "Cartmel",
+      "winner": "Zumbi",
+      "pick": "Ghasham",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.3,
+        "pick": 0,
+        "delta": 0.3
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.3,
+        "rprORGap": 0.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919730",
+      "course": "Wexford",
+      "winner": "Rich Belief",
+      "pick": "Redwood Queen",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.6,
+        "rprORGap": -0.1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919037",
+      "course": "Wexford",
+      "winner": "Sageborough",
+      "pick": "Colcannon",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 10.9,
+        "rprORGap": 0.7,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919038",
+      "course": "Wexford",
+      "winner": "Kilt",
+      "pick": "Grey Gardens",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 7.4,
+        "rprORGap": 1.3,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919039",
+      "course": "Wexford",
+      "winner": "Topothelane",
+      "pick": "Deise Crystal",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0.667,
+        "pick": 0,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 9.1,
+        "rprORGap": 2.1,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919042",
+      "course": "Wexford",
+      "winner": "Lecale's Diamond",
+      "pick": "Annie Button",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.1,
+        "rprORGap": 5.7,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919043",
+      "course": "Wexford",
+      "winner": "He's My Hero",
+      "pick": "Weaponized",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.7,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919257",
+      "course": "Sandown",
+      "winner": "Havana Smile",
+      "pick": "Major Neigh Sayer",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.9,
+        "rprORGap": 0.9,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919258",
+      "course": "Sandown",
+      "winner": "Where Love Lives",
+      "pick": "Napa",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.7,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919259",
+      "course": "Sandown",
+      "winner": "Dubai Future",
+      "pick": "Sweet William",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -4,
+        "rprORGap": 1.4,
+        "finalScore": -4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919262",
+      "course": "Sandown",
+      "winner": "Boyfriend",
+      "pick": "Raammee",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 20,
+        "distance": -15,
+        "courseAffinity": 0,
+        "personalAffinity": -0.6,
+        "rprORGap": 6.1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919263",
+      "course": "Sandown",
+      "winner": "Law Court",
+      "pick": "The Joker",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 6.9,
+        "rprORGap": 1.8,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919252",
+      "course": "Yarmouth",
+      "winner": "Sea Suite",
+      "pick": "Zubaru",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -0.6,
+        "rprORGap": 6.8,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919256",
+      "course": "Yarmouth",
+      "winner": "Siam Fox",
+      "pick": "Typeface",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.8,
+        "rprORGap": 2.5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919277",
+      "course": "Ripon",
+      "winner": "Vega's Virtue",
+      "pick": "Harswell River",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 1.9,
+        "rprORGap": 0.9,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919279",
+      "course": "Ripon",
+      "winner": "Spioradalta",
+      "pick": "El Matador",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.9,
+        "personalAffinity": 8.9,
+        "rprORGap": -2.6,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919281",
+      "course": "Ripon",
+      "winner": "Something",
+      "pick": "Spartan Times",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": -0.1,
+        "personalAffinity": -2.5,
+        "rprORGap": 4.5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919282",
+      "course": "Ripon",
+      "winner": "Marajito",
+      "pick": "Herakles",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.5,
+        "rprORGap": 5.6,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919273",
+      "course": "Worcester",
+      "winner": "Brionywells",
+      "pick": "Son Of Tyran",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -30,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.5,
+        "rprORGap": 5.2,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919274",
+      "course": "Worcester",
+      "winner": "Crown Of India",
+      "pick": "Charging Thunder",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.6,
+        "rprORGap": 6.6,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919275",
+      "course": "Worcester",
+      "winner": "Mancero",
+      "pick": "Playful Fox",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.3,
+        "rprORGap": 2.4,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919266",
+      "course": "Market Rasen",
+      "winner": "Lady Fortune",
+      "pick": "Parish Star",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.2,
+        "personalAffinity": 0.9,
+        "rprORGap": 4.6,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919267",
+      "course": "Market Rasen",
+      "winner": "Crebilly",
+      "pick": "Snatch A Glance",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -3.9,
+        "rprORGap": 5.1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919268",
+      "course": "Market Rasen",
+      "winner": "Lheur De Gloire",
+      "pick": "Catchim",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.1,
+        "personalAffinity": -1.1,
+        "rprORGap": 5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919269",
+      "course": "Market Rasen",
+      "winner": "Bunker Bay",
+      "pick": "Ruler Legend",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": -0.5,
+        "personalAffinity": -6.9,
+        "rprORGap": 6.8,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919023",
+      "course": "Fairyhouse",
+      "winner": "High King",
+      "pick": "Joga Bonito",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919024",
+      "course": "Fairyhouse",
+      "winner": "Spirit Of Eagles",
+      "pick": "Gloriously Glam",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -10,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.4,
+        "rprORGap": -1.8,
+        "finalScore": -6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919025",
+      "course": "Fairyhouse",
+      "winner": "Stone Bear",
+      "pick": "Treasured Royal",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.8,
+        "rprORGap": -2.7,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919026",
+      "course": "Fairyhouse",
+      "winner": "Are You In Or Out",
+      "pick": "I'm Spartacus",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": -0.3,
+        "delta": 0.8
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6.2,
+        "rprORGap": -1.3,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919027",
+      "course": "Fairyhouse",
+      "winner": "Fortuity",
+      "pick": "Venetian Star",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 8.5,
+        "rprORGap": 1.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919028",
+      "course": "Fairyhouse",
+      "winner": "Moyassr",
+      "pick": "Casheldale Lass",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.5,
+        "rprORGap": 7.5,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919029",
+      "course": "Fairyhouse",
+      "winner": "Guardian Of Realm",
+      "pick": "Mai Dahlia",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 30,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.4,
+        "rprORGap": 5,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919044",
+      "course": "Limerick",
+      "winner": "Larkins Lane",
+      "pick": "Let Him B",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 35,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.2,
+        "rprORGap": 10.2,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919047",
+      "course": "Limerick",
+      "winner": "Laska Du Breuil",
+      "pick": "Spellacy's Cross",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7,
+        "rprORGap": 1.7,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919464",
+      "course": "Carlisle",
+      "winner": "May Bee In Profit",
+      "pick": "Tamam Star",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.4,
+        "rprORGap": 0,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919465",
+      "course": "Carlisle",
+      "winner": "Pop Star",
+      "pick": "Get Up Everybody",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.3,
+        "pick": 0,
+        "delta": 0.3
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.3,
+        "rprORGap": 1.8,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919466",
+      "course": "Carlisle",
+      "winner": "Ganthorpe",
+      "pick": "Auspicious",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.1,
+        "personalAffinity": -1.1,
+        "rprORGap": 3.5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919469",
+      "course": "Carlisle",
+      "winner": "The Gay Blade",
+      "pick": "Kings Merchant",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 1,
+        "personalAffinity": 9.2,
+        "rprORGap": -4.2,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919457",
+      "course": "Brighton",
+      "winner": "Grey Horizon",
+      "pick": "Argy Bhaji",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.667,
+        "pick": 0,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -45,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 4,
+        "rprORGap": 3.8,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919458",
+      "course": "Brighton",
+      "winner": "Extended Order",
+      "pick": "High Calibre",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919459",
+      "course": "Brighton",
+      "winner": "Gallant Lion",
+      "pick": "Kimeko Glory",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": -0.2,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919460",
+      "course": "Brighton",
+      "winner": "Aim For The Bull",
+      "pick": "Havana Mojito",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 1.1,
+        "personalAffinity": 10.9,
+        "rprORGap": -0.7,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919461",
+      "course": "Brighton",
+      "winner": "Dion Baker",
+      "pick": "My Boy Harry",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.4,
+        "rprORGap": 1.2,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919462",
+      "course": "Brighton",
+      "winner": "Neptune Legend",
+      "pick": "On Key",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.9,
+        "personalAffinity": 8.6,
+        "rprORGap": -0.3,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919446",
+      "course": "Chepstow",
+      "winner": "Echo Of Stars",
+      "pick": "Alfaraz",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.9,
+        "rprORGap": 3.7,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919447",
+      "course": "Chepstow",
+      "winner": "On Edge",
+      "pick": "Cayman Tai",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.5,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.5,
+        "rprORGap": -1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919449",
+      "course": "Chepstow",
+      "winner": "Brocklesby Bill",
+      "pick": "Food For Thought",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6.1,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919450",
+      "course": "Chepstow",
+      "winner": "Northcliff",
+      "pick": "Romanovich",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 3.2,
+        "rprORGap": 3.1,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920077",
+      "course": "Wolverhampton",
+      "winner": "Green Team",
+      "pick": "Jack Sparowe",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -5,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.7,
+        "rprORGap": 3.3,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920078",
+      "course": "Wolverhampton",
+      "winner": "Flagpole",
+      "pick": "Hollywell Stream",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 1,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.9,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920080",
+      "course": "Wolverhampton",
+      "winner": "Dublin Bay",
+      "pick": "Enamorus",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.9,
+        "personalAffinity": 8.7,
+        "rprORGap": 1,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919793",
+      "course": "Down Royal",
+      "winner": "Cashel Blue",
+      "pick": "This Guy",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.6,
+        "rprORGap": -2.4,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919796",
+      "course": "Down Royal",
+      "winner": "Meriden",
+      "pick": "Sweet Baby Zou",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.5,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 25,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.6,
+        "rprORGap": 3.7,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919799",
+      "course": "Down Royal",
+      "winner": "Harmani",
+      "pick": "Eniac",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4,
+        "rprORGap": 5.6,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919803",
+      "course": "Tramore",
+      "winner": "Femme Magnifique",
+      "pick": "Lady Doyanne",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 15,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2,
+        "rprORGap": 0.9,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919806",
+      "course": "Tramore",
+      "winner": "Splashing Out",
+      "pick": "Eastmore",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.4,
+        "rprORGap": 0.9,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919807",
+      "course": "Tramore",
+      "winner": "One Day In May",
+      "pick": "Highlander Addict",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6.2,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920111",
+      "course": "Carlisle",
+      "winner": "Washington Heights",
+      "pick": "Redorange",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.6,
+        "rprORGap": 4.7,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920113",
+      "course": "Carlisle",
+      "winner": "Blue Courvoisier",
+      "pick": "Princling",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -30,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": -0.6,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920116",
+      "course": "Carlisle",
+      "winner": "Priapos",
+      "pick": "Candonomore",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.6,
+        "rprORGap": 0.5,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919731",
+      "course": "Beverley",
+      "winner": "Sportingsilvermine",
+      "pick": "Urban Glimpse",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.4,
+        "rprORGap": 2.4,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919732",
+      "course": "Beverley",
+      "winner": "Crystal Queen",
+      "pick": "Kodi Bear Light",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 2.9,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919735",
+      "course": "Beverley",
+      "winner": "Glenfinnan",
+      "pick": "Frankies Dream",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 3,
+        "rprORGap": 1.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920262",
+      "course": "Beverley",
+      "winner": "Anificas Beauty",
+      "pick": "Penny Ghent",
+      "rank": 11,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0.1,
+        "delta": 0.233
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -2.7,
+        "rprORGap": 4.4,
+        "finalScore": -5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919738",
+      "course": "Catterick",
+      "winner": "Forest Phoenix",
+      "pick": "Stoneacre Joe",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": -15,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.3,
+        "rprORGap": -3.5,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919742",
+      "course": "Catterick",
+      "winner": "Holbache",
+      "pick": "Evocative Spark",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0.1,
+        "delta": -0.1
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": -0.5,
+        "personalAffinity": -4.8,
+        "rprORGap": 4.5,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919743",
+      "course": "Catterick",
+      "winner": "Zoustar Dreams",
+      "pick": "Battenburg Belle",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.3,
+        "rprORGap": 3.4,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919744",
+      "course": "Catterick",
+      "winner": "Red Rifle",
+      "pick": "Favourite Friend",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 7,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5,
+        "rprORGap": 3.4,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919759",
+      "course": "Chester",
+      "winner": "Machadadorp",
+      "pick": "Town Queen",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 6.6,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919760",
+      "course": "Chester",
+      "winner": "Virtuous Star",
+      "pick": "Pure Grit",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919761",
+      "course": "Chester",
+      "winner": "Everatease",
+      "pick": "Undercover Affair",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919763",
+      "course": "Chester",
+      "winner": "Lexington Jet",
+      "pick": "Supido",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.5,
+        "rprORGap": -4.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919764",
+      "course": "Chester",
+      "winner": "Ruby's Angel",
+      "pick": "Champonie",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.2,
+        "rprORGap": 3.5,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919745",
+      "course": "Lingfield",
+      "winner": "Song Of The Stars",
+      "pick": "Keep It Classic",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.1,
+        "rprORGap": 3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919750",
+      "course": "Lingfield",
+      "winner": "Get Outta Here",
+      "pick": "Vidmiyr",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2,
+        "rprORGap": -0.7,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919752",
+      "course": "Stratford",
+      "winner": "Machete Beach",
+      "pick": "Maskarvel",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.8,
+        "personalAffinity": 13.3,
+        "rprORGap": 1.9,
+        "finalScore": 8,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919753",
+      "course": "Stratford",
+      "winner": "Stellarmasterpiece",
+      "pick": "Little Lady Lucy",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -4.4,
+        "rprORGap": 8.8,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919754",
+      "course": "Stratford",
+      "winner": "Juan Bermudez",
+      "pick": "Hope Rising",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -0.2,
+        "rprORGap": 0.1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919757",
+      "course": "Stratford",
+      "winner": "Gateau De Miel",
+      "pick": "Two To Tango",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 15,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.2,
+        "rprORGap": 3.9,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919758",
+      "course": "Stratford",
+      "winner": "American Trio",
+      "pick": "Lion Of The Desert",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 15,
+        "courseAffinity": 0,
+        "personalAffinity": 0.5,
+        "rprORGap": 3.4,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919936",
+      "course": "Listowel",
+      "winner": "Gomez Addams",
+      "pick": "Touch The Moon",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 10.9,
+        "rprORGap": -3.4,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919938",
+      "course": "Listowel",
+      "winner": "Le Fanu",
+      "pick": "Illtakehimmyself",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 9.2,
+        "rprORGap": -0.8,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919939",
+      "course": "Listowel",
+      "winner": "Rockonliam",
+      "pick": "High Court Cave",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.9,
+        "rprORGap": 2.7,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919940",
+      "course": "Listowel",
+      "winner": "Embrace The Day",
+      "pick": "Only For Our Man",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4,
+        "rprORGap": 3.7,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919928",
+      "course": "Tramore",
+      "winner": "Emily Love",
+      "pick": "Future Prospect",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -7,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 15,
+        "courseAffinity": 0.6,
+        "personalAffinity": 10,
+        "rprORGap": 0,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919930",
+      "course": "Tramore",
+      "winner": "Menas Miracle",
+      "pick": "Cullenwaine",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.6,
+        "rprORGap": -2.1,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919932",
+      "course": "Tramore",
+      "winner": "Liberated Light",
+      "pick": "Topothelane",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": -35,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": -1,
+        "rprORGap": -1.5,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919933",
+      "course": "Tramore",
+      "winner": "Butch Coolidge",
+      "pick": "Thiscouldbetheone",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.6,
+        "rprORGap": 10.4,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919787",
+      "course": "Thirsk",
+      "winner": "Dazzling Haze",
+      "pick": "Noble Vow",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.208,
+        "delta": 0.208
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 15,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 15,
+        "courseAffinity": 0.2,
+        "personalAffinity": 5.1,
+        "rprORGap": 5.9,
+        "finalScore": 10,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919788",
+      "course": "Thirsk",
+      "winner": "Al Hussar",
+      "pick": "Kinetic Force",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0,
+        "rprORGap": 5.1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919789",
+      "course": "Thirsk",
+      "winner": "Brielle",
+      "pick": "Great Bedwyn",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7.1,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919790",
+      "course": "Thirsk",
+      "winner": "Fandom",
+      "pick": "Yes I'm Mali",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.3,
+        "rprORGap": 5.7,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919791",
+      "course": "Thirsk",
+      "winner": "Mountain Road",
+      "pick": "Pole Star",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 7.8,
+        "rprORGap": 1.4,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919792",
+      "course": "Thirsk",
+      "winner": "Annastarzy",
+      "pick": "Thaluna",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -0.4,
+        "rprORGap": -0.3,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919772",
+      "course": "Nottingham",
+      "winner": "Bated Benevolence",
+      "pick": "Regal Chita",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919773",
+      "course": "Nottingham",
+      "winner": "Daretobedifferent",
+      "pick": "Legacy Rock",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": -0.333,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -1.7,
+        "rprORGap": 5.8,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919774",
+      "course": "Nottingham",
+      "winner": "Leonardo Blu",
+      "pick": "Lucky Camino",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -8,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.3,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919775",
+      "course": "Nottingham",
+      "winner": "Sugar Hill Babe",
+      "pick": "Ruby's Profit",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919776",
+      "course": "Nottingham",
+      "winner": "Tupero",
+      "pick": "In The Post",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 15,
+        "courseAffinity": 1.1,
+        "personalAffinity": 11.2,
+        "rprORGap": -5.3,
+        "finalScore": 7,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919767",
+      "course": "Fakenham",
+      "winner": "Alibey",
+      "pick": "Dancing Dame",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.8,
+        "rprORGap": -1.8,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919770",
+      "course": "Fakenham",
+      "winner": "Nickelforce",
+      "pick": "Hurricane Bay",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 25,
+        "courseAffinity": 0.1,
+        "personalAffinity": 2.3,
+        "rprORGap": 3.1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919942",
+      "course": "Kilbeggan",
+      "winner": "Mento",
+      "pick": "Mighty Berkshire",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 10.1,
+        "rprORGap": -7.8,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919944",
+      "course": "Kilbeggan",
+      "winner": "Blue Reed",
+      "pick": "Anodandawink",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6.6,
+        "rprORGap": 3.1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919945",
+      "course": "Kilbeggan",
+      "winner": "Secret Rock",
+      "pick": "Le Diablo",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.2,
+        "rprORGap": 5.2,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919948",
+      "course": "Kilbeggan",
+      "winner": "Rokanako",
+      "pick": "Pack Ball",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919921",
+      "course": "Listowel",
+      "winner": "The Scallionator",
+      "pick": "Glenade",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.8,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919922",
+      "course": "Listowel",
+      "winner": "Beibhinn",
+      "pick": "Big Negotiator",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919923",
+      "course": "Listowel",
+      "winner": "Unauthorized",
+      "pick": "I Bid You Ajou",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7.3,
+        "rprORGap": -0.2,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919924",
+      "course": "Listowel",
+      "winner": "Tim Toe",
+      "pick": "Satoyama",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 15,
+        "raceShape": 1,
+        "ground": 0,
+        "trainerForm": 30,
+        "distance": 0,
+        "courseAffinity": 1,
+        "personalAffinity": 10,
+        "rprORGap": 4,
+        "finalScore": 8,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919925",
+      "course": "Listowel",
+      "winner": "La La Lucrative",
+      "pick": "Secret Magician",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.6,
+        "rprORGap": 2.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919958",
+      "course": "Newbury",
+      "winner": "Aces Wild",
+      "pick": "Spring Bloom",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7.2,
+        "rprORGap": 2,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919960",
+      "course": "Newbury",
+      "winner": "Nanino Niyati",
+      "pick": "Twisting Physics",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 5.8,
+        "rprORGap": -1.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919949",
+      "course": "Lingfield",
+      "winner": "Volto Di Medusa",
+      "pick": "Virtue Patience",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.1,
+        "rprORGap": -0.1,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919950",
+      "course": "Lingfield",
+      "winner": "Walking On Clouds",
+      "pick": "Southbank",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.1,
+        "rprORGap": 2,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919953",
+      "course": "Lingfield",
+      "winner": "Kennington",
+      "pick": "Star Banner",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -5,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.8,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920703",
+      "course": "Lingfield",
+      "winner": "H Key Lails",
+      "pick": "Rogue Dynasty",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.7,
+        "rprORGap": 1.7,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920704",
+      "course": "Windsor",
+      "winner": "Mesaafi",
+      "pick": "Wheels Of Fire",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -25,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.7,
+        "rprORGap": 3.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919964",
+      "course": "Windsor",
+      "winner": "River Spey",
+      "pick": "Comical Point",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 20,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 6.5,
+        "rprORGap": -0.1,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919965",
+      "course": "Windsor",
+      "winner": "Guinness Lad",
+      "pick": "Just Adair",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0.4,
+        "pick": 0,
+        "delta": 0.4
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": -15,
+        "courseAffinity": -0.4,
+        "personalAffinity": -3.7,
+        "rprORGap": 2.9,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919967",
+      "course": "Windsor",
+      "winner": "Hello Cotai",
+      "pick": "Galaxy Wonder",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 2.8,
+        "rprORGap": 7.2,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920705",
+      "course": "Wolverhampton",
+      "winner": "Good Karma",
+      "pick": "South Kensington",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.5,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.9,
+        "rprORGap": 2.7,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919968",
+      "course": "Wolverhampton",
+      "winner": "Imola",
+      "pick": "Wave Rock",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.4,
+        "rprORGap": -0.3,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919970",
+      "course": "Wolverhampton",
+      "winner": "Ramli",
+      "pick": "Al Qatem",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.6,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "919973",
+      "course": "Wolverhampton",
+      "winner": "Beyond Borders",
+      "pick": "Initial Blue",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2.9,
+        "rprORGap": 6.1,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920071",
+      "course": "Gowran Park",
+      "winner": "Real Petite",
+      "pick": "Royal County Glory",
+      "rank": 14,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -7,
+        "paceCompat": 15,
+        "raceShape": 1,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 4.3,
+        "rprORGap": 2.9,
+        "finalScore": -4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "907905",
+      "course": "Gowran Park",
+      "winner": "Thrifty Of Digby",
+      "pick": "Akecheta",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7.2,
+        "rprORGap": -4.2,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920073",
+      "course": "Gowran Park",
+      "winner": "Bunyola Bay",
+      "pick": "Hardy Warrior",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 20,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.2,
+        "rprORGap": -5.7,
+        "finalScore": -5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920075",
+      "course": "Gowran Park",
+      "winner": "Sweet Baby Zou",
+      "pick": "Accelereight",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.5,
+        "pick": 0,
+        "delta": 0.5
+      },
+      "componentDeltas": {
+        "power": 1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 15,
+        "courseAffinity": 0.4,
+        "personalAffinity": 3.6,
+        "rprORGap": 0.5,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920090",
+      "course": "Listowel",
+      "winner": "Shannon Bank",
+      "pick": "Inchiquin Star",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.1,
+        "rprORGap": -1.3,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920091",
+      "course": "Listowel",
+      "winner": "Spy",
+      "pick": "Putapoundinthejar",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.1,
+        "rprORGap": -3.1,
+        "finalScore": -1.2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920092",
+      "course": "Listowel",
+      "winner": "Knockbrack Rambler",
+      "pick": "Whispering Willow",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.8,
+        "rprORGap": 7.3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920094",
+      "course": "Listowel",
+      "winner": "Bartlemy Boy",
+      "pick": "Solitary Man",
+      "rank": 8,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -20,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.5,
+        "personalAffinity": 7.4,
+        "rprORGap": -8.7,
+        "finalScore": -8,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920084",
+      "course": "Pontefract",
+      "winner": "Boleto",
+      "pick": "Raslan",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920085",
+      "course": "Pontefract",
+      "winner": "Rock Opera",
+      "pick": "Alpha Capture",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.2,
+        "rprORGap": 0,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920086",
+      "course": "Pontefract",
+      "winner": "Ruby Red Gove",
+      "pick": "Egotistical",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 6.5,
+        "rprORGap": 2.7,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920087",
+      "course": "Pontefract",
+      "winner": "Bay Dream Believer",
+      "pick": "Finlaggan",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.6,
+        "rprORGap": 2.2,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920088",
+      "course": "Pontefract",
+      "winner": "Dolos Dream",
+      "pick": "Ice Cold Alex",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.8,
+        "personalAffinity": 7.5,
+        "rprORGap": -0.6,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920096",
+      "course": "Southwell",
+      "winner": "Duke Of Luckley",
+      "pick": "Vocito",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 3.8,
+        "rprORGap": 4.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920097",
+      "course": "Southwell",
+      "winner": "Ceolwulf",
+      "pick": "Mr Mahler",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.8,
+        "personalAffinity": 14.4,
+        "rprORGap": -4.5,
+        "finalScore": 12,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920098",
+      "course": "Southwell",
+      "winner": "Lairig Mor",
+      "pick": "For Her Glory",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": -15,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1,
+        "rprORGap": 0,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920099",
+      "course": "Southwell",
+      "winner": "Kingofthefrontier",
+      "pick": "Way Maker",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -2,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": -3.4,
+        "rprORGap": 0,
+        "finalScore": -3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920100",
+      "course": "Southwell",
+      "winner": "Larkfield Lusive",
+      "pick": "Jafimgoso",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 9.1,
+        "rprORGap": 1.8,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920101",
+      "course": "Southwell",
+      "winner": "Squeezebox",
+      "pick": "Captain Cool",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.25,
+        "delta": 0.25
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 4.9,
+        "rprORGap": 2.1,
+        "finalScore": 4.4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920117",
+      "course": "Newcastle",
+      "winner": "Gemini Man",
+      "pick": "Lawmans Blis",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0.7,
+        "personalAffinity": 6.3,
+        "rprORGap": 5,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920118",
+      "course": "Newcastle",
+      "winner": "Rubellite",
+      "pick": "Ned Broy",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.7,
+        "personalAffinity": 7.7,
+        "rprORGap": -1.7,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920119",
+      "course": "Newcastle",
+      "winner": "Dontwaste A Moment",
+      "pick": "Star Noir",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 8.6,
+        "rprORGap": -2.5,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920121",
+      "course": "Newcastle",
+      "winner": "Criminal Shore",
+      "pick": "Military Leader",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 25,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.1,
+        "rprORGap": 6,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920122",
+      "course": "Newcastle",
+      "winner": "Dinah Myte",
+      "pick": "Barleybrown",
+      "rank": 10,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -4,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.6,
+        "rprORGap": -1.9,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920103",
+      "course": "Wolverhampton",
+      "winner": "Mythical Isle",
+      "pick": "Filey Beach",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": -0.2,
+        "personalAffinity": -2.5,
+        "rprORGap": -5,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920104",
+      "course": "Wolverhampton",
+      "winner": "Manly Fireball",
+      "pick": "Mr Noble",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 15,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0,
+        "personalAffinity": 0.3,
+        "rprORGap": 3,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920105",
+      "course": "Wolverhampton",
+      "winner": "Lady Of Clover",
+      "pick": "Knightmare",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4,
+        "rprORGap": 1,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920106",
+      "course": "Wolverhampton",
+      "winner": "South Coast Star",
+      "pick": "Zoulette",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.3,
+        "rprORGap": 2.3,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920107",
+      "course": "Wolverhampton",
+      "winner": "Based",
+      "pick": "Musical Soldier",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 0.4,
+        "rprORGap": 3.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920108",
+      "course": "Wolverhampton",
+      "winner": "Beachborough Girl",
+      "pick": "Study Up",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.5,
+        "rprORGap": -1.9,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920271",
+      "course": "Nottingham",
+      "winner": "The Ginger Kid",
+      "pick": "Menhaal",
+      "rank": 7,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.1,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920273",
+      "course": "Nottingham",
+      "winner": "Lillie Margot",
+      "pick": "Safe Harbor",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 4.3,
+        "rprORGap": 0.2,
+        "finalScore": 3,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920275",
+      "course": "Nottingham",
+      "winner": "Barbury Boy",
+      "pick": "Gatehouse",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 15,
+        "courseAffinity": 0,
+        "personalAffinity": 0.1,
+        "rprORGap": 0,
+        "finalScore": -1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920276",
+      "course": "Nottingham",
+      "winner": "Court Of Session",
+      "pick": "Run This Way",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": -1,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": -0.3,
+        "personalAffinity": -2.8,
+        "rprORGap": 3.5,
+        "finalScore": -2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920285",
+      "course": "Newton Abbot",
+      "winner": "Winning Paddy",
+      "pick": "Kenzo Des Bruyeres",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": -15,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 9.4,
+        "rprORGap": 1,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920287",
+      "course": "Newton Abbot",
+      "winner": "Morning Mayhem",
+      "pick": "American Land",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 5,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 4.1,
+        "rprORGap": -2.8,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920288",
+      "course": "Newton Abbot",
+      "winner": "Cogital",
+      "pick": "Westerton",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 5.2,
+        "rprORGap": 5.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920289",
+      "course": "Newton Abbot",
+      "winner": "Thepassingtyphoon",
+      "pick": "Matty's Mate",
+      "rank": 4,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -7,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 15,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920290",
+      "course": "Ripon",
+      "winner": "Social Symbol",
+      "pick": "Fantasy Force",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 10,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920292",
+      "course": "Ripon",
+      "winner": "Donna Nook",
+      "pick": "Barley",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": 0,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 50,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 5.2,
+        "rprORGap": -2.1,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920293",
+      "course": "Ripon",
+      "winner": "Glory Hyde",
+      "pick": "Fortamour",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 30,
+        "trainerForm": 10,
+        "distance": 15,
+        "courseAffinity": 1,
+        "personalAffinity": 13.7,
+        "rprORGap": -1.2,
+        "finalScore": 6,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920294",
+      "course": "Ripon",
+      "winner": "Rock Of England",
+      "pick": "Canaria Queen",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.25,
+        "delta": 0.25
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2,
+        "rprORGap": 1.7,
+        "finalScore": 0,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920278",
+      "course": "Warwick",
+      "winner": "Luna Run",
+      "pick": "Tyson",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": -0.333,
+        "delta": 0.333
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": -35,
+        "distance": 0,
+        "courseAffinity": -0.1,
+        "personalAffinity": -3.6,
+        "rprORGap": 2.5,
+        "finalScore": -4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920279",
+      "course": "Warwick",
+      "winner": "Kentucky River",
+      "pick": "Modern Style",
+      "rank": 5,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 35,
+        "distance": 0,
+        "courseAffinity": 0.3,
+        "personalAffinity": 2,
+        "rprORGap": 2.3,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920280",
+      "course": "Warwick",
+      "winner": "Knightsbridge",
+      "pick": "Carpe Diem",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 15,
+        "distance": 0,
+        "courseAffinity": 0.2,
+        "personalAffinity": 2.3,
+        "rprORGap": 3.8,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920282",
+      "course": "Warwick",
+      "winner": "Theonlywayiswessex",
+      "pick": "Royal Deeside",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.4,
+        "personalAffinity": 6,
+        "rprORGap": 0.6,
+        "finalScore": 4,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920265",
+      "course": "Curragh",
+      "winner": "Aix La Chapelle",
+      "pick": "Giant Sequoia",
+      "rank": 2,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -5,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.4,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920266",
+      "course": "Curragh",
+      "winner": "Celeron",
+      "pick": "Sirocco Sands",
+      "rank": 9,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": -3,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 5.9,
+        "rprORGap": 0,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920267",
+      "course": "Curragh",
+      "winner": "Amiata",
+      "pick": "Bad Boy Rizz",
+      "rank": 3,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 30,
+        "distance": 0,
+        "courseAffinity": 0.6,
+        "personalAffinity": 7.9,
+        "rprORGap": 0.3,
+        "finalScore": 5,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920268",
+      "course": "Curragh",
+      "winner": "Poetic Sound",
+      "pick": "Factual Fact",
+      "rank": 6,
+      "specialistIndex": {
+        "winner": 0,
+        "pick": 0,
+        "delta": 0
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.1,
+        "personalAffinity": 1.2,
+        "rprORGap": 3.2,
+        "finalScore": 1,
+        "qualityScore": 0
+      }
+    },
+    {
+      "raceId": "920270",
+      "course": "Curragh",
+      "winner": "Sommelier",
+      "pick": "Jon Riggens",
+      "rank": 12,
+      "specialistIndex": {
+        "winner": 0.333,
+        "pick": -0.333,
+        "delta": 0.667
+      },
+      "componentDeltas": {
+        "power": 0,
+        "paceCompat": 0,
+        "raceShape": 0,
+        "ground": 0,
+        "trainerForm": 0,
+        "distance": 0,
+        "courseAffinity": 0.5,
+        "personalAffinity": 4.8,
+        "rprORGap": 0.7,
+        "finalScore": 2,
+        "qualityScore": 0
+      }
+    }
+  ]
+}

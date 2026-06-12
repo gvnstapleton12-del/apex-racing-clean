@@ -84,46 +84,22 @@ export default function Racecards() {
 
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
-      {/* Compact Hero */}
-      <section className='dashboard-hero' style={{ padding: '24px 32px' }}>
-        <div className='flex items-center justify-between gap-8'>
-          <div>
-            <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
-            <h1 className='text-4xl font-black tracking-tight mt-2'>Racecards</h1>
-          </div>
-          
-          <div className='flex items-center gap-6'>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{races.length}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
-            </div>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{totalRunners}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Runners</div>
-            </div>
-            <div className='text-center'>
-              <div className='text-2xl font-bold text-amber-400'>{nextRace ? formatOffTime(nextRace) : '--:--'}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Next Off</div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Top Opportunity Hero */}
       {topOpportunity && (
-        <section className='apex-card p-8 mb-6'>
-          <div className='flex items-center justify-between'>
+        <section className='apex-card top-pick-hero p-5 mb-6'>
+          <div className='flex items-center justify-between relative z-10'>
             <div>
-              <div className='text-xs text-zinc-500 uppercase tracking-[0.3em] mb-2'>Today's Best Opportunity</div>
-              <h2 className='text-5xl font-black text-white mb-2'>{topOpportunity.horse}</h2>
-              <div className='text-lg text-zinc-400'>
+              <div className='text-[10px] text-zinc-500 uppercase tracking-[0.3em] mb-1'>Today's Best Opportunity</div>
+              <h2 className='text-2xl xl:text-3xl font-black text-white leading-tight max-w-5xl'>{topOpportunity.horse}</h2>
+              <div className='text-sm text-zinc-300 font-medium mt-1'>
                 {topOpportunity.race.course} · {formatOffTime(topOpportunity.race)} · {topOpportunity.race.race_name}
               </div>
             </div>
-            <div className='flex items-center gap-8'>
+            <div className='flex items-center gap-6'>
               <div className='text-center'>
-                <div className='text-6xl font-black text-amber-400'>{getScore(topOpportunity)}</div>
-                <div className='text-xs text-zinc-400 uppercase tracking-wider mt-1'>APEX Score</div>
+                <div className='text-4xl font-black text-amber-400'>{getScore(topOpportunity) > 0 ? getScore(topOpportunity) : '—'}</div>
+                <div className='text-[10px] text-zinc-400 uppercase tracking-wider mt-1'>APEX</div>
               </div>
             </div>
           </div>
@@ -207,7 +183,7 @@ export default function Racecards() {
                       {topRated.horse}
                     </a>
                     <div className='flex items-center gap-6'>
-                      <div className='text-5xl font-black text-amber-400'>{getScore(topRated)}</div>
+                      <div className='text-4xl font-black text-amber-400'>{getScore(topRated) > 0 ? getScore(topRated) : '—'}</div>
                       <div className='flex-1 space-y-2'>
                         <div className='flex justify-between items-center'>
                           <span className='text-xs text-zinc-400 uppercase tracking-wider'>Confidence</span>

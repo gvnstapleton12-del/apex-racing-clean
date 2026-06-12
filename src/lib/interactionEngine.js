@@ -8,12 +8,12 @@ function computeFieldSizeImpact(fieldSize) {
 
 function computeRaceTypeImpact(raceName) {
   const name = (raceName || '').toLowerCase()
-  if (/maiden/i.test(name)) return { label: 'Maiden', marketBoost: 1.2, classBoost: 0.8 }
-  if (/novice/i.test(name)) return { label: 'Novice', marketBoost: 1.1, classBoost: 0.9 }
+  if (/maiden/i.test(name)) return { label: 'Maiden', marketBoost: 1.0, classBoost: 0.8 }
+  if (/novice/i.test(name)) return { label: 'Novice', marketBoost: 1.0, classBoost: 0.9 }
   if (/handicap/i.test(name)) return { label: 'Handicap', marketBoost: 1.0, classBoost: 1.2 }
-  if (/group/i.test(name)) return { label: 'Group', marketBoost: 1.3, classBoost: 1.3 }
-  if (/claim/i.test(name)) return { label: 'Claimer', marketBoost: 0.8, classBoost: 0.7 }
-  if (/selling/i.test(name)) return { label: 'Seller', marketBoost: 0.7, classBoost: 0.6 }
+  if (/group/i.test(name)) return { label: 'Group', marketBoost: 1.0, classBoost: 1.3 }
+  if (/claim/i.test(name)) return { label: 'Claimer', marketBoost: 1.0, classBoost: 0.7 }
+  if (/selling/i.test(name)) return { label: 'Seller', marketBoost: 1.0, classBoost: 0.6 }
   return { label: 'Standard', marketBoost: 1.0, classBoost: 1.0 }
 }
 
@@ -37,8 +37,8 @@ function computePacePressureImpact(paceMap) {
 function computeHorseExposure(runner) {
   const form = runner.form || ''
   const runs = form.split(/[\s/-]+/).filter((p) => /^\d+$/.test(p)).length
-  if (runs <= 2) return { label: 'Very Light', trainerBoost: 1.3, marketPenalty: 0.8 }
-  if (runs <= 5) return { label: 'Light', trainerBoost: 1.2, marketPenalty: 0.9 }
+  if (runs <= 2) return { label: 'Very Light', trainerBoost: 1.3, marketPenalty: 1.0 }
+  if (runs <= 5) return { label: 'Light', trainerBoost: 1.2, marketPenalty: 1.0 }
   if (runs <= 10) return { label: 'Moderate', trainerBoost: 1.0, marketPenalty: 1.0 }
   return { label: 'Experienced', trainerBoost: 0.9, marketPenalty: 1.0 }
 }

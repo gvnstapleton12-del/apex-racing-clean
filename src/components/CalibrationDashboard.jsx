@@ -222,7 +222,7 @@ export default function CalibrationDashboard() {
         <div className='cal-value-summary' style={{ padding: '1.5rem 1rem', margin: '0 1rem 1.5rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ marginBottom: '1.5rem' }}>
             <h3 style={{ color: '#e2e8f0', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>Value Picks Performance</h3>
-            <p style={{ color: '#94a3b8', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</p>
+            <p style={{ color: '#94a3b8', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>Gate: P ≥ 10% + 15% margin + APEX ≥ 40</p>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
             <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>

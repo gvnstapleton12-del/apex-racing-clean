@@ -59,8 +59,8 @@ async function fetchAtrWithPlaywright(url) {
       viewport: { width: 1920, height: 1080 },
     })
     const page = await context.newPage()
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 })
-    await page.waitForTimeout(5000)
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 })
+    await page.waitForTimeout(3000)
     const html = await page.content()
     return html
   } finally {
