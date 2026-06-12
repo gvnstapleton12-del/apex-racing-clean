@@ -177,65 +177,7 @@ function shouldTrackBet(aiProfile, marketMovement) {
   return true
 }
 
-const ATR_LINK_CACHE = new Map()
 
-function formatAtrRacecardDate(date = '') {
-  if (!date) return ''
-  const m = date.match(/^(\d{4})-(\d{2})-(\d{2})$/)
-  if (!m) return ''
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  const [, y, mo, d] = m
-  const month = months[parseInt(mo, 10) - 1]
-  if (!month) return ''
-  return `${d}-${month}-${y}`
-}
-
-function buildAtrRacecardUrl(race = {}) {
-  const course = String(race.course || '').replace(/\s+/g, '-')
-  const date = formatAtrRacecardDate(race.date)
-  const offTime = String(race.off_time || '').replace(':', '')
-  if (!course || !date || !offTime) return null
-  return `https://m.attheraces.com/racecard/${course}/${date}/${offTime}`
-}
-
-function atrPopupUrl(href = '') {
-  const full = href.startsWith('http') ? href : `https://www.attheraces.com${href}`
-  return full.replace('https://m.attheraces.com', 'https://www.attheraces.com').replace('/form/horse/', '/form-popup/horse/')
-}
-
-async function fetchAtrHorseLinks(race = {}) {
-  const url = buildAtrRacecardUrl(race)
-  if (!url) return {}
-  const cached = ATR_LINK_CACHE.get(url)
-  if (cached) return cached
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 8000)
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        accept: 'text/html',
-        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/125 Safari/537.36',
-      },
-    })
-    clearTimeout(timeout)
-    if (!res.ok) return {}
-    const html = await res.text()
-    const links = {}
-    for (const [, href] of html.matchAll(/href="([^"]*\/form\/horse\/[^"]+)"/g)) {
-      const parts = href.split('?')[0].split('/')
-      const idx = parts.indexOf('horse')
-      if (idx < 0 || idx + 1 >= parts.length) continue
-      const key = parts[idx + 1].replace(/-/g, ' ').toLowerCase().trim()
-      if (key && !links[key]) links[key] = atrPopupUrl(href)
-    }
-    ATR_LINK_CACHE.set(url, links)
-    if (Object.keys(links).length > 0) console.log(`[ATR Links] ${Object.keys(links).length} horse links for ${race.course} ${race.off_time}`)
-    return links
-  } catch {
-    return {}
-  }
-}
 
 function classifyEngine(grade, odds) {
   const coreGrades = ['S', 'A', 'B', 'B+']
@@ -647,13 +589,7 @@ async function processRace(race) {
     })
     console.timeEnd(`[processRace] ${raceLabel} apexEngine`)
 
-    console.time(`[processRace] ${raceLabel} atrLinks`)
-    const atrLinks = await fetchAtrHorseLinks(race)
-    console.timeEnd(`[processRace] ${raceLabel} atrLinks`)
-    const enriched = (apexResult.racecards || []).map(r => ({
-      ...r,
-      atrUrl: atrLinks[String(r.horse || '').toLowerCase().trim()] || r.atrUrl,
-    }))
+    const enriched = apexResult.racecards || []
 
     console.time(`[processRace] ${raceLabel} enrich`)
     const scoredRunners = enriched.map((runner) => {
@@ -880,7 +816,7 @@ async function fetchLiveMeetings() {
         const batchResults = await Promise.all(batch.map(race =>
           Promise.race([
             processRace(race),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 20000))
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
           ])
         ))
         processed.push(...batchResults)
