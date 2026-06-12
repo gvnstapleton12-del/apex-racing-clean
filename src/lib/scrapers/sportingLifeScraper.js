@@ -176,6 +176,12 @@ export async function fetchMeetingRaces(meetingId) {
 
     console.log(`[SL] Meeting ${meetingId} status: ${meeting?.status || meeting?.meeting_status || 'none'}, course: ${meeting?.course_name || 'unknown'}`)
 
+    // Dump one complete meeting object to find where course data lives
+    if (!global.__slMeetingDumped) {
+      global.__slMeetingDumped = true
+      console.log('[SL] === RAW MEETING OBJECT:', JSON.stringify(meeting, null, 2))
+    }
+
     // Skip abandoned meetings (case-insensitive)
     const status = (meeting?.status || meeting?.meeting_status || '').toUpperCase()
     if (status === 'ABANDONED') {
@@ -217,19 +223,22 @@ async function fetchRaceRunners(raceId) {
     const data = await fetchJson(`${SL_API}/race/${raceId}`)
     const rides = data.rides || []
 
-    if (rides.length > 0 && !rides[0]._logged) {
+    if (rides.length > 0 && !global.__slRideDumped) {
+      global.__slRideDumped = true
       const sample = rides[0]
       console.log('[SL] Horse keys:', Object.keys(sample.horse || {}))
       console.log('[SL] Horse form summary keys:', Object.keys(sample.horse?.formsummary || {}))
       console.log('[SL] Full ride sample keys:', Object.keys(sample))
 
-      // Dump hidden SL fields
-      console.log('[SL] === race_history_stats:', JSON.stringify(rides[0].race_history_stats, null, 2))
-      console.log('[SL] === horse_lifetime_stats:', JSON.stringify(rides[0].horse_lifetime_stats, null, 2))
-      console.log('[SL] === insights:', JSON.stringify(rides[0].insights, null, 2))
-      console.log('[SL] === bet_movements:', JSON.stringify(rides[0].bet_movements, null, 2))
-
-      rides[0]._logged = true
+      // Dump hidden SL fields for one runner across the whole session
+      console.log('[SL] === HIDDEN FIELDS DUMP ===')
+      console.log(JSON.stringify({
+        horse: sample.horse?.name,
+        insights: sample.insights,
+        raceHistory: sample.race_history_stats,
+        lifetime: sample.horse_lifetime_stats,
+        movements: sample.bet_movements,
+      }, null, 2))
     }
     return rides
       .filter(ride => {
