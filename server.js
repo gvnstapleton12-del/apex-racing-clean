@@ -878,7 +878,7 @@ async function fetchLiveMeetings() {
         console.log(`[LiveMeetings] Merged ${oddsMerged} ATR odds`)
         // Re-broadcast with updated ATR odds
         LIVE_STATE.racecards = processed
-        API_CACHE.set(cacheKey, processed)
+    API_CACHE.set(cacheKey, { ...processed, _date: today })
         io.emit('live-update', buildLightweightState())
       }
     } catch (error) {
@@ -2844,6 +2844,13 @@ server.listen(PORT, () => {
   // Refresh racecards every 15 min to pick up odds changes and non-runners
   setInterval(async () => {
     try {
+      const today = new Date().toISOString().split('T')[0]
+      const cacheKey = 'racecards:sl'
+      const cached = API_CACHE.get(cacheKey)
+      if (cached && cached._date === today) {
+        console.log('[Scheduler] Skipping refresh — today\'s races already processed')
+        return
+      }
       console.log('[Scheduler] Periodic racecard refresh')
       await fetchLiveMeetings()
     } catch (e) {
