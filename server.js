@@ -360,7 +360,7 @@ const PREDICTIONS_DATABASE = (() => { const db = loadDatabase(PREDICTIONS_DB_PAT
 const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
-const COUNTERFACTUAL_DATABASE = (() => { const db = loadDatabase(COUNTERFACTUAL_DB_PATH); return Array.isArray(db) ? { observations: [], stats: {} } : db })()
+const COUNTERFACTUAL_DATABASE = (() => { const db = loadDatabase(COUNTERFACTUAL_DB_PATH); const base = Array.isArray(db) ? { observations: [], stats: {} } : (db || {}); if (!base.observations) base.observations = []; if (!base.stats) base.stats = {}; return base })()
 
 const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH) || {}
 if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
@@ -557,7 +557,8 @@ function logActivationZone(runner, race, odds) {
 
 function matchCounterfactualWithResults(races) {
   let matchCount = 0
-  const obs = COUNTERFACTUAL_DATABASE.observations
+  const obs = COUNTERFACTUAL_DATABASE.observations || []
+  if (!races || !Array.isArray(races)) return
 
   races.forEach((race) => {
     const rawDate = String(race.date || (race.off_dt || '').slice(0, 10) || '')
