@@ -257,46 +257,56 @@ export async function fetchAtrRatings(dateStr, races = []) {
     browser = await chromium.launch({ headless: true, executablePath, args: launchArgs })
     console.log(`[ATR Ratings] Scraping ${raceUrls.length} race pages...`)
 
-    const CONCURRENCY = 2
-    for (let i = 0; i < raceUrls.length; i += CONCURRENCY) {
-      const batch = raceUrls.slice(i, i + CONCURRENCY)
-      const results = await Promise.allSettled(batch.map(async (url) => {
-        const ctx = await browser.newContext({ userAgent: randomAgent(), viewport: { width: 1920, height: 1080 } })
-        const pg = await ctx.newPage()
-        try {
-          await pg.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 })
-          await pg.waitForTimeout(4000)
-          const raceRatings = await pg.evaluate(() => {
-            const result = {}
-            const cells = [...document.querySelectorAll('[class*="card-cell--timeform"]')]
-            for (const cell of cells) {
-              const text = cell.textContent?.trim()
-              if (!text || !/^\d{2,3}$/.test(text)) continue
-              const rating = parseInt(text)
-              if (rating < 50 || rating > 120) continue
-              let parent = cell
-              for (let i = 0; i < 20 && parent; i++) {
-                const horseLink = parent.querySelector('a[href*="/horse/"]')
-                if (horseLink) {
-                  const name = horseLink.textContent?.trim()?.replace(/\s+/g, ' ')
-                  if (name) result[name] = rating
-                  break
-                }
-                parent = parent.parentElement
-              }
+    let ctx = await browser.newContext({ userAgent: randomAgent(), viewport: { width: 1920, height: 1080 } })
+    let pg = await ctx.newPage()
+
+    const scrapeRace = async (url) => {
+      await pg.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 })
+      await pg.waitForTimeout(3000)
+      return pg.evaluate(() => {
+        const result = {}
+        const cells = [...document.querySelectorAll('[class*="card-cell--timeform"]')]
+        for (const cell of cells) {
+          const text = cell.textContent?.trim()
+          if (!text || !/^\d{2,3}$/.test(text)) continue
+          const rating = parseInt(text)
+          if (rating < 50 || rating > 120) continue
+          let parent = cell
+          for (let i = 0; i < 20 && parent; i++) {
+            const horseLink = parent.querySelector('a[href*="/horse/"]')
+            if (horseLink) {
+              const name = horseLink.textContent?.trim()?.replace(/\s+/g, ' ')
+              if (name) result[name] = rating
+              break
             }
-            return result
-          })
-          return raceRatings
-        } finally {
-          await ctx.close()
+            parent = parent.parentElement
+          }
         }
-      }))
-      for (const r of results) {
-        if (r.status === 'fulfilled') Object.assign(ratings, r.value)
-      }
-      if (i + CONCURRENCY < raceUrls.length) await new Promise(r => setTimeout(r, 500))
+        return result
+      })
     }
+
+    const freshContext = async () => {
+      try { await ctx.close().catch(() => {}) } catch {}
+      ctx = await browser.newContext({ userAgent: randomAgent(), viewport: { width: 1920, height: 1080 } })
+      pg = await ctx.newPage()
+    }
+
+    for (let i = 0; i < raceUrls.length; i++) {
+      const url = raceUrls[i]
+      try {
+        const raceRatings = await scrapeRace(url)
+        Object.assign(ratings, raceRatings)
+        if (i < raceUrls.length - 1) await new Promise(r => setTimeout(r, 800))
+      } catch (err) {
+        console.warn(`[ATR Ratings] Failed race ${i + 1}/${raceUrls.length}: ${err.message}`)
+        if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
+          console.warn('[ATR Ratings] Page crashed, recreating context...')
+          await freshContext()
+        }
+      }
+    }
+    await ctx.close().catch(() => {})
 
     console.log(`[ATR Ratings] Scraped ${Object.keys(ratings).length} horse ratings`)
   } catch (err) {

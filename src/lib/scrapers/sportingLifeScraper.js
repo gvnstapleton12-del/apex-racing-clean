@@ -504,15 +504,12 @@ export async function fetchSlResults(dateStr) {
       await page.close()
 
       const allRaces = []
-      const CONCURRENCY = 2
 
-      async function scrapeRace(race) {
-        const racePage = await context.newPage()
-        try {
-          await racePage.goto(race.url, { waitUntil: 'domcontentloaded', timeout: 30000 })
-          await racePage.waitForTimeout(2000)
+      async function scrapeRace(race, page) {
+          await page.goto(race.url, { waitUntil: 'domcontentloaded', timeout: 30000 })
+          await page.waitForTimeout(2000)
 
-          const isRaceFinished = await racePage.evaluate(() => {
+          const isRaceFinished = await page.evaluate(() => {
             const headerText = document.querySelector('[class*="RaceHeader__"], [class*="HeaderSummary__"]')?.textContent || ''
             const bodyText = document.body.textContent || ''
             return headerText.toLowerCase().includes('weighed in') || 
@@ -522,7 +519,7 @@ export async function fetchSlResults(dateStr) {
 
           if (!isRaceFinished) return null
 
-          const finalResults = await racePage.evaluate(() => {
+          const finalResults = await page.evaluate(() => {
             const results = []
             const seenHorses = new Set()
 
@@ -617,22 +614,26 @@ export async function fetchSlResults(dateStr) {
               commentary: '',
             })).sort((a, b) => a.position - b.position),
           }
-        } finally {
-          await racePage.close()
-        }
       }
 
-      for (let i = 0; i < uniqueLinks.length; i += CONCURRENCY) {
-        const batch = uniqueLinks.slice(i, i + CONCURRENCY)
-        const batchResults = await Promise.all(batch.map(scrapeRace))
-        for (const r of batchResults) {
+      let resultsPage = await context.newPage()
+      for (let i = 0; i < uniqueLinks.length; i++) {
+        try {
+          const r = await scrapeRace(uniqueLinks[i], resultsPage)
           if (r) allRaces.push(r)
+        } catch (err) {
+          console.warn(`[SL] Results race ${i + 1}/${uniqueLinks.length} failed: ${err.message}`)
+          if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
+            console.warn('[SL] Page crashed, recreating...')
+            try { await resultsPage.close().catch(() => {}) } catch {}
+            resultsPage = await context.newPage()
+          }
         }
-        const mem = process.memoryUsage()
-        console.log(`[SL] Results batch ${Math.floor(i / CONCURRENCY) + 1}/${Math.ceil(uniqueLinks.length / CONCURRENCY)}: ${batchResults.filter(Boolean).length}/${batch.length} races scraped | RSS: ${Math.round(mem.rss/1024/1024)}MB`)
-        // Pause between batches to let memory recover
-        await new Promise(r => setTimeout(r, 1000))
+        if (i < uniqueLinks.length - 1) await new Promise(r => setTimeout(r, 500))
       }
+      await resultsPage.close().catch(() => {})
+      const mem = process.memoryUsage()
+      console.log(`[SL] Results: ${allRaces.length}/${uniqueLinks.length} races scraped | RSS: ${Math.round(mem.rss/1024/1024)}MB`)
 
       console.log(`[SL] Found ${allRaces.length} races with results`)
       return allRaces
