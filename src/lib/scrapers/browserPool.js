@@ -33,7 +33,7 @@ export async function getBrowser() {
 
   browserPromise = (async () => {
     const proxy = getRandomProxy()
-    const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium'
+    const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || (process.platform === 'linux' ? '/usr/bin/chromium' : undefined)
     browser = await chromium.launch({
       headless: true,
       executablePath,

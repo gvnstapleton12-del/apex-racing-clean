@@ -52,7 +52,7 @@ async function fetchAtr(url, timeoutMs = 15000) {
 }
 
 async function fetchAtrWithPlaywright(url) {
-  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium'
+  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || (process.platform === 'linux' ? '/usr/bin/chromium' : undefined)
   const browser = await chromium.launch({
     headless: true,
     executablePath,
@@ -219,7 +219,7 @@ export async function fetchAtrRatings(dateStr, races = []) {
     return ratings
   }
 
-  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium'
+  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || (process.platform === 'linux' ? '/usr/bin/chromium' : undefined)
   const launchArgs = [
     '--disable-blink-features=AutomationControlled',
     '--no-sandbox',
