@@ -1,9 +1,9 @@
 [phases.install]
-cmds = ["pnpm install --no-frozen-lockfile"]
-
-[phases.build]
 cmds = [
-  "pnpm run build",
+  "pnpm install --no-frozen-lockfile",
   "npx playwright install chromium",
   "pnpm rebuild sqlite3"
 ]
+
+[phases.build]
+cmds = ["pnpm run build"]
