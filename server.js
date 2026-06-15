@@ -111,6 +111,7 @@ const JOCKEY_FORM_PATH = path.join(process.cwd(), 'data', 'jockey-form.json')
 const HORSE_MEMORY_DB_PATH = path.join(process.cwd(), 'data', 'apex-horses.db')
 const TRACK_PROFILES_PATH = path.join(process.cwd(), 'data', 'trackProfiles.json')
 const HORSE_PROFILES_PATH = path.join(process.cwd(), 'data', 'horseProfiles.json')
+const COUNTERFACTUAL_DB_PATH = path.join(process.cwd(), 'data', 'counterfactual-log.json')
 
 let HORSE_MEMORY_DB = null
 
@@ -359,6 +360,7 @@ const PREDICTIONS_DATABASE = (() => { const db = loadDatabase(PREDICTIONS_DB_PAT
 const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
+const COUNTERFACTUAL_DATABASE = (() => { const db = loadDatabase(COUNTERFACTUAL_DB_PATH); return Array.isArray(db) ? { observations: [], stats: {} } : db })()
 
 const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH) || {}
 if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
@@ -501,6 +503,122 @@ function createAlert(horseId, horse, type, message, severity = 'MEDIUM') {
   ALERT_DATABASE[horseId].unshift(alert)
   ALERT_DATABASE[horseId] = ALERT_DATABASE[horseId].slice(0, 50)
   io.emit('new-alert', alert)
+}
+
+const PA_ACTIVATION_ZONE_MIN = 0.05
+const PA_ACTIVATION_ZONE_MAX = 0.50
+
+function logActivationZone(runner, race, odds) {
+  const pa = runner.personalAffinity?.adjustment
+  if (pa === null || pa === undefined) return
+  if (pa < PA_ACTIVATION_ZONE_MIN || pa > PA_ACTIVATION_ZONE_MAX) return
+
+  const key = `${race.course}-${race.off_time}-${race.date}`
+  const horseName = String(runner.horse || '').trim()
+  const obsId = `${key}--${horseName}`
+
+  const fieldSize = (race.runners || []).length
+  const score = runner.finalScore || 0
+  const winProb = runner.winProb ?? null
+
+  const isAboveThreshold = pa >= 0.30
+
+  const entry = {
+    id: obsId,
+    date: race.date,
+    course: race.course,
+    offTime: race.off_time,
+    raceName: race.race_name || '',
+    horse: horseName,
+    trainer: runner.trainer || '',
+    odds: odds || 0,
+    pa,
+    paBin: isAboveThreshold ? '+0.3 to +0.5' : '0 to +0.3',
+    score,
+    winProb,
+    betQuality: runner.betQuality || '',
+    selectionQuality: runner.selectionQuality?.label || '',
+    fieldSize,
+    type: race.type || '',
+    going: race.going || '',
+    distance: race.distance || '',
+    result: null,
+    position: null,
+    timestamp: new Date().toISOString(),
+  }
+
+  const existing = COUNTERFACTUAL_DATABASE.observations.findIndex(o => o.id === obsId)
+  if (existing >= 0) {
+    COUNTERFACTUAL_DATABASE.observations[existing] = entry
+  } else {
+    COUNTERFACTUAL_DATABASE.observations.push(entry)
+  }
+}
+
+function matchCounterfactualWithResults(races) {
+  let matchCount = 0
+  const obs = COUNTERFACTUAL_DATABASE.observations
+
+  races.forEach((race) => {
+    const rawDate = String(race.date || (race.off_dt || '').slice(0, 10) || '')
+    const date = rawDate.replace(/[/]/g, '-')
+    if (!date) return
+
+    const runners = race.runners || []
+    const fieldSize = runners.length
+
+    runners.forEach((runner) => {
+      const rName = normalizeHorseName(runner.horse)
+      const rCourse = normalizeCourse(race.course)
+      const entry = obs.find(o =>
+        normalizeHorseName(o.horse) === rName &&
+        normalizeCourse(o.course) === rCourse &&
+        o.date === date &&
+        o.result === null
+      )
+      if (!entry) return
+
+      const pos = normalizePosition(runner.position || runner.pos)
+      if (pos === 1) entry.result = 'won'
+      else if (pos > 1 && pos <= placedPositions(fieldSize)) entry.result = 'placed'
+      else if (pos > 0) entry.result = 'lost'
+      entry.position = pos
+      entry.fieldSize = fieldSize
+      matchCount++
+    })
+  })
+
+  if (matchCount > 0) {
+    console.log(`[COUNTERFACTUAL] Matched ${matchCount} activation zone observations with results`)
+    updateCounterfactualStats()
+    saveDatabase(COUNTERFACTUAL_DB_PATH, COUNTERFACTUAL_DATABASE)
+    pgSaveDebounced('counterfactual', COUNTERFACTUAL_DATABASE)
+  }
+}
+
+function updateCounterfactualStats() {
+  const obs = COUNTERFACTUAL_DATABASE.observations
+  const resolved = obs.filter(o => o.result)
+  const zones = {
+    'below_0.3': { total: 0, won: 0, placed: 0, lost: 0, pending: 0 },
+    'above_0.3': { total: 0, won: 0, placed: 0, lost: 0, pending: 0 },
+  }
+
+  obs.forEach(o => {
+    const bucket = o.pa >= 0.30 ? 'above_0.3' : 'below_0.3'
+    zones[bucket].total++
+    if (o.result === 'won') zones[bucket].won++
+    else if (o.result === 'placed') zones[bucket].placed++
+    else if (o.result === 'lost') zones[bucket].lost++
+    else zones[bucket].pending++
+  })
+
+  zones['below_0.3'].winRate = zones['below_0.3'].total > 0
+    ? Math.round((zones['below_0.3'].won / Math.max(1, zones['below_0.3'].total - zones['below_0.3'].pending)) * 1000) / 10 : 0
+  zones['above_0.3'].winRate = zones['above_0.3'].total > 0
+    ? Math.round((zones['above_0.3'].won / Math.max(1, zones['above_0.3'].total - zones['above_0.3'].pending)) * 1000) / 10 : 0
+
+  COUNTERFACTUAL_DATABASE.stats = zones
 }
 
 function cleanRaceName(name = '') {
@@ -649,6 +767,7 @@ async function processRace(race) {
 
       logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: routed.winProb, placeProb: routed.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.betQuality || runner.selectionQuality?.label || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
       storeHistoricalRecord(runner, race, apexResult)
+      logActivationZone(runner, race, odds)
 
       return {
         horse: runner.horse,
@@ -755,9 +874,24 @@ async function processRace(race) {
       betFilter: { verdict: 'ERROR', reason: error.message },
       paceMap: {},
       volatility: { chaos: 0, label: 'N/A' },
+        }
+      }
+
+      const pgCf = await pgLoad('counterfactual')
+      if (pgCf && typeof pgCf === 'object' && pgCf.observations?.length > 0) {
+        COUNTERFACTUAL_DATABASE.observations = pgCf.observations
+        COUNTERFACTUAL_DATABASE.stats = pgCf.stats || {}
+        console.log(`[PG] Loaded counterfactual log from Postgres: ${pgCf.observations.length} observations`)
+      } else {
+        const fileCf = loadDatabase(COUNTERFACTUAL_DB_PATH)
+        if (fileCf?.observations?.length > 0) {
+          COUNTERFACTUAL_DATABASE.observations = fileCf.observations
+          COUNTERFACTUAL_DATABASE.stats = fileCf.stats || {}
+          await pgSave('counterfactual', COUNTERFACTUAL_DATABASE)
+          console.log(`[PG] Seeded counterfactual log from file: ${fileCf.observations.length} observations`)
+        }
+      }
     }
-  }
-}
 
 async function fetchLiveMeetings() {
   try {
@@ -1205,6 +1339,7 @@ function matchResultsToCalibration(races) {
 
   // Match results against daily picks so the home tab shows W/P/L
   matchDailyPicksWithResults(races)
+  matchCounterfactualWithResults(races)
 }
 
 async function fetchResultsForDate(dateStr) {
@@ -1217,6 +1352,7 @@ async function fetchResultsForDate(dateStr) {
       if (existingDateRaces.length >= 10) {
         console.log(`[Results] Already have ${existingDateRaces.length} races for ${dateStr}, skipping scrape`)
         matchResultsToCalibration(existingDateRaces)
+        matchCounterfactualWithResults(existingDateRaces)
 
         // Also record runs for condition database on skip path
         let conditionRecorded = 0
@@ -1579,6 +1715,7 @@ app.post('/api/daily-picks', (req, res) => {
   const dateResults = (LEARNING_DATABASE.races || []).filter(r => r.date === date && r.off_time)
   if (dateResults.length > 0) {
     matchDailyPicksWithResults(dateResults)
+    matchCounterfactualWithResults(dateResults)
     saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
     pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
   }
@@ -1590,6 +1727,7 @@ app.get('/api/daily-picks', (_req, res) => {
   // Re-match against any new results before serving
   const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
   matchDailyPicksWithResults(allResultRaces)
+  matchCounterfactualWithResults(allResultRaces)
   res.json(DAILY_PICKS_DATABASE)
 })
 
@@ -1817,6 +1955,7 @@ app.post('/api/upload-results', (req, res) => {
     saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
 
     matchDailyPicksWithResults(races)
+    matchCounterfactualWithResults(races)
 
     const pickDates = Object.keys(DAILY_PICKS_DATABASE)
     pickDates.forEach((date) => saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE))
@@ -2718,6 +2857,50 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       passed: { count: passed, wins: passedWins, roi: passed ? (passedPL / passed * 100) : 0 },
       paRejected: { count: paRejected, wins: paRejectedWins, roi: paRejected ? (paRejectedPL / paRejected * 100) : 0 },
       otherRejected: { count: otherRejected, wins: otherRejectedWins, roi: otherRejected ? (otherRejectedPL / otherRejected * 100) : 0 },
+    })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// ── Counterfactual Activation Zone Log ──
+app.get('/api/counterfactual-log', (_req, res) => {
+  try {
+    updateCounterfactualStats()
+    const obs = COUNTERFACTUAL_DATABASE.observations || []
+    const stats = COUNTERFACTUAL_DATABASE.stats || {}
+
+    const resolved = obs.filter(o => o.result)
+    const pending = obs.filter(o => !o.result)
+
+    const paBinBreakdown = {}
+    for (const o of obs) {
+      const bin = o.paBin || 'unknown'
+      if (!paBinBreakdown[bin]) paBinBreakdown[bin] = { total: 0, won: 0, placed: 0, lost: 0, pending: 0, roi: 0 }
+      paBinBreakdown[bin].total++
+      if (o.result === 'won') { paBinBreakdown[bin].won++; }
+      else if (o.result === 'placed') { paBinBreakdown[bin].placed++; }
+      else if (o.result === 'lost') { paBinBreakdown[bin].lost++; }
+      else { paBinBreakdown[bin].pending++; }
+    }
+    for (const bin of Object.keys(paBinBreakdown)) {
+      const b = paBinBreakdown[bin]
+      const resolved = b.total - b.pending
+      b.winRate = resolved > 0 ? Math.round((b.won / resolved) * 1000) / 10 : 0
+      b.placedRate = resolved > 0 ? Math.round(((b.won + b.placed) / resolved) * 1000) / 10 : 0
+      if (b.won > 0) {
+        const wins = obs.filter(o => o.paBin === bin && o.result === 'won')
+        b.avgWinOdds = Math.round(wins.reduce((s, o) => s + (o.odds || 2), 0) / wins.length * 10) / 10
+      }
+    }
+
+    res.json({
+      total: obs.length,
+      resolved: resolved.length,
+      pending: pending.length,
+      zones: stats,
+      paBinBreakdown,
+      recent: obs.slice(-20).reverse(),
     })
   } catch (e) {
     res.status(500).json({ error: e.message })
