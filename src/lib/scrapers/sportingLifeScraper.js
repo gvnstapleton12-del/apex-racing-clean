@@ -62,73 +62,54 @@ async function fetchJson(url) {
 
 async function fetchMeetingList(dateStr) {
   try {
-    const context = await createPage()
-    try {
-      const page = await context.newPage()
-      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
-      await page.waitForTimeout(3000)
+    console.log(`[SL] Fetching meeting list via HTTP for ${dateStr}...`)
+    const resp = await fetch(`${SL_BASE}/racing/racecards/${dateStr}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
+    })
+    const html = await resp.text()
 
-      const UK_IRE_KEYWORDS = [
-        'ascot', 'ayr', 'bath', 'beverley', 'brighton', 'cartmel', 'carlisle', 'cheltenham', 'chester', 'catterick', 'chepstow',
-        'doncaster', 'down royal', 'epsom', 'fairyhouse', 'goodwood', 'hamilton', 'haydock', 'hereford', 'hexham', 'huntingdon',
-        'kelso', 'kempton', 'leicester', 'lingfield', 'market rasen', 'newbury', 'newcastle', 'newmarket',
-        'newton abbot', 'northam', 'nottingham', 'plumpton', 'pontefract', 'redcar', 'ripon', 'sandown', 'sedgefield',
-        'southwell', 'stratford', 'taunton', 'thirsk', 'uttoxeter', 'wetherby', 'wolverhampton', 'worcester',
-        'great yarmouth', 'yarmouth', 'york', 'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney',
-        'laytown', 'leopardstown', 'listowel', 'naas', 'navan', 'punchestown', 'roscommon', 'sligo',
-        'tipperary', 'tramore', 'wexford', 'gowran park',
-        'aintree', 'bangor-on-dee', 'chelmsford city', 'exeter', 'fakenham', 'ffos las', 'fontwell park', 'ludlow', 'musselburgh', 'perth', 'salisbury', 'warwick', 'wincanton', 'windsor',
-        'bellewstown', 'clonmel', 'cork', 'downpatrick', 'kilbeggan', 'limerick', 'thurles',
-      ]
-
-      // Single evaluate: click each UK/IRE tab with async delays, collect all fast-cards links
-      const allData = await page.evaluate(async (ukIreKeywords) => {
-        const sleep = ms => new Promise(r => setTimeout(r, ms))
-        const tabSelector = 'span[id].NewGenericTabs__Tab-sc-bbf7998f-2, span[id].NewGenericTabs__ActiveTab-sc-bbf7998f-3'
-        const tabs = Array.from(document.querySelectorAll(tabSelector))
-
-        const ukIreTabs = tabs.filter(t => {
-          const name = t.textContent.trim().toLowerCase().replace(/\s*\(.*?\)\s*/g, '').trim()
-          return ukIreKeywords.some(k => name.includes(k))
-        })
-
-        // Click each tab and wait for content to render
-        for (const tab of ukIreTabs) {
-          try { tab.click() } catch {}
-          await sleep(1500)
-        }
-
-        // Now collect all fast-cards links
-        const allLinks = document.querySelectorAll('a[href*="/racing/fast-cards/"]')
-        const meetings = []
-        const abandoned = []
-        const seen = new Set()
-        for (const link of allLinks) {
-          const href = link.getAttribute('href')
-          const match = href.match(/\/racing\/fast-cards\/(\d+)\/(\d{4}-\d{2}-\d{2})\/([^/]+)/)
-          if (!match) continue
-          const key = match[1]
-          if (seen.has(key)) continue
-          seen.add(key)
-          const entry = { id: match[1], date: match[2], slug: match[3], name: link.textContent.trim() }
-          if (entry.name.toLowerCase().includes('abandoned') || entry.name.toLowerCase().includes('(off)')) {
-            abandoned.push(entry)
-          } else {
-            meetings.push(entry)
-          }
-        }
-
-        return { tabCount: ukIreTabs.length, meetings, abandoned }
-      }, UK_IRE_KEYWORDS)
-
-      console.log(`[SL] ${allData.tabCount} UK/IRE tabs → ${allData.meetings.length} meetings, ${allData.abandoned.length} abandoned`)
-      allData.meetings.forEach(m => console.log(`[SL] Found meeting: "${m.name}" (slug: ${m.slug})`))
-      allData.abandoned.forEach(m => console.log(`[SL] Abandoned meeting: ${m.name}`))
-
-      return { meetings: allData.meetings, abandoned: allData.abandoned }
-    } finally {
-      await context.close()
+    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
+    if (!nextDataMatch) {
+      console.error('[SL] No __NEXT_DATA__ found in page')
+      return []
     }
+
+    const nextData = JSON.parse(nextDataMatch[1])
+    const rawMeetings = nextData?.props?.pageProps?.meetings || []
+    console.log(`[SL] Found ${rawMeetings.length} total meetings in __NEXT_DATA__`)
+
+    const meetings = []
+    const abandoned = []
+    const seenIds = new Set()
+
+    for (const m of rawMeetings) {
+      const ms = m.meeting_summary
+      const ref = ms?.meeting_reference
+      if (!ref?.id || seenIds.has(ref.id)) continue
+      seenIds.add(ref.id)
+
+      const country = ms.course?.country?.short_name || ''
+      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland'].includes(country)
+      if (!isUkIre) continue
+
+      const courseName = ms.course?.name || ''
+      const raceCount = m.races?.length || 0
+      const slug = courseName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
+
+      const entry = { id: String(ref.id), date: dateStr, slug, name: courseName }
+      const status = (ms.status || '').toUpperCase()
+
+      if (status === 'ABANDONED' || courseName.toLowerCase().includes('abandoned')) {
+        console.log(`[SL] Abandoned meeting: ${courseName}`)
+        abandoned.push(entry)
+      } else {
+        console.log(`[SL] Found meeting: "${courseName}" (${raceCount} races, ID: ${ref.id})`)
+        meetings.push(entry)
+      }
+    }
+
+    console.log(`[SL] ${meetings.length} UK/IRE meetings, ${abandoned.length} abandoned`)
+    return { meetings, abandoned }
   } catch (err) {
     console.error(`[SL] Failed to fetch meeting list: ${err.message}`)
     return []
