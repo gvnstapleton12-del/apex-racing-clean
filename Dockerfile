@@ -114,6 +114,11 @@ COPY --from=builder /app/server.js ./
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/data ./data
 
+# Rebuild sqlite3 native bindings (pnpm symlinks don't survive COPY)
+RUN apk add --no-cache python3 make g++ && \
+    npm rebuild sqlite3 --build-from-source && \
+    apk del python3 make g++
+
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 
