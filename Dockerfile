@@ -14,7 +14,6 @@ RUN apk add --no-cache \
     glib \
     nspr \
     at-spi2-core \
-    atk \
     cups \
     dbus \
     libdrm \
@@ -76,7 +75,6 @@ RUN apk add --no-cache \
     glib \
     nspr \
     at-spi2-core \
-    atk \
     cups \
     dbus \
     libdrm \
