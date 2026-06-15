@@ -1,10 +1,10 @@
 {
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "pnpm run build"
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "pnpm start",
+    "startCommand": "",
     "healthcheckPath": "/api/debug/state",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",
