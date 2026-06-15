@@ -28,6 +28,8 @@ export async function initHorseDb() {
 
 export async function createTables(db) {
   if (!db) return
+  await db.exec(`PRAGMA journal_mode=WAL`)
+  await db.exec(`PRAGMA synchronous=NORMAL`)
   await db.exec(`
     CREATE TABLE IF NOT EXISTS horse_runs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,10 +44,13 @@ export async function createTables(db) {
       field_size INTEGER,
       finish_position INTEGER,
       sp_odds REAL,
+      starting_price REAL,
       weight_carried TEXT,
       jockey TEXT,
       trainer TEXT,
       official_rating INTEGER,
+      or_rating INTEGER,
+      rpr_rating REAL,
       speed_figure REAL,
       pace_score REAL,
       notes TEXT,
@@ -54,6 +59,10 @@ export async function createTables(db) {
   `)
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_horse_name ON horse_runs(horse_name)`)
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_horse_runs_date ON horse_runs(horse_name, race_date DESC)`)
+  // Add missing columns for existing databases
+  try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN or_rating INTEGER`) } catch (_) {}
+  try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN rpr_rating REAL`) } catch (_) {}
+  try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN starting_price REAL`) } catch (_) {}
 }
 
 export async function closeHorseDb(db) {

@@ -10,35 +10,47 @@ import RacePressureGraph from '../components/RacePressureGraph'
 import ScoreRing from '../components/ScoreRing'
 import MetricCard from '../components/MetricCard'
 
-export default function Racecards() {
+export default function Racecards({ selectHorse }: { selectHorse?: { horse: string; course: string; offTime: string } | null }) {
   const [selectedRace, setSelectedRace] = useState<Race | null>(null)
   const [search, setSearch] = useState('')
   const scrollTarget = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail || {}
-      const { course, offTime } = detail
-      if (!course) return
-      const id = `race-${course.replace(/\s+/g, '-')}-${(offTime || '').replace(':', '')}`
-      const el = document.getElementById(id)
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        el.classList.add('ring-2', 'ring-amber-500/50', 'transition-all', 'duration-1000')
-        setTimeout(() => {
-          el.classList.remove('ring-2', 'ring-amber-500/50')
-        }, 3000)
-      }
-    }
-    window.addEventListener('select-horse', handler)
-    return () => window.removeEventListener('select-horse', handler)
-  }, [])
 
   const { data: races = [], isLoading } = useQuery<Race[]>({
     queryKey: ['racecards'],
     queryFn: fetchRacecards,
     refetchInterval: 60000,
   })
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail || {}
+      const { course, offTime } = detail
+      if (!course) return
+      const allRaces = sortByOffTime(filterGBIRE(races))
+      const match = allRaces.find(r => r.course === course && r.off_time === offTime)
+      if (match) {
+        setSelectedRace(match)
+      }
+    }
+    window.addEventListener('select-horse', handler)
+    return () => window.removeEventListener('select-horse', handler)
+  }, [races])
+
+  useEffect(() => {
+    if (selectedRace) {
+      window.scrollTo(0, 0)
+    }
+  }, [selectedRace])
+
+  useEffect(() => {
+    if (selectHorse && races.length > 0) {
+      const allRaces = sortByOffTime(filterGBIRE(races))
+      const match = allRaces.find(r => r.course === selectHorse.course && r.off_time === selectHorse.offTime)
+      if (match) {
+        setSelectedRace(match)
+      }
+    }
+  }, [selectHorse, races])
 
   if (isLoading) {
     return (
@@ -66,7 +78,7 @@ export default function Racecards() {
   if (selectedRace) {
     return (
       <div className='p-6'>
-        <RacePage race={selectedRace} onBack={() => setSelectedRace(null)} />
+        <RacePage race={selectedRace} onBack={() => { setSelectedRace(null); window.scrollTo(0, 0) }} />
       </div>
     )
   }

@@ -67,6 +67,15 @@ Three-layer separation:
 - ✅ **PA Gate Monitor API** — `GET /api/pa-gate-monitor` tracks passed vs PA-rejected vs other-rejected performance across live predictions.
 - ✅ **PA visual indicator in RunnerDetailCard** — Color-coded badge: ✓ PA Strong/Positive/Weak or ✗ PA Negative.
 - ✅ **Three permanent benchmarks saved** — `backtest-baseline-pa25.json` (orig), `backtest-results-current.json` (current), `backtest-baseline-pa-gate.json` (PA gate shipped).
+- ✅ **Oracle Cloud server shutdown** — pm2 stop+delete apex; instance left parked (not terminated). Was never stable enough to be useful (stale dist, data format issues).
+- ✅ **Evidence tab API routes fixed** — Removed broken duplicate route block (lines 68-119) from server.js that imported non-existent modules. Real working routes at ~lines 1441+ serve 5438 historical records, 4237 learning bets.
+- ✅ **express.static re-added** — Static serving line had been accidentally deleted with broken route block; restored after JSON middleware.
+- ✅ **BrowserPool Windows fix** — Added `--no-proxy-server`, `--ignore-certificate-errors`, `--disable-features=NetworkService` to Chromium launch args to fix `ERR_INTERNET_DISCONNECTED`.
+- ✅ **Track Directory pace data audited** — `paceBiasByGoing` is draw-derived (not historical running styles). All 83 tracks have `paceBias`, 83 have `paceBiasByGoing`, 55 have `derivedStats`.
+- ✅ **Track Directory UI relabelled** — "Pace Bias" → "Track Positioning Bias" with data-quality gate: real draw bias when available (Historical Draw Bias), heuristic fallback when not (with "Estimated" disclaimer).
+- ✅ **Daily picks freeze fix** — Both client (`main.tsx:462`) and server (`server.js:1519`) now check if picks exist at all (not just null results). First save of the day is final; never overwritten.
+- ✅ **Horse memory schema alignment** — Added `or_rating`/`rpr_rating`/`starting_price` columns to `horseMemoryDb.js`, matching `saveHorseRun.js` inserts. Added WAL mode + synchronous=NORMAL for concurrent reads.
+- ✅ **Horse memory batch query** — `getHorseMemoryBatch` in `horseMemoryEngine.js` replaces N serial SQLite queries with 1 `WHERE horse_name IN (...)` query. Estimated 60s→~3s per race.
 
 ### Pending / Future
 - [ ] **Paper-track PA gate live** — Run 200-500 live races collecting PA > 0 vs PA ≤ 0 performance via `/api/pa-gate-monitor`
@@ -78,6 +87,7 @@ Three-layer separation:
 - [ ] RaceModal — convert to use same Tailwind card pattern as RacePage
 - [ ] Speed up results scraper (5+ min per date is slow; consider parallel fetching)
 - [ ] Replace template paceBiasByGoing with calculated historical data
+- [x] **Horse memory SQLite fix** — Schema now includes `or_rating`/`rpr_rating`/`starting_price` columns (matching saveHorseRun.js inserts). WAL mode + synchronous=NORMAL added for concurrent reads. Batch query (`getHorseMemoryBatch`) replaces N serial queries with 1 `WHERE horse_name IN (...)` — estimated 60s→~3s per race.
 
 ## Validated Findings
 
