@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"node server.js\" \"vite --host\"",
-    "start": "vite build && node server.js",
+    "start": "node server.js",
     "frontend": "vite",
     "build": "vite build",
     "postinstall": "npx playwright install chromium && pnpm rebuild sqlite3"
