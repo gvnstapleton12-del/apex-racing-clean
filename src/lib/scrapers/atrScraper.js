@@ -52,7 +52,44 @@ async function fetchAtr(url, timeoutMs = 15000) {
 }
 
 async function fetchAtrWithPlaywright(url) {
-  const browser = await chromium.launch({ headless: true })
+  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium'
+  const browser = await chromium.launch({
+    headless: true,
+    executablePath,
+    args: [
+      '--disable-blink-features=AutomationControlled',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--disable-software-rasterizer',
+      '--disable-vulkan',
+      '--use-angle=swiftshader',
+      '--no-proxy-server',
+      '--ignore-certificate-errors',
+      '--disable-features=NetworkService,UseSkiaRenderer,Vulkan',
+      '--no-zygote',
+      '--disable-site-isolation-trials',
+      '--disable-extensions',
+      '--disable-background-networking',
+      '--disable-background-timer-throttling',
+      '--disable-backgrounding-occluded-windows',
+      '--disable-renderer-backgrounding',
+      '--disable-ipc-flooding-protection',
+      '--disable-hang-monitor',
+      '--disable-popup-blocking',
+      '--disable-prompt-on-repost',
+      '--password-store=basic',
+      '--use-mock-keychain',
+      '--no-first-run',
+      '--hide-scrollbars',
+      '--mute-audio',
+      '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
+      '--disable-accelerated-2d-canvas',
+      '--disable-features=NetworkService,Translate,BackForwardCache,AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,UseSkiaRenderer,Vulkan',
+      '--disable-accelerated-2d-canvas',
+    ],
+  })
   try {
     const context = await browser.newContext({
       userAgent: randomAgent(),
@@ -182,11 +219,45 @@ export async function fetchAtrRatings(dateStr, races = []) {
     return ratings
   }
 
+  const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium'
+  const launchArgs = [
+    '--disable-blink-features=AutomationControlled',
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu',
+    '--disable-software-rasterizer',
+    '--disable-vulkan',
+    '--use-angle=swiftshader',
+    '--no-proxy-server',
+    '--ignore-certificate-errors',
+    '--disable-features=NetworkService,UseSkiaRenderer,Vulkan',
+    '--no-zygote',
+    '--disable-site-isolation-trials',
+    '--disable-extensions',
+    '--disable-background-networking',
+    '--disable-background-timer-throttling',
+    '--disable-backgrounding-occluded-windows',
+    '--disable-renderer-backgrounding',
+    '--disable-ipc-flooding-protection',
+    '--disable-hang-monitor',
+    '--disable-popup-blocking',
+    '--disable-prompt-on-repost',
+    '--password-store=basic',
+    '--use-mock-keychain',
+    '--no-first-run',
+    '--hide-scrollbars',
+    '--mute-audio',
+    '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
+    '--disable-accelerated-2d-canvas',
+    '--disable-features=NetworkService,Translate,BackForwardCache,AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,UseSkiaRenderer,Vulkan',
+    '--disable-accelerated-2d-canvas',
+  ]
   try {
-    browser = await chromium.launch({ headless: true })
+    browser = await chromium.launch({ headless: true, executablePath, args: launchArgs })
     console.log(`[ATR Ratings] Scraping ${raceUrls.length} race pages...`)
 
-    const CONCURRENCY = 4
+    const CONCURRENCY = 2
     for (let i = 0; i < raceUrls.length; i += CONCURRENCY) {
       const batch = raceUrls.slice(i, i + CONCURRENCY)
       const results = await Promise.allSettled(batch.map(async (url) => {
