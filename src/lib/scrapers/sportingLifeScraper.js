@@ -68,61 +68,64 @@ async function fetchMeetingList(dateStr) {
       await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
       await page.waitForTimeout(3000)
 
-      // Extract all meeting tab names from the tab navigation
-      const allTabNames = await page.evaluate(() => {
-        const tabs = document.querySelectorAll('span[id].NewGenericTabs__Tab-sc-bbf7998f-2, span[id].NewGenericTabs__ActiveTab-sc-bbf7998f-3')
-        return Array.from(tabs).map(t => t.textContent.trim())
-      })
+      const UK_IRE_KEYWORDS = [
+        'ascot', 'ayr', 'bath', 'beverley', 'brighton', 'cartmel', 'carlisle', 'cheltenham', 'chester', 'catterick', 'chepstow',
+        'doncaster', 'down royal', 'epsom', 'fairyhouse', 'goodwood', 'hamilton', 'haydock', 'hereford', 'hexham', 'huntingdon',
+        'kelso', 'kempton', 'leicester', 'lingfield', 'market rasen', 'newbury', 'newcastle', 'newmarket',
+        'newton abbot', 'northam', 'nottingham', 'plumpton', 'pontefract', 'redcar', 'ripon', 'sandown', 'sedgefield',
+        'southwell', 'stratford', 'taunton', 'thirsk', 'uttoxeter', 'wetherby', 'wolverhampton', 'worcester',
+        'great yarmouth', 'yarmouth', 'york', 'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney',
+        'laytown', 'leopardstown', 'listowel', 'naas', 'navan', 'punchestown', 'roscommon', 'sligo',
+        'tipperary', 'tramore', 'wexford', 'gowran park',
+        'aintree', 'bangor-on-dee', 'chelmsford city', 'exeter', 'fakenham', 'ffos las', 'fontwell park', 'ludlow', 'musselburgh', 'perth', 'salisbury', 'warwick', 'wincanton', 'windsor',
+        'bellewstown', 'clonmel', 'cork', 'downpatrick', 'kilbeggan', 'limerick', 'thurles',
+      ]
 
-      // Filter for UK/IRE meetings
-      const ukIreTabs = allTabNames.filter(name => isUkIre(name))
-      if (ukIreTabs.length === 0) return []
+      // Single evaluate: click each UK/IRE tab with async delays, collect all fast-cards links
+      const allData = await page.evaluate(async (ukIreKeywords) => {
+        const sleep = ms => new Promise(r => setTimeout(r, ms))
+        const tabSelector = 'span[id].NewGenericTabs__Tab-sc-bbf7998f-2, span[id].NewGenericTabs__ActiveTab-sc-bbf7998f-3'
+        const tabs = Array.from(document.querySelectorAll(tabSelector))
 
-      const meetings = []
-      const abandoned = []
-      const seenSlugs = new Set()
+        const ukIreTabs = tabs.filter(t => {
+          const name = t.textContent.trim().toLowerCase().replace(/\s*\(.*?\)\s*/g, '').trim()
+          return ukIreKeywords.some(k => name.includes(k))
+        })
 
-      for (const name of ukIreTabs) {
-        const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
-        if (seenSlugs.has(slug)) continue
-        seenSlugs.add(slug)
-
-        try {
-          // Click the tab to make this meeting active
-          await page.evaluate((tabName) => {
-            const tab = document.querySelector(`span[id="${tabName}"]`)
-            if (tab) tab.click()
-          }, name)
-
-          // Wait for the meeting section to render
-          await page.waitForTimeout(2000)
-
-          // Extract meeting info from the fast-cards link
-          const meetingInfo = await page.evaluate(() => {
-            const link = document.querySelector('a[href*="/racing/fast-cards/"]')
-            if (!link) return null
-            const href = link.getAttribute('href')
-            const match = href.match(/\/racing\/fast-cards\/(\d+)\/(\d{4}-\d{2}-\d{2})\/([^/]+)/)
-            if (!match) return null
-            return { id: match[1], date: match[2], slug: match[3], name: link.textContent.trim() }
-          })
-
-          if (meetingInfo) {
-            console.log(`[SL] Found meeting: "${meetingInfo.name}" (slug: ${meetingInfo.slug})`)
-            // Check if meeting name indicates abandoned status
-            if (meetingInfo.name.toLowerCase().includes('abandoned') || meetingInfo.name.toLowerCase().includes('(off)')) {
-              console.log(`[SL] Abandoned meeting: ${meetingInfo.name}`)
-              abandoned.push(meetingInfo)
-            } else {
-              meetings.push(meetingInfo)
-            }
-          }
-        } catch (err) {
-          console.error(`[SL] Failed to extract meeting "${name}": ${err.message}`)
+        // Click each tab and wait for content to render
+        for (const tab of ukIreTabs) {
+          try { tab.click() } catch {}
+          await sleep(1500)
         }
-      }
 
-      return { meetings, abandoned }
+        // Now collect all fast-cards links
+        const allLinks = document.querySelectorAll('a[href*="/racing/fast-cards/"]')
+        const meetings = []
+        const abandoned = []
+        const seen = new Set()
+        for (const link of allLinks) {
+          const href = link.getAttribute('href')
+          const match = href.match(/\/racing\/fast-cards\/(\d+)\/(\d{4}-\d{2}-\d{2})\/([^/]+)/)
+          if (!match) continue
+          const key = match[1]
+          if (seen.has(key)) continue
+          seen.add(key)
+          const entry = { id: match[1], date: match[2], slug: match[3], name: link.textContent.trim() }
+          if (entry.name.toLowerCase().includes('abandoned') || entry.name.toLowerCase().includes('(off)')) {
+            abandoned.push(entry)
+          } else {
+            meetings.push(entry)
+          }
+        }
+
+        return { tabCount: ukIreTabs.length, meetings, abandoned }
+      }, UK_IRE_KEYWORDS)
+
+      console.log(`[SL] ${allData.tabCount} UK/IRE tabs → ${allData.meetings.length} meetings, ${allData.abandoned.length} abandoned`)
+      allData.meetings.forEach(m => console.log(`[SL] Found meeting: "${m.name}" (slug: ${m.slug})`))
+      allData.abandoned.forEach(m => console.log(`[SL] Abandoned meeting: ${m.name}`))
+
+      return { meetings: allData.meetings, abandoned: allData.abandoned }
     } finally {
       await context.close()
     }
