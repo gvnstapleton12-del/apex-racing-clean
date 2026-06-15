@@ -26,7 +26,7 @@ function loadStore() {
   return _store
 }
 
-function saveStore() {
+export function saveAffinityStore() {
   try {
     const dir = dirname(STORE_PATH)
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
@@ -519,7 +519,6 @@ export function recordAffinityPrediction(horseName, race, prediction) {
   hs.systemVerificationHistory.totalPredictionsGenerated++
   hs.macroMetrics.totalScoredRuns++
   hs.lastUpdated = new Date().toISOString()
-  saveStore()
 }
 
 export function verifyAffinityResult(horseName, raceKey, position, finishDistance, runStyle) {
@@ -581,7 +580,7 @@ export function verifyAffinityResult(horseName, raceKey, position, finishDistanc
     : 0
 
   hs.lastUpdated = new Date().toISOString()
-  saveStore()
+  saveAffinityStore()
 
   return {
     predicted: pred.factor,

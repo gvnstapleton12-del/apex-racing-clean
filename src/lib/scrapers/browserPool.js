@@ -41,6 +41,9 @@ export async function getBrowser() {
         '--disable-setuid-sandbox',
         '--disable-dev-shm-usage',
         '--disable-gpu',
+        '--no-proxy-server',
+        '--ignore-certificate-errors',
+        '--disable-features=NetworkService',
       ],
       ...(proxy ? { proxy: { server: proxy } } : {}),
     })

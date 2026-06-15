@@ -102,6 +102,8 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
   const paceByGoing = (track as any).paceBiasByGoing
   const fastPace = paceByGoing?.fast
   const softPace = paceByGoing?.soft
+  const derivedStats = (track as any).derivedStats
+  const hasRealDrawData = derivedStats?.drawBias && derivedStats.drawBias.low != null
 
   return (
     <div className="apex-card p-5 space-y-4">
@@ -143,17 +145,37 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
         )}
       </div>
 
-      {/* Pace Bias — structured data */}
-      {fastPace && (
+      {/* Draw bias — real historical data or heuristic fallback */}
+      {hasRealDrawData ? (
         <div>
-          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Pace Bias</h4>
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Historical Draw Bias</h4>
+          <p className="text-[10px] text-zinc-600 mb-2">{derivedStats.raceCount} races · winner draw positions</p>
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Front Runner</span>
+              <span className="text-[11px] text-zinc-400 w-20">Low Draw</span>
+              <Bar pct={+derivedStats.drawBias.low} color={+derivedStats.drawBias.low >= 40 ? 'bg-green-400' : +derivedStats.drawBias.low >= 25 ? 'bg-amber-400' : 'bg-red-400'} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-zinc-400 w-20">Mid Draw</span>
+              <Bar pct={+derivedStats.drawBias.mid} color={+derivedStats.drawBias.mid >= 25 ? 'bg-green-400' : +derivedStats.drawBias.mid >= 15 ? 'bg-amber-400' : 'bg-red-400'} />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-zinc-400 w-20">High Draw</span>
+              <Bar pct={+derivedStats.drawBias.high} color={+derivedStats.drawBias.high >= 25 ? 'bg-amber-400' : +derivedStats.drawBias.high >= 10 ? 'bg-red-400' : 'bg-green-400'} />
+            </div>
+          </div>
+        </div>
+      ) : fastPace ? (
+        <div>
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Track Positioning Bias</h4>
+          <p className="text-[10px] text-zinc-600 mb-2">Estimated — insufficient historical draw data</p>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-zinc-400 w-20">Inside Position</span>
               <Bar pct={fastPace.fr} color={fastPace.fr >= 40 ? 'bg-green-400' : fastPace.fr >= 25 ? 'bg-amber-400' : 'bg-red-400'} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Prominent</span>
+              <span className="text-[11px] text-zinc-400 w-20">Prominent Position</span>
               <Bar pct={fastPace.pr} color={fastPace.pr >= 40 ? 'bg-green-400' : fastPace.pr >= 25 ? 'bg-amber-400' : 'bg-red-400'} />
             </div>
             <div className="flex items-center gap-2">
@@ -161,12 +183,12 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
               <Bar pct={fastPace.md} color={fastPace.md >= 25 ? 'bg-green-400' : fastPace.md >= 15 ? 'bg-amber-400' : 'bg-red-400'} />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Hold Up</span>
+              <span className="text-[11px] text-zinc-400 w-20">Wide / Held Up</span>
               <Bar pct={fastPace.hu} color={fastPace.hu >= 15 ? 'bg-green-400' : fastPace.hu >= 8 ? 'bg-amber-400' : 'bg-red-400'} />
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Typical Winner */}
       {winnerProfile.length > 0 && (
@@ -204,19 +226,20 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
         </div>
       </div>
 
-      {/* Ground analysis — structured data */}
-      {softPace && (
+      {/* Ground analysis — heuristic, only shown when no real draw data */}
+      {!hasRealDrawData && softPace && (
         <div>
-          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Soft / Heavy Ground</h4>
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Soft / Heavy Ground Shift</h4>
+          <p className="text-[10px] text-zinc-600 mb-1">Estimated pattern</p>
           <div className="space-y-0.5">
             {softPace.fr < fastPace.fr && (
-              <div className="text-[11px] text-zinc-400">FR drops {fastPace.fr}% → {softPace.fr}%</div>
+              <div className="text-[11px] text-zinc-400">Inside drops {fastPace.fr}% → {softPace.fr}%</div>
             )}
             {softPace.pr > fastPace.pr && (
-              <div className="text-[11px] text-green-400">✓ PR rises {fastPace.pr}% → {softPace.pr}%</div>
+              <div className="text-[11px] text-green-400">✓ Prominent rises {fastPace.pr}% → {softPace.pr}%</div>
             )}
             {softPace.hu > 8 && (
-              <div className="text-[11px] text-zinc-400">HU improves to {softPace.hu}%</div>
+              <div className="text-[11px] text-zinc-400">Wide/Held Up improves to {softPace.hu}%</div>
             )}
           </div>
         </div>
@@ -227,17 +250,6 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
         <div>
           <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Historical Data</h4>
           <div className="text-[10px] text-zinc-500 mb-1">{(track as any).derivedStats.raceCount} races · {(track as any).derivedStats.runnerCount} runners</div>
-          {/* Draw bias */}
-          {(track as any).derivedStats.drawBias && (
-            <div className="mb-2">
-              <span className="text-[10px] text-zinc-400">Draw Bias: </span>
-              <span className="text-[10px] text-blue-400">Low {(track as any).derivedStats.drawBias.low}%</span>
-              <span className="text-[10px] text-zinc-600"> · </span>
-              <span className="text-[10px] text-zinc-400">Mid {(track as any).derivedStats.drawBias.mid}%</span>
-              <span className="text-[10px] text-zinc-600"> · </span>
-              <span className="text-[10px] text-amber-400">High {(track as any).derivedStats.drawBias.high}%</span>
-            </div>
-          )}
           {/* Going bias */}
           {(track as any).derivedStats.goingBias && Object.keys((track as any).derivedStats.goingBias).length > 0 && (
             <div className="mb-1">

@@ -16,11 +16,11 @@ import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
 import { fetchAtrRacecards, fetchAtrRatings } from './src/lib/scrapers/atrScraper.js'
 import { initHorseDb, createTables, closeHorseDb } from './src/lib/horseMemoryDb.js'
-import { getHorseMemory, calculateHandicapScore, calculateAbilityFromMemory } from './src/lib/horseMemoryEngine.js'
+import { getHorseMemory, getHorseMemoryBatch, calculateHandicapScore, calculateAbilityFromMemory } from './src/lib/horseMemoryEngine.js'
 import { saveHorseRun } from './src/lib/saveHorseRun.js'
 import { recordTrackBiasResult, backfillFromHistorical, getAllTrackBiasStats, saveTrackBiasStore, getTrackBiasStore } from './src/lib/trackBiasLearner.js'
 import { checkRaceExclusion } from './src/lib/trackProfile.js'
-import { recordAffinityPrediction, verifyAffinityResult } from './src/lib/personalAffinity.js'
+import { recordAffinityPrediction, verifyAffinityResult, saveAffinityStore } from './src/lib/personalAffinity.js'
 
 // Global error handlers to prevent crashes
 process.on('uncaughtException', (error) => {
@@ -73,6 +73,8 @@ const io = new Server(server, {
 
 app.use(cors())
 app.use(express.json({ limit: '50mb' }))
+
+app.use(express.static(path.join(process.cwd(), 'dist')))
 
 const PORT = process.env.PORT || 3000
 
@@ -345,7 +347,7 @@ function saveDatabase(filePath, database) {
 const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
 const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
 const ALERT_DATABASE = loadDatabase(ALERT_DB_PATH)
-const PREDICTIONS_DATABASE = loadDatabase(PREDICTIONS_DB_PATH)
+const PREDICTIONS_DATABASE = (() => { const db = loadDatabase(PREDICTIONS_DB_PATH); return Array.isArray(db) ? {} : db })()
 const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
@@ -549,31 +551,39 @@ async function processRace(race) {
     }
 
     console.time(`[processRace] ${raceLabel} horseMemory`)
-    const enrichedRunners = await Promise.all((race.runners || []).map(async runner => {
-      if (HORSE_MEMORY_DB && runner.horse) {
-        try {
-          if (!global.__horseMemCache) global.__horseMemCache = new Map()
-          let memory = global.__horseMemCache.get(runner.horse)
-          if (memory === undefined) {
-            memory = await getHorseMemory(HORSE_MEMORY_DB, runner.horse, runner.or || 0)
-            global.__horseMemCache.set(runner.horse, memory === null ? null : memory)
-          }
-          if (memory) {
-            const handicapScore = calculateHandicapScore(memory, runner.or || 0)
-            const abilityScore = calculateAbilityFromMemory(memory, runner.or || 0, runner.rpr || 0)
-            runner.horseMemory = {
-              ...memory,
-              handicapScore: handicapScore.score,
-              handicapLabel: handicapScore.label,
-              abilityScore,
-            }
-          }
-        } catch (err) {
-          // silently skip horse memory errors per-runner
+    const raceRunners = race.runners || []
+    const orByHorse = {}
+    for (const r of raceRunners) {
+      if (r.horse) orByHorse[r.horse] = r.or || 0
+    }
+    if (!global.__horseMemCache) global.__horseMemCache = new Map()
+    const uncached = Object.keys(orByHorse).filter(h => !global.__horseMemCache.has(h))
+    if (uncached.length > 0) {
+      const batch = await getHorseMemoryBatch(HORSE_MEMORY_DB, uncached, orByHorse)
+      for (const [name, mem] of Object.entries(batch)) {
+        global.__horseMemCache.set(name, mem)
+      }
+      for (const name of uncached) {
+        if (!global.__horseMemCache.has(name)) {
+          global.__horseMemCache.set(name, null)
         }
       }
-      return runner
-    }))
+    }
+    for (const runner of raceRunners) {
+      if (!runner.horse) continue
+      const memory = global.__horseMemCache.get(runner.horse)
+      if (memory) {
+        const handicapScore = calculateHandicapScore(memory, runner.or || 0)
+        const abilityScore = calculateAbilityFromMemory(memory, runner.or || 0, runner.rpr || 0)
+        runner.horseMemory = {
+          ...memory,
+          handicapScore: handicapScore.score,
+          handicapLabel: handicapScore.label,
+          abilityScore,
+        }
+      }
+    }
+    const enrichedRunners = raceRunners
     console.timeEnd(`[processRace] ${raceLabel} horseMemory`)
 
     console.time(`[processRace] ${raceLabel} apexEngine`)
@@ -603,12 +613,11 @@ async function processRace(race) {
       if (!HORSE_DATABASE[horseId]) {
         HORSE_DATABASE[horseId] = { horse: runner.horse, runs: 0, bestScore: 0 }
       }
-      const horseProfile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
-      const profileAdj = computeProfileAdjustment(horseProfile, race)
-      if (horseProfile) {
-        HORSE_DATABASE[horseId].profile = horseProfile
-        HORSE_DATABASE[horseId].profile_adjustment = profileAdj
+      if (!HORSE_DATABASE[horseId].profile) {
+        HORSE_DATABASE[horseId].profile = buildHorseProfile(horseId, LEARNING_DATABASE.races || [])
       }
+      const horseProfile = HORSE_DATABASE[horseId].profile
+      const profileAdj = computeProfileAdjustment(horseProfile, race)
       const previousOdds = MARKET_DATABASE[horseId]?.lastOdds || runner.odds
       const marketMovement = analyzeMarketMovement({ horse: runner.horse, currentOdds: runner.odds, previousOdds, aiConfidence: runner.finalScore })
       MARKET_DATABASE[horseId] = { horse: runner.horse, lastOdds: runner.odds, movement: marketMovement.movement, updatedAt: new Date().toISOString() }
@@ -716,6 +725,7 @@ async function processRace(race) {
         recordAffinityPrediction(sr.horse, race, sr)
       } catch { /* silent */ }
     }
+    try { saveAffinityStore() } catch { /* silent */ }
     console.timeEnd(`[processRace] ${raceLabel} enrich`)
 
     return {
@@ -819,12 +829,18 @@ async function fetchLiveMeetings() {
       const batch = rawRaces.slice(i, i + batchSize)
       console.log(`[LiveMeetings] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(rawRaces.length / batchSize)}`)
       try {
-        const batchResults = await Promise.all(batch.map(race =>
-          Promise.race([
-            processRace(race),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
-          ])
-        ))
+        const batchResults = []
+        for (const race of batch) {
+          try {
+            const result = await Promise.race([
+              processRace(race),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 25000))
+            ])
+            batchResults.push(result)
+          } catch (e) {
+            console.error(`[processRace] Error ${race.course} ${race.off_time}: ${e.message}`)
+          }
+        }
         processed.push(...batchResults)
         const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
         console.log(`[LiveMeetings] Batch done: ${processed.length}/${rawRaces.length} races, ${totalRunners} runners scored`)
@@ -1516,8 +1532,8 @@ app.post('/api/daily-picks', (req, res) => {
   }
 
   const existing = DAILY_PICKS_DATABASE[date]
-  if (existing && existing.picks && existing.picks.some((p) => p.result !== null)) {
-    return res.json({ saved: false, reason: 'results already recorded for this date' })
+  if (existing && existing.picks) {
+    return res.json({ saved: false, reason: 'picks already saved for this date' })
   }
 
   DAILY_PICKS_DATABASE[date] = {
@@ -2646,6 +2662,11 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       }
     }
 
+    // Last 3 days only
+    const threeDaysAgo = new Date()
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
+    const cutoff = threeDaysAgo.toISOString().slice(0, 10)
+
     let passed = 0, passedWins = 0, passedPL = 0
     let paRejected = 0, paRejectedWins = 0, paRejectedPL = 0
     let otherRejected = 0, otherRejectedWins = 0, otherRejectedPL = 0
@@ -2653,6 +2674,7 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
     for (const racePreds of Object.values(db)) {
       if (!Array.isArray(racePreds)) continue
       for (const p of racePreds) {
+        if (!p.date || p.date < cutoff) continue
         const key = `${p.course}|${p.offTime}|${p.date}|${(p.horse||'').toLowerCase()}`
         const pos = resultMap[key]
         if (!pos) continue
@@ -2719,6 +2741,13 @@ app.post('/api/refresh-racecards', async (_req, res) => {
     res.json({ ok: true, message: 'Racecards refreshed', orPrGapBackfilled: backfilled })
   } catch (e) {
     res.status(500).json({ error: e.message })
+  }
+})
+
+
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api') && !req.path.startsWith('/socket.io')) {
+    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'))
   }
 })
 

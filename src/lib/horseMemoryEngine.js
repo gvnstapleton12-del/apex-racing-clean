@@ -1,66 +1,76 @@
 // Horse Memory Intelligence Engine
 // Historical handicap and performance analysis
 
-export async function getHorseMemory(db, horseName, currentOR) {
-  if (!db || !horseName) {
-    return null
+function computeHorseMemory(runs, horseName, currentOR) {
+  if (!runs || !runs.length) return null
+  const peakRPR = Math.max(...runs.map(r => r.rpr_rating || 0), 0)
+  const peakOR = Math.max(...runs.map(r => r.or_rating || 0), 0)
+  const winningRuns = runs.filter(r => r.finish_position === 1)
+  const lastWinningOR = winningRuns[0]?.or_rating || null
+  const lastWinningRPR = winningRuns[0]?.rpr_rating || null
+  const validRPR = runs.filter(r => r.rpr_rating > 0).map(r => r.rpr_rating)
+  const avgRPR = validRPR.length > 0 ? validRPR.reduce((a, b) => a + b, 0) / validRPR.length : 0
+  const recentRPR = validRPR.slice(0, 3).reduce((a, b) => a + b, 0) / 3 || 0
+  const olderRPR = validRPR.slice(3, 6).reduce((a, b) => a + b, 0) / 3 || 0
+  const rprTrend = recentRPR - olderRPR
+  const bestDistance = getMostFrequent(winningRuns.map(r => r.distance_furlongs).filter(Boolean))
+  const bestGoing = getMostFrequent(winningRuns.map(r => r.going).filter(Boolean))
+  const bestCourse = getMostFrequent(winningRuns.map(r => r.course).filter(Boolean))
+  return {
+    horseName,
+    runsCount: runs.length,
+    peakRPR, peakOR, lastWinningOR, lastWinningRPR,
+    currentVsPeak: currentOR > 0 && peakRPR > 0 ? currentOR - peakRPR : 0,
+    currentVsLastWin: currentOR > 0 && lastWinningOR ? currentOR - lastWinningOR : 0,
+    avgRPR: Math.round(avgRPR * 10) / 10,
+    recentRPR: Math.round(recentRPR * 10) / 10,
+    olderRPR: Math.round(olderRPR * 10) / 10,
+    rprTrend: Math.round(rprTrend * 10) / 10,
+    bestDistance, bestGoing, bestCourse,
+    wins: winningRuns.length,
+    winRate: runs.length > 0 ? Math.round((winningRuns.length / runs.length) * 100) : 0,
   }
-  
+}
+
+export async function getHorseMemory(db, horseName, currentOR) {
+  if (!db || !horseName) return null
   try {
-    const runs = await db.all(`
-      SELECT *
-      FROM horse_runs
-      WHERE horse_name = ?
-      ORDER BY race_date DESC
-      LIMIT 50
-    `, [horseName])
-    
-    if (!runs.length) {
-      return null
-    }
-    
-    const peakRPR = Math.max(...runs.map(r => r.rpr_rating || 0), 0)
-    const peakOR = Math.max(...runs.map(r => r.or_rating || 0), 0)
-    
-    const winningRuns = runs.filter(r => r.finish_position === 1)
-    const lastWinningOR = winningRuns[0]?.or_rating || null
-    const lastWinningRPR = winningRuns[0]?.rpr_rating || null
-    
-    const validRPR = runs.filter(r => r.rpr_rating > 0).map(r => r.rpr_rating)
-    const avgRPR = validRPR.length > 0 
-      ? validRPR.reduce((a, b) => a + b, 0) / validRPR.length 
-      : 0
-    
-    const recentRPR = validRPR.slice(0, 3).reduce((a, b) => a + b, 0) / 3 || 0
-    const olderRPR = validRPR.slice(3, 6).reduce((a, b) => a + b, 0) / 3 || 0
-    const rprTrend = recentRPR - olderRPR
-    
-    const bestDistance = getMostFrequent(winningRuns.map(r => r.distance_furlongs).filter(Boolean))
-    const bestGoing = getMostFrequent(winningRuns.map(r => r.going).filter(Boolean))
-    const bestCourse = getMostFrequent(winningRuns.map(r => r.course).filter(Boolean))
-    
-    return {
-      horseName,
-      runsCount: runs.length,
-      peakRPR,
-      peakOR,
-      lastWinningOR,
-      lastWinningRPR,
-      currentVsPeak: currentOR > 0 && peakRPR > 0 ? currentOR - peakRPR : 0,
-      currentVsLastWin: currentOR > 0 && lastWinningOR ? currentOR - lastWinningOR : 0,
-      avgRPR: Math.round(avgRPR * 10) / 10,
-      recentRPR: Math.round(recentRPR * 10) / 10,
-      olderRPR: Math.round(olderRPR * 10) / 10,
-      rprTrend: Math.round(rprTrend * 10) / 10,
-      bestDistance,
-      bestGoing,
-      bestCourse,
-      wins: winningRuns.length,
-      winRate: runs.length > 0 ? Math.round((winningRuns.length / runs.length) * 100) : 0,
-    }
+    const runs = await db.all(
+      `SELECT * FROM horse_runs WHERE horse_name = ? ORDER BY race_date DESC LIMIT 50`,
+      [horseName]
+    )
+    return computeHorseMemory(runs, horseName, currentOR)
   } catch (error) {
     console.error('Error getting horse memory:', error.message)
     return null
+  }
+}
+
+export async function getHorseMemoryBatch(db, horseNames, currentORByHorse = {}) {
+  if (!db || !horseNames.length) return {}
+  const unique = [...new Set(horseNames.filter(Boolean))]
+  if (!unique.length) return {}
+  try {
+    const placeholders = unique.map(() => '?').join(',')
+    const rows = await db.all(
+      `SELECT * FROM horse_runs WHERE horse_name IN (${placeholders}) ORDER BY horse_name, race_date DESC LIMIT 50`,
+      unique
+    )
+    const byHorse = {}
+    for (const row of rows) {
+      if (!byHorse[row.horse_name]) byHorse[row.horse_name] = []
+      if (byHorse[row.horse_name].length < 50) byHorse[row.horse_name].push(row)
+    }
+    const result = {}
+    for (const name of unique) {
+      const runs = byHorse[name] || []
+      const or = currentORByHorse[name] || 0
+      result[name] = computeHorseMemory(runs, name, or)
+    }
+    return result
+  } catch (error) {
+    console.error('Error getting horse memory batch:', error.message)
+    return {}
   }
 }
 

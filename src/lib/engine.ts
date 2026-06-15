@@ -467,6 +467,7 @@ export function formatSelection(race: Race, runner: Runner) {
     raceName: race.race_name,
     course: race.course,
     offTime: formatOffTime(race),
+    going: race.going || '',
     score: getScore(runner),
     winProb,
     placeProb,
