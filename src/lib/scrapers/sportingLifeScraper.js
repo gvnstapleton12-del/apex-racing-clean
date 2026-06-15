@@ -65,7 +65,8 @@ async function fetchMeetingList(dateStr) {
     const context = await createPage()
     try {
       const page = await context.newPage()
-      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'networkidle0', timeout: 60000 })
+      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
+      await page.waitForTimeout(3000)
 
       // Extract all meeting tab names from the tab navigation
       const allTabNames = await page.evaluate(() => {
@@ -304,7 +305,7 @@ async function fetchResultRunners(race) {
         }
       })
 
-      await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 })
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 })
       await page.waitForTimeout(5000)
 
       if (responseData?.rides) {

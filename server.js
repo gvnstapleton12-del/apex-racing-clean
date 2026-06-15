@@ -776,7 +776,16 @@ async function fetchLiveMeetings() {
 
     console.time('[Startup] fetchSlRacecards')
     const today = new Date().toISOString().split('T')[0]
-    const scrapeResult = await retry(() => fetchSlRacecards(today), 2, 2000)
+    let scrapeResult
+    try {
+      scrapeResult = await Promise.race([
+        retry(() => fetchSlRacecards(today), 2, 2000),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Racecard scrape timeout (5min)')), 300000))
+      ])
+    } catch (e) {
+      console.error('[LiveMeetings] Racecard scrape failed/timed out:', e.message)
+      scrapeResult = { races: [], abandoned: [] }
+    }
     console.timeEnd('[Startup] fetchSlRacecards')
     const rawRaces = scrapeResult?.races || scrapeResult || []
     const abandonedMeetings = scrapeResult?.abandoned || []
