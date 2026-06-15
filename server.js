@@ -3017,9 +3017,12 @@ server.listen(PORT, async () => {
   const picksCount = Object.values(DAILY_PICKS_DATABASE).reduce((sum, d) => sum + (d.picks?.length || 0), 0)
   console.log(`[STARTUP] DAILY_PICKS_DATABASE has ${picksDates.length} dates, ${picksCount} total picks`)
   // Fetch today's data on startup
-  fetchLiveMeetings()
-  // Delay results scraping by 60s to avoid competing with racecards + ATR for browser memory
-  setTimeout(() => fetchTodayResults(), 60000)
+  // Results scraping must wait until fetchLiveMeetings (racecards + ATR) fully completes
+  // to avoid two browser processes competing for memory on Railway
+  fetchLiveMeetings().then(() => {
+    console.log('[Startup] Racecards complete, scheduling results fetch in 5s...')
+    setTimeout(() => fetchTodayResults(), 5000)
+  })
 
   // Backfill track bias learning from historical records
   const trackBiasStore = getTrackBiasStore()
