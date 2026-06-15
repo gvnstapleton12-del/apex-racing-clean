@@ -922,6 +922,8 @@ async function fetchLiveMeetings() {
       scrapeResult = { races: [], abandoned: [] }
     }
     console.timeEnd('[Startup] fetchSlRacecards')
+    // Close shared browser pool to free memory — racecards are done, ATR has its own browser
+    try { await closeBrowser() } catch {}
     const rawRaces = scrapeResult?.races || scrapeResult || []
     const abandonedMeetings = scrapeResult?.abandoned || []
 
@@ -3016,7 +3018,8 @@ server.listen(PORT, async () => {
   console.log(`[STARTUP] DAILY_PICKS_DATABASE has ${picksDates.length} dates, ${picksCount} total picks`)
   // Fetch today's data on startup
   fetchLiveMeetings()
-  fetchTodayResults()
+  // Delay results scraping by 60s to avoid competing with racecards + ATR for browser memory
+  setTimeout(() => fetchTodayResults(), 60000)
 
   // Backfill track bias learning from historical records
   const trackBiasStore = getTrackBiasStore()
