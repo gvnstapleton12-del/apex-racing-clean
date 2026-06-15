@@ -199,7 +199,7 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
                       <div className='flex-1 space-y-2'>
                         <div className='flex justify-between items-center'>
                           <span className='text-xs text-zinc-400 uppercase tracking-wider'>Confidence</span>
-                          <span className='text-sm font-bold text-white'>{topRated.winProb ? `${(topRated.winProb * 100).toFixed(0)}%` : '—'}</span>
+                          <span className='text-sm font-bold text-white'>{topRated.winProb ? `${topRated.winProb.toFixed(0)}%` : '—'}</span>
                         </div>
                         <div className='flex justify-between items-center'>
                           <span className='text-xs text-zinc-400 uppercase tracking-wider'>Value</span>
