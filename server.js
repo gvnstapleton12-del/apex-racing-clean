@@ -2745,6 +2745,17 @@ app.post('/api/refresh-racecards', async (_req, res) => {
 })
 
 
+
+app.get('/api/debug/state', (_req, res) => {
+  res.json({
+    races: LIVE_STATE.racecards?.length || 0,
+    loading: LIVE_STATE.loading,
+    updatedAt: LIVE_STATE.updatedAt,
+    abandoned: LIVE_STATE.abandoned,
+    sampleRace: LIVE_STATE.racecards?.[0]?.course || 'none'
+  })
+})
+
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api') && !req.path.startsWith('/socket.io')) {
     res.sendFile(path.join(process.cwd(), 'dist', 'index.html'))
