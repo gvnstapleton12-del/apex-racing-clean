@@ -33,8 +33,10 @@ export async function getBrowser() {
 
   browserPromise = (async () => {
     const proxy = getRandomProxy()
+    const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium'
     browser = await chromium.launch({
       headless: true,
+      executablePath,
       args: [
         '--disable-blink-features=AutomationControlled',
         '--no-sandbox',
