@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join, dirname } from 'path'
 import { getTrackProfile } from './trackProfile.js'
 import { parseFinishDistance } from './performanceRating.js'
+import { hasPg, pgLoad, pgSave } from './pgStore.js'
 
 const LEAGUE_AVG_WR = 0.15
 const MIN_YEAR = 2025
@@ -11,8 +12,22 @@ const BLEND_WEIGHT_SL = 0.6
 const MIN_VERIFIED_FOR_BLEND = 5
 
 const STORE_PATH = join(process.cwd(), 'data', 'personalAffinity.json')
+const PG_KEY = 'personalAffinity'
 
 let _store = null
+let _pgLoaded = false
+
+async function loadStoreFromPG() {
+  if (!hasPg() || _pgLoaded) return
+  try {
+    const data = await pgLoad(PG_KEY)
+    if (data && data.horses && Object.keys(data.horses).length > 0) {
+      _store = data
+      _pgLoaded = true
+      console.log(`[PA] Loaded ${Object.keys(data.horses).length} horses from Postgres`)
+    }
+  } catch { /* silent */ }
+}
 
 function loadStore() {
   if (_store) return _store
@@ -26,12 +41,22 @@ function loadStore() {
   return _store
 }
 
+export async function initAffinityStore() {
+  await loadStoreFromPG()
+  loadStore()
+}
+
+let _pgSaveTimer = null
 export function saveAffinityStore() {
   try {
     const dir = dirname(STORE_PATH)
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
     writeFileSync(STORE_PATH, JSON.stringify(_store, null, 2), 'utf8')
   } catch { /* silent */ }
+  if (hasPg()) {
+    clearTimeout(_pgSaveTimer)
+    _pgSaveTimer = setTimeout(() => pgSave(PG_KEY, _store).catch(() => {}), 2000)
+  }
 }
 
 function createHorseEntry(horseName) {

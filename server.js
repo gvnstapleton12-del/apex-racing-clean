@@ -20,7 +20,8 @@ import { getHorseMemory, getHorseMemoryBatch, calculateHandicapScore, calculateA
 import { saveHorseRun } from './src/lib/saveHorseRun.js'
 import { recordTrackBiasResult, backfillFromHistorical, getAllTrackBiasStats, saveTrackBiasStore, getTrackBiasStore } from './src/lib/trackBiasLearner.js'
 import { checkRaceExclusion } from './src/lib/trackProfile.js'
-import { recordAffinityPrediction, verifyAffinityResult, saveAffinityStore } from './src/lib/personalAffinity.js'
+import { recordAffinityPrediction, verifyAffinityResult, saveAffinityStore, initAffinityStore } from './src/lib/personalAffinity.js'
+import { initPgStore, pgLoad, pgSave, hasPg } from './src/lib/pgStore.js'
 
 // Global error handlers to prevent crashes
 process.on('uncaughtException', (error) => {
@@ -343,6 +344,13 @@ function saveDatabase(filePath, database) {
     console.error('Failed to save DB:', error)
   }
 }
+
+function pgSaveDebounced(key, data) {
+  if (!hasPg()) return
+  clearTimeout(pgSaveTimers[key])
+  pgSaveTimers[key] = setTimeout(() => pgSave(key, data).catch(() => {}), 5000)
+}
+const pgSaveTimers = {}
 
 const HORSE_DATABASE = loadDatabase(HORSE_DB_PATH)
 const MARKET_DATABASE = loadDatabase(MARKET_DB_PATH)
@@ -928,6 +936,7 @@ async function fetchLiveMeetings() {
       saveDatabase(MARKET_DB_PATH, MARKET_DATABASE)
       saveDatabase(ALERT_DB_PATH, ALERT_DATABASE)
       saveDatabase(PREDICTIONS_DB_PATH, PREDICTIONS_DATABASE)
+      pgSaveDebounced('predictions', PREDICTIONS_DATABASE)
       saveDatabase(HISTORICAL_DB_PATH, HISTORICAL_DATABASE)
     } catch (error) {
       console.error('[LiveMeetings] Database save failed:', error.message)
@@ -1523,6 +1532,7 @@ function matchDailyPicksWithResults(races) {
   })
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+  pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
 }
 
 app.post('/api/daily-picks', (req, res) => {
@@ -1554,12 +1564,14 @@ app.post('/api/daily-picks', (req, res) => {
   }
 
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+  pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
 
   // Immediately match against any existing results
   const dateResults = (LEARNING_DATABASE.races || []).filter(r => r.date === date && r.off_time)
   if (dateResults.length > 0) {
     matchDailyPicksWithResults(dateResults)
     saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+    pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
   }
 
   res.json({ saved: true, date, count: picks.length })
@@ -1799,6 +1811,7 @@ app.post('/api/upload-results', (req, res) => {
 
     const pickDates = Object.keys(DAILY_PICKS_DATABASE)
     pickDates.forEach((date) => saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE))
+    pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
 
     races.forEach((race) => {
       const runners = race.runners || []
@@ -2762,8 +2775,45 @@ app.get('*', (req, res) => {
   }
 })
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`APEX websocket engine running on ${PORT}`)
+
+  // Initialize Postgres store and load persistent data
+  try {
+    const pgReady = await initPgStore()
+    if (pgReady) {
+      await initAffinityStore()
+
+      const pgPicks = await pgLoad('daily-picks')
+      if (pgPicks && typeof pgPicks === 'object' && Object.keys(pgPicks).length > 0) {
+        Object.keys(pgPicks).forEach(date => { DAILY_PICKS_DATABASE[date] = pgPicks[date] })
+        console.log(`[PG] Loaded daily-picks from Postgres: ${Object.keys(pgPicks).length} dates`)
+      } else {
+        const filePicks = loadDatabase(DAILY_PICKS_PATH)
+        if (Object.keys(filePicks).length > 0) {
+          Object.keys(filePicks).forEach(date => { DAILY_PICKS_DATABASE[date] = filePicks[date] })
+          await pgSave('daily-picks', DAILY_PICKS_DATABASE)
+          console.log(`[PG] Seeded daily-picks from file: ${Object.keys(filePicks).length} dates`)
+        }
+      }
+
+      const pgPreds = await pgLoad('predictions')
+      if (pgPreds && typeof pgPreds === 'object' && Object.keys(pgPreds).length > 0) {
+        Object.assign(PREDICTIONS_DATABASE, pgPreds)
+        console.log(`[PG] Loaded predictions from Postgres: ${Object.keys(pgPreds).length} entries`)
+      } else {
+        const filePreds = loadDatabase(PREDICTIONS_DB_PATH)
+        if (Object.keys(filePreds).length > 0) {
+          Object.assign(PREDICTIONS_DATABASE, filePreds)
+          await pgSave('predictions', PREDICTIONS_DATABASE)
+          console.log(`[PG] Seeded predictions from file: ${Object.keys(filePreds).length} entries`)
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[PG] Startup load error:', err.message)
+  }
+
   console.log('[STARTUP] APEX_DIAGNOSTIC =', process.env.APEX_DIAGNOSTIC)
   if (process.env.APEX_DIAGNOSTIC === '1') {
     console.log('[DIAG TEST] Diagnostic mode ACTIVE - will log signal dilution per race')
