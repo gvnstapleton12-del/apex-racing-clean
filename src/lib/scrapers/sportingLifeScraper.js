@@ -436,8 +436,8 @@ export async function fetchSlRacecards(dateStr) {
 
     console.log(`[SL] Total ${allRaces.length} UK/IRE races`)
 
-    // Fetch runners for ALL races — parallel batches of 8
-    const CONCURRENCY = 8
+    // Fetch runners for ALL races — parallel batches of 3 (reduced for memory)
+    const CONCURRENCY = 3
     let runnerCount = 0
     console.time('[SL] fetchAllRunners')
     for (let i = 0; i < allRaces.length; i += CONCURRENCY) {
@@ -455,7 +455,9 @@ export async function fetchSlRacecards(dateStr) {
       results.forEach((runners, j) => { allRaces[i + j].runners = runners })
       runnerCount += results.reduce((s, r) => s + r.length, 0)
       // Brief pause between batches to avoid rate limiting
-      await new Promise(r => setTimeout(r, 200))
+      const mem = process.memoryUsage()
+      console.log(`[SL] Runner batch ${Math.floor(i / CONCURRENCY) + 1}/${Math.ceil(allRaces.length / CONCURRENCY)} | RSS: ${Math.round(mem.rss/1024/1024)}MB`)
+      await new Promise(r => setTimeout(r, 500))
     }
     console.timeEnd('[SL] fetchAllRunners')
 
@@ -517,7 +519,7 @@ export async function fetchSlResults(dateStr) {
       await page.close()
 
       const allRaces = []
-      const CONCURRENCY = 6
+      const CONCURRENCY = 2
 
       async function scrapeRace(race) {
         const racePage = await context.newPage()
@@ -641,7 +643,10 @@ export async function fetchSlResults(dateStr) {
         for (const r of batchResults) {
           if (r) allRaces.push(r)
         }
-        console.log(`[SL] Results batch ${Math.floor(i / CONCURRENCY) + 1}/${Math.ceil(uniqueLinks.length / CONCURRENCY)}: ${batchResults.filter(Boolean).length}/${batch.length} races scraped`)
+        const mem = process.memoryUsage()
+        console.log(`[SL] Results batch ${Math.floor(i / CONCURRENCY) + 1}/${Math.ceil(uniqueLinks.length / CONCURRENCY)}: ${batchResults.filter(Boolean).length}/${batch.length} races scraped | RSS: ${Math.round(mem.rss/1024/1024)}MB`)
+        // Pause between batches to let memory recover
+        await new Promise(r => setTimeout(r, 1000))
       }
 
       console.log(`[SL] Found ${allRaces.length} races with results`)
