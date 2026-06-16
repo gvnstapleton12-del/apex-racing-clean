@@ -199,7 +199,6 @@ function Home() {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
   const [abandoned, setAbandoned] = useState<any[]>([])
   const [valuePicksStats, setValuePicksStats] = useState<{ count: number; wr: number; roi: number; kellyRoi: number } | null>(null)
-  const [learningStats, setLearningStats] = useState<{ totalBets: number; winners: number; winRate: number; totalROI: number } | null>(null)
   const {
     data: races = [],
     isLoading,
@@ -208,13 +207,6 @@ function Home() {
     queryFn: fetchRacecards,
     refetchInterval: 60000,
   })
-
-  useEffect(() => {
-    fetch('/api/learning-stats')
-      .then((r) => r.json())
-      .then(setLearningStats)
-      .catch(() => {})
-  }, [])
 
   useEffect(() => {
     fetch('/api/daily-picks')
@@ -536,8 +528,14 @@ function Home() {
     return { won, placed, lost, pending }
   }, [allRacesCard])
 
-  const overallWins = (learningStats?.winners || 0) + (liveStats.won || 0)
-  const overallTotal = (learningStats?.totalBets || 0) + liveStats.won + liveStats.placed + liveStats.lost
+  const pastDays = Object.entries(dailyPicksDb)
+    .filter(([date]) => date < today)
+    .sort(([a], [b]) => b.localeCompare(a))
+
+  const overallWins = pastDays.reduce((s, [, d]) => s + (d.stats?.won || 0), 0)
+  const overallPlaced = pastDays.reduce((s, [, d]) => s + (d.stats?.placed || 0), 0)
+  const overallLosses = pastDays.reduce((s, [, d]) => s + (d.stats?.lost || 0), 0)
+  const overallTotal = overallWins + overallPlaced + overallLosses
   const overallRate = calculateStrikeRate(overallWins, overallTotal)
 
   useEffect(() => {
@@ -639,7 +637,8 @@ function Home() {
                 <div className={`text-3xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
                   {overallRate}%
                 </div>
-                <div className='text-xs text-zinc-400 uppercase tracking-wider'>Win Rate</div>
+                  <div className='text-xs text-zinc-400 uppercase tracking-wider'>Win Rate</div>
+                  <div className='text-[9px] text-zinc-600 uppercase tracking-wider mt-0.5'>Daily Picks</div>
               </div>
             )}
             {nextRace && (
