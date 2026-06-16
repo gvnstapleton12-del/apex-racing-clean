@@ -189,7 +189,7 @@ export default function OrPrGapAnalysis() {
       <div className='mb-6'>
         <h2 className='text-lg font-bold mb-4'>Performance Bands</h2>
         <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
-          {bands.filter(b => b.total > 0).sort((a, b) => a.min - b.min).map((band) => {
+          {bands.filter(b => b.total >= 20).sort((a, b) => a.min - b.min).map((band) => {
             const gapMid = band.max === Infinity ? band.min + 5 : band.min === -Infinity ? band.max - 5 : (band.min + band.max) / 2
             const wr = band.winRate ? parseFloat(band.winRate) : 0
             const width = maxWinRate > 0 ? (wr / maxWinRate) * 100 : 0
@@ -305,9 +305,14 @@ export default function OrPrGapAnalysis() {
                   </div>
                 </div>
               )
-            })}
-          </div>
+          })}
         </div>
+        {bands.filter(b => b.total > 0 && b.total < 20).length > 0 && (
+          <p className='text-xs text-zinc-500 mt-3 text-center'>
+            {bands.filter(b => b.total > 0 && b.total < 20).reduce((s, b) => s + b.total, 0)} runners in small-sample bands (hidden, &lt;20 runners)
+          </p>
+        )}
+      </div>
       )}
     </div>
   )
