@@ -745,7 +745,39 @@ export function runApexEngine(runners, race, options = {}) {
       probRange: band.range,
       probTier: band.tier,
       confidenceScore: r.finalScore,
-      betQuality: (r.personalAffinity?.adjustment ?? 0) <= 0 ? 'NO BET' : betQuality(band, adjustedWinProbs[i], r.market.score, odds),
+      betQuality: (() => {
+        const paAdj = r.personalAffinity?.adjustment ?? 0
+        const components = r.newComponents || r.components || {}
+        const classDrop = components.classDrop || 0
+        const marketScore = r.market?.score || 0
+        const paceCompatScore = r.paceCompat?.score || 0
+        const trainerForm = components.trainerForm || 50
+        const distance = components.distance || 50
+
+        // Override detection: PA < -2 but strong compensating signals
+        let overrideCount = 0
+        const overrideReasons = []
+        if (classDrop > 2) { overrideCount++; overrideReasons.push('class_drop') }
+        if (marketScore > 70) { overrideCount++; overrideReasons.push('market_support') }
+        if (paceCompatScore > 70) { overrideCount++; overrideReasons.push('pace_advantage') }
+        if ((r.formAdj || 0) > 5) { overrideCount++; overrideReasons.push('form_spike') }
+        if (trainerForm > 70) { overrideCount++; overrideReasons.push('trainer_hot') }
+        if (distance > 70) { overrideCount++; overrideReasons.push('distance_suitable') }
+        const overrideTriggered = paAdj <= -2 && overrideCount >= 2
+
+        // PA eligibility zones
+        if (paAdj > 0) {
+          return betQuality(band, adjustedWinProbs[i], r.market.score, odds)
+        } else if (paAdj > -0.5) {
+          return 'BORDERLINE'
+        } else if (paAdj > -2) {
+          return 'WEAK_COMPAT'
+        } else if (overrideTriggered) {
+          return 'OVERRIDE_' + overrideReasons.slice(0, 2).join('_').toUpperCase()
+        } else {
+          return 'NO BET'
+        }
+      })(),
       selectionQuality: selectionQuality(
         adjustedWinProbs[i],
         odds,

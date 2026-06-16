@@ -251,8 +251,7 @@ function Home() {
         const records = data.records || []
         function passesValueGate(prob: number, odds: number, apexScore: number, previousRuns: number) {
           if (!odds || odds <= 1 || !prob) return false
-          const requiredApexFloor = previousRuns < 5 ? 50 : 40
-          if (apexScore > 0 && apexScore < requiredApexFloor) return false
+          if (apexScore > 0 && apexScore < 40) return false
           const implied = (1 / odds) * 100
           const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
           return prob >= 10 && marginPct > 15
@@ -314,9 +313,12 @@ function Home() {
       else if ((s.winProb || 0) < 0.10) r = `4_winProb<10%`
       else {
         const apexScore = s.score || 0
-        const previousRuns = (s.previous_results || []).length
-        const requiredApex = previousRuns < 5 ? 50 : 40
-        if (apexScore < requiredApex) r = `5_APEX ${apexScore}<${requiredApex}`
+        if (apexScore > 0 && apexScore < 40) r = `5_APEX ${apexScore}<40`
+        else if (apexScore >= 40 && apexScore < 60) {
+          const pa = (s as any).personalAffinity?.adjustment ?? 0
+          const edge = s.valueEdge || 0
+          if (pa <= 3 && edge <= 0.20) r = `5_APEX ${apexScore}<60 (no override)`
+        }
       }
       reasons[r] = (reasons[r] || 0) + 1
     })
@@ -325,14 +327,20 @@ function Home() {
     // Top 20 that PASS all filters — ranked by WinnerScore
     const passing = allSelections.filter((s: any) => {
       if (s.noBet) return false
+      const bq = s.betQuality || ''
+      if (bq === 'NO BET') return false
+      if (bq === 'WEAK_COMPAT') return false
       if ((s.valueEdge || 0) <= 0.03) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
       if ((s.winProb || 0) < 0.10) return false
       const apexScore = s.score || 0
       if (apexScore === 0) return true
-      const previousRuns = (s.previous_results || []).length
-      const requiredApexFloor = previousRuns < 5 ? 50 : 40
-      return apexScore >= requiredApexFloor
+      if (apexScore >= 60) return true
+      if (apexScore < 40) return false
+      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      const edge = s.valueEdge || 0
+      const wp = s.winProb || 0
+      return pa > 2.5 || edge > 0.20 || (wp > 0.30 && pa > 1)
     })
     console.table('[TOP 20 PASS]', passing.slice(0, 20).map((s: any) => ({
       horse: s.horse,
@@ -346,14 +354,21 @@ function Home() {
     // Top 20 that FAIL — showing which gate killed them
     const failing = allSelections.filter((s: any) => {
       if (s.noBet) return true
+      const bq = (s as any).betQuality || ''
+      if (bq === 'NO BET') return true
+      if (bq === 'WEAK_COMPAT') return true
       if ((s.valueEdge || 0) <= 0.03) return true
       if (parseOddsToNum(s.odds) < 2.0) return true
       if ((s.winProb || 0) < 0.10) return true
       const apexScore = s.score || 0
       if (apexScore > 0) {
-        const previousRuns = (s.previous_results || []).length
-        const requiredApex = previousRuns < 5 ? 50 : 40
-        if (apexScore < requiredApex) return true
+        if (apexScore < 40) return true
+        if (apexScore >= 40 && apexScore < 60) {
+          const pa = (s as any).personalAffinity?.adjustment ?? 0
+          const edge = s.valueEdge || 0
+          const wp = s.winProb || 0
+          if (pa <= 2.5 && edge <= 0.20 && !(wp > 0.30 && pa > 1)) return true
+        }
       }
       return false
     }).sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
@@ -373,14 +388,22 @@ function Home() {
   const bettable = allSelections
     .filter((s) => {
       if (s.noBet) return false
+      // PA eligibility zones from engine
+      const bq = (s as any).betQuality || ''
+      if (bq === 'NO BET') return false
+      if (bq === 'WEAK_COMPAT') return false
       if ((s.valueEdge || 0) <= 0.03) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
       if ((s.winProb || 0) < 0.10) return false
       const apexScore = s.score || 0
       if (apexScore === 0) return true
-      const previousRuns = ((s as any).previous_results || []).length
-      const requiredApexFloor = Math.max(60, previousRuns < 5 ? 50 : 40)
-      return apexScore >= requiredApexFloor
+      if (apexScore >= 60) return true
+      if (apexScore < 40) return false
+      // Score 40-59: override zone
+      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      const edge = s.valueEdge || 0
+      const wp = s.winProb || 0
+      return pa > 2.5 || edge > 0.20 || (wp > 0.30 && pa > 1)
     })
   const upcoming = bettable
     .filter((s) => {
@@ -517,13 +540,13 @@ function Home() {
 
   useEffect(() => {
     if (allPicks.length === 0) return
-    if (todaySaved) return
 
     fetch('/api/daily-picks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         date: today,
+        force: true,
         picks: allPicks.map((p) => ({
           horse: p.horse,
           course: p.course,

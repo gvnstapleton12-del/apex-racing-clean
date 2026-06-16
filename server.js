@@ -1684,13 +1684,13 @@ function matchDailyPicksWithResults(races) {
 }
 
 app.post('/api/daily-picks', (req, res) => {
-  const { date, picks } = req.body
+  const { date, picks, force } = req.body
   if (!date || !Array.isArray(picks)) {
     return res.status(400).json({ error: 'Invalid format' })
   }
 
   const existing = DAILY_PICKS_DATABASE[date]
-  if (existing && existing.picks) {
+  if (existing && existing.picks && !force) {
     return res.json({ saved: false, reason: 'picks already saved for this date' })
   }
 
