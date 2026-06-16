@@ -1,7 +1,43 @@
-// Sporting Life scraper — pure HTTP, no browser
+import { createPage } from './browserPool.js'
 
 const SL_BASE = 'https://www.sportinglife.com'
 const SL_API = 'https://www.sportinglife.com/api/horse-racing'
+
+// Shared browser page for all API calls — one context reused across all races
+let _sharedPage = null
+let _sharedContext = null
+
+async function getSharedPage() {
+  if (_sharedPage && !_sharedPage.isClosed()) return _sharedPage
+  _sharedContext = await createPage()
+  _sharedPage = await _sharedContext.newPage()
+  return _sharedPage
+}
+
+async function closeSharedPage() {
+  try { if (_sharedPage && !_sharedPage.isClosed()) await _sharedPage.close() } catch {}
+  try { if (_sharedContext) await _sharedContext.close() } catch {}
+  _sharedPage = null
+  _sharedContext = null
+}
+
+async function fetchJson(url) {
+  try {
+    const page = await getSharedPage()
+    const data = await page.evaluate(async (u) => {
+      const res = await fetch(u)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return await res.json()
+    }, url)
+    return data
+  } catch (err) {
+    if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
+      _sharedPage = null
+      _sharedContext = null
+    }
+    throw err
+  }
+}
 
 const UK_IRE_COURSES = new Set([
   'ascot', 'ayr', 'bath', 'beverley', 'brighton', 'cartmel', 'carlisle', 'cheltenham', 'chester', 'catterick', 'chepstow',
@@ -45,20 +81,16 @@ function parseFractionalOdds(str) {
   return num > 1 ? num : 0
 }
 
-async function fetchJson(url) {
-  const resp = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Accept': 'application/json' }
-  })
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
-  return await resp.json()
-}
-
 async function fetchMeetingList(dateStr) {
   try {
     console.log(`[SL] Fetching meeting list via HTTP for ${dateStr}...`)
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 20000)
     const resp = await fetch(`${SL_BASE}/racing/racecards/${dateStr}`, {
+      signal: controller.signal,
       headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
     })
+    clearTimeout(timer)
     const html = await resp.text()
 
     const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
@@ -154,7 +186,6 @@ export async function fetchMeetingRaces(meetingId) {
 
     console.log(`[SL] Meeting ${meetingId} status: ${meeting?.status || meeting?.meeting_status || 'none'}, course: ${meeting?.course_name || 'unknown'}`)
 
-    // Skip abandoned meetings (case-insensitive)
     const status = (meeting?.status || meeting?.meeting_status || '').toUpperCase()
     if (status === 'ABANDONED') {
       console.log(`[SL] Skipping abandoned meeting: ${meeting.course_name || meetingId}`)
@@ -310,9 +341,13 @@ export async function fetchSlRacecards(dateStr) {
     }
     console.timeEnd('[SL] fetchAllRunners')
 
+    // Close shared browser page — racecards done, free memory for ATR
+    await closeSharedPage()
+
     return { races: allRaces, abandoned }
   } catch (err) {
     console.error(`[SL Racecards] Failed for ${dateStr}:`, err.message)
+    await closeSharedPage()
     return []
   }
 }
@@ -368,12 +403,7 @@ export async function fetchSlResults(dateStr) {
     for (let i = 0; i < raceIds.length; i++) {
       const race = raceIds[i]
       try {
-        const apiUrl = `${SL_API}/race/${race.id}`
-        const apiResp = await fetch(apiUrl, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json' }
-        })
-        if (!apiResp.ok) continue
-        const data = await apiResp.json()
+        const data = await fetchJson(`${SL_API}/race/${race.id}`)
         const rides = data.rides || []
         const finished = rides.filter(r => r.finish_position > 0)
         if (finished.length === 0) continue
@@ -425,10 +455,12 @@ export async function fetchSlResults(dateStr) {
       }
     }
 
-    console.log(`[SL] Results: ${allRaces.length}/${raceIds.length} races with results (HTTP, no browser)`)
+    console.log(`[SL] Results: ${allRaces.length}/${raceIds.length} races with results`)
+    await closeSharedPage()
     return allRaces
   } catch (err) {
     console.error(`[SL Results] Failed for ${dateStr}:`, err.message)
+    await closeSharedPage()
     return []
   }
 }
