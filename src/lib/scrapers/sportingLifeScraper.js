@@ -1,4 +1,4 @@
-import { createPage } from './browserPool.js'
+// Sporting Life scraper — pure HTTP, no browser
 
 const SL_BASE = 'https://www.sportinglife.com'
 const SL_API = 'https://www.sportinglife.com/api/horse-racing'
@@ -46,18 +46,11 @@ function parseFractionalOdds(str) {
 }
 
 async function fetchJson(url) {
-  const context = await createPage()
-  try {
-    const page = await context.newPage()
-    const data = await page.evaluate(async (u) => {
-      const res = await fetch(u)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      return await res.json()
-    }, url)
-    return data
-  } finally {
-    await context.close()
-  }
+  const resp = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Accept': 'application/json' }
+  })
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+  return await resp.json()
 }
 
 async function fetchMeetingList(dateStr) {
@@ -267,135 +260,6 @@ async function fetchRaceRunners(raceId) {
   }
 }
 
-async function fetchResultRunners(race) {
-  try {
-    const courseSlug = (race.course || '').toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
-    const raceNameSlug = (race.race_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    const url = `${SL_BASE}/racing/results/${race.date}/${courseSlug}/${race.race_id}/${raceNameSlug}`
-
-    console.log(`[SL] Scraping result page: ${url}`)
-
-    const context = await createPage()
-    try {
-      const page = await context.newPage()
-
-      let responseData = null
-      page.on('response', async (response) => {
-        const reqUrl = response.url()
-        if (reqUrl.includes('/api/horse-racing/race/') && response.status() === 200) {
-          try {
-            responseData = await response.json()
-          } catch (e) {}
-        }
-      })
-
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 })
-      await page.waitForTimeout(5000)
-
-      if (responseData?.rides) {
-        console.log(`[SL] Got ${responseData.rides.length} rides from API response`)
-        const runners = responseData.rides
-          .filter(ride => ride.finish_position > 0)
-          .map((ride) => {
-            const horseName = ride.horse?.name || ''
-            return {
-              horse_id: String(ride.horse?.horse_reference?.id || ''),
-              horse: horseName,
-              atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(horseName)}`,
-              position: ride.finish_position,
-              finish_distance: ride.finish_distance || '',
-              jockey: ride.jockey?.name || '',
-              trainer: ride.trainer?.name || '',
-              odds: 0,
-              sp: parseFractionalOdds(ride.betting?.sp || ride.betting?.starting_price),
-              draw: ride.draw_number || ride.cloth_number || 0,
-              lbs: ride.handicap || '',
-              form: '',
-              age: ride.horse?.age || 0,
-              sex: ride.horse?.sex?.type || '',
-              commentary: ride.commentary || '',
-            }
-          })
-          .sort((a, b) => a.position - b.position)
-        console.log(`[SL] Extracted ${runners.length} runners from API`)
-        return runners
-      }
-
-      console.log(`[SL] No API response captured, falling back to HTML scrape`)
-
-      const runners = await page.evaluate(() => {
-        const nextData = document.querySelector('#__NEXT_DATA__')
-        if (nextData) {
-          try {
-            const data = JSON.parse(nextData.textContent)
-            const raceData = data.props?.pageProps?.race || data.props?.pageProps?.result
-            if (raceData?.rides) {
-              return raceData.rides
-                .filter(ride => ride.finish_position > 0)
-                .map((ride) => {
-                  const horseName = ride.horse?.name || ''
-                  return {
-                    horse_id: '',
-                    horse: horseName,
-                    atrUrl: '',
-                    position: ride.finish_position,
-                    finish_distance: ride.finish_distance || '',
-                    jockey: ride.jockey?.name || '',
-                    trainer: ride.trainer?.name || '',
-                    odds: 0,
-                    sp: 0,
-                    draw: 0,
-                    lbs: '',
-                    form: '',
-                    age: 0,
-                    sex: '',
-                    commentary: '',
-                  }
-                })
-                .sort((a, b) => a.position - b.position)
-            }
-          } catch (e) {}
-        }
-        return []
-      })
-
-      console.log(`[SL] Scraped ${runners.length} runners from HTML`)
-      return runners
-    } finally {
-      await context.close()
-    }
-  } catch (err) {
-    console.error(`[SL] Failed to scrape result ${race.race_id}: ${err.message}`)
-    return []
-  }
-}
-
-async function fetchResultsMeetingList(dateStr) {
-  try {
-    const html = await (async () => {
-      const context = await createPage()
-      try {
-        const page = await context.newPage()
-        await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-        await page.waitForTimeout(2000)
-        return await page.content()
-      } finally {
-        await context.close()
-      }
-    })()
-
-    const meetingRegex = /<a[^>]*href="\/racing\/meeting\/(\d{4}-\d{2}-\d{2})\/([^/]+)\/(\d+)"[^>]*>([^<]+)<\/a>/gi
-    const meetings = [...html.matchAll(meetingRegex)]
-
-    return meetings
-      .filter(m => isUkIre(m[2]))
-      .map(m => ({ id: m[3], date: m[1], slug: m[2], name: m[4] }))
-  } catch (err) {
-    console.error(`[SL] Failed to fetch results meeting list: ${err.message}`)
-    return []
-  }
-}
-
 export async function fetchSlRacecards(dateStr) {
   try {
     console.log(`[SL] Fetching racecards for ${dateStr}...`)
@@ -456,190 +320,113 @@ export async function fetchSlRacecards(dateStr) {
 export async function fetchSlResults(dateStr) {
   try {
     console.log(`[SL] Fetching results for ${dateStr}...`)
-    
-    const context = await createPage()
-    try {
-      const page = await context.newPage()
-      await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
-      await page.waitForTimeout(2000)
 
-      // Dismiss cookie consent if present
-      await page.evaluate(() => {
-        const btn = [...document.querySelectorAll('button')].find(b => b.textContent.includes('Allow All'))
-        if (btn) btn.click()
-      })
-      await page.waitForTimeout(1000)
+    const resp = await fetch(`${SL_BASE}/racing/results/${dateStr}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
+    })
+    const html = await resp.text()
 
-      const raceLinks = await page.evaluate(() => {
-        const resultLinks = document.querySelectorAll('a[href*="/racing/results/"]')
-        const cardLinks = document.querySelectorAll('a[href*="/racing/racecards/"]')
-        const allLinks = [...resultLinks, ...cardLinks]
-        return Array.from(allLinks).map(link => ({
-          url: link.href,
-          title: link.textContent.trim()
-        })).filter(link => link.url && link.title)
-      })
-
-      // Filter to only individual race pages (not list pages like /racing/results/yesterday)
-      const individualLinks = raceLinks.filter(link => {
-        const url = link.url
-        // Must have a course slug (more than just date in path)
-        const matches = url.match(/\/racing\/(?:racecards|results)\/\d{4}-\d{2}-\d{2}\/([^/]+)\/(?:racecard\/)?(\d+)/)
-        return matches !== null
-      })
-
-      // Deduplicate by numeric race ID (same race can appear as both /results/ and /racecards/ link)
-      const uniqueLinks = individualLinks.filter((link, idx, arr) => {
-        const idMatch = link.url.match(/(\d+)\/[^/]+$/)
-        const raceId = idMatch ? idMatch[1] : link.url
-        return arr.findIndex(l => {
-          const m = l.url.match(/(\d+)\/[^/]+$/)
-          return m ? m[1] === raceId : l.url === link.url
-        }) === idx
-      })
-
-      console.log(`[SL] Found ${uniqueLinks.length} individual race links for ${dateStr}`)
-
-      // Close listing page; reuse context for parallel race scraping
-      await page.close()
-
-      const allRaces = []
-
-      async function scrapeRace(race, page) {
-          await page.goto(race.url, { waitUntil: 'domcontentloaded', timeout: 30000 })
-          await page.waitForTimeout(2000)
-
-          const isRaceFinished = await page.evaluate(() => {
-            const headerText = document.querySelector('[class*="RaceHeader__"], [class*="HeaderSummary__"]')?.textContent || ''
-            const bodyText = document.body.textContent || ''
-            return headerText.toLowerCase().includes('weighed in') || 
-                   headerText.toLowerCase().includes('result') ||
-                   bodyText.toLowerCase().includes('weighed in')
-          })
-
-          if (!isRaceFinished) return null
-
-          const finalResults = await page.evaluate(() => {
-            const results = []
-            const seenHorses = new Set()
-
-            const horseLinks = document.querySelectorAll('a[href*="/horse/"]')
-            
-            for (const horseLink of horseLinks) {
-              const horseName = horseLink.textContent.trim()
-              if (!horseName || seenHorses.has(horseName)) continue
-              seenHorses.add(horseName)
-
-              const container = horseLink.closest('[class*="ResultRunner__StyledRow"]')
-              if (!container) continue
-
-              const detailRow = container.nextElementSibling
-
-              let oddsRaw = 'SP'
-              const oddsSpan = container.querySelector('[class*="BetLink"] span')
-              if (oddsSpan) {
-                const t = oddsSpan.textContent.trim()
-                if (/^\d+\/\d+f?$/.test(t) || /^\d+\/\d+$/.test(t)) oddsRaw = t
-              }
-              if (oddsRaw === 'SP') {
-                const allText = container.querySelectorAll('*')
-                for (let j = allText.length - 1; j >= 0; j--) {
-                  const t = allText[j].textContent.trim()
-                  if (/^\d+\/\d+f?$/.test(t) || /^\d+\/\d+$/.test(t)) {
-                    oddsRaw = t
-                    break
-                  }
-                }
-              }
-
-              let jockeyName = ''
-              let trainerName = ''
-
-              if (detailRow) {
-                const personNames = detailRow.querySelectorAll('[class*="StyledPersonName"]')
-                if (personNames.length >= 1) trainerName = personNames[0].textContent.trim()
-                if (personNames.length >= 2) jockeyName = personNames[1].textContent.trim()
-              }
-
-              results.push({
-                position: `${results.length + 1}`,
-                horse: horseName,
-                jockey: jockeyName,
-                trainer: trainerName,
-                rawOdds: oddsRaw
-              })
-            }
-
-            return results
-          })
-          
-          const courseMatch = race.url.match(/\/racing\/(?:racecards|results)\/\d{4}-\d{2}-\d{2}\/([^/]+)/)
-          const course = courseMatch ? courseMatch[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : ''
-          
-          const raceIdMatch = race.url.match(/\/(\d+)\/[^/]+$/)
-          const raceId = raceIdMatch ? raceIdMatch[1] : ''
-          
-          const offTime = (race.title || '').match(/^(\d{2}:\d{2})/)?.[1] || ''
-          
-          if (finalResults.length === 0 || !isUkIre(course)) return null
-
-          return {
-            race_id: `${course}-${raceId}`,
-            course,
-            off_time: offTime,
-            off_dt: offTime ? `${dateStr}T${offTime}:00` : '',
-            date: dateStr,
-            region: 'GB',
-            race_name: race.title,
-            type: race.title.toLowerCase().includes('hurdle') ? 'Hurdle' : race.title.toLowerCase().includes('chase') ? 'Chase' : 'Flat',
-            going: '',
-            surface: '',
-            field_size: finalResults.length,
-            race_class: 0,
-            distance_f: '',
-            runners: finalResults.map(r => ({
-              horse_id: '',
-              horse: r.horse,
-              atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(r.horse)}`,
-              position: parseInt(r.position) || 0,
-              jockey: r.jockey,
-              trainer: r.trainer,
-              odds: 0,
-              sp: parseFractionalOdds(r.rawOdds),
-              draw: 0,
-              lbs: '',
-              form: '',
-              age: 0,
-              sex: '',
-              commentary: '',
-            })).sort((a, b) => a.position - b.position),
-          }
-      }
-
-      let resultsPage = await context.newPage()
-      for (let i = 0; i < uniqueLinks.length; i++) {
-        try {
-          const r = await scrapeRace(uniqueLinks[i], resultsPage)
-          if (r) allRaces.push(r)
-        } catch (err) {
-          console.warn(`[SL] Results race ${i + 1}/${uniqueLinks.length} failed: ${err.message}`)
-          if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
-            console.warn('[SL] Page crashed, recreating...')
-            try { await resultsPage.close().catch(() => {}) } catch {}
-            resultsPage = await context.newPage()
-          }
-        }
-        if (i < uniqueLinks.length - 1) await new Promise(r => setTimeout(r, 500))
-      }
-      await resultsPage.close().catch(() => {})
-      const mem = process.memoryUsage()
-      console.log(`[SL] Results: ${allRaces.length}/${uniqueLinks.length} races scraped | RSS: ${Math.round(mem.rss/1024/1024)}MB`)
-
-      console.log(`[SL] Found ${allRaces.length} races with results`)
-      return allRaces
-    } finally {
-      await context.close()
+    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
+    if (!nextDataMatch) {
+      console.error('[SL] Results: No __NEXT_DATA__ found')
+      return []
     }
+
+    const nextData = JSON.parse(nextDataMatch[1])
+    const rawMeetings = nextData?.props?.pageProps?.meetings || []
+    console.log(`[SL] Results: Found ${rawMeetings.length} meetings in __NEXT_DATA__`)
+
+    const raceIds = []
+    for (const m of rawMeetings) {
+      const ms = m.meeting_summary
+      const ref = ms?.meeting_reference
+      const country = ms.course?.country?.short_name || ''
+      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland'].includes(country)
+      if (!isUkIre) continue
+      const courseName = ms.course?.name || ''
+
+      for (const race of (m.races || [])) {
+        const raceRef = race.race_summary_reference
+        if (!raceRef?.id) continue
+        raceIds.push({
+          id: String(raceRef.id),
+          course: courseName,
+          raceName: race.name || '',
+          offTime: race.off_time || race.time || '',
+          going: race.going || '',
+          type: race.name?.toLowerCase()?.includes('hurdle') ? 'Hurdle'
+            : race.name?.toLowerCase()?.includes('chase') ? 'Chase' : 'Flat',
+          raceClass: race.race_class || 0,
+          distance: race.distance || '',
+        })
+      }
+    }
+
+    console.log(`[SL] Results: ${raceIds.length} race IDs to fetch via API`)
+
+    const allRaces = []
+    for (let i = 0; i < raceIds.length; i++) {
+      const race = raceIds[i]
+      try {
+        const apiUrl = `${SL_API}/race/${race.id}`
+        const apiResp = await fetch(apiUrl, {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json' }
+        })
+        if (!apiResp.ok) continue
+        const data = await apiResp.json()
+        const rides = data.rides || []
+        const finished = rides.filter(r => r.finish_position > 0)
+        if (finished.length === 0) continue
+
+        const courseSlug = race.course.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
+        if (!isUkIre(courseSlug)) continue
+
+        allRaces.push({
+          race_id: `${race.course}-${race.id}`,
+          course: race.course,
+          off_time: race.offTime,
+          off_dt: race.offTime ? `${dateStr}T${race.offTime}:00` : '',
+          date: dateStr,
+          region: 'GB',
+          race_name: race.raceName,
+          type: race.type,
+          going: race.going,
+          surface: '',
+          field_size: finished.length,
+          race_class: parseInt(race.raceClass) || 0,
+          distance_f: race.distance,
+          runners: finished.map(r => {
+            const horseName = r.horse?.name || ''
+            return {
+              horse_id: String(r.horse?.horse_reference?.id || ''),
+              horse: horseName,
+              atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(horseName)}`,
+              position: r.finish_position,
+              finish_distance: r.finish_distance || '',
+              jockey: r.jockey?.name || '',
+              trainer: r.trainer?.name || '',
+              odds: 0,
+              sp: parseFractionalOdds(r.betting?.sp || r.betting?.starting_price),
+              draw: r.draw_number || r.cloth_number || 0,
+              lbs: r.handicap || '',
+              or: Number(r.official_rating || r.horse?.official_rating || 0) || 0,
+              rpr: Number(r.rpr || r.horse?.rpr || 0) || 0,
+              form: '',
+              age: r.horse?.age || 0,
+              sex: r.horse?.sex?.type || '',
+              commentary: r.commentary || '',
+              previous_results: (r.horse?.previous_results || []).slice(0, 6),
+            }
+          }).sort((a, b) => a.position - b.position),
+        })
+        if (i < raceIds.length - 1) await new Promise(r => setTimeout(r, 200))
+      } catch (err) {
+        console.warn(`[SL] Results API failed for ${race.course} ${race.offTime}: ${err.message}`)
+      }
+    }
+
+    console.log(`[SL] Results: ${allRaces.length}/${raceIds.length} races with results (HTTP, no browser)`)
+    return allRaces
   } catch (err) {
     console.error(`[SL Results] Failed for ${dateStr}:`, err.message)
     return []
