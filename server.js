@@ -1734,6 +1734,15 @@ app.get('/api/daily-picks', (_req, res) => {
   res.json(DAILY_PICKS_DATABASE)
 })
 
+app.delete('/api/daily-picks/:date', (req, res) => {
+  const { date } = req.params
+  if (!date) return res.status(400).json({ error: 'Date required' })
+  delete DAILY_PICKS_DATABASE[date]
+  saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+  pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
+  res.json({ deleted: true, date })
+})
+
 app.get('/api/replay-notes', (_req, res) => {
   res.json(REPLAY_NOTES_DATABASE)
 })

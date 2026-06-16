@@ -540,13 +540,13 @@ function Home() {
 
   useEffect(() => {
     if (allPicks.length === 0) return
+    if (todaySaved) return
 
     fetch('/api/daily-picks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         date: today,
-        force: true,
         picks: allPicks.map((p) => ({
           horse: p.horse,
           course: p.course,
