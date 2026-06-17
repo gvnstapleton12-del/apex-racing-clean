@@ -732,6 +732,9 @@ async function processRace(race) {
     })
     console.timeEnd(`[processRace] ${raceLabel} apexEngine`)
 
+    // Yield to event loop after CPU-heavy engine — allows HTTP requests during enrichment
+    await new Promise(resolve => setImmediate(resolve))
+
     const enriched = apexResult.racecards || []
 
     console.time(`[processRace] ${raceLabel} enrich`)
@@ -840,7 +843,8 @@ async function processRace(race) {
           return pr.runs > 0 ? { pr: pr.pr, gap: pr.gap, source: 'PR' } : null
         })() : null),
         freshFactor,
-        score: runner.finalScore,
+        score: runner.winnerScore,
+        finalScore: runner.finalScore,
         bettingSignals,
         marketMovement,
         elimination: runner.elimination,
@@ -978,30 +982,22 @@ async function fetchLiveMeetings() {
       })
     }
 
-    const batchSize = 6
-    for (let i = 0; i < rawRaces.length; i += batchSize) {
-      const batch = rawRaces.slice(i, i + batchSize)
-      console.log(`[LiveMeetings] Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(rawRaces.length / batchSize)}`)
+    for (let i = 0; i < rawRaces.length; i++) {
+      const race = rawRaces[i]
       try {
-        const batchResults = []
-        for (const race of batch) {
-          try {
-            const result = await Promise.race([
-              processRace(race),
-              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 25000))
-            ])
-            batchResults.push(result)
-          } catch (e) {
-            console.error(`[processRace] Error ${race.course} ${race.off_time}: ${e.message}`)
-          }
-        }
-        processed.push(...batchResults)
-        const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
-        console.log(`[LiveMeetings] Batch done: ${processed.length}/${rawRaces.length} races, ${totalRunners} runners scored`)
-      } catch (error) {
-        console.error(`[LiveMeetings] Batch ${Math.floor(i / batchSize) + 1} failed:`, error.message)
+        const result = await Promise.race([
+          processRace(race),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 25000))
+        ])
+        processed.push(result)
+      } catch (e) {
+        console.error(`[processRace] Error ${race.course} ${race.off_time}: ${e.message}`)
       }
-      await new Promise(resolve => setTimeout(resolve, 100))
+      if (i % 5 === 4) {
+        const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
+        console.log(`[LiveMeetings] ${i + 1}/${rawRaces.length} races processed, ${totalRunners} runners`)
+        await new Promise(resolve => setTimeout(resolve, 0))
+      }
     }
 
     // Broadcast scored races IMMEDIATELY — don't wait for ATR odds

@@ -388,18 +388,14 @@ function Home() {
   const bettable = allSelections
     .filter((s) => {
       if (s.noBet) return false
-      // PA eligibility zones from engine
       const bq = (s as any).betQuality || ''
       if (bq === 'NO BET') return false
       if (bq === 'WEAK_COMPAT') return false
-      if ((s.valueEdge || 0) <= 0.03) return false
-      if (parseOddsToNum(s.odds) < 2.0) return false
-      if ((s.winProb || 0) < 0.10) return false
+      if (parseOddsToNum(s.odds) < 1.5) return false
       const apexScore = s.score || 0
       if (apexScore === 0) return true
       if (apexScore >= 60) return true
       if (apexScore < 40) return false
-      // Score 40-59: override zone
       const pa = (s as any).personalAffinity?.adjustment ?? 0
       const edge = s.valueEdge || 0
       const wp = s.winProb || 0
@@ -462,15 +458,23 @@ function Home() {
     const ukNow = new Date(now.getTime() + ukOffset + (now.getTimezoneOffset() * 60 * 1000))
     const hhmm = (d: Date) => `${String(d.getHours()).padStart(2, '0')}${String(d.getMinutes()).padStart(2, '0')}`
     const nowTime = hhmm(ukNow)
-    const upcoming = (allPicks.length > 0 ? allPicks : allSelections)
-      .filter((s: any) => {
-        if (!s.offTime) return false
-        const t = s.offTime.replace(':', '')
+    const upcoming = (races || [])
+      .filter((r: any) => {
+        if (!r.off_time) return false
+        const t = formatOffTime(r).replace(':', '')
         return t > nowTime
       })
-      .sort((a: any, b: any) => (a.offTime || '').localeCompare(b.offTime || ''))
-    return upcoming[0] || null
-  }, [allPicks, allSelections])
+      .sort((a: any, b: any) => formatOffTime(a).localeCompare(formatOffTime(b)))
+    if (upcoming.length === 0) return null
+    const r = upcoming[0]
+    const sorted = [...(r.runners || [])].sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
+    return {
+      offTime: formatOffTime(r),
+      course: r.course,
+      raceName: r.race_name || '',
+      topHorse: sorted[0]?.horse || '',
+    }
+  }, [races])
 
   const noBetReason = allPicks.length === 0 && ukIreRaces.length > 0
     ? bettable.length === 0
@@ -482,40 +486,42 @@ function Home() {
   const todayResults = todaySaved?.picks || []
   const todayStats = todaySaved?.stats || null
 
-  // All races card — only races where the system made a pick
+  // All races card — every race, picks highlighted
   const allRacesCard = useMemo(() => {
-    const picksByRace = new Map<string, any>()
-    for (const p of todayResults) {
-      picksByRace.set(`${p.course}|${p.offTime}`, p)
+    const pickByRace = new Map<string, any>()
+    for (const p of allPicks) {
+      const key = `${p.course}|${p.offTime}`
+      if (!pickByRace.has(key)) pickByRace.set(key, p)
     }
     return (races || [])
-      .filter(r => {
-        const offTime = formatOffTime(r)
-        return picksByRace.has(`${r.course}|${offTime}`)
-      })
+      .filter(r => (r.runners || []).length >= 2)
       .map(r => {
-        const sorted = [...(r.runners || [])].sort((a, b) => (b.finalScore || 0) - (a.finalScore || 0))
-        const top = sorted[0]
         const offTime = formatOffTime(r)
+        const pickKey = `${r.course}|${offTime}`
+        const pick = pickByRace.get(pickKey)
         const fieldSize = r.runners?.length || 0
         const placed = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
-        const pos = top?.position || null
+        const pos = pick?.position || (r.runners || []).find((run: any) => run.position)?.position || null
         const result = pos === 1 ? 'won' : pos > 0 && pos <= placed ? 'placed' : pos > placed ? 'lost' : null
+        const movement = pick?.marketMovement || null
+        const winner = !pick ? (r.runners || []).find((run: any) => run.position === 1) : null
         return {
           course: r.course,
           offTime,
           raceName: r.race_name || '',
-          horse: top?.horse || '—',
-          score: top?.finalScore || 0,
-          odds: top?.odds || 0,
+          horse: pick?.horse || winner?.horse || '—',
+          score: pick?.score || winner?.score || 0,
+          odds: pick?.odds || winner?.odds || 0,
           going: r.going || '',
-          isPick: true,
+          isPick: !!pick,
+          isWinner: !!winner,
           result,
           position: pos,
+          movement,
         }
       })
       .sort((a, b) => (a.offTime || '').localeCompare(b.offTime || ''))
-  }, [races, todayResults])
+  }, [races, allPicks])
 
   const liveStats = useMemo(() => {
     let won = 0, placed = 0, lost = 0, pending = 0
@@ -780,33 +786,69 @@ function Home() {
             })}
           </div>
           {allRacesCard.length > 0 && (
-            <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
-              <div className='flex items-center justify-between mb-3'>
-                <h3 className='text-sm font-bold text-zinc-400 uppercase tracking-wider'>Today&apos;s Full Card</h3>
-                {(liveStats.won + liveStats.placed + liveStats.lost) > 0 && (
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded ${liveStats.won > 0 ? 'bg-green-500/10 text-green-400' : 'bg-zinc-500/10 text-zinc-400'}`}>
-                    {liveStats.won}W {liveStats.placed}P {liveStats.lost}L
-                  </span>
-                )}
+            <div className='w-full rounded-xl border border-slate-800 bg-[#0f1720]/80 p-4 overflow-x-auto'>
+              <div className='mb-3 border-b border-slate-800 pb-3'>
+                <h3 className='text-sm font-bold text-slate-400 uppercase tracking-wider'>Today&apos;s Full Card</h3>
               </div>
-              <div className='space-y-1'>
-                {allRacesCard.filter(r => r.isPick).map((r, i) => {
-                  const resultBadge = r.result === 'won' ? 'W' : r.result === 'placed' ? 'P' : r.result === 'lost' ? 'L' : r.result === 'nr' ? 'NR' : '-'
-                  const badgeBg = r.result === 'won' ? 'bg-green-500/20 text-green-400' : r.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : r.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
-                  return (
-                    <div key={i} className='flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/[0.02]'>
-                      <div className='flex items-center gap-3'>
-                        <span className='text-zinc-500 text-xs w-10'>{r.offTime}</span>
-                        <span className='text-zinc-600 text-xs w-20 truncate'>{r.course}</span>
-                        <span className={`text-sm font-medium ${r.isPick ? 'text-amber-400' : 'text-zinc-300'}`}>{r.horse}</span>
-                        {r.going && <span className='text-zinc-500 text-xs'>{r.going}</span>}
-                        <span className='text-zinc-600 text-xs'>{r.odds > 0 ? r.odds : '-'}</span>
-                      </div>
-                      <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
-                    </div>
-                  )
-                })}
-              </div>
+              <table className='w-full text-sm'>
+                <thead>
+                  <tr className='text-[10px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-800/50'>
+                    <th className='text-left py-2 px-3 w-[70px]'>Time</th>
+                    <th className='text-left py-2 px-3 w-[140px]'>Track</th>
+                    <th className='text-left py-2 px-3 w-[200px]'>Selection</th>
+                    <th className='text-left py-2 px-3'>Going</th>
+                    <th className='text-center py-2 px-3 w-[70px]'>Score</th>
+                    <th className='text-right py-2 px-3 w-[70px]'>Odds</th>
+                    <th className='text-right py-2 px-3 w-[50px]'>Res</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {allRacesCard.map((r, i) => {
+                    const resultBadge = r.result === 'won' ? 'W' : r.result === 'placed' ? 'P' : r.result === 'lost' ? 'L' : r.result === 'nr' ? 'NR' : '-'
+                    const badgeBg = r.result === 'won' ? 'bg-green-500/20 text-green-400' : r.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : r.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
+                    const hasSelection = !!r.horse && r.horse !== '—' && r.horse !== ''
+                    return (
+                      <tr key={i} className={`border-b border-slate-800/30 ${
+                        r.isPick ? 'bg-amber-500/5' : r.isWinner ? 'bg-green-500/5' : 'opacity-50'
+                      }`}>
+                        <td className='py-2 px-3 font-mono text-xs text-slate-300'>{r.offTime}</td>
+                        <td className='py-2 px-3 font-semibold text-xs text-slate-200 truncate'>{r.course}</td>
+                        <td className='py-2 px-3'>
+                          {r.isPick ? (
+                            <span className='font-bold text-amber-400 text-xs tracking-wide'>{r.horse}</span>
+                          ) : r.isWinner ? (
+                            <span className='font-bold text-green-400 text-xs tracking-wide'>{r.horse}</span>
+                          ) : (
+                            <span className='text-slate-600'>—</span>
+                          )}
+                        </td>
+                        <td className='py-2 px-3 text-xs text-slate-400 truncate'>{r.going || '—'}</td>
+                        <td className='py-2 px-3 text-center font-mono text-xs font-bold text-slate-300'>
+                          {hasSelection && r.score ? r.score : <span className='text-slate-700'>—</span>}
+                        </td>
+                        <td className='py-2 px-3 text-right font-mono text-xs font-bold text-slate-300'>
+                          {hasSelection && r.odds > 0 ? (
+                            <span className='inline-flex items-center gap-1'>
+                              {r.odds}
+                              {r.movement?.movement?.includes('STEAMER') && (
+                                <span className='text-green-400 text-[10px]' title={`Steamed ${Math.abs(r.movement.delta).toFixed(1)}`}>&#9660;</span>
+                              )}
+                              {r.movement?.movement?.includes('DRIFTER') && (
+                                <span className='text-red-400 text-[10px]' title={`Drifted ${Math.abs(r.movement.delta).toFixed(1)}`}>&#9650;</span>
+                              )}
+                            </span>
+                          ) : (
+                            <span className='text-slate-700'>—</span>
+                          )}
+                        </td>
+                        <td className='py-2 px-3 text-right'>
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </section>

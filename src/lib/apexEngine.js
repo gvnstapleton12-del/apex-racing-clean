@@ -431,6 +431,11 @@ export function runApexEngine(runners, race, options = {}) {
       Math.max(1, Math.min(99, 50 + centered * SCORE_SPREAD_MULTIPLIER))
     )
 
+    // Confidence-weighted scoring: discount finalScore when PA signal is weak
+    // sqrt creates steep penalty for ultra-low confidence but flattens quickly
+    const paConfidence = personalAffinity.confidence ?? 1.0
+    const scoreWithConfidence = Math.round(rescaledScore * Math.sqrt(paConfidence))
+
     // Chaos detection: widen probability distributions for high-volatility races
     // This allows outsiders more realistic chances in chaotic races
     const chaosWidening = volatility.chaos > 0.7 ? 1.25 :
@@ -613,7 +618,7 @@ export function runApexEngine(runners, race, options = {}) {
       trainerScore,
       volatility: volatility.chaos,
       winnerScore: rescaledScore,
-      finalScore: rescaledScore,
+      finalScore: scoreWithConfidence,
       horseQuality,
       features,
       snapshot,
@@ -636,7 +641,7 @@ export function runApexEngine(runners, race, options = {}) {
     logSignalDilutionDiagnostic(race, results, interactionResults)
   }
 
-  const sorted = interactionResults.sort((a, b) => b.finalScore - a.finalScore)
+  const sorted = interactionResults.sort((a, b) => b.winnerScore - a.winnerScore)
   const winProbs = bayesianWinProbabilities(sorted, race)
   const placeProbs = bayesianPlaceProbabilities(sorted)
 
@@ -754,7 +759,7 @@ export function runApexEngine(runners, race, options = {}) {
       ...r,
       courseAffinity: r.courseAffinity || 0,
       winProb: Math.round(adjustedWinProbs[i] * 10) / 10,
-      placeProb: Math.round(adjustedPlaceProbs[i] * 10) / 10,
+      placeProb: Math.round(Math.max(adjustedPlaceProbs[i], adjustedWinProbs[i]) * 10) / 10,
       probBand: band.label,
       probRange: band.range,
       probTier: band.tier,

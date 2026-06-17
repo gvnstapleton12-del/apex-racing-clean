@@ -19,7 +19,7 @@ export function selectionQuality(winProb, odds, confidence, volatility, uncertai
 
   const fairOdds = Math.round((1 / p) * 100) / 100
   const edge = p * b - q
-  const valuePct = Math.round(((fairOdds / odds - 1) * 100) * 10) / 10
+  const valuePct = Math.round(((odds / fairOdds - 1) * 100) * 10) / 10
 
   let score = 0
   const reasons = []
