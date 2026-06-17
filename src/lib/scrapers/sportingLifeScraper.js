@@ -62,7 +62,11 @@ function isUkIre(course) {
     .replace(/-park$/, '')
     .replace(/-city$/, '')
     .replace(/-racecourse$/, '')
-  return UK_IRE_COURSES.has(slug) || UK_IRE_COURSES.has(slug + '-downs') || UK_IRE_COURSES.has(slug + '-park') || UK_IRE_COURSES.has(slug + '-city')
+  if (UK_IRE_COURSES.has(slug)) return true
+  if (UK_IRE_COURSES.has(slug + '-downs') || UK_IRE_COURSES.has(slug + '-park') || UK_IRE_COURSES.has(slug + '-city')) return true
+  // Handle compound names e.g. "Royal Ascot" → 'royal-ascot' → check each token
+  const tokens = slug.split('-')
+  return tokens.some(t => UK_IRE_COURSES.has(t))
 }
 
 function deriveRaceType(raceName = '') {
@@ -114,7 +118,7 @@ async function fetchMeetingList(dateStr) {
       seenIds.add(ref.id)
 
       const country = ms.course?.country?.short_name || ''
-      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland'].includes(country)
+      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland', 'SCO', 'Scotland', 'Scot', 'Wale'].includes(country)
       if (!isUkIre) continue
 
       const courseName = ms.course?.name || ''
@@ -376,7 +380,7 @@ export async function fetchSlResults(dateStr) {
       const ms = m.meeting_summary
       const ref = ms?.meeting_reference
       const country = ms.course?.country?.short_name || ''
-      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland'].includes(country)
+      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland', 'SCO', 'Scotland', 'Scot', 'Wale'].includes(country)
       if (!isUkIre) continue
       const courseName = ms.course?.name || ''
 

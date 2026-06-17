@@ -2844,6 +2844,33 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
     let paRejected = 0, paRejectedWins = 0, paRejectedPL = 0
     let otherRejected = 0, otherRejectedWins = 0, otherRejectedPL = 0
 
+    // Contender monitor — all predictions split by PA sign
+    let contenderPaPos = 0, contenderPaPosWins = 0
+    let contenderPaNonPos = 0, contenderPaNonPosWins = 0
+
+    // Bettable monitor — value-qualified bets split by PA gate
+    let bettablePassed = 0, bettablePassedWins = 0, bettablePassedPL = 0
+    let bettableRejected = 0, bettableRejectedWins = 0, bettableRejectedPL = 0
+
+    // Calibration by PA band
+    const calBands = [
+      { label: '<=0', min: -Infinity, max: 0, count: 0, wins: 0, sumPred: 0 },
+      { label: '0-2', min: 0, max: 2, count: 0, wins: 0, sumPred: 0 },
+      { label: '2-5', min: 2, max: 5, count: 0, wins: 0, sumPred: 0 },
+      { label: '5+', min: 5, max: Infinity, count: 0, wins: 0, sumPred: 0 },
+    ]
+    const isBettable = (p) => {
+      const bq = p.betQuality || ''
+      if (bq === 'NO BET' || bq === 'WEAK_COMPAT') return false
+      const wp = (p.estimatedWinProbability ?? p.predictedWinProb ?? 0) / 100
+      if (wp < 0.06) return false
+      if (Number(p.odds || 0) < 2.0) return false
+      const impliedProb = 1 / Number(p.odds || 2)
+      const edge = wp - impliedProb
+      if (edge <= 0) return false
+      return true
+    }
+
     for (const racePreds of Object.values(db)) {
       if (!Array.isArray(racePreds)) continue
       for (const p of racePreds) {
@@ -2854,21 +2881,67 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
         const won = pos === 1
         const odds = p.odds || 2
         const pl = won ? (odds - 1) : -1
+        const pa = p.personalAffinity
+        const wp = (p.estimatedWinProbability ?? p.predictedWinProb ?? 0) / 100
 
+        // Original gate classification
         if (p.betQuality && p.betQuality !== 'NO BET') {
           passed++; if (won) passedWins++; passedPL += pl
-        } else if (p.personalAffinity !== null && p.personalAffinity <= 0) {
+        } else if (pa !== null && pa <= 0) {
           paRejected++; if (won) paRejectedWins++; paRejectedPL += pl
         } else {
           otherRejected++; if (won) otherRejectedWins++; otherRejectedPL += pl
         }
+
+        // Contender monitor — all predictions by PA sign
+        if (pa !== null && pa > 0) {
+          contenderPaPos++; if (won) contenderPaPosWins++
+        } else if (pa !== null) {
+          contenderPaNonPos++; if (won) contenderPaNonPosWins++
+        }
+
+        // Bettable monitor — value-qualified bets only
+        if (isBettable(p)) {
+          if (pa !== null && pa > 0) {
+            bettablePassed++; if (won) bettablePassedWins++; bettablePassedPL += pl
+          } else {
+            bettableRejected++; if (won) bettableRejectedWins++; bettableRejectedPL += pl
+          }
+        }
+
+        // Calibration by PA band — all predictions with results
+        if (pa !== null && wp > 0) {
+          for (const band of calBands) {
+            if (pa > band.min && pa <= band.max) {
+              band.count++; if (won) band.wins++; band.sumPred += wp
+              break
+            }
+          }
+        }
       }
     }
 
+    const calibration = calBands.map(b => ({
+      band: b.label,
+      count: b.count,
+      avgPred: b.count ? +(b.sumPred / b.count * 100).toFixed(1) : 0,
+      actualWR: b.count ? +(b.wins / b.count * 100).toFixed(1) : 0,
+      error: b.count ? +((b.wins / b.count - b.sumPred / b.count) * 100).toFixed(1) : 0,
+    }))
+
     res.json({
-      passed: { count: passed, wins: passedWins, roi: passed ? (passedPL / passed * 100) : 0 },
-      paRejected: { count: paRejected, wins: paRejectedWins, roi: paRejected ? (paRejectedPL / paRejected * 100) : 0 },
-      otherRejected: { count: otherRejected, wins: otherRejectedWins, roi: otherRejected ? (otherRejectedPL / otherRejected * 100) : 0 },
+      passed: { count: passed, wins: passedWins, roi: passed ? +(passedPL / passed * 100).toFixed(1) : 0 },
+      paRejected: { count: paRejected, wins: paRejectedWins, roi: paRejected ? +(paRejectedPL / paRejected * 100).toFixed(1) : 0 },
+      otherRejected: { count: otherRejected, wins: otherRejectedWins, roi: otherRejected ? +(otherRejectedPL / otherRejected * 100).toFixed(1) : 0 },
+      contender: {
+        paPositive: { count: contenderPaPos, wins: contenderPaPosWins, wr: contenderPaPos ? +(contenderPaPosWins / contenderPaPos * 100).toFixed(1) : 0 },
+        paNonPositive: { count: contenderPaNonPos, wins: contenderPaNonPosWins, wr: contenderPaNonPos ? +(contenderPaNonPosWins / contenderPaNonPos * 100).toFixed(1) : 0 },
+      },
+      bettable: {
+        passed: { count: bettablePassed, wins: bettablePassedWins, roi: bettablePassed ? +(bettablePassedPL / bettablePassed * 100).toFixed(1) : 0 },
+        rejected: { count: bettableRejected, wins: bettableRejectedWins, roi: bettableRejected ? +(bettableRejectedPL / bettableRejected * 100).toFixed(1) : 0 },
+      },
+      calibration,
     })
   } catch (e) {
     res.status(500).json({ error: e.message })
@@ -2913,6 +2986,90 @@ app.get('/api/counterfactual-log', (_req, res) => {
       zones: stats,
       paBinBreakdown,
       recent: obs.slice(-20).reverse(),
+    })
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
+// ── PA by Finish Position ──
+app.get('/api/pa-by-position', (_req, res) => {
+  try {
+    const db = PREDICTIONS_DATABASE || {}
+    const races = LEARNING_DATABASE.races || []
+
+    const resultMap = {}
+    for (const race of races) {
+      if (!race.runners) continue
+      for (const r of race.runners) {
+        const key = `${race.course}|${race.off_time}|${race.date}|${(r.horse||'').toLowerCase()}`
+        resultMap[key] = r.position
+      }
+    }
+
+    const selections = []
+    for (const racePreds of Object.values(db)) {
+      if (!Array.isArray(racePreds)) continue
+      for (const p of racePreds) {
+        const key = `${p.course}|${p.offTime}|${p.date}|${(p.horse||'').toLowerCase()}`
+        const pos = Number(resultMap[key])
+        if (!pos || pos < 1) continue
+
+        selections.push({
+          pos, horse: p.horse, course: p.course, date: p.date, pa: p.personalAffinity ?? 0,
+        })
+      }
+    }
+
+    const buckets = { winner: { items: [] }, placed: { items: [] }, top4: { items: [] }, unplaced: { items: [] } }
+    for (const s of selections) {
+      if (s.pos === 1) buckets.winner.items.push(s)
+      else if (s.pos <= 3) buckets.placed.items.push(s)
+      else if (s.pos <= 4) buckets.top4.items.push(s)
+      else buckets.unplaced.items.push(s)
+    }
+
+    const bucketStats = {}
+    for (const [name, b] of Object.entries(buckets)) {
+      const paVals = b.items.map(s => s.pa)
+      const n = paVals.length
+      const avgPA = n ? paVals.reduce((a, b) => a + b, 0) / n : 0
+      const sorted = [...paVals].sort((a, b) => a - b)
+      const medianPA = n ? (n % 2 ? sorted[Math.floor(n / 2)] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2) : 0
+      const positive = paVals.filter(p => p > 0).length
+      bucketStats[name] = {
+        count: n, avgPA: Math.round(avgPA * 10) / 10, medianPA: Math.round(medianPA * 10) / 10,
+        pctPositive: n ? Math.round(positive / n * 1000) / 10 : 0,
+        pctNonPositive: n ? Math.round((n - positive) / n * 1000) / 10 : 0,
+      }
+    }
+
+    const paBands = [
+      { label: '>10', min: 10, max: Infinity },
+      { label: '5 to 10', min: 5, max: 10 },
+      { label: '3 to 5', min: 3, max: 5 },
+      { label: '1 to 3', min: 1, max: 3 },
+      { label: '0 to 1', min: 0, max: 1 },
+      { label: '-2 to 0', min: -2, max: 0 },
+      { label: '-5 to -2', min: -5, max: -2 },
+      { label: '<= -5', min: -Infinity, max: -5 },
+    ]
+    const bandStats = paBands.map(band => {
+      const inBand = selections.filter(s => s.pa >= band.min && s.pa < (band.max === Infinity ? Infinity : band.max))
+      const n = inBand.length
+      if (!n) return null
+      const wins = inBand.filter(s => s.pos === 1).length
+      const places = inBand.filter(s => s.pos >= 2 && s.pos <= 3).length
+      const avgFinish = inBand.reduce((a, s) => a + s.pos, 0) / n
+      return {
+        band: band.label, count: n, wins, winRate: Math.round(wins / n * 1000) / 10,
+        placeRate: Math.round((wins + places) / n * 1000) / 10,
+        avgFinishPos: Math.round(avgFinish * 10) / 10,
+      }
+    }).filter(Boolean)
+
+    res.json({
+      totalSelections: selections.length, buckets: bucketStats, bands: bandStats,
     })
   } catch (e) {
     res.status(500).json({ error: e.message })

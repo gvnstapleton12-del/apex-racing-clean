@@ -624,12 +624,16 @@ export default function Proof() {
   const [stats, setStats] = useState<any>(null)
   const [preds, setPreds] = useState<any>(null)
   const [paGate, setPaGate] = useState<any>(null)
+  const [counterfactual, setCounterfactual] = useState<any>(null)
+  const [paByPosition, setPaByPosition] = useState<any>(null)
   const [tab, setTab] = useState<'overview' | 'samples' | 'calibration' | 'history'>('overview')
 
   useEffect(() => {
     fetch(apiUrl('/api/learning-stats')).then(r => r.json()).then(setStats).catch(() => {})
     fetch(apiUrl('/api/predictions')).then(r => r.json()).then(setPreds).catch(() => {})
     fetch(apiUrl('/api/pa-gate-monitor')).then(r => r.json()).then(setPaGate).catch(() => {})
+    fetch(apiUrl('/api/counterfactual-log')).then(r => r.json()).then(setCounterfactual).catch(() => {})
+    fetch(apiUrl('/api/pa-by-position')).then(r => r.json()).then(setPaByPosition).catch(() => {})
   }, [])
 
   const recentPreds = preds ? Object.entries(preds).slice(-20).flatMap(([, v]: any) => v).slice(0, 50) : []
@@ -685,7 +689,7 @@ export default function Proof() {
             </div>
           )}
 
-          <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6'>
+            <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6'>
             <h2 className='text-lg font-bold mb-4'>PA Gate Monitor</h2>
             <p className='text-zinc-500 text-sm mb-4'>Value selections: PA {'>'} 0 passes gate, PA {'<='} 0 rejected.</p>
             {paGate ? (
@@ -723,17 +727,208 @@ export default function Proof() {
                 {['PA Passed', 'PA Rejected', 'Other Rejected'].map(label => (
                   <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse'>
                     <span className='text-zinc-600 text-xs font-medium uppercase tracking-wider'>{label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* ── Contender Monitor ── */}
+            {paGate?.contender && (
+              <div className='mt-6 border-t border-green-500/10 pt-6'>
+                <h3 className='text-md font-bold mb-3'>Contender Monitor</h3>
+                <p className='text-zinc-500 text-xs mb-4'>All PA-gated predictions (ignoring bet quality). Measures whether PA separates contenders from non-contenders.</p>
+                <div className='grid grid-cols-2 gap-4'>
+                  <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
+                    <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA &gt; 0</span>
+                    <div className='mt-2 space-y-1'>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Count</span><span className='font-bold'>{paGate.contender.paPositive.count}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.contender.paPositive.wins}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.contender.paPositive.wr}%</span></div>
+                    </div>
+                  </div>
+                  <div className='bg-red-500/5 rounded-xl p-4 border border-red-500/10'>
+                    <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA &le; 0</span>
+                    <div className='mt-2 space-y-1'>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Count</span><span className='font-bold'>{paGate.contender.paNonPositive.count}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.contender.paNonPositive.wins}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.contender.paNonPositive.wr}%</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Bet Monitor ── */}
+            {paGate?.bettable && (
+              <div className='mt-6 border-t border-green-500/10 pt-6'>
+                <h3 className='text-md font-bold mb-3'>Bet Monitor</h3>
+                <p className='text-zinc-500 text-xs mb-4'>Value-qualified bets only (winProb &ge; 6%, odds &ge; 2.0, valueEdge &gt; 0, not NO BET/WEAK_COMPAT). Measures whether PA gate improves betting execution.</p>
+                <div className='grid grid-cols-2 gap-4'>
+                  <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
+                    <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA Passed Bettable</span>
+                    <div className='mt-2 space-y-1'>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.bettable.passed.count}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.bettable.passed.wins}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.bettable.passed.count ? (paGate.bettable.passed.wins / paGate.bettable.passed.count * 100).toFixed(1) : '0'}%</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.bettable.passed.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.bettable.passed.roi >= 0 ? '+' : ''}{paGate.bettable.passed.roi}%</span></div>
+                    </div>
+                  </div>
+                  <div className='bg-red-500/5 rounded-xl p-4 border border-red-500/10'>
+                    <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA Rejected Bettable</span>
+                    <div className='mt-2 space-y-1'>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.bettable.rejected.count}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.bettable.rejected.wins}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.bettable.rejected.count ? (paGate.bettable.rejected.wins / paGate.bettable.rejected.count * 100).toFixed(1) : '0'}%</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.bettable.rejected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.bettable.rejected.roi >= 0 ? '+' : ''}{paGate.bettable.rejected.roi}%</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Calibration by PA Band ── */}
+            {paGate?.calibration && (
+              <div className='mt-6 border-t border-green-500/10 pt-6'>
+                <h3 className='text-md font-bold mb-3'>Calibration by PA Band</h3>
+                <p className='text-zinc-500 text-xs mb-4'>Predicted vs actual win rate per PA band. 🟢 within &plusmn;3pp, 🟡 &plusmn;3-7pp, 🔴 &gt; &plusmn;7pp.</p>
+                <div className='overflow-x-auto'>
+                  <table className='w-full text-sm'>
+                    <thead>
+                      <tr className='text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-700/50'>
+                        <th className='text-left py-2 pr-4'>PA Band</th>
+                        <th className='text-right py-2 pr-4'>n</th>
+                        <th className='text-right py-2 pr-4'>Avg Pred</th>
+                        <th className='text-right py-2 pr-4'>Actual WR</th>
+                        <th className='text-right py-2 pr-4'>Error</th>
+                        <th className='text-right py-2 pr-2'>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paGate.calibration.map((b: any) => {
+                        const errAbs = Math.abs(b.error)
+                        const icon = errAbs <= 3 ? '\u{1F7E2}' : errAbs <= 7 ? '\u{1F7E1}' : '\u{1F534}'
+                        return (
+                          <tr key={b.band} className='border-b border-zinc-800/50'>
+                            <td className='py-2 pr-4 font-medium'>{b.band}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.count}</td>
+                            <td className='text-right py-2 pr-4'>{b.avgPred}%</td>
+                            <td className='text-right py-2 pr-4'>{b.actualWR}%</td>
+                            <td className={`text-right py-2 pr-4 font-mono ${b.error > 0 ? 'text-green-400' : 'text-red-400'}`}>{b.error > 0 ? '+' : ''}{b.error}pp</td>
+                            <td className='text-right py-2 pr-2 text-lg'>{icon}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className='bg-[#0f1720]/80 border border-amber-500/10 rounded-2xl p-6'>
+            <h2 className='text-lg font-bold mb-4'>Counterfactual Activation Zone Logger</h2>
+            <p className='text-zinc-500 text-sm mb-4'>PA activation zone experiment — tracks horses with PA +0.05 to +0.5 split at +0.3 threshold.</p>
+            {counterfactual ? (
+              (() => {
+                const below = counterfactual.zones?.['below_0.3']
+                const above = counterfactual.zones?.['above_0.3']
+                const bins = counterfactual.paBinBreakdown ?? {}
+                return (
+              <div className='space-y-4'>
+                <div className='grid grid-cols-4 gap-4'>
+                  <div className='col-span-2 bg-[#0f1720]/80 rounded-xl p-4 border border-amber-500/10'>
+                    <span className='text-amber-400 text-xs font-medium uppercase tracking-wider'>Below +0.3 (suspected inert)</span>
+                    <div className='mt-2 grid grid-cols-2 gap-y-1 text-sm'>
+                      <span className='text-zinc-400'>Total</span><span className='font-bold'>{below?.total ?? 0}</span>
+                      <span className='text-zinc-400'>Wins</span><span className='font-bold text-green-400'>{below?.won ?? 0}</span>
+                      <span className='text-zinc-400'>Placed</span><span className='font-bold'>{below?.placed ?? 0}</span>
+                      <span className='text-zinc-400'>WR</span><span className='font-bold'>{below?.winRate ?? 0}%</span>
+                    </div>
+                  </div>
+                  <div className='col-span-2 bg-[#0f1720]/80 rounded-xl p-4 border border-amber-500/10'>
+                    <span className='text-amber-400 text-xs font-medium uppercase tracking-wider'>Above +0.3 (suspected active)</span>
+                    <div className='mt-2 grid grid-cols-2 gap-y-1 text-sm'>
+                      <span className='text-zinc-400'>Total</span><span className='font-bold'>{above?.total ?? 0}</span>
+                      <span className='text-zinc-400'>Wins</span><span className='font-bold text-green-400'>{above?.won ?? 0}</span>
+                      <span className='text-zinc-400'>Placed</span><span className='font-bold'>{above?.placed ?? 0}</span>
+                      <span className='text-zinc-400'>WR</span><span className='font-bold'>{above?.winRate ?? 0}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className='grid grid-cols-2 gap-4'>
+                  {Object.entries(bins).map(([bin, data]: [string, any]) => (
+                    <div key={bin} className='bg-white/[0.03] rounded-xl p-3 border border-white/5'>
+                      <span className='text-zinc-500 text-xs font-medium uppercase tracking-wider'>{bin}</span>
+                      <div className='mt-1 grid grid-cols-2 gap-y-1 text-xs'>
+                        <span className='text-zinc-500'>Total</span><span className='font-bold text-right'>{data.total}</span>
+                        <span className='text-zinc-500'>Won</span><span className='font-bold text-right text-green-400'>{data.won}</span>
+                        <span className='text-zinc-500'>WR</span><span className='font-bold text-right'>{data.winRate}%</span>
+                        <span className='text-zinc-500'>Placed</span><span className='font-bold text-right'>{data.placedRate}%</span>
+                        {data.avgWinOdds && <><span className='text-zinc-500'>Avg Odds</span><span className='font-bold text-right'>{data.avgWinOdds}</span></>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className='text-xs text-zinc-500'>Total observations: {counterfactual.total} | Resolved: {counterfactual.resolved} | Pending: {counterfactual.pending} | Needs ~200+ resolved per cohort for meaningful signal</div>
+              </div>
+                )
+              })()
+            ) : (
+              <div className='grid grid-cols-4 gap-4'>
+                {['Below +0.3', 'Above +0.3'].map(label => (
+                  <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse col-span-2'>
+                    <span className='text-zinc-600 text-xs font-medium uppercase tracking-wider'>{label}</span>
                     <div className='mt-2 space-y-2'>
-                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>Bets</span><span className='bg-zinc-700/50 rounded h-4 w-12' /></div>
+                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>Total</span><span className='bg-zinc-700/50 rounded h-4 w-8' /></div>
                       <div className='flex justify-between'><span className='text-zinc-700 text-sm'>Wins</span><span className='bg-zinc-700/50 rounded h-4 w-8' /></div>
                       <div className='flex justify-between'><span className='text-zinc-700 text-sm'>WR</span><span className='bg-zinc-700/50 rounded h-4 w-10' /></div>
-                      <div className='flex justify-between'><span className='text-zinc-700 text-sm'>ROI</span><span className='bg-zinc-700/50 rounded h-4 w-14' /></div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
+
+          {paByPosition && (
+          <div className='bg-[#0f1720]/80 border border-sky-500/10 rounded-2xl p-6'>
+            <h2 className='text-lg font-bold mb-4'>PA by Finish Position</h2>
+            <p className='text-zinc-500 text-sm mb-4'>PA distribution among selections that passed the score gate, grouped by finish position. {paByPosition.totalSelections} selections.</p>
+            <div className='grid grid-cols-4 gap-4 mb-6'>
+              {['winner','placed','top4','unplaced'].map(key => {
+                const b = paByPosition.buckets?.[key]
+                if (!b) return null
+                const labels = { winner: 'Winner (1st)', placed: 'Placed (2nd-3rd)', top4: 'Top 4', unplaced: 'Unplaced' }
+                return (
+                  <div key={key} className='bg-white/[0.03] rounded-xl p-4 border border-white/5'>
+                    <span className='text-sky-400 text-xs font-medium uppercase tracking-wider'>{labels[key]}</span>
+                    <div className='mt-2 space-y-1 text-sm'>
+                      <div className='flex justify-between'><span className='text-zinc-400'>Count</span><span className='font-bold'>{b.count}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400'>Avg PA</span><span className='font-bold'>{b.avgPA}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400'>Median PA</span><span className='font-bold'>{b.medianPA}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400'>PA {'>'} 0</span><span className='font-bold text-green-400'>{b.pctPositive}%</span></div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+            <div>
+              <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>Avg Finish Position by PA Band</span>
+              <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 mt-2'>
+                {paByPosition.bands?.map((b: any) => (
+                  <div key={b.band} className='bg-white/[0.03] rounded-xl p-3 border border-white/5'>
+                    <span className='text-zinc-500 text-xs'>{b.band}</span>
+                    <div className='mt-1 text-xs space-y-0.5'>
+                      <div className='flex justify-between'><span className='text-zinc-500'>n</span><span className='font-bold'>{b.count}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-500'>Avg Fin</span><span className='font-bold'>{b.avgFinishPos}</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-500'>WR</span><span className='font-bold text-green-400'>{b.winRate}%</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-500'>Place</span><span className='font-bold'>{b.placeRate}%</span></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          )}
 
           <div className='bg-[#0f1720]/80 border border-amber-500/10 rounded-2xl p-6'>
             <h2 className='text-lg font-bold mb-2'>How It Works</h2>

@@ -655,10 +655,24 @@ export function runApexEngine(runners, race, options = {}) {
     return Math.max(0.01, Math.min(0.99, calibratedProb))
   }
 
-  const adjustedWinProbs = winProbs.map((p) => {
+  const enablePaCalibration = options.enablePaCalibration !== false
+  const paCalibrationCap = options.paCalibrationCap ?? 0.20
+  const adjustedWinProbs = winProbs.map((p, i) => {
     const prob = p / 100
     const calibrated = calibrateWinProbability(prob)
-    return Math.round(calibrated * 1000) / 10
+    let adjusted = calibrated
+    if (enablePaCalibration) {
+      const paAdj = sorted[i]?.personalAffinity?.adjustment ?? 0
+      let paCorrection = 0
+      if (paAdj <= 0) paCorrection = -0.50
+      else if (paAdj <= 1) paCorrection = -0.22
+      else if (paAdj <= 3) paCorrection = 0.12
+      else if (paAdj <= 6) paCorrection = Math.min(0.30, paCalibrationCap)
+      else if (paAdj <= 10) paCorrection = Math.min(0.33, paCalibrationCap)
+      else paCorrection = Math.min(0.43, paCalibrationCap)
+      adjusted = Math.max(0.01, Math.min(0.99, calibrated + paCorrection))
+    }
+    return Math.round(adjusted * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {
     const prob = p / 100
