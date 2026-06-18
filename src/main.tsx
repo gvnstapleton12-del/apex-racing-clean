@@ -963,7 +963,7 @@ function App() {
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Main</div>
             <div className='space-y-1'>
-              {['Home', 'Racecards'].map((tab) => (
+              {['Home', 'Racecards', 'Results'].map((tab) => (
                 <button
                   key={tab}
                   type='button'
@@ -983,7 +983,7 @@ function App() {
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Tools</div>
             <div className='space-y-1'>
-              {['Results', 'Evidence', 'Rating Edge', 'Tracks'].map((tab) => (
+              {['Evidence', 'Rating Edge', 'Tracks'].map((tab) => (
                 <button
                   key={tab}
                   type='button'
