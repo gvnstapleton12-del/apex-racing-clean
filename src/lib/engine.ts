@@ -458,7 +458,11 @@ export function formatSelection(race: Race, runner: Runner) {
       betType = 'WIN'
     } else if (isFavourite) {
       betType = 'PLACE'
+    } else {
+      betType = 'SPEC'
     }
+  } else {
+    betType = 'SPEC'
   }
 
   return {

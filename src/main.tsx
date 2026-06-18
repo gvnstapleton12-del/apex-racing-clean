@@ -111,6 +111,9 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
               {!label && betType === 'PLACE' && (
                 <span className='text-xs px-2 py-1 rounded-lg border border-amber-500/30 bg-amber-500/15 text-amber-400 font-bold'>E/W</span>
               )}
+              {!label && betType === 'SPEC' && (
+                <span className='text-xs px-2 py-1 rounded-lg border border-zinc-500/30 bg-zinc-500/15 text-zinc-400 font-bold'>SPEC</span>
+              )}
               {isBomb && (
                 <span className='text-xs px-2 py-1 rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 font-bold'>BOMB</span>
               )}
