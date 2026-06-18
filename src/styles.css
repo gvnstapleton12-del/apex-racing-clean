@@ -229,6 +229,7 @@ button {
   display: grid;
   gap: 8px;
   overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
 }
 
