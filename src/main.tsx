@@ -15,7 +15,6 @@ import { formatOffTime } from './lib/formatTime'
 import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
 import type { Race, Runner } from './lib/types'
 import { getAtTheRacesHorseUrl } from './lib/horseLinks'
-import IntelligenceDashboard from './pages/IntelligenceDashboard'
 import TrackDirectory from './pages/TrackDirectory'
 import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
@@ -41,7 +40,6 @@ const tabs = [
   'Home',
   'Racecards',
   'Results',
-  'Intelligence',
   'Evidence',
   'Calibration',
   'Rating Edge',
@@ -932,10 +930,6 @@ function App() {
       return <Home />
     }
 
-    if (activeTab === 'Intelligence') {
-      return <IntelligenceDashboard />
-    }
-
     if (activeTab === 'Calibration') {
       return <CalibrationDashboard />
     }
@@ -969,7 +963,7 @@ function App() {
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Main</div>
             <div className='space-y-1'>
-              {['Home', 'Racecards', 'Intelligence'].map((tab) => (
+              {['Home', 'Racecards'].map((tab) => (
                 <button
                   key={tab}
                   type='button'
