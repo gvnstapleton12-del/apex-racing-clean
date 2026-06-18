@@ -136,16 +136,17 @@ export default function CalibrationDashboard() {
   const placeRate = records.length ? (((wins + places) / records.length) * 100).toFixed(1) : 0
 
   // Compute value-pick metrics on-the-fly using the production gate
-  function passesValueGate(prob, odds, apexScore = 0, previousRuns = 0) {
+  function passesValueGate(prob, odds, apexScore = 0, previousRuns = 0, pa = null) {
     if (!odds || odds <= 1 || !prob) return false
+    if (pa !== null && pa <= 0) return false
     const requiredApexFloor = previousRuns < 5 ? 50 : 40
     if (apexScore > 0 && apexScore < requiredApexFloor) return false
     const implied = (1 / odds) * 100
     const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
     return prob >= 10 && marginPct > 25
   }
-  const valuePicks = records.filter(r => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0)))
-  const nonValuePicks = records.filter(r => !passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0)))
+  const valuePicks = records.filter(r => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
+  const nonValuePicks = records.filter(r => !passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
   const vpWins = valuePicks.filter(r => r.actualWon).length
   const vpWR = valuePicks.length ? ((vpWins / valuePicks.length) * 100).toFixed(1) : '0.0'
   const vpPL = valuePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)

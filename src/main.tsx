@@ -249,14 +249,15 @@ function Home() {
       .then((r) => r.json())
       .then((data) => {
         const records = data.records || []
-        function passesValueGate(prob: number, odds: number, apexScore: number, previousRuns: number) {
+        function passesValueGate(prob: number, odds: number, apexScore: number, previousRuns: number, pa: number | null) {
           if (!odds || odds <= 1 || !prob) return false
+          if (pa !== null && pa <= 0) return false
           if (apexScore > 0 && apexScore < 40) return false
           const implied = (1 / odds) * 100
           const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
           return prob >= 10 && marginPct > 15
         }
-        const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0)))
+        const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
         if (vp.length === 0) return
         const vpWins = vp.filter((r: any) => r.actualWon).length
         const vpPL = vp.reduce((s: number, r: any) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
