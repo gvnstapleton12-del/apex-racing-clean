@@ -9,17 +9,13 @@ import {
 } from '@tanstack/react-query'
 
 import Racecards from './pages/Racecards'
-import UploadResults, {
-  ResultsList,
-} from './pages/Results'
+import { ResultsList } from './pages/Results'
 import { fetchRacecards } from './lib/racingApi'
 import { formatOffTime } from './lib/formatTime'
 import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
 import type { Race, Runner } from './lib/types'
 import { getAtTheRacesHorseUrl } from './lib/horseLinks'
 import IntelligenceDashboard from './pages/IntelligenceDashboard'
-import Replays from './pages/Replays'
-import Analytics from './pages/Analytics'
 import TrackDirectory from './pages/TrackDirectory'
 import Proof from './pages/Proof'
 import CalibrationDashboard from './components/CalibrationDashboard'
@@ -49,9 +45,6 @@ const tabs = [
   'Evidence',
   'Calibration',
   'Rating Edge',
-  'Upload',
-  'Replays',
-  'Analytics',
   'Tracks',
 ]
 
@@ -922,14 +915,6 @@ function App() {
       return <ResultsList results={uploadedResults} />
     }
 
-    if (activeTab === 'Upload') {
-      return (
-        <UploadResults
-          onResultsLoaded={handleResultsLoaded}
-        />
-      )
-    }
-
     if (activeTab === 'Home') {
       return <Home />
     }
@@ -944,14 +929,6 @@ function App() {
 
     if (activeTab === 'Rating Edge') {
       return <OrPrGapAnalysis />
-    }
-
-    if (activeTab === 'Replays') {
-      return <Replays />
-    }
-
-    if (activeTab === 'Analytics') {
-      return <Analytics />
     }
 
     if (activeTab === 'Tracks') {
@@ -999,7 +976,7 @@ function App() {
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Tools</div>
             <div className='space-y-1'>
-              {['Results', 'Evidence', 'Rating Edge', 'Upload', 'Replays', 'Analytics', 'Tracks'].map((tab) => (
+              {['Results', 'Evidence', 'Rating Edge', 'Tracks'].map((tab) => (
                 <button
                   key={tab}
                   type='button'
