@@ -12,7 +12,7 @@ import Racecards from './pages/Racecards'
 import { ResultsList } from './pages/Results'
 import { fetchRacecards } from './lib/racingApi'
 import { formatOffTime } from './lib/formatTime'
-import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
+import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate, passesValueGate } from './lib/engine'
 import type { Race, Runner } from './lib/types'
 import { getAtTheRacesHorseUrl } from './lib/horseLinks'
 import TrackDirectory from './pages/TrackDirectory'
@@ -152,7 +152,41 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
               <span className='text-[10px] text-amber-400/70 uppercase tracking-wider'>APEX</span>
             </span>
           </div>
-          
+
+          {/* Pace Shape summary */}
+          {(() => {
+            const rs = selection.race?.raceShape
+            const pm = selection.race?.paceMap
+            if (!rs && !pm) return null
+            const leaders = rs?.leaders ?? pm?.frontRunners ?? 0
+            const tempo = rs?.tempo || pm?.projectedTempo || '—'
+            const shape = rs?.shape || ''
+            const advantaged = rs?.beneficiaries?.slice(0, 3) || []
+            const disadvantaged = rs?.disadvantaged?.slice(0, 3) || []
+            if (!shape && leaders === 0) return null
+            const tempoColor = tempo === 'FAST' ? 'text-red-400' : tempo === 'SLOW' ? 'text-blue-400' : 'text-amber-400'
+            return (
+              <div className='mt-3 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/5'>
+                <div className='text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1'>Pace Shape</div>
+                <div className='flex items-center gap-3 text-[11px]'>
+                  <span className='text-zinc-400'>Leaders: <span className='text-zinc-200 font-bold'>{leaders}</span></span>
+                  <span className='text-zinc-400'>Tempo: <span className={`font-bold ${tempoColor}`}>{tempo}</span></span>
+                  {shape && <span className='text-zinc-500'>· {shape}</span>}
+                </div>
+                {(advantaged.length > 0 || disadvantaged.length > 0) && (
+                  <div className='flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-[10px]'>
+                    {advantaged.slice(0, 2).map((b: any, i: number) => (
+                      <span key={i} className='text-green-400'>✓ {b.reason?.split(' ')[0] || 'Advantaged'}</span>
+                    ))}
+                    {disadvantaged.slice(0, 2).map((d: any, i: number) => (
+                      <span key={i} className='text-red-400'>✗ {d.reason?.split(' ')[0] || 'Disadvantaged'}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
           {/* View Analysis button */}
           <button
             className='mt-4 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-sm font-medium hover:bg-white/10 transition text-zinc-400 hover:text-white'
@@ -199,6 +233,7 @@ interface DailyPicksEntry {
 
 function Home() {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
+  const [pickView, setPickView] = useState<'saved' | 'live'>('saved')
   const [abandoned, setAbandoned] = useState<any[]>([])
   const [valuePicksStats, setValuePicksStats] = useState<{ count: number; wr: number; roi: number; kellyRoi: number } | null>(null)
   const {
@@ -251,14 +286,6 @@ function Home() {
       .then((r) => r.json())
       .then((data) => {
         const records = data.records || []
-        function passesValueGate(prob: number, odds: number, apexScore: number, previousRuns: number, pa: number | null) {
-          if (!odds || odds <= 1 || !prob) return false
-          if (pa !== null && pa <= 0) return false
-          if (apexScore > 0 && apexScore < 40) return false
-          const implied = (1 / odds) * 100
-          const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
-          return prob >= 10 && marginPct > 15
-        }
         const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
         if (vp.length === 0) return
         const vpWins = vp.filter((r: any) => r.actualWon).length
@@ -271,7 +298,7 @@ function Home() {
           const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
           const implied = 1 / odds
           const margin = (p - implied) / implied
-          if (p >= 0.10 && margin > 0.15) {
+          if (p >= 0.15 && margin > 0.25) {
             const b = odds - 1
             const edge = p * b - (1 - p)
             if (edge > 0) {
@@ -288,6 +315,7 @@ function Home() {
   }, [])
 
   const today = new Date().toISOString().split('T')[0]
+  const todaySaved = dailyPicksDb[today]
   const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
@@ -448,11 +476,26 @@ function Home() {
     seenUpcoming.add(raceKey)
     return true
   })
-  const picks = upcomingBest ? [upcomingBest, ...upcomingOnePerRace].slice(0, 15) : upcomingOnePerRace.slice(0, 15)
+  const picksLive = upcomingBest ? [upcomingBest, ...upcomingOnePerRace].slice(0, 15) : upcomingOnePerRace.slice(0, 15)
+  // Freeze picks from saved DB when available — match to live data for display
+  const picks = todaySaved?.picks?.length
+    ? todaySaved.picks
+        .map((savedPick: any) => {
+          const liveMatch = allSelections.find((s: any) => s.horse === savedPick.horse && s.course === savedPick.course)
+          return liveMatch || { ...savedPick, race: null }
+        })
+        .slice(0, 15)
+    : picksLive
   console.log('[FINAL PICKS]', picks.length, picks.map((p: any) => `${p.horse} (${p.course} ${p.offTime}) score=${p.score} ev=${((p.winProb || 0) * (parseOddsToNum(p.odds) || 0) - 1).toFixed(2)}`))
   const picksKey = allPicks.map((p) => p.horse + p.course).join('|')
   const topScore = allPicks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
+
+  // View toggle: saved vs live picks
+  const hasSavedPicks = (todaySaved?.picks?.length || 0) > 0
+  const displayPicks = pickView === 'live' || !hasSavedPicks ? picksLive : picks
+  const liveBestBet = picksLive[0] || null
+  const displayBestBet = pickView === 'live' || !hasSavedPicks ? liveBestBet : bestBet
 
   // Next race off
   const nextRace = useMemo(() => {
@@ -485,14 +528,15 @@ function Home() {
       : getNoBetReason(ukIreRaces)
     : null
 
-  const todaySaved = dailyPicksDb[today]
   const todayResults = todaySaved?.picks || []
   const todayStats = todaySaved?.stats || null
 
   // All races card — every race, picks highlighted
+  // Use saved picks when available (frozen), fall back to live
   const allRacesCard = useMemo(() => {
+    const pickSource = pickView === 'live' || !todaySaved?.picks?.length ? allPicks : todaySaved.picks
     const pickByRace = new Map<string, any>()
-    for (const p of allPicks) {
+    for (const p of pickSource) {
       const key = `${p.course}|${p.offTime}`
       if (!pickByRace.has(key)) pickByRace.set(key, p)
     }
@@ -504,8 +548,8 @@ function Home() {
         const pick = pickByRace.get(pickKey)
         const fieldSize = r.runners?.length || 0
         const placed = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
-        const pos = pick?.position || (r.runners || []).find((run: any) => run.position)?.position || null
-        const result = pos === 1 ? 'won' : pos > 0 && pos <= placed ? 'placed' : pos > placed ? 'lost' : null
+        const pos = pick?.position || r.runners?.find((run: any) => run.horse === pick?.horse)?.position || null
+        const result = pick?.result ?? (pos === 1 ? 'won' : pos > 0 && pos <= placed ? 'placed' : pos > placed ? 'lost' : null)
         const movement = pick?.marketMovement || null
         const winner = !pick ? (r.runners || []).find((run: any) => run.position === 1) : null
         return {
@@ -524,7 +568,7 @@ function Home() {
         }
       })
       .sort((a, b) => (a.offTime || '').localeCompare(b.offTime || ''))
-  }, [races, allPicks])
+  }, [races, allPicks, todaySaved, pickView])
 
   const liveStats = useMemo(() => {
     let won = 0, placed = 0, lost = 0, pending = 0
@@ -577,6 +621,7 @@ function Home() {
           or: p.or,
           rpr: p.rpr,
           performanceRating: p.performanceRating,
+          marketMovement: p.marketMovement || null,
         })),
       }),
     })
@@ -663,21 +708,26 @@ function Home() {
       </section>
 
       {/* Top Pick Hero */}
-      {bestBet && (
+      {displayBestBet && (
         <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/20 rounded-2xl p-8 mb-6'>
           <div className='absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
           <div className='flex items-center justify-between relative z-10'>
             <div className='flex-1'>
               <div className='flex items-center gap-3 mb-3'>
                 <span className='text-lg font-black uppercase tracking-wider px-3 py-1 rounded-lg' style={{ backgroundColor: '#d97706', color: '#fff' }}>NAP</span>
+                {hasSavedPicks && (
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${pickView === 'live' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                    {pickView === 'live' ? 'Live' : 'Frozen'}
+                  </span>
+                )}
               </div>
-              <h2 className='text-5xl font-black text-amber-400 mb-2 drop-shadow-[0_0_16px_rgba(251,191,36,0.3)]'>{bestBet.horse}</h2>
+              <h2 className='text-5xl font-black text-amber-400 mb-2 drop-shadow-[0_0_16px_rgba(251,191,36,0.3)]'>{displayBestBet.horse}</h2>
               <div className='flex items-center gap-2 text-sm text-zinc-400 flex-wrap'>
-                <span className='text-zinc-300 font-medium'>{bestBet.course}</span>
+                <span className='text-zinc-300 font-medium'>{displayBestBet.course}</span>
                 <span className='text-zinc-600'>·</span>
-                <span>{bestBet.offTime}</span>
+                <span>{displayBestBet.offTime}</span>
                 <span className='text-zinc-600'>·</span>
-                <span className='text-zinc-500 truncate max-w-[400px]'>{bestBet.raceName}</span>
+                <span className='text-zinc-500 truncate max-w-[400px]'>{displayBestBet.raceName}</span>
               </div>
             </div>
             <div className='flex items-center gap-6'>
@@ -686,11 +736,11 @@ function Home() {
                   <svg className='absolute inset-0 w-full h-full -rotate-90' viewBox='0 0 100 100'>
                     <circle cx='50' cy='50' r='42' fill='none' stroke='rgba(251,191,36,0.1)' strokeWidth='6' />
                     <circle cx='50' cy='50' r='42' fill='none' stroke='#fbbf24' strokeWidth='6'
-                      strokeDasharray={`${Math.min(bestBet.score || 0, 100) * 2.64} 264`}
+                      strokeDasharray={`${Math.min(displayBestBet.score || 0, 100) * 2.64} 264`}
                       strokeLinecap='round' />
                   </svg>
                   <div className='text-center'>
-                    <div className='text-3xl font-black text-amber-400'>{bestBet.score}</div>
+                    <div className='text-3xl font-black text-amber-400'>{displayBestBet.score}</div>
                     <div className='text-[10px] text-zinc-500 uppercase tracking-wider'>APEX</div>
                   </div>
                 </div>
@@ -705,7 +755,7 @@ function Home() {
             <div className='flex items-center justify-between mb-6'>
               <div>
                 <h3 className='text-lg font-semibold text-white'>Value Picks Performance</h3>
-                <p className='text-xs text-zinc-500 mt-1'>Gate: P ≥ 10% + 25% margin + APEX ≥ 40</p>
+                <p className='text-xs text-zinc-500 mt-1'>Gate: P ≥ 15% + 25% margin + APEX ≥ 40/50</p>
               </div>
             </div>
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
@@ -768,12 +818,27 @@ function Home() {
               </div>
             </div>
           )}
+          {hasSavedPicks && (
+            <div className='flex gap-2 items-center mb-2'>
+              <button type='button' onClick={() => setPickView('saved')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${pickView === 'saved' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'}`}>
+                Frozen Picks
+              </button>
+              <button type='button' onClick={() => setPickView('live')}
+                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${pickView === 'live' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'}`}>
+                Live Picks
+              </button>
+              {pickView === 'live' && (
+                <span className='text-[10px] text-zinc-500 ml-1'>Best 10-15 min before off</span>
+              )}
+            </div>
+          )}
           <div className='home-picks-grid grid grid-cols-1 lg:grid-cols-2 gap-6'>
-            {picks.map((s, i) => {
+            {displayPicks.map((s, i) => {
               const saved = todayResults.find(
                 (r: any) => r.horse === s.horse && r.course === s.course
               )
-              const isNapPick = bestBet && s.horse === bestBet.horse && s.course === bestBet.course
+              const isNapPick = i === 0
               const isBombPick = s.odds && parseOddsToNum(s.odds) >= 10
               if (isNapPick) {
                 return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNap isBomb={false} />
@@ -836,10 +901,10 @@ function Home() {
                             <span className='inline-flex items-center gap-1'>
                               {r.odds}
                               {r.movement?.movement?.includes('STEAMER') && (
-                                <span className='text-green-400 text-[10px]' title={`Steamed ${Math.abs(r.movement.delta).toFixed(1)}`}>&#9660;</span>
+                                <span className='text-[10px]' style={{ color: '#4ade80' }} title={`Steamed ${Math.abs(r.movement.delta).toFixed(1)}`}>&#9660;</span>
                               )}
                               {r.movement?.movement?.includes('DRIFTER') && (
-                                <span className='text-red-400 text-[10px]' title={`Drifted ${Math.abs(r.movement.delta).toFixed(1)}`}>&#9650;</span>
+                                <span className='text-[10px]' style={{ color: '#f87171' }} title={`Drifted ${Math.abs(r.movement.delta).toFixed(1)}`}>&#9650;</span>
                               )}
                             </span>
                           ) : (
@@ -884,6 +949,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('Home')
   const [uploadedResults, setUploadedResults] = useState<any[]>([])
   const [selectedHorse, setSelectedHorse] = useState<any>(null)
+  const [carouselIndex, setCarouselIndex] = useState(0)
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -892,6 +958,11 @@ function App() {
     }
     window.addEventListener('select-horse', handler)
     return () => window.removeEventListener('select-horse', handler)
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => setCarouselIndex(i => (i + 1) % 3), 4000)
+    return () => clearInterval(timer)
   }, [])
 
   useEffect(() => {
@@ -1024,6 +1095,17 @@ function App() {
         <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5 mt-auto'>
           <span className='text-zinc-500 text-xs uppercase tracking-wider'>APEX Racing</span>
           <strong className='text-zinc-400 text-sm'>v1.1.0</strong>
+        </div>
+
+        <div className='sidebar-carousel'>
+          {[1, 2, 3].map(n => (
+            <img
+              key={n}
+              src={`/images/horse-race-${n}.jpg`}
+              alt=''
+              className={n === carouselIndex ? 'active' : ''}
+            />
+          ))}
         </div>
       </aside>
 

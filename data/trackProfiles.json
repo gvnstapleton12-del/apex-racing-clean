@@ -354,7 +354,10 @@
           "mid": "75.0",
           "high": "0.0",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|AW": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "AW",
               "low": "29",
               "mid": "71",
               "high": "0",
@@ -832,13 +835,19 @@
           "mid": "14.3",
           "high": "42.9",
           "byDistance": {
-            "1m6f": {
+            "1m6f|Flat|AW": {
+              "distance": "1m6f",
+              "raceType": "Flat",
+              "surface": "AW",
               "low": "0",
               "mid": "67",
               "high": "33",
               "wins": 3
             },
-            "2m+": {
+            "2m+|Flat|AW": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "AW",
               "low": "50",
               "mid": "6",
               "high": "44",
@@ -1516,7 +1525,10 @@
           "mid": "83.3",
           "high": "0.0",
           "byDistance": {
-            "1m6f": {
+            "1m6f|Flat|AW": {
+              "distance": "1m6f",
+              "raceType": "Flat",
+              "surface": "AW",
               "low": "33",
               "mid": "67",
               "high": "0",
@@ -1769,13 +1781,19 @@
           "mid": "8.3",
           "high": "41.7",
           "byDistance": {
-            "6f": {
+            "6f|Flat|Turf": {
+              "distance": "6f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "40",
               "mid": "0",
               "high": "60",
               "wins": 5
             },
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "0",
               "high": "67",
@@ -3350,25 +3368,37 @@
           "mid": "10.5",
           "high": "36.8",
           "byDistance": {
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "25",
               "high": "25",
               "wins": 4
             },
-            "6f": {
+            "6f|Flat|Turf": {
+              "distance": "6f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "0",
               "high": "67",
               "wins": 3
             },
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "25",
               "high": "25",
               "wins": 4
             },
-            "7f": {
+            "7f|Flat|Turf": {
+              "distance": "7f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "80",
               "mid": "0",
               "high": "20",
@@ -3913,7 +3943,10 @@
           "mid": "62.5",
           "high": "0.0",
           "byDistance": {
-            "7f": {
+            "7f|Flat|AW": {
+              "distance": "7f",
+              "raceType": "Flat",
+              "surface": "AW",
               "low": "0",
               "mid": "100",
               "high": "0",
@@ -4495,7 +4528,10 @@
           "mid": "0.0",
           "high": "14.3",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "100",
               "mid": "0",
               "high": "0",
@@ -5117,19 +5153,28 @@
           "mid": "26.1",
           "high": "39.1",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "20",
               "high": "47",
               "wins": 15
             },
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "25",
               "high": "25",
               "wins": 4
             },
-            "1m4f": {
+            "1m4f|Flat|Turf": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "25",
               "mid": "50",
               "high": "25",
@@ -5373,13 +5418,19 @@
           "mid": "7.7",
           "high": "23.1",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "0",
               "high": "33",
               "wins": 9
             },
-            "1m4f": {
+            "1m4f|Flat|Turf": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "33",
               "high": "0",
@@ -5886,19 +5937,28 @@
           "mid": "14.3",
           "high": "42.9",
           "byDistance": {
-            "5f": {
+            "5f|Flat|Turf": {
+              "distance": "5f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "0",
               "high": "33",
               "wins": 3
             },
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "40",
               "mid": "0",
               "high": "60",
               "wins": 5
             },
-            "1m4f": {
+            "1m4f|Flat|Turf": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "67",
               "high": "0",
@@ -6664,7 +6724,10 @@
           "mid": "57.1",
           "high": "0.0",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "50",
               "high": "0",
@@ -7451,13 +7514,19 @@
           "mid": "28.6",
           "high": "21.4",
           "byDistance": {
-            "5f": {
+            "5f|Flat|Turf": {
+              "distance": "5f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "33",
               "high": "0",
               "wins": 3
             },
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "33",
               "high": "33",
@@ -7751,13 +7820,19 @@
           "mid": "13.3",
           "high": "66.7",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "10",
               "mid": "10",
               "high": "80",
               "wins": 10
             },
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "25",
               "mid": "25",
               "high": "50",
@@ -8029,19 +8104,28 @@
           "mid": "28.6",
           "high": "57.1",
           "byDistance": {
-            "6f": {
+            "6f|Flat|Turf": {
+              "distance": "6f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "0",
               "high": "100",
               "wins": 5
             },
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "25",
               "mid": "75",
               "high": "0",
               "wins": 4
             },
-            "7f": {
+            "7f|Flat|Turf": {
+              "distance": "7f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "33",
               "high": "67",
@@ -8300,19 +8384,28 @@
           "mid": "33.3",
           "high": "40.0",
           "byDistance": {
-            "5f": {
+            "5f|Flat|Turf": {
+              "distance": "5f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "0",
               "high": "100",
               "wins": 3
             },
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "13",
               "mid": "50",
               "high": "38",
               "wins": 8
             },
-            "1m4f": {
+            "1m4f|Flat|Turf": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "100",
               "mid": "0",
               "high": "0",
@@ -8591,19 +8684,28 @@
           "mid": "7.7",
           "high": "53.8",
           "byDistance": {
-            "6f": {
+            "6f|Flat|Turf": {
+              "distance": "6f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "25",
               "mid": "0",
               "high": "75",
               "wins": 4
             },
-            "1m": {
+            "1m|Flat|Turf": {
+              "distance": "1m",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "33",
               "high": "67",
               "wins": 3
             },
-            "5f": {
+            "5f|Flat|Turf": {
+              "distance": "5f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "0",
               "high": "33",
@@ -8886,13 +8988,19 @@
           "mid": "39.0",
           "high": "56.1",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "3",
               "mid": "48",
               "high": "48",
               "wins": 33
             },
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "14",
               "mid": "0",
               "high": "86",
@@ -9292,13 +9400,19 @@
           "mid": "0.0",
           "high": "33.3",
           "byDistance": {
-            "1m4f": {
+            "1m4f|Flat|Turf": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "100",
               "mid": "0",
               "high": "0",
               "wins": 3
             },
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "0",
               "high": "67",
@@ -9804,7 +9918,10 @@
           "mid": "14.3",
           "high": "28.6",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "10",
               "high": "40",
@@ -9985,13 +10102,19 @@
           "mid": "42.9",
           "high": "50.0",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "13",
               "mid": "38",
               "high": "50",
               "wins": 8
             },
-            "1m": {
+            "1m|Flat|Turf": {
+              "distance": "1m",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "0",
               "high": "100",
@@ -10247,7 +10370,10 @@
           "mid": "42.9",
           "high": "42.9",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "17",
               "mid": "50",
               "high": "33",
@@ -10792,19 +10918,28 @@
           "mid": "28.6",
           "high": "42.9",
           "byDistance": {
-            "5f": {
+            "5f|Flat|Turf": {
+              "distance": "5f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "0",
               "high": "50",
               "wins": 4
             },
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "40",
               "mid": "40",
               "high": "20",
               "wins": 5
             },
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "33",
               "high": "67",
@@ -11191,25 +11326,37 @@
           "mid": "27.8",
           "high": "38.9",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "40",
               "high": "60",
               "wins": 5
             },
-            "1m4f": {
+            "1m4f|Flat|Turf": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "60",
               "mid": "40",
               "high": "0",
               "wins": 5
             },
-            "6f": {
+            "6f|Flat|Turf": {
+              "distance": "6f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "20",
               "mid": "0",
               "high": "80",
               "wins": 5
             },
-            "5f": {
+            "5f|Flat|Turf": {
+              "distance": "5f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "33",
               "high": "0",
@@ -11707,11 +11854,12 @@
       "layoutBiasRules": [],
       "featureRules": [],
       "trackCategory": "galloping",
-      "insight": "Fair, galloping, undulating track. Demands top-class ability. Stamina crucial on the long cambered straight. Jumping precision essential over hurdles and fences.",
+      "insight": "Galloping, undulating track. Stamina crucial — Swinley Bottom dip followed by 2.5f uphill finish. Ground-dependent draw flip on straight course (5f-1m). Wide sweeping turns reward low draws on the round course.",
       "keyFactors": [
         "Ability",
         "Stamina",
-        "Jumping"
+        "Draw",
+        "Positioning"
       ],
       "paceBiasByGoing": {
         "fast": {
@@ -12578,7 +12726,10 @@
           "mid": "14.3",
           "high": "14.3",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "25",
               "high": "25",
@@ -14131,7 +14282,10 @@
           "mid": "14.3",
           "high": "28.6",
           "byDistance": {
-            "1m4f": {
+            "1m4f|Flat|AW": {
+              "distance": "1m4f",
+              "raceType": "Flat",
+              "surface": "AW",
               "low": "67",
               "mid": "33",
               "high": "0",
@@ -14944,7 +15098,10 @@
           "mid": "37.5",
           "high": "0.0",
           "byDistance": {
-            "1m2f": {
+            "1m2f|Flat|Turf": {
+              "distance": "1m2f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "60",
               "mid": "40",
               "high": "0",
@@ -19578,13 +19735,19 @@
           "mid": "14.3",
           "high": "42.9",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "0",
               "high": "67",
               "wins": 3
             },
-            "1m": {
+            "1m|Flat|Turf": {
+              "distance": "1m",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "33",
               "high": "0",
@@ -19990,7 +20153,10 @@
           "mid": "50.0",
           "high": "0.0",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "33",
               "mid": "67",
               "high": "0",
@@ -20324,7 +20490,10 @@
           "mid": "0.0",
           "high": "42.9",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "50",
               "mid": "0",
               "high": "50",
@@ -21554,7 +21723,10 @@
           "mid": "25.0",
           "high": "50.0",
           "byDistance": {
-            "7f": {
+            "7f|Flat|Turf": {
+              "distance": "7f",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "0",
               "mid": "33",
               "high": "67",
@@ -21912,7 +22084,10 @@
           "mid": "33.3",
           "high": "0.0",
           "byDistance": {
-            "2m+": {
+            "2m+|Flat|Turf": {
+              "distance": "2m+",
+              "raceType": "Flat",
+              "surface": "Turf",
               "low": "67",
               "mid": "33",
               "high": "0",
@@ -23177,7 +23352,10 @@
           "mid": "0.0",
           "high": "0.0",
           "byDistance": {
-            "2m+": {
+            "2m+|Hurdle|Turf": {
+              "distance": "2m+",
+              "raceType": "Hurdle",
+              "surface": "Turf",
               "low": "100",
               "mid": "0",
               "high": "0",

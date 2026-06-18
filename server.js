@@ -1554,6 +1554,7 @@ function buildLightweightState() {
       performanceRating: r.performanceRating || null,
       previous_results: r.previous_results || [],
       horseProfile: r.horseProfile || null,
+      marketMovement: MARKET_DATABASE[r.horse_id] || MARKET_DATABASE[r.horse] || null,
     })),
   }))
 
@@ -1701,6 +1702,7 @@ app.post('/api/daily-picks', (req, res) => {
       odds: p.odds,
       form: p.form,
       draw: p.draw,
+      marketMovement: p.marketMovement || null,
       result: null,
       position: null,
     })),

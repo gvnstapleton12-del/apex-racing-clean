@@ -73,6 +73,11 @@ const BetFilterSchema = z.object({
 const PaceMapSchema = z.object({
   projectedTempo: z.string().optional(),
   collapseRisk: z.string().optional(),
+  frontRunners: z.coerce.number().optional(),
+  prominent: z.coerce.number().optional(),
+  midfield: z.coerce.number().optional(),
+  holdUp: z.coerce.number().optional(),
+  pacePressure: z.string().optional(),
 }).passthrough().nullable()
 
 const RunnerSchema = z.object({

@@ -16,10 +16,11 @@ const tracks: Record<string, TrackProfile> = (trackData as any).tracks || {}
 function classifyDiscipline(track: TrackProfile): string[] {
   const d = (track.discipline || '').toLowerCase()
   const cats: string[] = []
+  const isDualPurpose = /dual.?purpose/.test(d)
   if (track.aw) cats.push('All-Weather')
   if (/flat only|flat aw/.test(d) && !cats.includes('All-Weather')) cats.push('Flat')
-  if (/(?:national hunt|nh only|jumps only|nh\s)/.test(d) || /chase|hurdle|nh flat|bumper/.test(d)) cats.push('Jumps')
-  if (/dual.?purpose/.test(d)) cats.push('Dual-Purpose')
+  if (!isDualPurpose && (/(?:national hunt|nh only|jumps only|nh\s)/.test(d) || /chase|hurdle|nh flat|bumper/.test(d))) cats.push('Jumps')
+  if (isDualPurpose) cats.push('Dual-Purpose')
   if (/cross.?country/.test(d)) cats.push('Cross-Country')
   if (cats.length === 0 && track.turf) cats.push('Flat')
   if (cats.length === 0) cats.push('Flat')
@@ -94,6 +95,36 @@ function getRatings(track: TrackProfile) {
   return { speed: 3, stamina: 3, positioning: 3, draw: 2 }
 }
 
+function getDerivedRatings(derivedStats: any, isJumps: boolean): { draw: number | null, stamina: number | null } {
+  if (!derivedStats) return { draw: null, stamina: null }
+  let drawRating: number | null = null
+  const drawBias = derivedStats.drawBias
+  if (drawBias?.low != null && drawBias?.high != null) {
+    const low = +drawBias.low || 0
+    const high = +drawBias.high || 0
+    const maxSkew = Math.max(Math.abs(low - 33), Math.abs(high - 33))
+    if (maxSkew > 20) drawRating = 5
+    else if (maxSkew > 15) drawRating = 4
+    else if (maxSkew > 10) drawRating = 3
+    else if (maxSkew > 5) drawRating = 2
+    else drawRating = 1
+  }
+  let staminaRating: number | null = null
+  const distBias = derivedStats.distanceBias
+  if (distBias) {
+    const staying = distBias['2m+'] || distBias['1m6f']
+    const sprint = distBias['5f'] || distBias['6f']
+    if (staying?.wr && sprint?.wr) {
+      const diff = +staying.wr - +sprint.wr
+      if (diff > 10) staminaRating = 5
+      else if (diff > 5) staminaRating = 4
+      else if (diff > 0) staminaRating = 3
+      else staminaRating = 2
+    }
+  }
+  return { draw: drawRating, stamina: staminaRating }
+}
+
 function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
   const insight = getInsight(name, track)
   const winnerProfile = getWinnerProfile(name, track)
@@ -104,6 +135,7 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
   const softPace = paceByGoing?.soft
   const derivedStats = (track as any).derivedStats
   const hasRealDrawData = derivedStats?.drawBias && derivedStats.drawBias.low != null
+  const derivedRatings = getDerivedRatings(derivedStats, isJumps)
 
   return (
     <div className="apex-card p-5 space-y-4">
@@ -164,28 +196,76 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
               <Bar pct={+derivedStats.drawBias.high} color={+derivedStats.drawBias.high >= 25 ? 'bg-amber-400' : +derivedStats.drawBias.high >= 10 ? 'bg-red-400' : 'bg-green-400'} />
             </div>
           </div>
+          {/* Distance-specific draw breakdown */}
+          {derivedStats.drawBias.byDistance && Object.keys(derivedStats.drawBias.byDistance).length > 0 && (
+            <div className="mt-3 pt-3 border-t border-white/5">
+              <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Draw by Distance</h4>
+              <div className="space-y-2">
+                {Object.entries(derivedStats.drawBias.byDistance).map(([key, data]: [string, any]) => {
+                  const parts = key.split('|')
+                  const dist = parts[0]
+                  const raceType = parts[1] || null
+                  const surface = parts[2] || null
+                  return (
+                    <div key={key} className="bg-white/[0.02] rounded-lg p-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-bold text-zinc-300">{dist}</span>
+                          {raceType && (
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                              raceType === 'Flat' ? 'bg-green-500/15 text-green-400' :
+                              raceType === 'Hurdle' ? 'bg-blue-500/15 text-blue-400' :
+                              raceType === 'Chase' ? 'bg-purple-500/15 text-purple-400' :
+                              'bg-zinc-500/15 text-zinc-400'
+                            }`}>{raceType}</span>
+                          )}
+                          {surface && surface === 'AW' && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/15 text-amber-400">AW</span>
+                          )}
+                        </div>
+                        <span className="text-[10px] text-zinc-500">{data.wins} win{data.wins !== 1 ? 's' : ''}</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { label: 'Low', val: +data.low },
+                          { label: 'Mid', val: +data.mid },
+                          { label: 'High', val: +data.high },
+                        ].map(({ label, val }) => (
+                          <div key={label} className="text-center">
+                            <div className="text-[10px] text-zinc-500">{label}</div>
+                            <div className={`text-[11px] font-bold ${val >= 40 ? 'text-green-400' : val >= 25 ? 'text-amber-400' : 'text-zinc-400'}`}>{val}%</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
         </div>
       ) : fastPace ? (
         <div>
-          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Track Positioning Bias</h4>
-          <p className="text-[10px] text-zinc-600 mb-2">Estimated — insufficient historical draw data</p>
+          <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-2">Running Style Distribution</h4>
+          <p className="text-[10px] text-zinc-600 mb-2">Estimated from draw positions · FR = Front Runner, PR = Prominent, MD = Midfield, HU = Held Up</p>
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Inside Position</span>
-              <Bar pct={fastPace.fr} color={fastPace.fr >= 40 ? 'bg-green-400' : fastPace.fr >= 25 ? 'bg-amber-400' : 'bg-red-400'} />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Prominent Position</span>
-              <Bar pct={fastPace.pr} color={fastPace.pr >= 40 ? 'bg-green-400' : fastPace.pr >= 25 ? 'bg-amber-400' : 'bg-red-400'} />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Midfield</span>
-              <Bar pct={fastPace.md} color={fastPace.md >= 25 ? 'bg-green-400' : fastPace.md >= 15 ? 'bg-amber-400' : 'bg-red-400'} />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-zinc-400 w-20">Wide / Held Up</span>
-              <Bar pct={fastPace.hu} color={fastPace.hu >= 15 ? 'bg-green-400' : fastPace.hu >= 8 ? 'bg-amber-400' : 'bg-red-400'} />
-            </div>
+            {([
+              { key: 'fr', label: 'Front Runner', val: fastPace.fr },
+              { key: 'pr', label: 'Prominent', val: fastPace.pr },
+              { key: 'md', label: 'Midfield', val: fastPace.md },
+              { key: 'hu', label: 'Held Up', val: fastPace.hu },
+            ]).map(({ key, label, val }) => {
+              const delta = val - 25
+              const deltaLabel = delta > 5 ? `+${delta}%` : delta < -5 ? `${delta}%` : 'Neutral'
+              const deltaColor = delta > 5 ? 'text-green-400' : delta < -5 ? 'text-red-400' : 'text-zinc-500'
+              return (
+                <div key={key} className="flex items-center gap-2">
+                  <span className="text-[11px] text-zinc-400 w-28">{label}</span>
+                  <div className="flex-1"><Bar pct={val} color={val >= 35 ? 'bg-green-400' : val >= 25 ? 'bg-amber-400' : 'bg-red-400'} /></div>
+                  <span className={`text-[10px] w-14 text-right ${deltaColor}`}>{deltaLabel}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       ) : null}
@@ -211,17 +291,26 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
         <p className="text-[11px] text-zinc-300 leading-relaxed">{insight}</p>
       </div>
 
-      {/* APEX Rating */}
+      {/* APEX Rating — derived from data when available, static fallback */}
       <div>
-        <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">APEX Rating</h4>
+        <h4 className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider mb-1.5">
+          APEX Rating
+          {hasRealDrawData && <span className="ml-1 text-green-500 normal-case">data-driven</span>}
+        </h4>
         <div className="space-y-0.5">
           <BiasRating label="Speed" stars={ratings.speed} />
-          <BiasRating label="Stamina" stars={ratings.stamina} />
+          <BiasRating
+            label="Stamina"
+            stars={derivedRatings.stamina ?? ratings.stamina}
+          />
           <BiasRating label="Positioning" stars={ratings.positioning} />
           {isJumps ? (
             <BiasRating label="Jumping" stars={ratings.jumping || 0} />
           ) : (
-            <BiasRating label="Draw Impact" stars={ratings.draw} />
+            <BiasRating
+              label="Draw Impact"
+              stars={derivedRatings.draw ?? ratings.draw}
+            />
           )}
         </div>
       </div>
@@ -265,6 +354,15 @@ function TrackCard({ name, track }: { name: string; track: TrackProfile }) {
               <span className="text-[10px] text-zinc-400">Distance: </span>
               {Object.entries((track as any).derivedStats.distanceBias).map(([dist, v]: [string, any]) => (
                 <span key={dist} className="text-[10px] text-zinc-300">{dist} {v.wr}% · </span>
+              ))}
+            </div>
+          )}
+          {/* Field size bias */}
+          {(track as any).derivedStats.fieldSizeBias && Object.keys((track as any).derivedStats.fieldSizeBias).length > 0 && (
+            <div className="mt-1">
+              <span className="text-[10px] text-zinc-400">Field Size: </span>
+              {Object.entries((track as any).derivedStats.fieldSizeBias).map(([size, v]: [string, any]) => (
+                <span key={size} className="text-[10px] text-zinc-300">{size} {v.wr}% ({v.runs}r) · </span>
               ))}
             </div>
           )}

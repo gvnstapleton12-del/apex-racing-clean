@@ -701,6 +701,26 @@ export interface JockeyMetric {
   eliteRides: number
 }
 
+// ============================================================
+// VALUE GATE — shared filter for value pick selection
+// ============================================================
+
+export function passesValueGate(
+  prob: number,
+  odds: number,
+  apexScore: number = 0,
+  previousRuns: number = 0,
+  pa: number | null = null
+): boolean {
+  if (!odds || odds <= 1 || !prob) return false
+  if (pa !== null && pa <= 0) return false
+  const requiredApexFloor = previousRuns < 5 ? 50 : 40
+  if (apexScore > 0 && apexScore < requiredApexFloor) return false
+  const implied = (1 / odds) * 100
+  const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
+  return prob >= 15 && marginPct > 25
+}
+
 export function aggregateJockeyMetrics(races: Race[], minRides = 2, eliteThreshold = 80): JockeyMetric[] {
   const jockeys: Record<string, JockeyMetric> = {}
   races.forEach((race) => {

@@ -15,6 +15,17 @@ console.log(`Loading ${files.length} cache files...`)
 
 const trackData = {}
 
+// ── Known AW-only tracks (from trackProfiles.json surfaceType) ──
+const AW_ONLY = new Set([
+  'Southwell', 'Wolverhampton', 'Newcastle',
+  'Chelmsford', 'Kempton', 'Dundalk',
+])
+
+function getSurface(course) {
+  if (AW_ONLY.has(course)) return 'AW'
+  return 'Turf'
+}
+
 for (const file of files) {
   const data = JSON.parse(readFileSync(join(CACHE_DIR, file), 'utf8'))
   for (const race of data) {
@@ -30,6 +41,8 @@ for (const file of files) {
         going: race.going,
         distance_f: race.distance_f,
         race_class: race.race_class,
+        race_type: race.type || 'Flat',
+        surface: getSurface(course),
         field_size: race.runners?.length || 0,
         date: race.date,
       })
@@ -86,17 +99,20 @@ for (const [course, data] of Object.entries(trackData)) {
   const raceCount = data.races.length
   const minRaces = raceCount >= MIN_RACES_FOR_STATS
 
-  // Draw bias by distance (among winners only)
+  // Draw bias by distance + race type + surface (among winners only)
   const drawByDist = {}
   for (const r of runners) {
     if (!r.draw || r.draw < 1 || r.position !== 1) continue
     const dist = distanceBand(toFurlongs(r.distance_f))
-    if (!drawByDist[dist]) drawByDist[dist] = { wins: 0, drawWins: {} }
-    drawByDist[dist].wins++
+    const raceType = r.race_type || 'Flat'
+    const surface = r.surface || 'Turf'
+    const key = `${dist}|${raceType}|${surface}`
+    if (!drawByDist[key]) drawByDist[key] = { wins: 0, drawWins: {} }
+    drawByDist[key].wins++
     const fs = r.field_size || 10
     const third = Math.ceil(fs / 3)
     const drawPos = r.draw <= third ? 'low' : r.draw > fs - third ? 'high' : 'mid'
-    drawByDist[dist].drawWins[drawPos] = (drawByDist[dist].drawWins[drawPos] || 0) + 1
+    drawByDist[key].drawWins[drawPos] = (drawByDist[key].drawWins[drawPos] || 0) + 1
   }
 
   // Going bias
@@ -152,12 +168,18 @@ for (const [course, data] of Object.entries(trackData)) {
       byDistance: Object.fromEntries(
         Object.entries(drawByDist)
           .filter(([, v]) => v.wins >= 3)
-          .map(([dist, v]) => [dist, {
-            low: ((v.drawWins.low || 0) / v.wins * 100).toFixed(0),
-            mid: ((v.drawWins.mid || 0) / v.wins * 100).toFixed(0),
-            high: ((v.drawWins.high || 0) / v.wins * 100).toFixed(0),
-            wins: v.wins,
-          }])
+          .map(([key, v]) => {
+            const [dist, raceType, surface] = key.split('|')
+            return [key, {
+              distance: dist,
+              raceType,
+              surface,
+              low: ((v.drawWins.low || 0) / v.wins * 100).toFixed(0),
+              mid: ((v.drawWins.mid || 0) / v.wins * 100).toFixed(0),
+              high: ((v.drawWins.high || 0) / v.wins * 100).toFixed(0),
+              wins: v.wins,
+            }]
+          })
       ),
     } : null,
     goingBias: Object.fromEntries(

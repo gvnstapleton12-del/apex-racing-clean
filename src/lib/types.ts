@@ -15,6 +15,7 @@ export interface Race {
   age_band?: string
   field_size?: number
   paceMap?: PaceMap
+  raceShape?: RaceShape
   betFilter?: BetFilter
   runners?: Runner[]
 }
@@ -22,6 +23,24 @@ export interface Race {
 export interface PaceMap {
   projectedTempo: string
   collapseRisk: string
+  frontRunners: number
+  prominent: number
+  midfield: number
+  holdUp: number
+  pacePressure: string
+}
+
+export interface RaceShape {
+  shape?: string
+  tempo?: string
+  leaders?: number
+  pressers?: number
+  midfield?: number
+  closers?: number
+  pressureLabel?: string
+  collapseProb?: number
+  beneficiaries?: Array<{ horse?: string; horse_id?: string; earlyPaceScore?: number; reason?: string }>
+  disadvantaged?: Array<{ horse?: string; horse_id?: string; earlyPaceScore?: number; reason?: string }>
 }
 
 export interface BetFilter {

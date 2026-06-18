@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, Fragment } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Race, Runner } from '../lib/types'
 import { fetchRacecards } from '../lib/racingApi'
@@ -162,8 +162,8 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
             const topRated = sortByScore(runners)[0]
 
             return (
+              <Fragment key={race.race_id || index}>
               <article
-                key={race.race_id || index}
                 id={`race-${race.course ? race.course.replace(/\s+/g, '-') : ''}-${(race.off_time || '').replace(':', '')}`}
                 className='race-card-2'
               >
@@ -239,6 +239,10 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
                   )}
                 </div>
               </article>
+              {(race.raceShape || race.paceMap) && (
+                <RacePressureGraph race={race} />
+              )}
+              </Fragment>
             )
           })}
         </div>
