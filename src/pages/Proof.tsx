@@ -786,6 +786,90 @@ export default function Proof() {
               </div>
             )}
 
+            {/* ── PA Band Performance (All-Time) ── */}
+            {paGate?.paBandPerformance?.allTime && (
+              <div className='mt-6 border-t border-green-500/10 pt-6'>
+                <h3 className='text-md font-bold mb-1'>PA Band Performance (All-Time)</h3>
+                <p className='text-zinc-500 text-xs mb-4'>Bettable selections only, grouped by PA strength. Primary dataset for model decisions.</p>
+                <div className='overflow-x-auto'>
+                  <table className='w-full text-sm'>
+                    <thead>
+                      <tr className='text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-700/50'>
+                        <th className='text-left py-2 pr-4'>PA Band</th>
+                        <th className='text-right py-2 pr-4'>Bets</th>
+                        <th className='text-right py-2 pr-4'>Wins</th>
+                        <th className='text-right py-2 pr-4'>WR</th>
+                        <th className='text-right py-2 pr-4'>ROI</th>
+                        <th className='text-right py-2 pr-4'>Avg Odds</th>
+                        <th className='text-right py-2 pr-4'>Avg Edge</th>
+                        <th className='text-right py-2 pr-2'>Sample</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paGate.paBandPerformance.allTime.map((b: any) => {
+                        const sampleIcon = b.count >= 500 ? '\u{1F7E2}' : b.count >= 200 ? '\u{1F7E1}' : '\u{1F534}'
+                        const wrColor = b.wr >= 35 ? 'text-green-400' : b.wr >= 25 ? 'text-amber-400' : 'text-red-400'
+                        return (
+                          <tr key={b.band} className='border-b border-zinc-800/50'>
+                            <td className='py-2 pr-4 font-medium'>{b.band}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.count}</td>
+                            <td className='text-right py-2 pr-4 text-green-400'>{b.wins}</td>
+                            <td className={`text-right py-2 pr-4 font-bold ${wrColor}`}>{b.wr}%</td>
+                            <td className={`text-right py-2 pr-4 font-mono ${b.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{b.roi >= 0 ? '+' : ''}{b.roi}%</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgOdds}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgEdge}%</td>
+                            <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* ── PA Band Performance (Last 3 Days) ── */}
+            {paGate?.paBandPerformance?.threeDay && (
+              <div className='mt-6 border-t border-green-500/10 pt-6'>
+                <h3 className='text-md font-bold mb-1'>Last 3 Days</h3>
+                <p className='text-zinc-500 text-xs mb-4'>Short-window drift detector. Do not make model decisions from this table.</p>
+                <div className='overflow-x-auto'>
+                  <table className='w-full text-sm'>
+                    <thead>
+                      <tr className='text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-700/50'>
+                        <th className='text-left py-2 pr-4'>PA Band</th>
+                        <th className='text-right py-2 pr-4'>Bets</th>
+                        <th className='text-right py-2 pr-4'>Wins</th>
+                        <th className='text-right py-2 pr-4'>WR</th>
+                        <th className='text-right py-2 pr-4'>ROI</th>
+                        <th className='text-right py-2 pr-4'>Avg Odds</th>
+                        <th className='text-right py-2 pr-4'>Avg Edge</th>
+                        <th className='text-right py-2 pr-2'>Sample</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paGate.paBandPerformance.threeDay.map((b: any) => {
+                        const sampleIcon = b.count >= 500 ? '\u{1F7E2}' : b.count >= 200 ? '\u{1F7E1}' : '\u{1F534}'
+                        const wrColor = b.wr >= 35 ? 'text-green-400' : b.wr >= 25 ? 'text-amber-400' : 'text-red-400'
+                        return (
+                          <tr key={b.band} className='border-b border-zinc-800/50'>
+                            <td className='py-2 pr-4 font-medium'>{b.band}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.count}</td>
+                            <td className='text-right py-2 pr-4 text-green-400'>{b.wins}</td>
+                            <td className={`text-right py-2 pr-4 font-bold ${wrColor}`}>{b.wr}%</td>
+                            <td className={`text-right py-2 pr-4 font-mono ${b.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{b.roi >= 0 ? '+' : ''}{b.roi}%</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgOdds}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgEdge}%</td>
+                            <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* ── Calibration by PA Band ── */}
             {paGate?.calibration && (
               <div className='mt-6 border-t border-green-500/10 pt-6'>

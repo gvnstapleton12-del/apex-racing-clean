@@ -2855,6 +2855,20 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       { label: '2-5', min: 2, max: 5, count: 0, wins: 0, sumPred: 0 },
       { label: '5+', min: 5, max: Infinity, count: 0, wins: 0, sumPred: 0 },
     ]
+
+    // PA band performance — bettable selections only
+    const isBettableBypass = (p) => {
+      const bq = p.betQuality || ''
+      if (bq === 'NO BET' || bq === 'WEAK_COMPAT' || bq === 'BORDERLINE') return false
+      return bq === 'STRONG VALUE' || bq === 'VALUE' || bq === 'PLAYABLE' || bq === 'SPECULATIVE'
+    }
+    const paPerfBands = [
+      { label: '0-2', min: 0, max: 2 },
+      { label: '2-5', min: 2, max: 5 },
+      { label: '5+', min: 5, max: Infinity },
+    ]
+    const allTime = paPerfBands.map(b => ({ ...b, count: 0, wins: 0, stakes: 0, returns: 0, sumOdds: 0, sumEdge: 0 }))
+    const threeDay = paPerfBands.map(b => ({ ...b, count: 0, wins: 0, stakes: 0, returns: 0, sumOdds: 0, sumEdge: 0 }))
     const isBettable = (p) => {
       const bq = p.betQuality || ''
       if (bq === 'NO BET' || bq === 'WEAK_COMPAT') return false
@@ -2870,7 +2884,7 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
     for (const racePreds of Object.values(db)) {
       if (!Array.isArray(racePreds)) continue
       for (const p of racePreds) {
-        if (!p.date || p.date < cutoff) continue
+        if (!p.date) continue
         const key = `${p.course}|${p.offTime}|${p.date}|${(p.horse||'').toLowerCase()}`
         const pos = resultMap[key]
         if (!pos) continue
@@ -2879,25 +2893,32 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
         const pl = won ? (odds - 1) : -1
         const pa = p.personalAffinity
         const wp = (p.estimatedWinProbability ?? p.predictedWinProb ?? 0) / 100
+        const impliedProb = 1 / Number(odds || 2)
+        const valEdge = wp - impliedProb
+        const isRecent = p.date >= cutoff
 
-        // Original gate classification
-        if (p.betQuality && p.betQuality !== 'NO BET') {
-          passed++; if (won) passedWins++; passedPL += pl
-        } else if (pa !== null && pa <= 0) {
-          paRejected++; if (won) paRejectedWins++; paRejectedPL += pl
-        } else {
-          otherRejected++; if (won) otherRejectedWins++; otherRejectedPL += pl
+        // Original gate classification (3-day window only)
+        if (isRecent) {
+          if (p.betQuality && p.betQuality !== 'NO BET') {
+            passed++; if (won) passedWins++; passedPL += pl
+          } else if (pa !== null && pa <= 0) {
+            paRejected++; if (won) paRejectedWins++; paRejectedPL += pl
+          } else {
+            otherRejected++; if (won) otherRejectedWins++; otherRejectedPL += pl
+          }
         }
 
-        // Contender monitor — all predictions by PA sign
-        if (pa !== null && pa > 0) {
-          contenderPaPos++; if (won) contenderPaPosWins++
-        } else if (pa !== null) {
-          contenderPaNonPos++; if (won) contenderPaNonPosWins++
+        // Contender monitor — all predictions by PA sign (3-day only)
+        if (isRecent) {
+          if (pa !== null && pa > 0) {
+            contenderPaPos++; if (won) contenderPaPosWins++
+          } else if (pa !== null) {
+            contenderPaNonPos++; if (won) contenderPaNonPosWins++
+          }
         }
 
-        // Bettable monitor — value-qualified bets only
-        if (isBettable(p)) {
+        // Bettable monitor — value-qualified bets only (3-day only)
+        if (isRecent && isBettable(p)) {
           if (pa !== null && pa > 0) {
             bettablePassed++; if (won) bettablePassedWins++; bettablePassedPL += pl
           } else {
@@ -2905,11 +2926,37 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
           }
         }
 
-        // Calibration by PA band — all predictions with results
+        // Calibration by PA band — all predictions with results (all-time)
         if (pa !== null && wp > 0) {
           for (const band of calBands) {
             if (pa > band.min && pa <= band.max) {
               band.count++; if (won) band.wins++; band.sumPred += wp
+              break
+            }
+          }
+        }
+
+        // PA band performance — bettable selections only (both all-time and 3-day)
+        if (isBettableBypass(p) && pa !== null && pa > 0) {
+          for (let i = 0; i < paPerfBands.length; i++) {
+            const b = paPerfBands[i]
+            if (pa > b.min && pa <= b.max) {
+              // All-time
+              allTime[i].count++
+              allTime[i].stakes++
+              allTime[i].returns += won ? odds : 0
+              allTime[i].sumOdds += odds
+              if (won) allTime[i].wins++
+              if (valEdge > 0) allTime[i].sumEdge += valEdge
+              // 3-day
+              if (isRecent) {
+                threeDay[i].count++
+                threeDay[i].stakes++
+                threeDay[i].returns += won ? odds : 0
+                threeDay[i].sumOdds += odds
+                if (won) threeDay[i].wins++
+                if (valEdge > 0) threeDay[i].sumEdge += valEdge
+              }
               break
             }
           }
@@ -2938,6 +2985,30 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
         rejected: { count: bettableRejected, wins: bettableRejectedWins, roi: bettableRejected ? +(bettableRejectedPL / bettableRejected * 100).toFixed(1) : 0 },
       },
       calibration,
+      paBandPerformance: {
+        allTime: allTime.map(b => ({
+          band: b.label,
+          count: b.count,
+          wins: b.wins,
+          stakes: b.stakes,
+          returns: +b.returns.toFixed(2),
+          wr: b.count ? +(b.wins / b.count * 100).toFixed(1) : 0,
+          roi: b.stakes ? +((b.returns - b.stakes) / b.stakes * 100).toFixed(1) : 0,
+          avgOdds: b.count ? +(b.sumOdds / b.count).toFixed(2) : 0,
+          avgEdge: b.count ? +(b.sumEdge / b.count * 100).toFixed(1) : 0,
+        })),
+        threeDay: threeDay.map(b => ({
+          band: b.label,
+          count: b.count,
+          wins: b.wins,
+          stakes: b.stakes,
+          returns: +b.returns.toFixed(2),
+          wr: b.count ? +(b.wins / b.count * 100).toFixed(1) : 0,
+          roi: b.stakes ? +((b.returns - b.stakes) / b.stakes * 100).toFixed(1) : 0,
+          avgOdds: b.count ? +(b.sumOdds / b.count).toFixed(2) : 0,
+          avgEdge: b.count ? +(b.sumEdge / b.count * 100).toFixed(1) : 0,
+        })),
+      },
     })
   } catch (e) {
     res.status(500).json({ error: e.message })
