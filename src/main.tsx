@@ -82,6 +82,7 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
   if (!selection) return null
   const isNR = result === 'nr'
   const label = resultLabel(result, position)
+  const betType = selection.betType || null
   return (
     <article className={`apex-card ${isNap ? 'lg:col-span-2' : ''} ${isNap ? 'border-amber-500/40 shadow-[0_0_40px_rgba(245,158,11,0.15)]' : ''} p-6 ${isNap ? 'hover:border-amber-400/50' : ''} transition-all duration-300 relative overflow-hidden${label ? ' has-result' : ''}${isNR ? ' opacity-40' : ''}`}>
       {isNap && <div className='nap-glow' />}
@@ -104,6 +105,12 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             )}
             <span className='text-zinc-500 text-xs'>{selection.offTime}</span>
             <div className='ml-auto flex items-center gap-2'>
+              {!label && betType === 'WIN' && (
+                <span className='text-xs px-2 py-1 rounded-lg border border-green-500/30 bg-green-500/15 text-green-400 font-bold'>WIN</span>
+              )}
+              {!label && betType === 'PLACE' && (
+                <span className='text-xs px-2 py-1 rounded-lg border border-amber-500/30 bg-amber-500/15 text-amber-400 font-bold'>E/W</span>
+              )}
               {isBomb && (
                 <span className='text-xs px-2 py-1 rounded-lg border border-red-500/20 bg-red-500/10 text-red-300 font-bold'>BOMB</span>
               )}
@@ -171,6 +178,7 @@ interface DailyPick {
   probConfidence: number | null
   valueEdge: number
   kellyStake: number | null
+  betType: string | null
   result: string | null
   position: number | null
 }
@@ -564,6 +572,7 @@ function Home() {
           fieldSize: p.fieldSize || 0,
           valueEdge: p.valueEdge,
           kellyStake: p.kellyStake,
+          betType: p.betType,
           or: p.or,
           rpr: p.rpr,
           performanceRating: p.performanceRating,
@@ -592,6 +601,7 @@ function Home() {
                 fieldSize: p.fieldSize || 0,
                 valueEdge: p.valueEdge,
                 kellyStake: p.kellyStake,
+                betType: p.betType,
                 or: p.or,
                 rpr: p.rpr,
                 performanceRating: p.performanceRating,
