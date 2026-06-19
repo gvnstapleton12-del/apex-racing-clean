@@ -12,7 +12,7 @@ import Racecards from './pages/Racecards'
 import { ResultsList } from './pages/Results'
 import { fetchRacecards } from './lib/racingApi'
 import { formatOffTime } from './lib/formatTime'
-import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate, passesValueGate } from './lib/engine'
+import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
 import type { Race, Runner } from './lib/types'
 import { getAtTheRacesHorseUrl } from './lib/horseLinks'
 import TrackDirectory from './pages/TrackDirectory'
@@ -163,6 +163,32 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             </span>
           </div>
 
+          {/* Model diagnostics */}
+          <div className='flex gap-2 mt-2 flex-wrap items-center'>
+            {selection.winProb != null && selection.winProb > 0 && (
+              <span className='text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Model {selection.winProb.toFixed(1)}%</span>
+            )}
+            {selection.odds != null && parseOddsToNum(selection.odds) > 0 && (
+              <span className='text-[10px] px-2 py-0.5 rounded bg-zinc-500/10 text-zinc-400 border border-white/5'>Mkt {(100 / parseOddsToNum(selection.odds)).toFixed(1)}%</span>
+            )}
+            {selection.personalAffinity?.adjustment != null && (
+              <span className={`text-[10px] px-2 py-0.5 rounded border ${selection.personalAffinity.adjustment > 0 ? 'bg-green-500/10 text-green-400 border-green-500/20' : selection.personalAffinity.adjustment < -0.5 ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-zinc-500/10 text-zinc-400 border-white/5'}`}>
+                PA {selection.personalAffinity.adjustment > 0 ? '+' : ''}{selection.personalAffinity.adjustment.toFixed(1)}
+              </span>
+            )}
+            {(selection as any).betQuality && (
+              <span className={`text-[10px] px-2 py-0.5 rounded border ${
+                (selection as any).betQuality === 'STRONG VALUE' ? 'bg-green-500/15 text-green-300 border-green-500/30' :
+                (selection as any).betQuality === 'VALUE' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                (selection as any).betQuality === 'PLAYABLE' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                (selection as any).betQuality === 'SPECULATIVE' ? 'bg-zinc-500/10 text-zinc-400 border-white/5' :
+                (selection as any).betQuality === 'BORDERLINE' ? 'bg-amber-500/10 text-amber-400/70 border-amber-500/10' :
+                (selection as any).betQuality === 'WEAK_COMPAT' ? 'bg-zinc-500/10 text-zinc-500 border-white/5' :
+                'bg-red-500/10 text-red-400/70 border-red-500/10'
+              }`}>{(selection as any).betQuality}</span>
+            )}
+          </div>
+
           {/* Pace Shape summary */}
           {(() => {
             const rs = selection.race?.raceShape
@@ -243,9 +269,10 @@ interface DailyPicksEntry {
 
 function Home() {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
-  const [pickView, setPickView] = useState<'saved' | 'live'>('saved')
+  const [pickView, setPickView] = useState<'saved' | 'live'>('live')
   const [abandoned, setAbandoned] = useState<any[]>([])
-  const [valuePicksStats, setValuePicksStats] = useState<{ count: number; wr: number; roi: number; kellyRoi: number } | null>(null)
+  const [livePicksStats, setLivePicksStats] = useState<{ stats: { won: number; placed: number; lost: number; nr: number; pending: number }; roi: number } | null>(null)
+  const [homeWidgets, setHomeWidgets] = useState<any>(null)
   const {
     data: races = [],
     isLoading,
@@ -290,37 +317,21 @@ function Home() {
     return () => clearInterval(interval)
   }, [])
 
-  // Fetch value picks ROI from calibration
   useEffect(() => {
-    fetch('/api/calibration')
-      .then((r) => r.json())
-      .then((data) => {
-        const records = data.records || []
-        const vp = records.filter((r: any) => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
-        if (vp.length === 0) return
-        const vpWins = vp.filter((r: any) => r.actualWon).length
-        const vpPL = vp.reduce((s: number, r: any) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
-        const vpROI = (vpPL / vp.length) * 100
-        // Simulate eighth-Kelly
-        let kellyBankroll = 1000
-        vp.forEach((r: any) => {
-          const p = Number(r.predictedWinProb) / 100
-          const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
-          const implied = 1 / odds
-          const margin = (p - implied) / implied
-          if (p >= 0.15 && margin > 0.25) {
-            const b = odds - 1
-            const edge = p * b - (1 - p)
-            if (edge > 0) {
-              const kelly = (edge / b) * 0.125
-              const stake = kellyBankroll * Math.min(kelly, 0.05)
-              kellyBankroll += r.actualWon ? stake * (odds - 1) : -stake
-            }
-          }
-        })
-        const kellyRoi = ((kellyBankroll - 1000) / 1000) * 100
-        setValuePicksStats({ count: vp.length, wr: (vpWins / vp.length) * 100, roi: vpROI, kellyRoi })
-      })
+    const fetchStats = () => {
+      fetch('/api/live-picks/stats')
+        .then(r => r.json())
+        .then(setLivePicksStats)
+        .catch(() => {})
+    }
+    fetchStats()
+    const interval = setInterval(fetchStats, 60000)
+    return () => clearInterval(interval)
+  }, [])
+  useEffect(() => {
+    fetch('/api/home-widgets')
+      .then(r => r.json())
+      .then(setHomeWidgets)
       .catch(() => {})
   }, [])
 
@@ -487,6 +498,27 @@ function Home() {
     return true
   })
   const picksLive = upcomingBest ? [upcomingBest, ...upcomingOnePerRace].slice(0, 15) : upcomingOnePerRace.slice(0, 15)
+
+  // Log ALL live picks to server for honest performance tracking (not just upcoming)
+  const allLivePicksKey = allPicks.map(p => p.horse + p.course).join('|')
+  useEffect(() => {
+    if (allPicks.length === 0) return
+    const dateStr = new Date().toISOString().split('T')[0]
+    fetch('/api/live-picks/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: dateStr,
+        picks: allPicks.map(p => ({
+          horse: p.horse,
+          course: p.course,
+          offTime: p.offTime,
+          odds: parseOddsToNum(p.odds),
+          score: p.score,
+        })),
+      }),
+    }).catch(() => {})
+  }, [allLivePicksKey])
   // Freeze picks from saved DB when available — match to live data for display
   const picks = todaySaved?.picks?.length
     ? todaySaved.picks
@@ -541,6 +573,17 @@ function Home() {
   const todayResults = todaySaved?.picks || []
   const todayStats = todaySaved?.stats || null
 
+  // Top horse per race from ALL selections (regardless of bettable filter)
+  // Used as fallback in full card so every race shows a pick
+  const topPerRace = useMemo(() => {
+    const map = new Map<string, any>()
+    for (const s of allSelections) {
+      const key = `${s.course}|${s.offTime}`
+      if (!map.has(key)) map.set(key, s)
+    }
+    return map
+  }, [allSelections])
+
   // All races card — every race, picks highlighted
   // Use saved picks when available (frozen), fall back to live
   const allRacesCard = useMemo(() => {
@@ -555,7 +598,7 @@ function Home() {
       .map(r => {
         const offTime = formatOffTime(r)
         const pickKey = `${r.course}|${offTime}`
-        const pick = pickByRace.get(pickKey)
+        const pick = pickByRace.get(pickKey) || topPerRace.get(pickKey)
         const fieldSize = r.runners?.length || 0
         const placed = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
         const pos = pick?.position || r.runners?.find((run: any) => run.horse === pick?.horse)?.position || null
@@ -568,6 +611,7 @@ function Home() {
           raceName: r.race_name || '',
           horse: pick?.horse || winner?.horse || '—',
           score: pick?.score || winner?.score || 0,
+          winProb: (pick?.winProb || 0) * 100,
           odds: pick?.odds || winner?.odds || 0,
           going: r.going || '',
           isPick: !!pick,
@@ -751,35 +795,6 @@ function Home() {
         </section>
       )}
 
-        {valuePicksStats && (
-          <div className='mt-8 pt-8 border-t border-white/5'>
-            <div className='flex items-center justify-between mb-6'>
-              <div>
-                <h3 className='text-lg font-semibold text-white'>Value Picks Performance</h3>
-                <p className='text-xs text-zinc-500 mt-1'>Gate: P ≥ 15% + 25% margin + APEX ≥ 40/50</p>
-              </div>
-            </div>
-            <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
-              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-                <span className='text-zinc-400 text-sm block'>Bets</span>
-                <strong className='text-2xl font-bold text-white'>{valuePicksStats.count}</strong>
-              </div>
-              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-                <span className='text-zinc-400 text-sm block'>Win Rate</span>
-                <strong className={`text-2xl font-bold ${valuePicksStats.wr >= 10 ? 'text-green-400' : valuePicksStats.wr >= 7 ? 'text-amber-400' : 'text-red-400'}`}>{valuePicksStats.wr.toFixed(1)}%</strong>
-              </div>
-              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-                <span className='text-zinc-400 text-sm block'>Level ROI</span>
-                <strong className={`text-2xl font-bold ${valuePicksStats.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.roi >= 0 ? '+' : ''}{valuePicksStats.roi.toFixed(1)}%</strong>
-              </div>
-              <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
-                <span className='text-zinc-400 text-sm block'>Eighth-Kelly ROI</span>
-                <strong className={`text-2xl font-bold ${valuePicksStats.kellyRoi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{valuePicksStats.kellyRoi >= 0 ? '+' : ''}{valuePicksStats.kellyRoi.toFixed(1)}%</strong>
-              </div>
-            </div>
-          </div>
-        )}
-
       {isLoading ? (
         <div className='loading-card bg-white/[0.02] rounded-2xl border border-white/5 p-12 flex items-center gap-4'>
           <div className='pulse-dot' />
@@ -834,6 +849,97 @@ function Home() {
               )}
             </div>
           )}
+          {todayStats && (
+            <div className='flex items-center gap-6 mb-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
+              <div className='flex items-center gap-2'>
+                <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Frozen</span>
+                <span className='text-sm font-bold text-green-400'>{todayStats.won}W</span>
+                <span className='text-zinc-600'>/</span>
+                <span className='text-sm font-bold text-amber-400'>{todayStats.placed}P</span>
+                <span className='text-zinc-600'>/</span>
+                <span className='text-sm font-bold text-red-400'>{todayStats.lost}L</span>
+                {todayStats.pending > 0 && (
+                  <>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-sm font-bold text-zinc-400'>{todayStats.pending} pending</span>
+                  </>
+                )}
+              </div>
+              {livePicksStats && (
+                <div className='flex items-center gap-2 pl-4 border-l border-white/5'>
+                  <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20'>Live</span>
+                  <span className='text-sm font-bold text-green-400'>{livePicksStats.stats.won}W</span>
+                  <span className='text-zinc-600'>/</span>
+                  <span className='text-sm font-bold text-amber-400'>{livePicksStats.stats.placed}P</span>
+                  <span className='text-zinc-600'>/</span>
+                  <span className='text-sm font-bold text-red-400'>{livePicksStats.stats.lost}L</span>
+                  {livePicksStats.roi !== 0 && (
+                    <span className={`text-xs font-bold ${livePicksStats.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {livePicksStats.roi > 0 ? '+' : ''}{livePicksStats.roi}%
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          {homeWidgets && (
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-3 bg-black/40 border border-white/10 rounded-xl p-3 mb-4'>
+              {/* PA COVERAGE */}
+              <div className='border-r border-white/10 pr-3'>
+                <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>PA Coverage</div>
+                {homeWidgets.paCoverage.total > 0 ? (
+                  <>
+                    <div className='mt-1.5 text-2xl font-semibold text-white'>{homeWidgets.paCoverage.coveragePct}%</div>
+                    <div className='text-[11px] text-zinc-400 mt-0.5'>{homeWidgets.paCoverage.withPA.toLocaleString()} / {homeWidgets.paCoverage.total.toLocaleString()} results</div>
+                    <div className='flex gap-3 mt-1.5 text-[11px]'>
+                      <span className='text-emerald-400'>+{homeWidgets.paCoverage.paPositive}</span>
+                      <span className='text-red-400'>-{homeWidgets.paCoverage.paNegative}</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className='text-xs text-zinc-500 mt-2'>No calibration data</div>
+                )}
+              </div>
+              {/* PA SIGNAL */}
+              <div className='border-r border-white/10 px-3'>
+                <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>PA Signal</div>
+                {homeWidgets.paCoverage.withPA > 0 ? (
+                  <div className='mt-1.5 space-y-0.5 text-[11px]'>
+                    {homeWidgets.paSignal.map((band: any) => (
+                      <div key={band.label} className='flex justify-between'>
+                        <span className={
+                          band.label.includes('Strong') ? 'text-emerald-400' :
+                          band.label.includes('Positive') ? 'text-green-400' :
+                          band.label.includes('Weak') ? 'text-yellow-400' : 'text-red-400'
+                        }>{band.label.split('(')[0].trim()}</span>
+                        <span className='text-zinc-300'>{band.total} | {band.wr}% | {band.roiPct}%</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className='text-xs text-zinc-500 mt-2'>PA not stored historically</div>
+                )}
+              </div>
+              {/* CALIBRATION */}
+              <div className='pl-3'>
+                <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>Calibration (90d)</div>
+                <div className='mt-1.5 space-y-0.5 text-[11px]'>
+                  {homeWidgets.cal90.filter((band: any) => band.n > 0).map((band: any) => {
+                    const err = Number(band.error)
+                    return (
+                      <div key={band.label} className='flex justify-between'>
+                        <span className='text-zinc-300'>{band.label}</span>
+                        <span className={
+                          Math.abs(err) < 3 ? 'text-emerald-400' :
+                          Math.abs(err) < 6 ? 'text-yellow-400' : 'text-red-400'
+                        }>{band.n} | {band.actualWR}% | {err}pp</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
           <div className='home-picks-grid grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {displayPicks.map((s, i) => {
               const saved = todayResults.find(
@@ -869,6 +975,7 @@ function Home() {
                     <th className='text-left py-2 px-3 w-[200px]'>Selection</th>
                     <th className='text-left py-2 px-3'>Going</th>
                     <th className='text-center py-2 px-3 w-[70px]'>Score</th>
+                    <th className='text-center py-2 px-3 w-[50px]'>WP%</th>
                     <th className='text-right py-2 px-3 w-[70px]'>Odds</th>
                     <th className='text-right py-2 px-3 w-[50px]'>Res</th>
                   </tr>
@@ -896,6 +1003,9 @@ function Home() {
                         <td className='py-2 px-3 text-xs text-slate-400 truncate'>{r.going || '—'}</td>
                         <td className='py-2 px-3 text-center font-mono text-xs font-bold text-slate-300'>
                           {hasSelection && r.score ? r.score : <span className='text-slate-700'>—</span>}
+                        </td>
+                        <td className='py-2 px-3 text-center font-mono text-[10px] text-slate-400'>
+                          {hasSelection && r.winProb > 0 ? `${r.winProb.toFixed(1)}%` : <span className='text-slate-700'>—</span>}
                         </td>
                         <td className='py-2 px-3 text-right font-mono text-xs font-bold text-slate-300'>
                           {hasSelection && r.odds > 0 ? (

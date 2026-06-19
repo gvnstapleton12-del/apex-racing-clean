@@ -118,10 +118,10 @@ async function fetchMeetingList(dateStr) {
       seenIds.add(ref.id)
 
       const country = ms.course?.country?.short_name || ''
-      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland', 'SCO', 'Scotland', 'Scot', 'Wale'].includes(country)
-      if (!isUkIre) continue
-
       const courseName = ms.course?.name || ''
+      const isUkIreCountry = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland', 'SCO', 'Scotland', 'Scot', 'Wale'].includes(country)
+      const isUkIreCourse = isUkIre(courseName)
+      if (!isUkIreCountry && !isUkIreCourse) continue
       const raceCount = m.races?.length || 0
       const slug = courseName.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
 
@@ -380,9 +380,10 @@ export async function fetchSlResults(dateStr) {
       const ms = m.meeting_summary
       const ref = ms?.meeting_reference
       const country = ms.course?.country?.short_name || ''
-      const isUkIre = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland', 'SCO', 'Scotland', 'Scot', 'Wale'].includes(country)
-      if (!isUkIre) continue
       const courseName = ms.course?.name || ''
+      const isUkIreCountry = ['ENG', 'Wales', 'WLS', 'NIR', 'Eire', 'IRE', 'GB', 'Ireland', 'SCO', 'Scotland', 'Scot', 'Wale'].includes(country)
+      const isUkIreCourse = isUkIre(courseName)
+      if (!isUkIreCountry && !isUkIreCourse) continue
 
       for (const race of (m.races || [])) {
         const raceRef = race.race_summary_reference

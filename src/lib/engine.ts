@@ -716,9 +716,13 @@ export function passesValueGate(
   if (pa !== null && pa <= 0) return false
   const requiredApexFloor = previousRuns < 5 ? 50 : 40
   if (apexScore > 0 && apexScore < requiredApexFloor) return false
+
+  // PA is a gate (line above), not a probability amplifier
+  const correctedProb = prob
+
   const implied = (1 / odds) * 100
-  const marginPct = implied > 0 ? ((prob - implied) / implied) * 100 : 0
-  return prob >= 15 && marginPct > 25
+  const marginPct = implied > 0 ? ((correctedProb - implied) / implied) * 100 : 0
+  return correctedProb >= 15 && marginPct > 25
 }
 
 export function aggregateJockeyMetrics(races: Race[], minRides = 2, eliteThreshold = 80): JockeyMetric[] {

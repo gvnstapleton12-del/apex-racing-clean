@@ -386,7 +386,10 @@ export function runApexEngine(runners, race, options = {}) {
       courseMultiplier,
       disableGoing: options.disableGoing ?? true,
     })
-    const personalAffinityAdj = (personalAffinity.factor - 1.0) * 100
+    let personalAffinityAdj = (personalAffinity.factor - 1.0) * 100
+    if (personalAffinityAdj > 0) {
+      personalAffinityAdj = Math.pow(personalAffinityAdj, 1.5)
+    }
 
     // Expose individual affinity components as separate score adjustments
     const courseAffinityAdj = personalAffinity.breakdown?.track?.adjustment
@@ -661,23 +664,13 @@ export function runApexEngine(runners, race, options = {}) {
   }
 
   const enablePaCalibration = options.enablePaCalibration !== false
-  const paCalibrationCap = options.paCalibrationCap ?? 0.20
+  const paCalibrationCap = options.paCalibrationCap ?? 0.45
   const adjustedWinProbs = winProbs.map((p, i) => {
     const prob = p / 100
     const calibrated = calibrateWinProbability(prob)
-    let adjusted = calibrated
-    if (enablePaCalibration) {
-      const paAdj = sorted[i]?.personalAffinity?.adjustment ?? 0
-      let paCorrection = 0
-      if (paAdj <= 0) paCorrection = -0.50
-      else if (paAdj <= 1) paCorrection = -0.22
-      else if (paAdj <= 3) paCorrection = 0.12
-      else if (paAdj <= 6) paCorrection = Math.min(0.30, paCalibrationCap)
-      else if (paAdj <= 10) paCorrection = Math.min(0.33, paCalibrationCap)
-      else paCorrection = Math.min(0.43, paCalibrationCap)
-      adjusted = Math.max(0.01, Math.min(0.99, calibrated + paCorrection))
-    }
-    return Math.round(adjusted * 1000) / 10
+    // PA is a gate (NO BET if PA≤0), NOT a probability amplifier
+    // Removed additive PA correction that inflated probabilities 3-7x
+    return Math.round(calibrated * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {
     const prob = p / 100
@@ -784,7 +777,7 @@ export function runApexEngine(runners, race, options = {}) {
         if (distance > 70) { overrideCount++; overrideReasons.push('distance_suitable') }
         const overrideTriggered = paAdj <= -2 && overrideCount >= 2
 
-        // PA eligibility zones
+        // PA eligibility zones — PA is a gate, not a probability amplifier
         if (paAdj > 0) {
           return betQuality(band, adjustedWinProbs[i], r.market.score, odds)
         } else if (paAdj > -0.5) {

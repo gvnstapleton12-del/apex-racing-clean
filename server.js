@@ -112,6 +112,7 @@ const HORSE_MEMORY_DB_PATH = path.join(process.cwd(), 'data', 'apex-horses.db')
 const TRACK_PROFILES_PATH = path.join(process.cwd(), 'data', 'trackProfiles.json')
 const HORSE_PROFILES_PATH = path.join(process.cwd(), 'data', 'horseProfiles.json')
 const COUNTERFACTUAL_DB_PATH = path.join(process.cwd(), 'data', 'counterfactual-log.json')
+const LIVE_PICKS_LOG_PATH = path.join(process.cwd(), 'data', 'live-picks-log.json')
 
 let HORSE_MEMORY_DB = null
 
@@ -361,6 +362,10 @@ const GOING_DATABASE = loadDatabase(GOING_DB_PATH)
 const DISTANCE_DATABASE = loadDatabase(DISTANCE_DB_PATH)
 const BUCKET_DATABASE = loadDatabase(BUCKET_DB_PATH)
 const COUNTERFACTUAL_DATABASE = (() => { const db = loadDatabase(COUNTERFACTUAL_DB_PATH); const base = Array.isArray(db) ? { observations: [], stats: {} } : (db || {}); if (!base.observations) base.observations = []; if (!base.stats) base.stats = {}; return base })()
+
+// Live picks log: tracks every live pick generated for honest performance measurement
+// Structure: { "2026-06-19": { picks: [{ horse, course, offTime, odds, score, timestamp }], stats: { won, placed, lost, pending } } }
+const LIVE_PICKS_LOG = (() => { const db = loadDatabase(LIVE_PICKS_LOG_PATH); return db || {} })()
 
 const LEARNING_DATABASE = loadDatabase(LEARNING_DB_PATH) || {}
 if (!LEARNING_DATABASE.records) LEARNING_DATABASE.records = []
@@ -1503,14 +1508,14 @@ async function fetchResultsForDate(dateStr) {
 }
 
 async function fetchTodayResults() {
-  const today = new Date().toISOString().split('T')[0]
-  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+  // Fetch last 3 days + today to catch any missed dates
+  const dates = [0, 1, 2, 3].map(i => {
+    const d = new Date(Date.now() - i * 86400000)
+    return d.toISOString().split('T')[0]
+  })
 
   console.time('[Results] fetchTodayResults')
-  await Promise.all([
-    fetchResultsForDate(yesterday),
-    fetchResultsForDate(today),
-  ])
+  await Promise.all(dates.map(d => fetchResultsForDate(d)))
   console.timeEnd('[Results] fetchTodayResults')
 }
 
@@ -1768,6 +1773,28 @@ app.get('/api/daily-picks', (_req, res) => {
   res.json(DAILY_PICKS_DATABASE)
 })
 
+app.post('/api/results/backfill', async (req, res) => {
+  const { dates } = req.body
+  if (!Array.isArray(dates) || dates.length === 0) {
+    return res.status(400).json({ error: 'dates array required' })
+  }
+  console.log(`[Backfill] Fetching results for ${dates.length} dates: ${dates.join(', ')}`)
+  const results = {}
+  for (const date of dates) {
+    try {
+      const count = await fetchResultsForDate(date)
+      results[date] = count
+    } catch (e) {
+      results[date] = `error: ${e.message}`
+    }
+  }
+  // Re-match daily picks with the newly scraped results
+  const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
+  matchDailyPicksWithResults(allResultRaces)
+  matchCounterfactualWithResults(allResultRaces)
+  res.json({ ok: true, results })
+})
+
 app.delete('/api/daily-picks/:date', (req, res) => {
   const { date } = req.params
   if (!date) return res.status(400).json({ error: 'Date required' })
@@ -1775,6 +1802,172 @@ app.delete('/api/daily-picks/:date', (req, res) => {
   saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
   pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
   res.json({ deleted: true, date })
+})
+
+// Live picks tracking — honest performance measurement without survivorship bias
+app.post('/api/live-picks/log', (req, res) => {
+  const { date, picks } = req.body
+  if (!date || !Array.isArray(picks)) {
+    return res.status(400).json({ error: 'date and picks array required' })
+  }
+  if (!LIVE_PICKS_LOG[date]) {
+    LIVE_PICKS_LOG[date] = { picks: [], stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: 0 } }
+  }
+  const log = LIVE_PICKS_LOG[date]
+  // Dedupe by race (course|offTime) — one pick per race, replace on refresh
+  const raceMap = new Map(log.picks.map(p => [`${p.course}|${p.offTime}`, p]))
+  for (const p of picks) {
+    const raceKey = `${p.course}|${p.offTime}`
+    const existing = raceMap.get(raceKey)
+    // Replace if new pick has higher score, or if no result yet on existing
+    if (!existing || (p.score > (existing.score || 0) && !existing.result)) {
+      raceMap.set(raceKey, {
+        horse: p.horse,
+        course: p.course,
+        offTime: p.offTime || '',
+        odds: p.odds || 0,
+        score: p.score || 0,
+        timestamp: new Date().toISOString(),
+      })
+    }
+  }
+  log.picks = Array.from(raceMap.values())
+  // Recalculate stats
+  const won = log.picks.filter(p => p.result === 'won').length
+  const placed = log.picks.filter(p => p.result === 'placed').length
+  const lost = log.picks.filter(p => p.result === 'lost').length
+  const nr = log.picks.filter(p => p.result === 'nr').length
+  log.stats = { won, placed, lost, nr, pending: log.picks.length - won - placed - lost - nr }
+  saveDatabase(LIVE_PICKS_LOG_PATH, LIVE_PICKS_LOG)
+  res.json({ saved: true, total: log.picks.length, stats: log.stats })
+})
+
+app.get('/api/live-picks/stats', (_req, res) => {
+  const today = new Date().toISOString().split('T')[0]
+  const log = LIVE_PICKS_LOG[today] || { picks: [], stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: 0 } }
+
+  // Re-match against latest results
+  const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
+  let matchCount = 0
+  for (const race of allResultRaces) {
+    const raceDate = String(race.date || (race.off_dt || '').slice(0, 10) || '').replace(/[/]/g, '-')
+    if (raceDate !== today) continue
+    const runners = race.runners || []
+    const fieldSize = runners.length
+    for (const runner of runners) {
+      const match = log.picks.find(p =>
+        normalizeHorseName(p.horse) === normalizeHorseName(runner.horse) &&
+        normalizeCourse(p.course) === normalizeCourse(race.course)
+      )
+      if (match && !match.result) {
+        const pos = normalizePosition(runner.position || runner.pos)
+        if (pos === 1) match.result = 'won'
+        else if (pos > 1 && pos <= placedPositions(fieldSize)) match.result = 'placed'
+        else if (pos > 0) match.result = 'lost'
+        match.position = pos
+        match.fieldSize = fieldSize
+        matchCount++
+      }
+    }
+  }
+  // Recalculate stats
+  const won = log.picks.filter(p => p.result === 'won').length
+  const placed = log.picks.filter(p => p.result === 'placed').length
+  const lost = log.picks.filter(p => p.result === 'lost').length
+  const nr = log.picks.filter(p => p.result === 'nr').length
+  log.stats = { won, placed, lost, nr, pending: log.picks.length - won - placed - lost - nr }
+  if (matchCount > 0) saveDatabase(LIVE_PICKS_LOG_PATH, LIVE_PICKS_LOG)
+
+  // Calculate ROI
+  let roi = 0
+  for (const p of log.picks) {
+    if (p.result === 'won') roi += (p.odds - 1)
+    else if (p.result === 'lost') roi -= 1
+  }
+  const resolved = won + placed + lost
+  const roiPct = resolved > 0 ? (roi / resolved * 100).toFixed(1) : '0'
+
+  res.json({ date: today, stats: log.stats, roi: parseFloat(roiPct), picks: log.picks })
+})
+
+// Home page widgets: PA coverage, PA signal performance, rolling calibration
+app.get('/api/home-widgets', (_req, res) => {
+  const records = CALIBRATION_DATABASE.records || []
+  const now = Date.now()
+  const DAY = 86400000
+
+  // 1. PA Coverage — PA was never stored in calibration records
+  // Show honest "no data" until we start persisting PA
+  const withPA = records.filter(r => r.personalAffinity != null && typeof r.personalAffinity === 'number')
+  const paPositive = withPA.filter(r => r.personalAffinity > 0)
+  const paNegative = withPA.filter(r => r.personalAffinity <= 0)
+  const paCoverage = records.length > 0 ? (withPA.length / records.length * 100).toFixed(1) : '0'
+
+  // 2. PA Signal — only compute if we have PA data
+  const paBands = [
+    { label: 'PA Strong (>5)', filter: r => r.personalAffinity > 5 },
+    { label: 'PA Positive (0-5)', filter: r => r.personalAffinity > 0 && r.personalAffinity <= 5 },
+    { label: 'PA Weak (-2-0)', filter: r => r.personalAffinity > -2 && r.personalAffinity <= 0 },
+    { label: 'PA Negative (<-2)', filter: r => r.personalAffinity <= -2 },
+  ]
+  const paSignal = paBands.map(band => {
+    const subset = withPA.filter(band.filter)
+    const wins = subset.filter(r => r.actualWon).length
+    const total = subset.length
+    const wr = total > 0 ? (wins / total * 100).toFixed(1) : '—'
+    let roi = 0
+    for (const r of subset) {
+      if (r.actualWon) roi += ((Number(r.actualOdds) || 2) - 1)
+      else roi -= 1
+    }
+    const roiPct = total > 0 ? (roi / total * 100).toFixed(1) : '—'
+    return { label: band.label, total, wins, wr, roiPct }
+  })
+
+  // 3. Rolling Calibration — uses CALIBRATION_DATABASE which has predictedWinProb + actualWon
+  const wpBands = [
+    { label: '0-6%', min: 0, max: 6 },
+    { label: '6-12%', min: 6, max: 12 },
+    { label: '12-20%', min: 12, max: 20 },
+    { label: '20-40%', min: 20, max: 40 },
+    { label: '40%+', min: 40, max: 100 },
+  ]
+
+  function computeCalibration(days) {
+    const cutoff = now - days * DAY
+    const subset = records.filter(r => {
+      const d = r.date ? new Date(r.date).getTime() : 0
+      return d >= cutoff
+    })
+    return wpBands.map(band => {
+      const bucket = subset.filter(r => {
+        const wp = Number(r.predictedWinProb) || 0
+        return wp >= band.min && wp < band.max
+      })
+      const wins = bucket.filter(r => r.actualWon).length
+      const avgPred = bucket.length > 0
+        ? (bucket.reduce((s, r) => s + (Number(r.predictedWinProb) || 0), 0) / bucket.length).toFixed(1)
+        : '—'
+      const actualWR = bucket.length > 0 ? (wins / bucket.length * 100).toFixed(1) : '—'
+      const error = avgPred !== '—' && actualWR !== '—'
+        ? (Number(avgPred) - Number(actualWR)).toFixed(1)
+        : '—'
+      return { label: band.label, n: bucket.length, avgPred, actualWR, error }
+    })
+  }
+
+  res.json({
+    paCoverage: {
+      total: records.length,
+      withPA: withPA.length,
+      paPositive: paPositive.length,
+      paNegative: paNegative.length,
+      coveragePct: paCoverage,
+    },
+    paSignal,
+    cal30: computeCalibration(30),
+    cal90: computeCalibration(90),
+  })
 })
 
 app.get('/api/replay-notes', (_req, res) => {
@@ -2016,29 +2209,29 @@ app.post('/api/upload-results', (req, res) => {
       runners.forEach((runner) => {
         const horseId = runner.horse_id || runner.horse
         
-        // Save to Horse Memory SQLite Database - TEMPORARILY DISABLED
-        // if (HORSE_MEMORY_DB && runner.horse) {
-        //   saveHorseRun(HORSE_MEMORY_DB, {
-        //     horse_name: runner.horse,
-        //     horse_id: horseId,
-        //     race_date: race.date || new Date().toISOString().split('T')[0],
-        //     course: race.course || '',
-        //     distance: raceDist,
-        //     going: raceGoing,
-        //     or_rating: runner.or || runner.ofr || 0,
-        //     rpr_rating: runner.rpr || 0,
-        //     finish_position: normalizePosition(runner.position) || 0,
-        //     starting_price: resolveOdds(runner),
-        //     race_class: race.race_class || race.class || '',
-        //     field_size: race.field_size || race.fieldSize || runners.length,
-        //     trainer: runner.trainer || '',
-        //     jockey: runner.jockey || '',
-        //   }).then(saved => {
-        //     if (!saved) {
-        //       console.error('[Horse Memory] Failed to save run for', runner.horse)
-        //     }
-        //   })
-        // }
+        // Save to Horse Memory SQLite Database
+        if (HORSE_MEMORY_DB && runner.horse) {
+          saveHorseRun(HORSE_MEMORY_DB, {
+            horse_name: runner.horse,
+            horse_id: horseId,
+            race_date: race.date || new Date().toISOString().split('T')[0],
+            course: race.course || '',
+            distance: raceDist,
+            going: raceGoing,
+            or_rating: runner.or || runner.ofr || 0,
+            rpr_rating: runner.rpr || 0,
+            finish_position: normalizePosition(runner.position) || 0,
+            starting_price: resolveOdds(runner),
+            race_class: race.race_class || race.class || '',
+            field_size: race.field_size || race.fieldSize || runners.length,
+            trainer: runner.trainer || '',
+            jockey: runner.jockey || '',
+          }).then(saved => {
+            if (!saved) {
+              console.error('[Horse Memory] Failed to save run for', runner.horse)
+            }
+          })
+        }
         const position = normalizePosition(runner.position)
         if (!horseId) return
 
@@ -3505,7 +3698,7 @@ function gracefulShutdown(signal) {
   console.log(`[Shutdown] ${signal} received, closing databases...`)
   Promise.all([
     closeBrowser(),
-    // HORSE_MEMORY_DB ? closeHorseDb(HORSE_MEMORY_DB) : Promise.resolve(), // TEMPORARILY DISABLED
+    HORSE_MEMORY_DB ? closeHorseDb(HORSE_MEMORY_DB) : Promise.resolve(),
   ]).then(() => {
     console.log('[Shutdown] All databases and browser closed')
     process.exit(0)
