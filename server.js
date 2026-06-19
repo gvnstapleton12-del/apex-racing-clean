@@ -434,6 +434,7 @@ const LIVE_STATE = {
   racecards: [],
   updatedAt: null,
   loading: true,
+  atrLoading: false,
 }
 
 function findPredictionForRunner(race, runner) {
@@ -949,38 +950,9 @@ async function fetchLiveMeetings() {
 
     console.log(`[LiveMeetings] Processing ${rawRaces.length} races from Sporting Life...`)
 
-    // Fetch ATR ratings before scoring so engine can use them
-    let atrRatings = {}
-    try {
-      console.time('[Startup] fetchAtrRatings')
-      console.log('[LiveMeetings] Fetching ATR ratings...')
-      atrRatings = await retry(() => fetchAtrRatings(today, rawRaces), 2, 2000)
-      const atrCount = Object.keys(atrRatings).length
-      console.timeEnd('[Startup] fetchAtrRatings')
-      console.log(`[LiveMeetings] Got ${atrCount} ATR ratings`)
-    } catch (error) {
-      console.timeEnd('[Startup] fetchAtrRatings')
-      console.error('[LiveMeetings] ATR ratings fetch failed:', error.message)
-    }
-
+    // Phase 1: Process races immediately WITHOUT waiting for ATR ratings
     console.time('[Startup] processRaces')
     const processed = []
-
-    // Build ATR lookup once, not per race
-    const normalizedAtrRatings = {}
-    for (const [name, rating] of Object.entries(atrRatings)) {
-      normalizedAtrRatings[normalizeHorseName(name)] = rating
-    }
-    for (const race of rawRaces) {
-      race.runners = (race.runners || []).map(runner => {
-        const key = normalizeHorseName(runner.horse)
-        const rating = normalizedAtrRatings[key]
-        if (rating && rating > 0 && (!runner.rpr || runner.rpr === 0)) {
-          return { ...runner, rpr: rating }
-        }
-        return runner
-      })
-    }
 
     for (let i = 0; i < rawRaces.length; i++) {
       const race = rawRaces[i]
@@ -1000,14 +972,73 @@ async function fetchLiveMeetings() {
       }
     }
 
-    // Broadcast scored races IMMEDIATELY — don't wait for ATR odds
+    // Broadcast scored races IMMEDIATELY — picks visible within ~30s
     console.timeEnd('[Startup] processRaces')
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
+    LIVE_STATE.atrLoading = true
     API_CACHE.set(cacheKey, processed)
     io.emit('live-update', buildLightweightState())
-    console.log(`[LiveMeetings] Broadcasted ${processed.length} races (pre-ATR odds)`)
+    console.log(`[LiveMeetings] Broadcasted ${processed.length} races (pre-ATR)`)
+
+    // Phase 2: ATR ratings in background — re-merge + re-broadcast when done
+    ;(async () => {
+      try {
+        console.time('[ATR] fetchAtrRatings')
+        console.log('[ATR] Fetching ratings in background...')
+        const atrRatings = await retry(() => fetchAtrRatings(today, rawRaces), 2, 2000)
+        const atrCount = Object.keys(atrRatings).length
+        console.timeEnd('[ATR] fetchAtrRatings')
+        console.log(`[ATR] Got ${atrCount} ratings, merging into processed races...`)
+
+        const normalizedAtrRatings = {}
+        for (const [name, rating] of Object.entries(atrRatings)) {
+          normalizedAtrRatings[normalizeHorseName(name)] = rating
+        }
+
+        let merged = 0
+        for (const race of processed) {
+          let raceChanged = false
+          const updatedRunners = (race.runners || []).map(runner => {
+            const key = normalizeHorseName(runner.horse)
+            const rating = normalizedAtrRatings[key]
+            if (rating && rating > 0 && (!runner.rpr || runner.rpr === 0)) {
+              raceChanged = true
+              merged++
+              return { ...runner, rpr: rating }
+            }
+            return runner
+          })
+          if (raceChanged) {
+            race.runners = updatedRunners
+            // Re-score race with updated RPR values
+            try {
+              const rescored = await processRace({
+                ...race,
+                runners: updatedRunners,
+              })
+              Object.assign(race, rescored)
+            } catch (e) {
+              console.error(`[ATR] Re-score failed ${race.course}: ${e.message}`)
+            }
+          }
+        }
+
+        console.log(`[ATR] Merged ${merged} ratings, re-scored affected races`)
+        LIVE_STATE.atrLoading = false
+        LIVE_STATE.updatedAt = new Date().toISOString()
+        LIVE_STATE.racecards = processed
+        API_CACHE.set(cacheKey, processed)
+        io.emit('live-update', buildLightweightState())
+        console.log('[ATR] Re-broadcasted with ATR ratings')
+      } catch (error) {
+        console.timeEnd('[ATR] fetchAtrRatings')
+        console.error('[ATR] Background fetch failed:', error.message)
+        LIVE_STATE.atrLoading = false
+        io.emit('live-update', buildLightweightState())
+      }
+    })()
 
     // Fetch ATR odds as secondary source (non-blocking with 30s hard timeout)
     try {
@@ -1055,6 +1086,7 @@ async function fetchLiveMeetings() {
     try {
       const enrichedCache = (processed || []).map(race => ({
         race_id: race.race_id,
+        race_name: race.race_name || '',
         course: race.course,
         off_time: race.off_time,
         date: race.date,
@@ -1062,6 +1094,8 @@ async function fetchLiveMeetings() {
         distance_f: race.distance_f || '',
         race_class: race.race_class || 0,
         surface: race.surface || '',
+        excluded: race.excluded || false,
+        exclusionReason: race.exclusionReason || null,
         runners: (race.runners || []).map(r => ({
           horse: r.horse,
           or: r.or,
@@ -1563,6 +1597,7 @@ function buildLightweightState() {
     abandoned: LIVE_STATE.abandoned || [],
     updatedAt: LIVE_STATE.updatedAt,
     loading: LIVE_STATE.loading,
+    atrLoading: LIVE_STATE.atrLoading,
   }
 }
 
