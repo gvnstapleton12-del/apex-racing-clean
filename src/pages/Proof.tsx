@@ -20,8 +20,13 @@ function HistoryTab() {
   const [maxRecords, setMaxRecords] = useState(200)
 
   useEffect(() => {
-    fetch(apiUrl(`/api/historical?limit=${maxRecords}&offset=0`)).then(r => r.json()).then(setData).catch(() => {})
-    fetch(apiUrl('/api/historical/stats')).then(r => r.json()).then(setStats).catch(() => {})
+    const fetchData = () => {
+      fetch(apiUrl(`/api/historical?limit=${maxRecords}&offset=0`)).then(r => r.json()).then(setData).catch(() => {})
+      fetch(apiUrl('/api/historical/stats')).then(r => r.json()).then(setStats).catch(() => {})
+    }
+    fetchData()
+    const interval = setInterval(fetchData, 60000)
+    return () => clearInterval(interval)
   }, [maxRecords])
 
   const records = data?.records || []
@@ -629,11 +634,16 @@ export default function Proof() {
   const [tab, setTab] = useState<'overview' | 'samples' | 'calibration' | 'history'>('overview')
 
   useEffect(() => {
-    fetch(apiUrl('/api/learning-stats')).then(r => r.json()).then(setStats).catch(() => {})
-    fetch(apiUrl('/api/predictions')).then(r => r.json()).then(setPreds).catch(() => {})
-    fetch(apiUrl('/api/pa-gate-monitor')).then(r => r.json()).then(setPaGate).catch(() => {})
-    fetch(apiUrl('/api/counterfactual-log')).then(r => r.json()).then(setCounterfactual).catch(() => {})
-    fetch(apiUrl('/api/pa-by-position')).then(r => r.json()).then(setPaByPosition).catch(() => {})
+    const fetchData = () => {
+      fetch(apiUrl('/api/learning-stats')).then(r => r.json()).then(setStats).catch(() => {})
+      fetch(apiUrl('/api/predictions')).then(r => r.json()).then(setPreds).catch(() => {})
+      fetch(apiUrl('/api/pa-gate-monitor')).then(r => r.json()).then(setPaGate).catch(() => {})
+      fetch(apiUrl('/api/counterfactual-log')).then(r => r.json()).then(setCounterfactual).catch(() => {})
+      fetch(apiUrl('/api/pa-by-position')).then(r => r.json()).then(setPaByPosition).catch(() => {})
+    }
+    fetchData()
+    const interval = setInterval(fetchData, 60000)
+    return () => clearInterval(interval)
   }, [])
 
   const recentPreds = preds ? Object.entries(preds).slice(-20).flatMap(([, v]: any) => v).slice(0, 50) : []
