@@ -2186,6 +2186,63 @@
       "drawBiasRules": [
         {
           "when": {
+            "maxDistance": 6,
+            "fastOnly": true,
+            "drawHigh": "advantage",
+            "runningStyle": [
+              "Prominent",
+              "Midfield"
+            ]
+          },
+          "adj": 0.05,
+          "note": "Sprint: high draws track stands rail on fast ground"
+        },
+        {
+          "when": {
+            "maxDistance": 6,
+            "fastOnly": true,
+            "drawHigh": "advantage",
+            "runningStyle": [
+              "Front Runner"
+            ]
+          },
+          "adj": 0.03,
+          "note": "Sprint: FR can survive short distance with soft lead"
+        },
+        {
+          "when": {
+            "maxDistance": 6,
+            "runningStyle": [
+              "Prominent",
+              "Midfield"
+            ]
+          },
+          "adj": 0.04,
+          "note": "Sprint: PR/MD competitive"
+        },
+        {
+          "when": {
+            "maxDistance": 6,
+            "runningStyle": [
+              "Front Runner"
+            ]
+          },
+          "adj": 0.02,
+          "note": "Sprint: FR neutral — raw speed lasts over short trip"
+        },
+        {
+          "when": {
+            "maxDistance": 6,
+            "runningStyle": [
+              "Hold Up"
+            ]
+          },
+          "adj": 0.01,
+          "note": "Sprint: HU slight edge from pace collapse"
+        },
+        {
+          "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "fastOnly": true,
             "drawHigh": "advantage",
@@ -2194,10 +2251,12 @@
               "Midfield"
             ]
           },
-          "adj": 0.07
+          "adj": 0.07,
+          "note": "Route: high draws track shaded stands rail for better ground"
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "fastOnly": true,
             "drawHigh": "advantage",
@@ -2205,10 +2264,12 @@
               "Front Runner"
             ]
           },
-          "adj": 0.03
+          "adj": 0.03,
+          "note": "Route: slight high-draw edge even for FR"
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "fastOnly": true,
             "drawLow": "disadvantage",
@@ -2217,18 +2278,22 @@
               "Prominent"
             ]
           },
-          "adj": -0.05
+          "adj": -0.05,
+          "note": "Route: low draw disadvantage on fast ground"
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "softOnly": true,
             "drawLow": "advantage"
           },
-          "adj": 0.03
+          "adj": 0.03,
+          "note": "Soft ground flips to low draw advantage"
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "softOnly": true,
             "drawHigh": "disadvantage"
@@ -2237,31 +2302,37 @@
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "runningStyle": [
               "Prominent",
               "Midfield"
             ]
           },
-          "adj": 0.04
+          "adj": 0.04,
+          "note": "Route: PR/MD benefit from pace collapse on uphill finish"
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "runningStyle": [
               "Front Runner"
             ]
           },
-          "adj": -0.05
+          "adj": -0.05,
+          "note": "Route: FR penalized — Bunbury Mile false flat traps early speed"
         },
         {
           "when": {
+            "minDistance": 7,
             "maxDistance": 8,
             "runningStyle": [
               "Hold Up"
             ]
           },
-          "adj": 0.03
+          "adj": 0.03,
+          "note": "Route: HU benefit from uphill finish"
         },
         {
           "when": {
@@ -2286,7 +2357,7 @@
       "featureRules": [],
       "biasRules": [],
       "trackCategory": "galloping",
-      "insight": "Wide, fair, galloping track. Speed and class dominate. The July Course is slightly sharper than the Rowley Mile.",
+      "insight": "Wide, fair, galloping track. Speed and class dominate. The July Course is slightly sharper than the Rowley Mile. Sprint trips (5f-6f) favor raw speed; route trips (7f+) penalize front-runners due to Bunbury Mile false flat uphill finish.",
       "keyFactors": [
         "Ability",
         "Speed",
@@ -2294,15 +2365,15 @@
       ],
       "paceBiasByGoing": {
         "fast": {
-          "fr": 34,
-          "pr": 34,
-          "md": 20,
+          "fr": 26,
+          "pr": 36,
+          "md": 26,
           "hu": 12
         },
         "soft": {
-          "fr": 26,
+          "fr": 24,
           "pr": 38,
-          "md": 24,
+          "md": 26,
           "hu": 12
         }
       },
@@ -5908,15 +5979,15 @@
       ],
       "paceBiasByGoing": {
         "fast": {
-          "fr": 34,
-          "pr": 34,
-          "md": 20,
+          "fr": 28,
+          "pr": 36,
+          "md": 24,
           "hu": 12
         },
         "soft": {
-          "fr": 26,
-          "pr": 38,
-          "md": 24,
+          "fr": 22,
+          "pr": 40,
+          "md": 26,
           "hu": 12
         }
       },

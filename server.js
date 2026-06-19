@@ -1589,6 +1589,7 @@ function buildLightweightState() {
       previous_results: r.previous_results || [],
       horseProfile: r.horseProfile || null,
       marketMovement: MARKET_DATABASE[r.horse_id] || MARKET_DATABASE[r.horse] || null,
+      personalAffinity: r.personalAffinity || null,
     })),
   }))
 
@@ -2855,6 +2856,9 @@ app.get('/api/horse-affinity/:horseName', (req, res) => {
 })
 
 // ── PA Gate Live Monitor ──
+// Honest naming: every section declares what subset it measures.
+// Bettable filter: single definition (wp>=6%, odds>=2, positive edge, not NO BET/WEAK_COMPAT).
+// Gate classification checks PA first, then betQuality — never the reverse.
 app.get('/api/pa-gate-monitor', (_req, res) => {
   try {
     const db = PREDICTIONS_DATABASE || {}
@@ -2868,44 +2872,19 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       }
     }
 
-    // Last 3 days only
     const threeDaysAgo = new Date()
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
     const cutoff = threeDaysAgo.toISOString().slice(0, 10)
 
-    let passed = 0, passedWins = 0, passedPL = 0
-    let paRejected = 0, paRejectedWins = 0, paRejectedPL = 0
-    let otherRejected = 0, otherRejectedWins = 0, otherRejectedPL = 0
+    // Dataset summary counters
+    let totalWithResults = 0
+    let totalWithPA = 0
+    let totalPAPositive = 0
+    let totalPANull = 0
+    let dateEarliest = null
+    let dateLatest = null
 
-    // Contender monitor — all predictions split by PA sign
-    let contenderPaPos = 0, contenderPaPosWins = 0
-    let contenderPaNonPos = 0, contenderPaNonPosWins = 0
-
-    // Bettable monitor — value-qualified bets split by PA gate
-    let bettablePassed = 0, bettablePassedWins = 0, bettablePassedPL = 0
-    let bettableRejected = 0, bettableRejectedWins = 0, bettableRejectedPL = 0
-
-    // Calibration by PA band
-    const calBands = [
-      { label: '<=0', min: -Infinity, max: 0, count: 0, wins: 0, sumPred: 0 },
-      { label: '0-2', min: 0, max: 2, count: 0, wins: 0, sumPred: 0 },
-      { label: '2-5', min: 2, max: 5, count: 0, wins: 0, sumPred: 0 },
-      { label: '5+', min: 5, max: Infinity, count: 0, wins: 0, sumPred: 0 },
-    ]
-
-    // PA band performance — bettable selections only
-    const isBettableBypass = (p) => {
-      const bq = p.betQuality || ''
-      if (bq === 'NO BET' || bq === 'WEAK_COMPAT' || bq === 'BORDERLINE') return false
-      return bq === 'STRONG VALUE' || bq === 'VALUE' || bq === 'PLAYABLE' || bq === 'SPECULATIVE'
-    }
-    const paPerfBands = [
-      { label: '0-2', min: 0, max: 2 },
-      { label: '2-5', min: 2, max: 5 },
-      { label: '5+', min: 5, max: Infinity },
-    ]
-    const allTime = paPerfBands.map(b => ({ ...b, count: 0, wins: 0, stakes: 0, returns: 0, sumOdds: 0, sumEdge: 0 }))
-    const threeDay = paPerfBands.map(b => ({ ...b, count: 0, wins: 0, stakes: 0, returns: 0, sumOdds: 0, sumEdge: 0 }))
+    // Single bettable filter — used everywhere for consistency
     const isBettable = (p) => {
       const bq = p.betQuality || ''
       if (bq === 'NO BET' || bq === 'WEAK_COMPAT') return false
@@ -2913,10 +2892,47 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       if (wp < 0.06) return false
       if (Number(p.odds || 0) < 2.0) return false
       const impliedProb = 1 / Number(p.odds || 2)
-      const edge = wp - impliedProb
-      if (edge <= 0) return false
-      return true
+      return (wp - impliedProb) > 0
     }
+
+    // Gate classification: check PA FIRST, then betQuality.
+    // A horse with betQuality='VALUE' but pa=-3 is "PA KILLED", not "passed".
+    // pa=null means PA data was unavailable — classified as "no PA data".
+    let engineSelected = 0, engineSelectedWins = 0, engineSelectedPL = 0
+    let engineSelected3d = 0, engineSelected3dWins = 0, engineSelected3dPL = 0
+    let paKilled = 0, paKilledWins = 0, paKilledPL = 0
+    let paKilled3d = 0, paKilled3dWins = 0, paKilled3dPL = 0
+    let noPAData = 0, noPADataWins = 0, noPADataPL = 0
+    let noPAData3d = 0, noPAData3dWins = 0, noPAData3dPL = 0
+
+    // Contender monitor: all predictions with valid PA, split by PA sign (no betQuality filter)
+    let contPAPos = 0, contPAPosWins = 0
+    let contPAPos3d = 0, contPAPos3dWins = 0
+    let contPANeg = 0, contPANegWins = 0
+    let contPANeg3d = 0, contPANeg3dWins = 0
+
+    // Bettable monitor: isBettable() predictions, split by PA sign
+    let betPAPos = 0, betPAPosWins = 0, betPAPosPL = 0
+    let betPAPos3d = 0, betPAPos3dWins = 0, betPAPos3dPL = 0
+    let betPANeg = 0, betPANegWins = 0, betPANegPL = 0
+    let betPANeg3d = 0, betPANeg3dWins = 0, betPANeg3dPL = 0
+
+    // Calibration by PA band — all predictions with valid PA and wp>0
+    const calBands = [
+      { label: '<=0', min: -Infinity, max: 0, count: 0, wins: 0, sumPred: 0 },
+      { label: '0-2', min: 0, max: 2, count: 0, wins: 0, sumPred: 0 },
+      { label: '2-5', min: 2, max: 5, count: 0, wins: 0, sumPred: 0 },
+      { label: '5+', min: 5, max: Infinity, count: 0, wins: 0, sumPred: 0 },
+    ]
+
+    // PA band performance — isBettable() AND PA>0 (same filter as bettable monitor PA+ branch)
+    const paPerfBands = [
+      { label: '0-2', min: 0, max: 2 },
+      { label: '2-5', min: 2, max: 5 },
+      { label: '5+', min: 5, max: Infinity },
+    ]
+    const allTime = paPerfBands.map(b => ({ ...b, count: 0, wins: 0, stakes: 0, returns: 0, sumOdds: 0, sumEdge: 0 }))
+    const threeDay = paPerfBands.map(b => ({ ...b, count: 0, wins: 0, stakes: 0, returns: 0, sumOdds: 0, sumEdge: 0 }))
 
     for (const racePreds of Object.values(db)) {
       if (!Array.isArray(racePreds)) continue
@@ -2934,36 +2950,57 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
         const valEdge = wp - impliedProb
         const isRecent = p.date >= cutoff
 
-        // Original gate classification (3-day window only)
-        if (isRecent) {
+        // Dataset summary
+        totalWithResults++
+        if (pa !== null) totalWithPA++
+        if (pa !== null && pa > 0) totalPAPositive++
+        if (pa === null) totalPANull++
+        if (!dateEarliest || p.date < dateEarliest) dateEarliest = p.date
+        if (!dateLatest || p.date > dateLatest) dateLatest = p.date
+
+        // ── Gate classification: PA first, then betQuality ──
+        if (pa !== null && pa <= 0) {
+          // PA gate killed this horse — regardless of what betQuality says
+          paKilled++; if (won) paKilledWins++; paKilledPL += pl
+          if (isRecent) { paKilled3d++; if (won) paKilled3dWins++; paKilled3dPL += pl }
+        } else if (pa !== null && pa > 0) {
+          // PA passed — now check if engine selected it
           if (p.betQuality && p.betQuality !== 'NO BET') {
-            passed++; if (won) passedWins++; passedPL += pl
-          } else if (pa !== null && pa <= 0) {
-            paRejected++; if (won) paRejectedWins++; paRejectedPL += pl
+            engineSelected++; if (won) engineSelectedWins++; engineSelectedPL += pl
+            if (isRecent) { engineSelected3d++; if (won) engineSelected3dWins++; engineSelected3dPL += pl }
           } else {
-            otherRejected++; if (won) otherRejectedWins++; otherRejectedPL += pl
+            // PA passed but engine rejected (low prob, negative edge, etc.)
+            noPAData++; if (won) noPADataWins++; noPADataPL += pl
+            if (isRecent) { noPAData3d++; if (won) noPAData3dWins++; noPAData3dPL += pl }
           }
+        } else {
+          // PA was null — no PA data available
+          noPAData++; if (won) noPADataWins++; noPADataPL += pl
+          if (isRecent) { noPAData3d++; if (won) noPAData3dWins++; noPAData3dPL += pl }
         }
 
-        // Contender monitor — all predictions by PA sign (3-day only)
-        if (isRecent) {
-          if (pa !== null && pa > 0) {
-            contenderPaPos++; if (won) contenderPaPosWins++
-          } else if (pa !== null) {
-            contenderPaNonPos++; if (won) contenderPaNonPosWins++
-          }
+        // ── Contender monitor: PA sign split, ignores betQuality ──
+        if (pa !== null && pa > 0) {
+          contPAPos++; if (won) contPAPosWins++
+          if (isRecent) { contPAPos3d++; if (won) contPAPos3dWins++ }
+        } else if (pa !== null && pa <= 0) {
+          contPANeg++; if (won) contPANegWins++
+          if (isRecent) { contPANeg3d++; if (won) contPANeg3dWins++ }
         }
+        // pa===null: not counted (no PA data to classify)
 
-        // Bettable monitor — value-qualified bets only (3-day only)
-        if (isRecent && isBettable(p)) {
+        // ── Bettable monitor: isBettable() + PA sign ──
+        if (isBettable(p)) {
           if (pa !== null && pa > 0) {
-            bettablePassed++; if (won) bettablePassedWins++; bettablePassedPL += pl
+            betPAPos++; if (won) betPAPosWins++; betPAPosPL += pl
+            if (isRecent) { betPAPos3d++; if (won) betPAPos3dWins++; betPAPos3dPL += pl }
           } else {
-            bettableRejected++; if (won) bettableRejectedWins++; bettableRejectedPL += pl
+            betPANeg++; if (won) betPANegWins++; betPANegPL += pl
+            if (isRecent) { betPANeg3d++; if (won) betPANeg3dWins++; betPANeg3dPL += pl }
           }
         }
 
-        // Calibration by PA band — all predictions with results (all-time)
+        // ── Calibration: all with valid PA and wp>0 ──
         if (pa !== null && wp > 0) {
           for (const band of calBands) {
             if (pa > band.min && pa <= band.max) {
@@ -2973,19 +3010,17 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
           }
         }
 
-        // PA band performance — bettable selections only (both all-time and 3-day)
-        if (isBettableBypass(p) && pa !== null && pa > 0) {
+        // ── PA band performance: isBettable() + PA>0 ──
+        if (isBettable(p) && pa !== null && pa > 0) {
           for (let i = 0; i < paPerfBands.length; i++) {
             const b = paPerfBands[i]
             if (pa > b.min && pa <= b.max) {
-              // All-time
               allTime[i].count++
               allTime[i].stakes++
               allTime[i].returns += won ? odds : 0
               allTime[i].sumOdds += odds
               if (won) allTime[i].wins++
               if (valEdge > 0) allTime[i].sumEdge += valEdge
-              // 3-day
               if (isRecent) {
                 threeDay[i].count++
                 threeDay[i].stakes++
@@ -3001,50 +3036,98 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       }
     }
 
+    const wr = (w, n) => n ? +(w / n * 100).toFixed(1) : 0
+    const roi = (pl, n) => n ? +(pl / n * 100).toFixed(1) : 0
+
     const calibration = calBands.map(b => ({
       band: b.label,
       count: b.count,
       avgPred: b.count ? +(b.sumPred / b.count * 100).toFixed(1) : 0,
-      actualWR: b.count ? +(b.wins / b.count * 100).toFixed(1) : 0,
+      actualWR: wr(b.wins, b.count),
       error: b.count ? +((b.wins / b.count - b.sumPred / b.count) * 100).toFixed(1) : 0,
     }))
 
     res.json({
-      passed: { count: passed, wins: passedWins, roi: passed ? +(passedPL / passed * 100).toFixed(1) : 0 },
-      paRejected: { count: paRejected, wins: paRejectedWins, roi: paRejected ? +(paRejectedPL / paRejected * 100).toFixed(1) : 0 },
-      otherRejected: { count: otherRejected, wins: otherRejectedWins, roi: otherRejected ? +(otherRejectedPL / otherRejected * 100).toFixed(1) : 0 },
-      contender: {
-        paPositive: { count: contenderPaPos, wins: contenderPaPosWins, wr: contenderPaPos ? +(contenderPaPosWins / contenderPaPos * 100).toFixed(1) : 0 },
-        paNonPositive: { count: contenderPaNonPos, wins: contenderPaNonPosWins, wr: contenderPaNonPos ? +(contenderPaNonPosWins / contenderPaNonPos * 100).toFixed(1) : 0 },
+      // Dataset context — what are we looking at?
+      dataset: {
+        totalWithResults,
+        withPA: totalWithPA,
+        withPAPositive: totalPAPositive,
+        withPANull: totalPANull,
+        paCoverage: totalWithResults ? +(totalPAPositive / totalWithResults * 100).toFixed(1) : 0,
+        dateRange: [dateEarliest, dateLatest],
+        oddsSource: 'pre-race decimal',
+        note: 'PA coverage is % of results-matched predictions with PA>0. PA=null means no historical data for that horse.',
       },
+      // Gate classification: PA checked first. "Engine Selected" = PA>0 AND engine wanted to bet.
+      gate: {
+        engineSelected: { count: engineSelected, wins: engineSelectedWins, roi: roi(engineSelectedPL, engineSelected), wr: wr(engineSelectedWins, engineSelected) },
+        engineSelectedThreeDay: { count: engineSelected3d, wins: engineSelected3dWins, roi: roi(engineSelected3dPL, engineSelected3d), wr: wr(engineSelected3dWins, engineSelected3d) },
+        paKilled: { count: paKilled, wins: paKilledWins, roi: roi(paKilledPL, paKilled), wr: wr(paKilledWins, paKilled) },
+        paKilledThreeDay: { count: paKilled3d, wins: paKilled3dWins, roi: roi(paKilled3dPL, paKilled3d), wr: wr(paKilled3dWins, paKilled3d) },
+        noPAData: { count: noPAData, wins: noPADataWins, roi: roi(noPADataPL, noPAData), wr: wr(noPADataWins, noPAData) },
+        noPADataThreeDay: { count: noPAData3d, wins: noPAData3dWins, roi: roi(noPAData3dPL, noPAData3d), wr: wr(noPAData3dWins, noPAData3d) },
+      },
+      // Contender monitor: PA sign split only (no betQuality filter, pa=null excluded)
+      contender: {
+        paPositive: { count: contPAPos, wins: contPAPosWins, wr: wr(contPAPosWins, contPAPos) },
+        paNonPositive: { count: contPANeg, wins: contPANegWins, wr: wr(contPANegWins, contPANeg) },
+      },
+      contenderThreeDay: {
+        paPositive: { count: contPAPos3d, wins: contPAPos3dWins, wr: wr(contPAPos3dWins, contPAPos3d) },
+        paNonPositive: { count: contPANeg3d, wins: contPANeg3dWins, wr: wr(contPANeg3dWins, contPANeg3d) },
+      },
+      // Bettable monitor: isBettable() predictions split by PA sign
       bettable: {
-        passed: { count: bettablePassed, wins: bettablePassedWins, roi: bettablePassed ? +(bettablePassedPL / bettablePassed * 100).toFixed(1) : 0 },
-        rejected: { count: bettableRejected, wins: bettableRejectedWins, roi: bettableRejected ? +(bettableRejectedPL / bettableRejected * 100).toFixed(1) : 0 },
+        passed: { count: betPAPos, wins: betPAPosWins, roi: roi(betPAPosPL, betPAPos), wr: wr(betPAPosWins, betPAPos) },
+        rejected: { count: betPANeg, wins: betPANegWins, roi: roi(betPANegPL, betPANeg), wr: wr(betPANegWins, betPANeg) },
+      },
+      bettableThreeDay: {
+        passed: { count: betPAPos3d, wins: betPAPos3dWins, roi: roi(betPAPos3dPL, betPAPos3d), wr: wr(betPAPos3dWins, betPAPos3d) },
+        rejected: { count: betPANeg3d, wins: betPANeg3dWins, roi: roi(betPANeg3dPL, betPANeg3d), wr: wr(betPANeg3dWins, betPANeg3d) },
       },
       calibration,
       paBandPerformance: {
-        allTime: allTime.map(b => ({
-          band: b.label,
-          count: b.count,
-          wins: b.wins,
-          stakes: b.stakes,
-          returns: +b.returns.toFixed(2),
-          wr: b.count ? +(b.wins / b.count * 100).toFixed(1) : 0,
-          roi: b.stakes ? +((b.returns - b.stakes) / b.stakes * 100).toFixed(1) : 0,
-          avgOdds: b.count ? +(b.sumOdds / b.count).toFixed(2) : 0,
-          avgEdge: b.count ? +(b.sumEdge / b.count * 100).toFixed(1) : 0,
-        })),
-        threeDay: threeDay.map(b => ({
-          band: b.label,
-          count: b.count,
-          wins: b.wins,
-          stakes: b.stakes,
-          returns: +b.returns.toFixed(2),
-          wr: b.count ? +(b.wins / b.count * 100).toFixed(1) : 0,
-          roi: b.stakes ? +((b.returns - b.stakes) / b.stakes * 100).toFixed(1) : 0,
-          avgOdds: b.count ? +(b.sumOdds / b.count).toFixed(2) : 0,
-          avgEdge: b.count ? +(b.sumEdge / b.count * 100).toFixed(1) : 0,
-        })),
+        allTime: allTime.map(b => {
+          const p = b.count ? b.wins / b.count : 0
+          const se = b.count > 1 ? Math.sqrt(p * (1 - p) / b.count) : 0
+          const ci95 = +(se * 1.96 * 100).toFixed(1)
+          const sampleConfidence = b.count >= 100 ? 'high' : b.count >= 30 ? 'moderate' : 'low'
+          return {
+            band: b.label,
+            count: b.count,
+            wins: b.wins,
+            stakes: b.stakes,
+            returns: +b.returns.toFixed(2),
+            wr: wr(b.wins, b.count),
+            roi: b.stakes ? +((b.returns - b.stakes) / b.stakes * 100).toFixed(1) : 0,
+            avgOdds: b.count ? +(b.sumOdds / b.count).toFixed(2) : 0,
+            avgEdge: b.count ? +(b.sumEdge / b.count * 100).toFixed(1) : 0,
+            ci95,
+            reliable: b.count >= 30,
+            sampleConfidence,
+          }
+        }),
+        threeDay: threeDay.map(b => {
+          const p = b.count ? b.wins / b.count : 0
+          const se = b.count > 1 ? Math.sqrt(p * (1 - p) / b.count) : 0
+          const ci95 = +(se * 1.96 * 100).toFixed(1)
+          const sampleConfidence = b.count >= 100 ? 'high' : b.count >= 30 ? 'moderate' : 'low'
+          return {
+            band: b.label,
+            count: b.count,
+            wins: b.wins,
+            stakes: b.stakes,
+            returns: +b.returns.toFixed(2),
+            wr: wr(b.wins, b.count),
+            roi: b.stakes ? +((b.returns - b.stakes) / b.stakes * 100).toFixed(1) : 0,
+            avgOdds: b.count ? +(b.sumOdds / b.count).toFixed(2) : 0,
+            avgEdge: b.count ? +(b.sumEdge / b.count * 100).toFixed(1) : 0,
+            ci95,
+            reliable: b.count >= 30,
+            sampleConfidence,
+          }
+        }),
       },
     })
   } catch (e) {

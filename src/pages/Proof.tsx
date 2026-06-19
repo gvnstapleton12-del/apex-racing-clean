@@ -690,41 +690,64 @@ export default function Proof() {
           )}
 
             <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6'>
-            <h2 className='text-lg font-bold mb-4'>PA Gate Monitor</h2>
-            <p className='text-zinc-500 text-sm mb-4'>Value selections: PA {'>'} 0 passes gate, PA {'<='} 0 rejected.</p>
+            <h2 className='text-lg font-bold mb-1'>PA Gate Monitor</h2>
+            <p className='text-zinc-500 text-sm mb-4'>Honest evaluation. Every section declares what subset it measures.</p>
             {paGate ? (
+              <>
+              {/* ── Dataset Summary ── */}
+              {paGate.dataset && (
+                <div className='mb-4 p-3 rounded-lg bg-white/[0.02] border border-white/5 text-xs text-zinc-500 flex flex-wrap gap-x-6 gap-y-1'>
+                  <span>Results: <b className='text-zinc-300'>{paGate.dataset.totalWithResults}</b></span>
+                  <span>With PA data: <b className='text-zinc-300'>{paGate.dataset.withPA}</b> ({paGate.dataset.paCoverage}% of results)</span>
+                  <span>PA &gt; 0: <b className='text-zinc-300'>{paGate.dataset.withPAPositive}</b></span>
+                  <span>PA null: <b className='text-zinc-300'>{paGate.dataset.withPANull}</b></span>
+                  <span>{paGate.dataset.dateRange?.[0]} to {paGate.dataset.dateRange?.[1]}</span>
+                  <span>Odds: {paGate.dataset.oddsSource}</span>
+                </div>
+              )}
+
+              {/* ── Gate Classification ── */}
               <div className='grid grid-cols-3 gap-4'>
                 <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
-                  <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA Passed</span>
+                  <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>Engine Selected</span>
+                  <p className='text-zinc-600 text-[10px] mt-0.5'>PA &gt; 0 AND betQuality != NO BET</p>
                   <div className='mt-2 space-y-1'>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.passed.count}</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.passed.wins}</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.passed.count ? (paGate.passed.wins / paGate.passed.count * 100).toFixed(1) : '0'}%</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.passed.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.passed.roi >= 0 ? '+' : ''}{paGate.passed.roi.toFixed(1)}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.gate.engineSelected.count}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.gate.engineSelected.wins}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.gate.engineSelected.wr}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.gate.engineSelected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.gate.engineSelected.roi >= 0 ? '+' : ''}{paGate.gate.engineSelected.roi}%</span></div>
                   </div>
                 </div>
                 <div className='bg-red-500/5 rounded-xl p-4 border border-red-500/10'>
-                  <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA Rejected</span>
+                  <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA Killed</span>
+                  <p className='text-zinc-600 text-[10px] mt-0.5'>PA &le; 0 (regardless of betQuality)</p>
                   <div className='mt-2 space-y-1'>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.paRejected.count}</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.paRejected.wins}</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.paRejected.count ? (paGate.paRejected.wins / paGate.paRejected.count * 100).toFixed(1) : '0'}%</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.paRejected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.paRejected.roi >= 0 ? '+' : ''}{paGate.paRejected.roi.toFixed(1)}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.gate.paKilled.count}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.gate.paKilled.wins}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.gate.paKilled.wr}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.gate.paKilled.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.gate.paKilled.roi >= 0 ? '+' : ''}{paGate.gate.paKilled.roi}%</span></div>
                   </div>
                 </div>
                 <div className='bg-zinc-500/5 rounded-xl p-4 border border-zinc-500/10'>
-                  <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>Other Rejected</span>
+                  <span className='text-zinc-400 text-xs font-medium uppercase tracking-wider'>No PA Data</span>
+                  <p className='text-zinc-600 text-[10px] mt-0.5'>PA = null (horse unknown to PA system)</p>
                   <div className='mt-2 space-y-1'>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.otherRejected.count}</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.otherRejected.wins}</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.otherRejected.count ? (paGate.otherRejected.wins / paGate.otherRejected.count * 100).toFixed(1) : '0'}%</span></div>
-                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.otherRejected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.otherRejected.roi >= 0 ? '+' : ''}{paGate.otherRejected.roi.toFixed(1)}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.gate.noPAData.count}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.gate.noPAData.wins}</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.gate.noPAData.wr}%</span></div>
+                    <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.gate.noPAData.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.gate.noPAData.roi >= 0 ? '+' : ''}{paGate.gate.noPAData.roi}%</span></div>
                   </div>
                 </div>
               </div>
+              <div className='mt-3 flex gap-4 text-xs text-zinc-600'>
+                <span>3-day: Selected = {paGate.gate.engineSelectedThreeDay.count} ({paGate.gate.engineSelectedThreeDay.wr}% WR)</span>
+                <span>Killed = {paGate.gate.paKilledThreeDay.count} ({paGate.gate.paKilledThreeDay.wr}% WR)</span>
+                <span>No PA = {paGate.gate.noPADataThreeDay.count} ({paGate.gate.noPADataThreeDay.wr}% WR)</span>
+              </div>
+              </>
             ) : (
               <div className='grid grid-cols-3 gap-4'>
-                {['PA Passed', 'PA Rejected', 'Other Rejected'].map(label => (
+                {['Engine Selected', 'PA Killed', 'No PA Data'].map(label => (
                   <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse'>
                     <span className='text-zinc-600 text-xs font-medium uppercase tracking-wider'>{label}</span>
                   </div>
@@ -735,54 +758,62 @@ export default function Proof() {
             {/* ── Contender Monitor ── */}
             {paGate?.contender && (
               <div className='mt-6 border-t border-green-500/10 pt-6'>
-                <h3 className='text-md font-bold mb-3'>Contender Monitor</h3>
-                <p className='text-zinc-500 text-xs mb-4'>All PA-gated predictions (ignoring bet quality). Measures whether PA separates contenders from non-contenders.</p>
+                <h3 className='text-md font-bold mb-1'>Contender Monitor</h3>
+                <p className='text-zinc-500 text-xs mb-4'>Predictions with PA data only ({paGate.dataset?.paCoverage ?? '?'}% of total). pa=null excluded. Does NOT represent full population.</p>
                 <div className='grid grid-cols-2 gap-4'>
                   <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
-                    <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA &gt; 0</span>
+                    <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA &gt; 0 (n={paGate.contender.paPositive.count})</span>
                     <div className='mt-2 space-y-1'>
-                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Count</span><span className='font-bold'>{paGate.contender.paPositive.count}</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.contender.paPositive.wins}</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.contender.paPositive.wr}%</span></div>
                     </div>
                   </div>
                   <div className='bg-red-500/5 rounded-xl p-4 border border-red-500/10'>
-                    <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA &le; 0</span>
+                    <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA &le; 0 (n={paGate.contender.paNonPositive.count})</span>
                     <div className='mt-2 space-y-1'>
-                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Count</span><span className='font-bold'>{paGate.contender.paNonPositive.count}</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.contender.paNonPositive.wins}</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.contender.paNonPositive.wr}%</span></div>
                     </div>
                   </div>
                 </div>
+                {paGate?.contenderThreeDay && (
+                  <div className='mt-3 flex gap-4 text-xs text-zinc-600'>
+                    <span>3-day: PA &gt; 0 = {paGate.contenderThreeDay.paPositive.count} ({paGate.contenderThreeDay.paPositive.wr}%)</span>
+                    <span>PA &le; 0 = {paGate.contenderThreeDay.paNonPositive.count} ({paGate.contenderThreeDay.paNonPositive.wr}%)</span>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* ── Bet Monitor ── */}
+            {/* ── Bettable Monitor ── */}
             {paGate?.bettable && (
               <div className='mt-6 border-t border-green-500/10 pt-6'>
-                <h3 className='text-md font-bold mb-3'>Bet Monitor</h3>
-                <p className='text-zinc-500 text-xs mb-4'>Value-qualified bets only (winProb &ge; 6%, odds &ge; 2.0, valueEdge &gt; 0, not NO BET/WEAK_COMPAT). Measures whether PA gate improves betting execution.</p>
+                <h3 className='text-md font-bold mb-1'>Bettable Monitor</h3>
+                <p className='text-zinc-500 text-xs mb-4'>isBettable() predictions (wp&ge;6%, odds&ge;2, positive edge, not NO BET/WEAK_COMPAT) split by PA sign. Same filter used for PA Band Performance.</p>
                 <div className='grid grid-cols-2 gap-4'>
                   <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
-                    <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>PA Passed Bettable</span>
+                    <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>Bettable: PA+ (n={paGate.bettable.passed.count})</span>
                     <div className='mt-2 space-y-1'>
-                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.bettable.passed.count}</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.bettable.passed.wins}</span></div>
-                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.bettable.passed.count ? (paGate.bettable.passed.wins / paGate.bettable.passed.count * 100).toFixed(1) : '0'}%</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.bettable.passed.wr}%</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.bettable.passed.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.bettable.passed.roi >= 0 ? '+' : ''}{paGate.bettable.passed.roi}%</span></div>
                     </div>
                   </div>
                   <div className='bg-red-500/5 rounded-xl p-4 border border-red-500/10'>
-                    <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>PA Rejected Bettable</span>
+                    <span className='text-red-400 text-xs font-medium uppercase tracking-wider'>Bettable: PA- (n={paGate.bettable.rejected.count})</span>
                     <div className='mt-2 space-y-1'>
-                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Bets</span><span className='font-bold'>{paGate.bettable.rejected.count}</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>Wins</span><span className='font-bold text-green-400'>{paGate.bettable.rejected.wins}</span></div>
-                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.bettable.rejected.count ? (paGate.bettable.rejected.wins / paGate.bettable.rejected.count * 100).toFixed(1) : '0'}%</span></div>
+                      <div className='flex justify-between'><span className='text-zinc-400 text-sm'>WR</span><span className='font-bold'>{paGate.bettable.rejected.wr}%</span></div>
                       <div className='flex justify-between'><span className='text-zinc-400 text-sm'>ROI</span><span className={`font-bold ${paGate.bettable.rejected.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{paGate.bettable.rejected.roi >= 0 ? '+' : ''}{paGate.bettable.rejected.roi}%</span></div>
                     </div>
                   </div>
                 </div>
+                {paGate?.bettableThreeDay && (
+                  <div className='mt-3 flex gap-4 text-xs text-zinc-600'>
+                    <span>3-day: PA+ = {paGate.bettableThreeDay.passed.count} ({paGate.bettableThreeDay.passed.wr}% WR, {paGate.bettableThreeDay.passed.roi >= 0 ? '+' : ''}{paGate.bettableThreeDay.passed.roi}% ROI)</span>
+                    <span>PA- = {paGate.bettableThreeDay.rejected.count} ({paGate.bettableThreeDay.rejected.wr}% WR, {paGate.bettableThreeDay.rejected.roi >= 0 ? '+' : ''}{paGate.bettableThreeDay.rejected.roi}% ROI)</span>
+                  </div>
+                )}
               </div>
             )}
 
@@ -790,7 +821,7 @@ export default function Proof() {
             {paGate?.paBandPerformance?.allTime && (
               <div className='mt-6 border-t border-green-500/10 pt-6'>
                 <h3 className='text-md font-bold mb-1'>PA Band Performance (All-Time)</h3>
-                <p className='text-zinc-500 text-xs mb-4'>Bettable selections only, grouped by PA strength. Primary dataset for model decisions.</p>
+                <p className='text-zinc-500 text-xs mb-4'>isBettable() predictions with PA &gt; 0, grouped by PA strength. ROI = (returns - stakes) / stakes. Odds = pre-race decimal. <span className='text-zinc-600'>{'\u{1F7E2}'} n&ge;100 reliable | {'\u{1F7E1}'} n&ge;30 moderate | {'\u{1F534}'} n&lt;30 insufficient</span></p>
                 <div className='overflow-x-auto'>
                   <table className='w-full text-sm'>
                     <thead>
@@ -807,18 +838,26 @@ export default function Proof() {
                     </thead>
                     <tbody>
                       {paGate.paBandPerformance.allTime.map((b: any) => {
-                        const sampleIcon = b.count >= 500 ? '\u{1F7E2}' : b.count >= 200 ? '\u{1F7E1}' : '\u{1F534}'
-                        const wrColor = b.wr >= 35 ? 'text-green-400' : b.wr >= 25 ? 'text-amber-400' : 'text-red-400'
+                        const sampleIcon = b.sampleConfidence === 'high' ? '\u{1F7E2}' : b.sampleConfidence === 'moderate' ? '\u{1F7E1}' : '\u{1F534}'
+                        const rowOpacity = b.reliable ? '' : 'opacity-40'
                         return (
-                          <tr key={b.band} className='border-b border-zinc-800/50'>
+                          <tr key={b.band} className={`border-b border-zinc-800/50 ${rowOpacity}`}>
                             <td className='py-2 pr-4 font-medium'>{b.band}</td>
                             <td className='text-right py-2 pr-4 text-zinc-400'>{b.count}</td>
                             <td className='text-right py-2 pr-4 text-green-400'>{b.wins}</td>
-                            <td className={`text-right py-2 pr-4 font-bold ${wrColor}`}>{b.wr}%</td>
-                            <td className={`text-right py-2 pr-4 font-mono ${b.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{b.roi >= 0 ? '+' : ''}{b.roi}%</td>
+                            <td className='text-right py-2 pr-4 font-bold text-zinc-400'>
+                              {b.reliable ? <span className='text-zinc-200'>{b.wr}%</span> : <span title={`\u00B1${b.ci95}pp 95% CI`}>{b.wr}%</span>}
+                            </td>
+                            <td className='text-right py-2 pr-4 font-mono text-zinc-400'>
+                              {b.reliable ? (
+                                <span className={b.roi >= 0 ? 'text-green-400' : 'text-red-400'}>{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
+                              ) : (
+                                <span title="Insufficient sample">{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
+                              )}
+                            </td>
                             <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgOdds}</td>
                             <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgEdge}%</td>
-                            <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}</td>
+                            <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}{b.reliable ? '' : ` (\u00B1${b.ci95}pp)`}</td>
                           </tr>
                         )
                       })}
@@ -832,7 +871,10 @@ export default function Proof() {
             {paGate?.paBandPerformance?.threeDay && (
               <div className='mt-6 border-t border-green-500/10 pt-6'>
                 <h3 className='text-md font-bold mb-1'>Last 3 Days</h3>
-                <p className='text-zinc-500 text-xs mb-4'>Short-window drift detector. Do not make model decisions from this table.</p>
+                <p className='text-zinc-500 text-xs mb-4'>Short-window drift detector. Do not make model decisions from this table. Same filter as All-Time above. n&lt;30 bands are unreliable.</p>
+                {paGate.paBandPerformance.threeDay.every((b: any) => b.count === 0) ? (
+                  <p className='text-zinc-500 text-sm py-4'>No completed bettable races in the last 3 days.</p>
+                ) : (
                 <div className='overflow-x-auto'>
                   <table className='w-full text-sm'>
                     <thead>
@@ -849,32 +891,44 @@ export default function Proof() {
                     </thead>
                     <tbody>
                       {paGate.paBandPerformance.threeDay.map((b: any) => {
-                        const sampleIcon = b.count >= 500 ? '\u{1F7E2}' : b.count >= 200 ? '\u{1F7E1}' : '\u{1F534}'
-                        const wrColor = b.wr >= 35 ? 'text-green-400' : b.wr >= 25 ? 'text-amber-400' : 'text-red-400'
+                        const sampleIcon = b.sampleConfidence === 'high' ? '\u{1F7E2}' : b.sampleConfidence === 'moderate' ? '\u{1F7E1}' : '\u{1F534}'
+                        const rowOpacity = b.reliable ? '' : 'opacity-40'
                         return (
-                          <tr key={b.band} className='border-b border-zinc-800/50'>
+                          <tr key={b.band} className={`border-b border-zinc-800/50 ${rowOpacity}`}>
                             <td className='py-2 pr-4 font-medium'>{b.band}</td>
                             <td className='text-right py-2 pr-4 text-zinc-400'>{b.count}</td>
                             <td className='text-right py-2 pr-4 text-green-400'>{b.wins}</td>
-                            <td className={`text-right py-2 pr-4 font-bold ${wrColor}`}>{b.wr}%</td>
-                            <td className={`text-right py-2 pr-4 font-mono ${b.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{b.roi >= 0 ? '+' : ''}{b.roi}%</td>
+                            <td className='text-right py-2 pr-4 font-bold text-zinc-400'>
+                              {b.reliable ? <span className='text-zinc-200'>{b.wr}%</span> : <span title={`\u00B1${b.ci95}pp 95% CI`}>{b.wr}%</span>}
+                            </td>
+                            <td className='text-right py-2 pr-4 font-mono text-zinc-400'>
+                              {b.reliable ? (
+                                <span className={b.roi >= 0 ? 'text-green-400' : 'text-red-400'}>{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
+                              ) : (
+                                <span title="Insufficient sample">{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
+                              )}
+                            </td>
                             <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgOdds}</td>
                             <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgEdge}%</td>
-                            <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}</td>
+                            <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}{b.reliable ? '' : ` (\u00B1${b.ci95}pp)`}</td>
                           </tr>
                         )
                       })}
                     </tbody>
                   </table>
                 </div>
+                )}
               </div>
             )}
 
             {/* ── Calibration by PA Band ── */}
             {paGate?.calibration && (
               <div className='mt-6 border-t border-green-500/10 pt-6'>
-                <h3 className='text-md font-bold mb-3'>Calibration by PA Band</h3>
-                <p className='text-zinc-500 text-xs mb-4'>Predicted vs actual win rate per PA band. 🟢 within &plusmn;3pp, 🟡 &plusmn;3-7pp, 🔴 &gt; &plusmn;7pp.</p>
+                <h3 className='text-md font-bold mb-1'>Calibration by PA Band</h3>
+                <p className='text-zinc-500 text-xs mb-4'>All predictions with valid PA and wp&gt;0. "Avg Pred" is the model's assigned win probability (normalized per-race). "Actual WR" is what actually happened.</p>
+                <div className='mb-4 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10 text-xs text-amber-400/80'>
+                  <b>Why the error is large:</b> PA enters <code>finalScore</code> as one of ~12 additive terms, then gets diluted through 5 normalization layers in the Bayesian model (score → proportion → 45% blend → renormalize ×5). The predicted probability is RELATIVE (within-race), not ABSOLUTE. A large positive error means PA-boosted horses systematically outperform their model-assigned probabilities relative to their race-mates. The model correctly ranks PA+ horses higher, but underestimates their absolute win probability.
+                </div>
                 <div className='overflow-x-auto'>
                   <table className='w-full text-sm'>
                     <thead>
@@ -916,6 +970,10 @@ export default function Proof() {
               (() => {
                 const below = counterfactual.zones?.['below_0.3']
                 const above = counterfactual.zones?.['above_0.3']
+                const totalObs = (below?.total ?? 0) + (above?.total ?? 0)
+                if (totalObs < 100) {
+                  return <p className='text-zinc-500 text-sm py-4'>Collecting data... {totalObs}/100 observations. Results are not statistically reliable below 100.</p>
+                }
                 const bins = counterfactual.paBinBreakdown ?? {}
                 return (
               <div className='space-y-4'>

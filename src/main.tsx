@@ -65,6 +65,7 @@ interface Selection extends Runner {
   confidenceTier: string
   betFilterVerdict: string
   odds?: string | number
+  personalAffinity?: { adjustment: number; factor: number; confidence: number; breakdown?: any } | null
 }
 
 interface PickCardProps {
@@ -102,6 +103,15 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
               <span className='px-2 py-1 rounded-md text-xs font-medium bg-red-500/10 text-red-400'>LOW</span>
             )}
             <span className='text-zinc-500 text-xs'>{selection.offTime}</span>
+            {selection.personalAffinity?.adjustment != null && (
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                selection.personalAffinity.adjustment > 0
+                  ? 'bg-green-500/10 text-green-400'
+                  : 'bg-red-500/10 text-red-400'
+              }`}>
+                {selection.personalAffinity.adjustment > 0 ? '\u2713' : '\u2717'} PA {selection.personalAffinity.adjustment >= 5 ? 'Strong' : selection.personalAffinity.adjustment >= 2 ? 'Positive' : selection.personalAffinity.adjustment > 0 ? 'Weak' : 'Negative'}
+              </span>
+            )}
             <div className='ml-auto flex items-center gap-2'>
               {!label && betType === 'WIN' && (
                 <span className='text-xs px-2 py-1 rounded-lg border border-green-500/30 bg-green-500/15 text-green-400 font-bold'>WIN</span>
@@ -688,15 +698,6 @@ function Home() {
               <div className='text-3xl font-bold text-amber-400'>{allPicks.length}</div>
               <div className='text-xs text-zinc-400 uppercase tracking-wider'>Picks</div>
             </div>
-            {overallRate && (
-              <div className='text-center'>
-                <div className={`text-3xl font-bold ${overallRate >= 30 ? 'text-green-400' : overallRate >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
-                  {overallRate}%
-                </div>
-                  <div className='text-xs text-zinc-400 uppercase tracking-wider'>Win Rate</div>
-                  <div className='text-[9px] text-zinc-600 uppercase tracking-wider mt-0.5'>Daily Picks</div>
-              </div>
-            )}
             {nextRace && (
               <div className='text-center pl-6 border-l border-white/10'>
                 <div className='text-3xl font-bold text-amber-400'>{nextRace.offTime}</div>
