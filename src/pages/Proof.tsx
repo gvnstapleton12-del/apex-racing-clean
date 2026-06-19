@@ -668,27 +668,6 @@ export default function Proof() {
             <StatCard label='Avg Confidence' value={`${stats.averageConfidence || 0}`} subtitle='Out of 100' />
           </div>
 
-          {stats.confidenceBands && (
-            <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-6'>
-              <h2 className='text-lg font-bold mb-4'>Performance by Confidence Band</h2>
-              <div className='space-y-3'>
-                {stats.confidenceBands
-                  .filter((b: any) => b.runs > 0)
-                  .sort((a: any, b: any) => b.runs - a.runs)
-                  .map((band: any) => (
-                    <div key={band.band} className='flex items-center gap-4'>
-                      <span className='w-20 text-sm font-medium capitalize'>{band.band}</span>
-                      <div className='flex-1 bg-white/5 rounded-full h-6 overflow-hidden'>
-                        <div className='h-full bg-green-500/30 rounded-full transition-all' style={{ width: `${calculateWinPercentage(band.wins, band.runs)}%` }} />
-                      </div>
-                      <span className='w-20 text-right text-sm text-zinc-400'>{band.runs} runs</span>
-                      <span className='w-20 text-right text-sm font-bold'>{band.strikeRate.toFixed(1)}%</span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-
             <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6'>
             <h2 className='text-lg font-bold mb-1'>PA Gate Monitor</h2>
             <p className='text-zinc-500 text-sm mb-4'>Honest evaluation. Every section declares what subset it measures.</p>
