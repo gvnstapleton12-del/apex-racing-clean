@@ -489,6 +489,7 @@ function logPrediction(race, runner, aiProfile) {
     grade: aiProfile.grade || '',
     betQuality: aiProfile.betQuality || '',
     personalAffinity: runner.personalAffinity?.adjustment ?? null,
+    previousRuns: (runner.previous_results || []).length,
     going: normalizeGoingString(race.going || ''),
     breakdown: aiProfile.breakdown || null,
     timestamp: new Date().toISOString(),
