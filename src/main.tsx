@@ -155,7 +155,14 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
               <span className='px-3 py-1.5 bg-red-500/10 text-red-400 rounded-lg text-sm font-bold'>{(selection.valueEdge * 100).toFixed(1)}% edge</span>
             ) : null}
             {selection.odds != null && (
-              <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-amber-500/15 text-amber-200' : 'bg-white/[0.06] text-white'}`}>{selection.odds}</span>
+              <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-amber-500/15 text-amber-200' : 'bg-white/[0.06] text-white'}`}>
+                {selection.odds}
+                {selection.movement != null && Math.abs(selection.movement) > 15 && (
+                  <span className={`ml-1.5 text-[10px] ${selection.movement < 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {selection.movement < 0 ? '▼' : '▲'} {Math.abs(selection.movement).toFixed(0)}%
+                  </span>
+                )}
+              </span>
             )}
             <span className='ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20'>
               <strong className='text-lg font-black text-amber-400 leading-none'>{selection.score}</strong>
@@ -188,6 +195,15 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
               }`}>{(selection as any).betQuality}</span>
             )}
           </div>
+
+          {/* Frozen odds indicator for odds movers */}
+          {selection.frozenOdds != null && selection.currentOdds != null && (
+            <div className='flex items-center gap-2 mt-1.5 text-[10px]'>
+              <span className='text-zinc-500'>Frozen: {selection.frozenOdds}</span>
+              <span className='text-zinc-600'>→</span>
+              <span className='text-zinc-400'>Now: {selection.currentOdds}</span>
+            </div>
+          )}
 
           {/* Pace Shape summary */}
           {(() => {
@@ -499,6 +515,23 @@ function Home() {
   })
   const picksLive = upcomingBest ? [upcomingBest, ...upcomingOnePerRace].slice(0, 15) : upcomingOnePerRace.slice(0, 15)
 
+  // Odds Movers: frozen picks where current odds differ significantly from saved odds
+  const oddsMovers = useMemo(() => {
+    if (!todaySaved?.picks?.length) return []
+    return todaySaved.picks
+      .map((saved: any) => {
+        const live = allSelections.find((s: any) => s.horse === saved.horse && s.course === saved.course)
+        if (!live) return null
+        const frozenOdds = parseOddsToNum(saved.odds)
+        const currentOdds = parseOddsToNum(live.odds)
+        if (frozenOdds <= 0 || currentOdds <= 0) return null
+        const movement = ((currentOdds - frozenOdds) / frozenOdds) * 100
+        return { ...live, frozenOdds, currentOdds, movement, savedResult: saved.result }
+      })
+      .filter((p: any) => p && Math.abs(p.movement) > 15)
+      .sort((a: any, b: any) => Math.abs(b.movement) - Math.abs(a.movement))
+  }, [todaySaved, allSelections])
+
   // Log ALL live picks to server for honest performance tracking (not just upcoming)
   const allLivePicksKey = allPicks.map(p => p.horse + p.course).join('|')
   useEffect(() => {
@@ -533,11 +566,11 @@ function Home() {
   const topScore = allPicks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
 
-  // View toggle: saved vs live picks
+  // View toggle: saved vs odds movers
   const hasSavedPicks = (todaySaved?.picks?.length || 0) > 0
-  const displayPicks = pickView === 'live' || !hasSavedPicks ? picksLive : picks
-  const liveBestBet = picksLive[0] || null
-  const displayBestBet = pickView === 'live' || !hasSavedPicks ? liveBestBet : bestBet
+  const displayPicks = pickView === 'live' ? oddsMovers : picks
+  const liveBestBet = oddsMovers[0] || picksLive[0] || null
+  const displayBestBet = pickView === 'live' ? liveBestBet : bestBet
 
   // Next race off
   const nextRace = useMemo(() => {
@@ -762,7 +795,7 @@ function Home() {
                 <span className='text-lg font-black uppercase tracking-wider px-3 py-1 rounded-lg' style={{ backgroundColor: '#d97706', color: '#fff' }}>NAP</span>
                 {hasSavedPicks && (
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${pickView === 'live' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                    {pickView === 'live' ? 'Live' : 'Frozen'}
+                    {pickView === 'live' ? 'Moved' : 'Frozen'}
                   </span>
                 )}
               </div>
@@ -842,10 +875,13 @@ function Home() {
               </button>
               <button type='button' onClick={() => setPickView('live')}
                 className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${pickView === 'live' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'}`}>
-                Live Picks
+                Odds Movers
               </button>
-              {pickView === 'live' && (
-                <span className='text-[10px] text-zinc-500 ml-1'>Best 10-15 min before off</span>
+              {pickView === 'live' && oddsMovers.length > 0 && (
+                <span className='text-[10px] text-zinc-500 ml-1'>{oddsMovers.length} horses moved {'>'}15%</span>
+              )}
+              {pickView === 'live' && oddsMovers.length === 0 && (
+                <span className='text-[10px] text-zinc-500 ml-1'>No significant movements today</span>
               )}
             </div>
           )}
