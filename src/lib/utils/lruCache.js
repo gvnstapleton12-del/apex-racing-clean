@@ -29,6 +29,10 @@ export class LruCache {
     return this.get(key) !== undefined
   }
 
+  delete(key) {
+    return this.store.delete(key)
+  }
+
   clear() {
     this.store.clear()
   }
