@@ -74,6 +74,36 @@ export async function getHorseMemoryBatch(db, horseNames, currentORByHorse = {})
   }
 }
 
+export async function getHorseMemoryBatchBefore(db, horseNames, currentORByHorse = {}, beforeDate) {
+  if (!db || !horseNames.length) return {}
+  const unique = [...new Set(horseNames.filter(Boolean))]
+  if (!unique.length) return {}
+  try {
+    const placeholders = unique.map(() => '?').join(',')
+    const dateClause = beforeDate ? ` AND race_date < ?` : ''
+    const params = beforeDate ? [...unique, beforeDate] : unique
+    const rows = await db.all(
+      `SELECT * FROM horse_runs WHERE horse_name IN (${placeholders})${dateClause} ORDER BY horse_name, race_date DESC LIMIT 50`,
+      params
+    )
+    const byHorse = {}
+    for (const row of rows) {
+      if (!byHorse[row.horse_name]) byHorse[row.horse_name] = []
+      if (byHorse[row.horse_name].length < 50) byHorse[row.horse_name].push(row)
+    }
+    const result = {}
+    for (const name of unique) {
+      const runs = byHorse[name] || []
+      const or = currentORByHorse[name] || 0
+      result[name] = computeHorseMemory(runs, name, or)
+    }
+    return result
+  } catch (error) {
+    console.error('Error getting horse memory batch before date:', error.message)
+    return {}
+  }
+}
+
 export function calculateHandicapScore(memory, currentOR) {
   if (!memory || !currentOR) {
     return { score: 50, label: 'Unknown', details: {} }
@@ -327,4 +357,145 @@ export async function findWellHandicappedHorses(db, course, date) {
     course: r.course,
     raceDate: r.race_date,
   }))
+}
+
+const GOING_TO_NUM = {
+  'firm': 1, 'good to firm': 2, 'good': 3, 'good to soft': 4, 'soft': 5, 'heavy': 6,
+  'standard': 3, 'standard to slow': 4, 'standard to fast': 2,
+}
+
+export function getWinningAnchor(runs) {
+  if (!runs || !runs.length) return null
+  for (const run of runs) {
+    if (run.proven_zone && run.finish_position === 1) {
+      try { return JSON.parse(run.proven_zone) } catch { return null }
+    }
+  }
+  return null
+}
+
+export async function getCohortBaseline(db, trainer, course) {
+  if (!db || !trainer) return null
+  try {
+    let query, params
+    if (course) {
+      query = `
+        SELECT COUNT(*) as total,
+               SUM(CASE WHEN finish_position = 1 THEN 1 ELSE 0 END) as wins,
+               AVG(CASE WHEN finish_position = 1 THEN field_size ELSE NULL END) as avgWinFieldSize,
+               AVG(CASE WHEN finish_position = 1 THEN or_rating ELSE NULL END) as avgWinOR
+        FROM horse_runs
+        WHERE trainer = ? AND course = ?
+      `
+      params = [trainer, course]
+    } else {
+      query = `
+        SELECT COUNT(*) as total,
+               SUM(CASE WHEN finish_position = 1 THEN 1 ELSE 0 END) as wins,
+               AVG(CASE WHEN finish_position = 1 THEN field_size ELSE NULL END) as avgWinFieldSize,
+               AVG(CASE WHEN finish_position = 1 THEN or_rating ELSE NULL END) as avgWinOR
+        FROM horse_runs
+        WHERE trainer = ?
+      `
+      params = [trainer]
+    }
+    const row = await db.get(query, params)
+    if (!row || row.total < 5) return null
+    return {
+      winRate: row.total > 0 ? (row.wins / row.total) : 0,
+      totalRuns: row.total,
+      totalWins: row.wins || 0,
+      avgWinFieldSize: Math.round(row.avgWinFieldSize || 0),
+      avgWinOR: Math.round(row.avgWinOR || 0),
+    }
+  } catch {
+    return null
+  }
+}
+
+function scoreDimension(current, anchor, threshold) {
+  if (!anchor) return 0.5
+  const delta = Math.abs(current - anchor)
+  if (delta <= threshold * 0.5) return 1.0
+  if (delta <= threshold) return 0.7
+  if (delta <= threshold * 2) return 0.3
+  return 0.0
+}
+
+export function computeProvenZoneScore(runs, currentConditions, cohortBaseline) {
+  if (!runs || !runs.length) return { score: 50, details: {}, inZone: false }
+
+  const anchor = getWinningAnchor(runs)
+  const winCount = runs.filter(r => r.finish_position === 1).length
+  const totalRuns = runs.length
+
+  if (!anchor) {
+    if (cohortBaseline && cohortBaseline.totalRuns >= 10) {
+      const cohortScore = Math.min(80, 30 + cohortBaseline.winRate * 200)
+      return { score: cohortScore, details: { source: 'cohort', winRate: cohortBaseline.winRate }, inZone: false }
+    }
+    return { score: 50, details: { source: 'default' }, inZone: false }
+  }
+
+  const weights = { or: 0.35, going: 0.20, distance: 0.20, fieldSize: 0.15, class: 0.10 }
+  const scores = {}
+  const details = {}
+
+  // OR Buffer
+  const orDelta = (currentConditions.or || 0) - (anchor.orAtWin || 0)
+  scores.or = orDelta <= 0 ? 1.0 : orDelta <= 3 ? 0.7 : orDelta <= 6 ? 0.3 : 0.0
+  details.orDelta = orDelta
+  details.orInZone = orDelta <= 0
+  details.anchorOR = anchor.orAtWin
+
+  // Going distance
+  const currentGoingNum = currentConditions.goingNum || GOING_TO_NUM[(currentConditions.going || '').toLowerCase()] || 0
+  scores.going = scoreDimension(currentGoingNum, anchor.goingNumAtWin, 1)
+  details.goingDelta = currentGoingNum - anchor.goingNumAtWin
+  details.anchorGoing = anchor.goingAtWin
+
+  // Distance match
+  const currentDist = currentConditions.distanceFurlongs || 0
+  scores.distance = scoreDimension(currentDist, anchor.distanceFurlongsAtWin, 2)
+  details.distanceDelta = Math.abs(currentDist - anchor.distanceFurlongsAtWin)
+  details.anchorDistance = anchor.distanceFurlongsAtWin
+
+  // Field size
+  const fieldDelta = Math.abs((currentConditions.fieldSize || 0) - (anchor.fieldSizeAtWin || 0))
+  scores.fieldSize = fieldDelta <= 2 ? 1.0 : fieldDelta <= 4 ? 0.7 : fieldDelta <= 6 ? 0.3 : 0.0
+  details.fieldDelta = fieldDelta
+  details.anchorFieldSize = anchor.fieldSizeAtWin
+
+  // Class
+  const currentClass = parseInt(currentConditions.raceClass) || 0
+  const anchorClass = parseInt(anchor.raceClassAtWin) || 0
+  if (anchorClass > 0 && currentClass > 0) {
+    scores.class = currentClass >= anchorClass ? 1.0 : currentClass === anchorClass - 1 ? 0.7 : 0.3
+  } else {
+    scores.class = 0.5
+  }
+  details.anchorClass = anchor.raceClassAtWin
+  details.anchorCourse = anchor.courseAtWin
+
+  let weightedScore = 0
+  for (const [dim, weight] of Object.entries(weights)) {
+    weightedScore += (scores[dim] || 0.5) * weight
+  }
+  const rawScore = Math.round(weightedScore * 100)
+
+  // Blend with cohort for low win counts
+  let finalScore = rawScore
+  if (winCount < 3 && cohortBaseline && cohortBaseline.totalRuns >= 10) {
+    const n = winCount
+    const k = 5
+    const cohortScore = Math.min(80, 30 + cohortBaseline.winRate * 200)
+    finalScore = Math.round(((n / (n + k)) * rawScore) + ((k / (n + k)) * cohortScore))
+    details.cohortBlended = true
+    details.cohortWinRate = cohortBaseline.winRate
+  }
+
+  const inZone = scores.or <= 0 && (scores.going >= 0.7) && (scores.distance >= 0.7)
+  details.scores = scores
+
+  return { score: finalScore, details, inZone, anchor }
 }

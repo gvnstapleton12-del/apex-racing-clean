@@ -465,6 +465,13 @@ export function formatSelection(race: Race, runner: Runner) {
     betType = 'SPEC'
   }
 
+  // PA modifier: downgrade weak PA (<2), upgrade strong PA (>=5)
+  const paAdj = (runner as any).personalAffinity?.adjustment ?? 0
+  if (paAdj < 2 && betType === 'WIN') betType = 'PLACE'
+  if (paAdj <= 0 && betType === 'PLACE') betType = 'SPEC'
+  if (paAdj >= 5 && betType === 'SPEC') betType = 'WIN'
+  if (paAdj >= 5 && betType === 'PLACE') betType = 'WIN'
+
   return {
     ...runner,
     race,
@@ -479,8 +486,8 @@ export function formatSelection(race: Race, runner: Runner) {
     probConfidence: confidence,
     valueEdge: edge,
     kellyStake: confidence * Math.max(edge, 0) * 0.25,
-    noBet: winProb < 0.06 || edge < -0.15,
-    noBetReason: winProb < 0.06 ? 'win probability too low' : edge < -0.15 ? 'negative edge exceeds threshold' : null,
+    noBet: winProb < 0.06 || edge < -0.15 || odds < 2.0,
+    noBetReason: winProb < 0.06 ? 'win probability too low' : edge < -0.15 ? 'negative edge exceeds threshold' : odds < 2.0 ? 'odds below evens — no value at short prices' : null,
     probBand: runner.probBand || '',
     probRange: runner.probRange || '',
     confidenceTier: '',

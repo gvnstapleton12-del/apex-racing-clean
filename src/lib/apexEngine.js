@@ -48,6 +48,7 @@ function probBand(winProb) {
 }
 
 function betQuality(probBand, winProb, marketAdj, odds) {
+  if (odds > 0 && odds < 2.0) return 'NO BET'
   if (probBand.tier >= 5) return 'NO BET'
   if (probBand.tier >= 4 && winProb < 8) return 'NO BET'
 
@@ -391,6 +392,13 @@ export function runApexEngine(runners, race, options = {}) {
       personalAffinityAdj = Math.pow(personalAffinityAdj, 1.5)
     }
 
+    // Proven Zone modifier — adjusts PA based on distance from winning conditions
+    const provenZoneScore = runner.horseMemory?.provenZoneScore
+    if (provenZoneScore != null && personalAffinityAdj !== 0) {
+      const zoneModifier = 0.9 + (provenZoneScore / 100) * 0.2
+      personalAffinityAdj = personalAffinityAdj * zoneModifier
+    }
+
     // Expose individual affinity components as separate score adjustments
     const courseAffinityAdj = personalAffinity.breakdown?.track?.adjustment
       ? Math.round(personalAffinity.breakdown.track.adjustment * 100) / 10 : 0
@@ -570,6 +578,11 @@ export function runApexEngine(runners, race, options = {}) {
         breakdown: personalAffinity.breakdown,
         note: personalAffinity.note,
       },
+      provenZone: {
+        score: runner.horseMemory?.provenZoneScore ?? null,
+        inZone: runner.horseMemory?.provenZoneInZone ?? false,
+        details: runner.horseMemory?.provenZoneDetails ?? {},
+      },
       trackProfile: {
         trackBiasFactor: Math.round(trackBiasFactor * 1000) / 1000,
         drawBias,
@@ -663,24 +676,36 @@ export function runApexEngine(runners, race, options = {}) {
     return Math.max(0.01, Math.min(0.99, calibratedProb))
   }
 
+  function dampenCalibration(p) {
+    if (p <= 0.05) return p * 0.50
+    if (p <= 0.10) return p * 0.43
+    if (p <= 0.15) return p * 0.51
+    if (p <= 0.20) return p * 0.73
+    if (p <= 0.30) return p * 0.78
+    if (p <= 0.40) return p
+    return Math.min(0.99, p * 1.19)
+  }
+
   const enablePaCalibration = options.enablePaCalibration !== false
   const paCalibrationCap = options.paCalibrationCap ?? 0.45
+  const plattWinProbs = []
   const adjustedWinProbs = winProbs.map((p, i) => {
     const prob = p / 100
     const calibrated = calibrateWinProbability(prob)
-    // PA is a gate (NO BET if PA≤0), NOT a probability amplifier
-    // Removed additive PA correction that inflated probabilities 3-7x
-    return Math.round(calibrated * 1000) / 10
+    plattWinProbs.push(calibrated)
+    const dampened = dampenCalibration(calibrated)
+    return Math.round(dampened * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {
     const prob = p / 100
     const calibrated = calibrateWinProbability(prob)
-    return Math.round(calibrated * 1000) / 10
+    const dampened = dampenCalibration(calibrated)
+    return Math.round(dampened * 1000) / 10
   })
 
   // Engine 2: Race Shape Simulation
   const simulation = runRaceSimulation(sorted, race, paceMap, {
-    numSimulations: 100,
+    numSimulations: options.numSimulations ?? 100,
     seed: Date.now(),
   })
 
@@ -752,6 +777,7 @@ export function runApexEngine(runners, race, options = {}) {
       ...r,
       courseAffinity: r.courseAffinity || 0,
       winProb: Math.round(adjustedWinProbs[i] * 10) / 10,
+      plattProb: Math.round(plattWinProbs[i] * 10000) / 100,
       placeProb: Math.round(Math.max(adjustedPlaceProbs[i], adjustedWinProbs[i]) * 10) / 10,
       probBand: band.label,
       probRange: band.range,

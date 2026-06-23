@@ -116,6 +116,36 @@ export interface HorseMemory {
   handicapScore?: number
   handicapLabel?: string
   abilityScore?: number
+  provenZoneScore?: number
+  provenZoneInZone?: boolean
+  provenZoneDetails?: {
+    orDelta?: number
+    orInZone?: boolean
+    anchorOR?: number
+    goingDelta?: number
+    anchorGoing?: string
+    distanceDelta?: number
+    anchorDistance?: number
+    fieldDelta?: number
+    anchorFieldSize?: number
+    anchorClass?: string
+    anchorCourse?: string
+    scores?: Record<string, number>
+    source?: string
+    cohortBlended?: boolean
+    cohortWinRate?: number
+  }
+  provenZoneAnchor?: {
+    anchorDate: string
+    orAtWin: number
+    fieldSizeAtWin: number
+    goingNumAtWin: number
+    goingAtWin: string
+    distanceFurlongsAtWin: number
+    raceClassAtWin: string
+    courseTypeAtWin: string
+    courseAtWin: string
+  } | null
 }
 
 export interface AiProfile {

@@ -322,18 +322,18 @@ function computeJockeyCourseSR(runner, race, jockeyFormDb) {
       else if (winRate >= 10) score = 55
       else score = 40
     }
-  }
 
-  const courseKey = `${jockey}|${course}`
-  if (jockeyFormDb[courseKey]) {
-    const courseRecord = jockeyFormDb[courseKey]
-    const courseRuns = courseRecord.runs || 0
-    const courseWins = courseRecord.wins || 0
-    if (courseRuns >= 5) {
-      const courseSR = (courseWins / courseRuns) * 100
-      if (courseSR >= 30) score = Math.min(score + 15, 100)
-      else if (courseSR >= 20) score = Math.min(score + 10, 100)
-      else if (courseSR < 10) score = Math.max(score - 10, 0)
+    // Course-specific: check nested byCourse first, then flat key fallback
+    const courseRecord = jockeyRecord.byCourse?.[course] || jockeyFormDb[`${jockey}|${course}`]
+    if (courseRecord) {
+      const courseRuns = courseRecord.runs || 0
+      const courseWins = courseRecord.wins || 0
+      if (courseRuns >= 5) {
+        const courseSR = (courseWins / courseRuns) * 100
+        if (courseSR >= 30) score = Math.min(score + 15, 100)
+        else if (courseSR >= 20) score = Math.min(score + 10, 100)
+        else if (courseSR < 10) score = Math.max(score - 10, 0)
+      }
     }
   }
 
