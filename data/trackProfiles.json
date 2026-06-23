@@ -24112,16 +24112,16 @@
       "surface": "Turf",
       "surfaceType": "turf",
       "country": "IRE",
-      "discipline": "National Hunt only (Chase, Hurdle, NH Flat)",
+      "discipline": "Flat and National Hunt",
       "handedness": "Left",
       "circuitLengthF": 10,
       "straight": "Home straight of approximately 2.5 furlongs (500 yards). Sharp undulating circuit with stiff finish.",
-      "paceBias": "Left-handed sharp National Hunt track in County Mayo, Ireland. Sharp 10f undulating circuit with stiff finish. Summer jumping only (May to August) — conditions typically quick. Chase/Hurdle Good/Fast: FR 42% / PR 34% / MD 15% / HU 9% (Mayo Speedster). Chase/Hurdle Soft/Heavy: PR 40% / MD 30% / FR 18% / HU 12% (Western Tracker). Sharp undulating circuit heavily favors early speed on quick ground. Soft ground (less common in summer) shifts to prominent types. Stiff finish demands stamina reserve. Smaller fields typical (8-12 runners) — tactical speed crucial.",
+      "paceBias": "Left-handed sharp dual-purpose track in County Mayo, Ireland. Sharp 10f undulating circuit with stiff finish. Hosts summer evening Flat cards (May-August) alongside NH fixtures. Chase/Hurdle Good/Fast: FR 42% / PR 34% / MD 15% / HU 9%. Chase/Hurdle Soft/Heavy: PR 40% / MD 30% / FR 18% / HU 12%. Sharp undulating circuit heavily favors early speed on quick ground. Flat races draw-dependent over trips. Stiff finish demands stamina reserve.",
       "keyTraits": [
-        "County Mayo, Ireland, left-handed sharp National Hunt track",
+        "County Mayo, Ireland, left-handed sharp dual-purpose track",
         "Sharp 1m2f (10f) undulating circuit",
         "Home straight approximately 2.5f (500 yards) with stiff finish",
-        "Summer jumping only (May to August)",
+        "Hosts summer evening Flat cards (May-August) alongside NH fixtures",
         "Typically quick ground conditions",
         "Chase/Hurdle Good/Fast: FR 42% / PR 34% / MD 15% / HU 9%",
         "Chase/Hurdle Soft/Heavy: PR 40% / MD 30% / FR 18% / HU 12%",
@@ -24129,7 +24129,7 @@
         "Soft ground shifts to PR dominance (40% wins)",
         "Smaller fields typical (8-12 runners)",
         "Stiff finish demands stamina reserve",
-        "No draw bias — NH starting stalls not used"
+        "Draw bias applicable in Flat races — low draw advantaged over 1m-1m2f"
       ],
       "aw": false,
       "turf": true,
@@ -24139,11 +24139,6 @@
       "uphillFinish": false,
       "layoutCategory": "sharp",
       "systemExclusions": [
-        {
-          "type": "race_type_exclusion",
-          "raceType": "Flat",
-          "note": "Flat category invalid on pure National Hunt course"
-        },
         {
           "type": "race_type_exclusion",
           "raceType": "Hurdle",
@@ -24274,9 +24269,9 @@
       ],
       "layoutBiasRules": [],
       "featureRules": [],
-      "notable": "County Mayo left-handed sharp NH track (10f circuit) with undulations and stiff finish. Summer jumping only (May-August). Chase/Hurdle Good/Fast: FR 42% / PR 34% / MD 15% / HU 9%. Chase/Hurdle Soft/Heavy: PR 40% / MD 30% / FR 18% / HU 12%. Sharp circuit heavily FR-favored on quick ground. Smaller fields typical (8-12 runners). System Exclusions: Flat, Maiden Hurdle, Class 5 Hcap 12+.",
+      "notable": "County Mayo left-handed sharp dual-purpose track (10f circuit) with undulations and stiff finish. Hosts summer evening Flat cards (May-August) alongside NH fixtures. Chase/Hurdle Good/Fast: FR 42% / PR 34% / MD 15% / HU 9%. Chase/Hurdle Soft/Heavy: PR 40% / MD 30% / FR 18% / HU 12%. Sharp circuit heavily FR-favored on quick ground. Smaller fields typical (8-12 runners). System Exclusions: Maiden Hurdle, Class 5 Hcap 12+.",
       "trackCategory": "tactical",
-      "insight": "Sharp, left-handed jumps track. Tight turns and undulating layout. Positional speed and jumping accuracy crucial.",
+      "insight": "Sharp, left-handed dual-purpose track. Tight turns and undulating layout. Positional speed and jumping accuracy crucial for NH. Draw matters in Flat races.",
       "keyFactors": [
         "Positioning",
         "Jumping",
@@ -24303,7 +24298,7 @@
         "draw": 1,
         "jumping": 4
       },
-      "isJumps": true,
+      "isJumps": false,
       "derivedStats": {
         "raceCount": 15,
         "runnerCount": 184,

@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import fs from 'fs'
 import path from 'path'
 import http from 'http'
+import { spawn } from 'child_process'
 
 import { Server } from 'socket.io'
 
@@ -15,9 +16,9 @@ import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchl
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
 import { fetchAtrRacecards, fetchAtrRatings } from './src/lib/scrapers/atrScraper.js'
-import { initHorseDb, createTables, closeHorseDb } from './src/lib/horseMemoryDb.js'
-import { getHorseMemory, getHorseMemoryBatch, calculateHandicapScore, calculateAbilityFromMemory } from './src/lib/horseMemoryEngine.js'
-import { saveHorseRun } from './src/lib/saveHorseRun.js'
+import { initHorseDb, createTables, closeHorseDb, saveJockeyRun } from './src/lib/horseMemoryDb.js'
+import { getHorseMemory, getHorseMemoryBatch, calculateHandicapScore, calculateAbilityFromMemory, computeProvenZoneScore, getCohortBaseline } from './src/lib/horseMemoryEngine.js'
+import { saveHorseRun, savePreviousResults } from './src/lib/saveHorseRun.js'
 import { recordTrackBiasResult, backfillFromHistorical, getAllTrackBiasStats, saveTrackBiasStore, getTrackBiasStore } from './src/lib/trackBiasLearner.js'
 import { checkRaceExclusion } from './src/lib/trackProfile.js'
 import { recordAffinityPrediction, verifyAffinityResult, saveAffinityStore, initAffinityStore } from './src/lib/personalAffinity.js'
@@ -115,6 +116,7 @@ const COUNTERFACTUAL_DB_PATH = path.join(process.cwd(), 'data', 'counterfactual-
 const LIVE_PICKS_LOG_PATH = path.join(process.cwd(), 'data', 'live-picks-log.json')
 
 let HORSE_MEMORY_DB = null
+let BACKFILL_IN_PROGRESS = false
 
 function normalizeHorseName(name = '') {
   return String(name)
@@ -638,6 +640,16 @@ function cleanRaceName(name = '') {
     .trim()
 }
 
+async function getHorseRunsForZone(db, horseName) {
+  if (!db || !horseName) return []
+  try {
+    return await db.all(
+      `SELECT * FROM horse_runs WHERE horse_name = ? ORDER BY race_date DESC LIMIT 50`,
+      [horseName]
+    )
+  } catch { return [] }
+}
+
 async function processRace(race) {
   const startTime = Date.now()
   const raceLabel = `${race.course} ${race.off_time}`
@@ -716,6 +728,29 @@ async function processRace(race) {
           abilityScore,
         }
       }
+    }
+
+    const raceGoingNum = { 'firm': 1, 'good to firm': 2, 'good': 3, 'good to soft': 4, 'soft': 5, 'heavy': 6 }[String(race.going || '').toLowerCase()] || 0
+    const raceFieldSize = race.field_size || race.fieldSize || raceRunners.length || 0
+    const raceClass = race.race_class || race.class || ''
+    const raceDistF = race.distance_furlongs || 0
+    for (const runner of raceRunners) {
+      if (!runner.horse || !runner.horseMemory) continue
+      const runs = await getHorseRunsForZone(HORSE_MEMORY_DB, runner.horse)
+      if (!runs || !runs.length) continue
+      const cohort = await getCohortBaseline(HORSE_MEMORY_DB, runner.trainer || '', race.course || '')
+      const zone = computeProvenZoneScore(runs, {
+        or: runner.or || 0,
+        goingNum: raceGoingNum,
+        going: race.going || '',
+        distanceFurlongs: raceDistF,
+        fieldSize: raceFieldSize,
+        raceClass,
+      }, cohort)
+      runner.horseMemory.provenZoneScore = zone.score
+      runner.horseMemory.provenZoneDetails = zone.details
+      runner.horseMemory.provenZoneInZone = zone.inZone
+      runner.horseMemory.provenZoneAnchor = zone.anchor || null
     }
     const enrichedRunners = raceRunners
     console.timeEnd(`[processRace] ${raceLabel} horseMemory`)
@@ -1132,6 +1167,68 @@ async function fetchLiveMeetings() {
   }
 }
 
+const BACKTEST_CACHE_DIR = path.join(process.cwd(), 'data', 'backtest-cache')
+
+function saveBacktestCache(races) {
+  if (!races || !races.length) return
+  const byDate = {}
+  for (const race of races) {
+    const d = race.date
+    if (!d) continue
+    if (!byDate[d]) byDate[d] = []
+    byDate[d].push(race)
+  }
+  for (const [date, dateRaces] of Object.entries(byDate)) {
+    const cachePath = path.join(BACKTEST_CACHE_DIR, `results-${date}.json`)
+    let existing = []
+    try {
+      if (fs.existsSync(cachePath)) {
+        existing = JSON.parse(fs.readFileSync(cachePath, 'utf8'))
+      }
+    } catch {}
+    const existingIds = new Set(existing.map(r => r.race_id || `${r.course}-${r.off_time || r.off}`))
+    const newRaces = dateRaces
+      .filter(r => !existingIds.has(r.race_id || `${r.course}-${r.off_time || r.off}`))
+      .map(r => ({
+        race_id: r.race_id || `${r.course}-${r.off_time || r.off}`,
+        course: r.course || '',
+        race_name: r.race_name || '',
+        going: r.going || '',
+        distance_f: r.distance_f || '',
+        race_class: r.race_class || 0,
+        date: r.date || '',
+        runners: (r.runners || []).map(runner => ({
+          horse: runner.horse || '',
+          horse_id: runner.horse_id || '',
+          position: runner.position || 0,
+          odds: runner.odds || 0,
+          sp: runner.sp || 0,
+          or: runner.or || 0,
+          rpr: runner.rpr || 0,
+          draw: runner.draw || 0,
+          jockey: runner.jockey || '',
+          trainer: runner.trainer || '',
+          form: runner.form || '',
+          age: runner.age || 0,
+          sex: runner.sex || '',
+          lbs: runner.lbs || '',
+          last_run: runner.last_run || 0,
+          previous_results: runner.previous_results || [],
+        })),
+      }))
+    if (newRaces.length > 0) {
+      const merged = [...existing, ...newRaces]
+      try {
+        if (!fs.existsSync(BACKTEST_CACHE_DIR)) fs.mkdirSync(BACKTEST_CACHE_DIR, { recursive: true })
+        fs.writeFileSync(cachePath, JSON.stringify(merged, null, 0))
+        console.log(`[BacktestCache] Saved ${newRaces.length} new races for ${date} (total: ${merged.length})`)
+      } catch (err) {
+        console.error(`[BacktestCache] Failed to write ${cachePath}: ${err.message}`)
+      }
+    }
+  }
+}
+
 function matchResultsToCalibration(races) {
   let matched = 0
 
@@ -1363,6 +1460,49 @@ function matchResultsToCalibration(races) {
     saveDatabase(TRAINER_FORM_PATH, TRAINER_FORM_DATABASE)
     console.log(`[TrainerForm] Updated: ${Object.keys(trainerForm).length} trainers in last 14 days`)
 
+    // Update jockey form database (last 14 days) — mirrors trainer form builder
+    const jockeyForm = {}
+    allRaces.forEach(race => {
+      if (!race.date || race.date < cutoffDate) return
+      const runners = race.runners || []
+      const fSize = race.field_size || runners.length
+      runners.forEach(runner => {
+        const jockey = runner.jockey
+        if (!jockey) return
+        if (!jockeyForm[jockey]) {
+          jockeyForm[jockey] = { runs: 0, wins: 0, places: 0, lastUpdate: race.date, byCourse: {} }
+        }
+        const pos = normalizePosition(runner.position)
+        if (pos > 0) {
+          jockeyForm[jockey].runs++
+          if (pos === 1) jockeyForm[jockey].wins++
+          if (pos <= placedPositions(fSize)) jockeyForm[jockey].places++
+        }
+        const course = (race.course || '').toLowerCase()
+        if (course) {
+          if (!jockeyForm[jockey].byCourse[course]) {
+            jockeyForm[jockey].byCourse[course] = { runs: 0, wins: 0 }
+          }
+          if (pos > 0) {
+            jockeyForm[jockey].byCourse[course].runs++
+            if (pos === 1) jockeyForm[jockey].byCourse[course].wins++
+          }
+        }
+      })
+    })
+    Object.keys(jockeyForm).forEach(jockey => {
+      const j = jockeyForm[jockey]
+      j.winRate = j.runs > 0 ? Math.round((j.wins / j.runs) * 100 * 10) / 10 : 0
+      j.placeRate = j.runs > 0 ? Math.round((j.places / j.runs) * 100 * 10) / 10 : 0
+      Object.keys(j.byCourse).forEach(course => {
+        const c = j.byCourse[course]
+        c.winRate = c.runs > 0 ? Math.round((c.wins / c.runs) * 100 * 10) / 10 : 0
+      })
+    })
+    Object.assign(JOCKEY_FORM_DATABASE, jockeyForm)
+    saveDatabase(JOCKEY_FORM_PATH, JOCKEY_FORM_DATABASE)
+    console.log(`[JockeyForm] Updated: ${Object.keys(jockeyForm).length} jockeys in last 14 days`)
+
     OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
     console.log(`[OR History] Built OR profiles for ${Object.keys(OR_HISTORY).length} horses`)
 
@@ -1375,6 +1515,9 @@ function matchResultsToCalibration(races) {
 
     console.log(`[Calibration] Matched ${matched} runners for calibration, saved learning records`)
   }
+
+  // Save full race objects to backtest-cache for point-in-time backtesting
+  saveBacktestCache(races)
 
   // Match results against daily picks so the home tab shows W/P/L
   matchDailyPicksWithResults(races)
@@ -1417,7 +1560,9 @@ async function fetchResultsForDate(dateStr) {
     const resultRaces = await retry(() => fetchSlResults(dateStr), 2, 2000)
 
     if (!resultRaces || resultRaces.length === 0) {
-      console.log(`[Results] No results found for ${dateStr}`)
+      console.log(`[Results] No results scraped for ${dateStr}, matching against existing DB races`)
+      const existingRaces = (LEARNING_DATABASE.races || []).filter(r => r.date === dateStr)
+      if (existingRaces.length > 0) matchDailyPicksWithResults(existingRaces)
       return 0
     }
 
@@ -1744,9 +1889,22 @@ app.post('/api/daily-picks', (req, res) => {
       odds: p.odds,
       form: p.form,
       draw: p.draw,
+      going: p.going || '',
+      fieldSize: p.fieldSize || 0,
+      winProb: p.winProb ?? null,
+      fairOdds: p.fairOdds ?? null,
+      probConfidence: p.probConfidence ?? null,
+      valueEdge: p.valueEdge ?? 0,
+      kellyStake: p.kellyStake ?? null,
+      betType: p.betType || null,
+      or: p.or ?? null,
+      rpr: p.rpr ?? null,
+      performanceRating: p.performanceRating ?? null,
       marketMovement: p.marketMovement || null,
-      result: null,
-      position: null,
+      personalAffinity: p.personalAffinity || null,
+      betQuality: p.betQuality || null,
+      result: p.result || null,
+      position: p.position || null,
     })),
     stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: picks.length },
   }
@@ -1780,20 +1938,25 @@ app.post('/api/results/backfill', async (req, res) => {
     return res.status(400).json({ error: 'dates array required' })
   }
   console.log(`[Backfill] Fetching results for ${dates.length} dates: ${dates.join(', ')}`)
-  const results = {}
-  for (const date of dates) {
-    try {
-      const count = await fetchResultsForDate(date)
-      results[date] = count
-    } catch (e) {
-      results[date] = `error: ${e.message}`
+  BACKFILL_IN_PROGRESS = true
+  try {
+    const results = {}
+    for (const date of dates) {
+      try {
+        const count = await fetchResultsForDate(date)
+        results[date] = count
+      } catch (e) {
+        results[date] = `error: ${e.message}`
+      }
     }
+    // Re-match daily picks with the newly scraped results
+    const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
+    matchDailyPicksWithResults(allResultRaces)
+    matchCounterfactualWithResults(allResultRaces)
+    res.json({ ok: true, results })
+  } finally {
+    BACKFILL_IN_PROGRESS = false
   }
-  // Re-match daily picks with the newly scraped results
-  const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
-  matchDailyPicksWithResults(allResultRaces)
-  matchCounterfactualWithResults(allResultRaces)
-  res.json({ ok: true, results })
 })
 
 app.delete('/api/daily-picks/:date', (req, res) => {
@@ -2227,11 +2390,26 @@ app.post('/api/upload-results', (req, res) => {
             field_size: race.field_size || race.fieldSize || runners.length,
             trainer: runner.trainer || '',
             jockey: runner.jockey || '',
-          }).then(saved => {
+          }, TRACK_PROFILES).then(saved => {
             if (!saved) {
               console.error('[Horse Memory] Failed to save run for', runner.horse)
             }
           })
+          if (runner.jockey) {
+            saveJockeyRun(HORSE_MEMORY_DB, {
+              jockey: runner.jockey,
+              course: race.course || '',
+              race_date: race.date || new Date().toISOString().split('T')[0],
+              finish_position: normalizePosition(runner.position) || 0,
+              field_size: race.field_size || race.fieldSize || runners.length,
+              sp_odds: resolveOdds(runner),
+              race_class: race.race_class || race.class || '',
+            })
+          }
+          // Save previous_results to horse_runs — massively backfills RPR/OR/distance/going data
+          if (runner.previous_results?.length > 0) {
+            savePreviousResults(HORSE_MEMORY_DB, runner.horse, horseId, runner.previous_results, TRACK_PROFILES)
+          }
         }
         const position = normalizePosition(runner.position)
         if (!horseId) return
@@ -2584,7 +2762,7 @@ app.get('/api/historical/stats', (_req, res) => {
   const bands = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
   const byWinProb = bands.map((band) => {
     const inBand = bettable.filter((r) => {
-      const wp = (r.winProb || 0) * 100
+      const wp = (r.winProb > 1 ? r.winProb : (r.winProb || 0) * 100)
       const prev = bands[bands.indexOf(band) - 1] || 0
       return wp > prev && wp <= band
     })
@@ -2738,7 +2916,7 @@ app.get('/api/historical/stats', (_req, res) => {
         const bands = [5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100]
         return bands.map((band) => {
           const inBand = bucket.filter((r) => {
-            const wp = (r.winProb || 0) * 100
+            const wp = (r.winProb > 1 ? r.winProb : (r.winProb || 0) * 100)
             const prev = bands[bands.indexOf(band) - 1] || 0
             return wp > prev && wp <= band
           })
@@ -3457,6 +3635,82 @@ app.get('/api/pa-by-position', (_req, res) => {
   }
 })
 
+// Point-in-time backtest endpoint — spawns backtest script as child process, streams progress via SSE
+app.get('/api/backtest/stream', (req, res) => {
+  const fromDate = req.query.from || '2026-05-21'
+  const toDate = req.query.to || '2026-06-21'
+  const paGate = req.query['pa-gate'] === 'true'
+  const label = req.query.label || `api-${fromDate}`
+
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no',
+  })
+
+  const args = ['scripts/backtestPointInTime.mjs', '--from', fromDate, '--to', toDate, '--label', label]
+  if (paGate) args.push('--pa-gate')
+
+  const proc = spawn('node', args, { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'] })
+
+  proc.stdout.on('data', (data) => {
+    const lines = data.toString().split('\n').filter(Boolean)
+    for (const line of lines) {
+      res.write(`data: ${JSON.stringify({ type: 'progress', message: line })}\n\n`)
+    }
+  })
+
+  proc.stderr.on('data', (data) => {
+    res.write(`data: ${JSON.stringify({ type: 'error', message: data.toString().trim() })}\n\n`)
+  })
+
+  proc.on('close', (code) => {
+    res.write(`data: ${JSON.stringify({ type: 'done', code, label })}\n\n`)
+    res.end()
+  })
+
+  req.on('close', () => {
+    proc.kill('SIGTERM')
+  })
+})
+
+// Synchronous backtest trigger — returns result file path when complete
+app.post('/api/backtest/run', async (req, res) => {
+  const { startDate, endDate, paGate } = req.body || {}
+  if (!startDate || !endDate) {
+    return res.status(400).json({ error: 'startDate and endDate required' })
+  }
+
+  const label = `api-${startDate}-${Date.now()}`
+  const args = ['scripts/backtestPointInTime.mjs', '--from', startDate, '--to', endDate, '--label', label]
+  if (paGate) args.push('--pa-gate')
+
+  console.log(`[Backtest] Starting: ${startDate} to ${endDate}, PA gate: ${paGate}`)
+
+  try {
+    const result = await new Promise((resolve, reject) => {
+      const proc = spawn('node', args, { cwd: process.cwd(), stdio: ['ignore', 'pipe', 'pipe'] })
+      let stdout = ''
+      let stderr = ''
+      proc.stdout.on('data', (d) => { stdout += d.toString() })
+      proc.stderr.on('data', (d) => { stderr += d.toString() })
+      proc.on('close', (code) => {
+        if (code === 0) resolve({ stdout, label })
+        else reject(new Error(stderr || `Exit code ${code}`))
+      })
+      proc.on('error', reject)
+    })
+
+    const outputPath = path.join(process.cwd(), `data/backtest-results-${label}.json`)
+    console.log(`[Backtest] Complete: ${outputPath}`)
+    res.json({ ok: true, outputPath, label, stdout: result.stdout.slice(-2000) })
+  } catch (err) {
+    console.error(`[Backtest] Failed: ${err.message}`)
+    res.status(500).json({ error: err.message })
+  }
+})
+
 app.post('/api/refresh-racecards', async (_req, res) => {
   try {
     console.log('[API] Manual racecard refresh requested')
@@ -3667,11 +3921,22 @@ server.listen(PORT, async () => {
   scheduleNext8am()
 
   // Re-scrape today's results every 30 min to pick up newly finished races
+  // Also retry recent past dates that still have pending picks
   setInterval(async () => {
+    if (BACKFILL_IN_PROGRESS) return
     const today = new Date().toISOString().split('T')[0]
     try {
       console.log('[Scheduler] Periodic results refresh for', today)
       await fetchResultsForDate(today)
+      // Retry past 3 days if they still have pending picks
+      for (let i = 1; i <= 3; i++) {
+        const d = new Date(Date.now() - i * 86400000).toISOString().split('T')[0]
+        const dp = DAILY_PICKS_DATABASE[d]
+        if (dp?.stats?.pending > 0) {
+          console.log(`[Scheduler] Retrying past date ${d} (${dp.stats.pending} pending)`)
+          await fetchResultsForDate(d)
+        }
+      }
     } catch (e) {
       console.error('[Scheduler] Results refresh failed:', e.message)
     }
@@ -3679,6 +3944,7 @@ server.listen(PORT, async () => {
 
   // Refresh racecards every 15 min to pick up odds changes and non-runners
   setInterval(async () => {
+    if (BACKFILL_IN_PROGRESS) return
     try {
       const today = new Date().toISOString().split('T')[0]
       const cacheKey = 'racecards:sl'

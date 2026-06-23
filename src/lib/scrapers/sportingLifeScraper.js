@@ -253,7 +253,7 @@ async function fetchRaceRunners(raceId) {
       return {
       horse_id: String(ride.horse?.horse_reference?.id || ''),
       horse: horseName,
-      atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(horseName)}`,
+      atrUrl: `https://www.sportinglife.com/racing/profiles/horse/${ride.horse?.horse_reference?.id || ''}`,
       position: ride.finish_position || 0,
       finish_distance: ride.finish_distance || '',
       jockey: ride.jockey?.name || '',
@@ -435,7 +435,7 @@ export async function fetchSlResults(dateStr) {
             return {
               horse_id: String(r.horse?.horse_reference?.id || ''),
               horse: horseName,
-              atrUrl: `https://www.attheraces.com/search?search=${encodeURIComponent(horseName)}`,
+              atrUrl: `https://www.sportinglife.com/racing/profiles/horse/${r.horse?.horse_reference?.id || ''}`,
               position: r.finish_position,
               finish_distance: r.finish_distance || '',
               jockey: r.jockey?.name || '',

@@ -50,7 +50,10 @@ export function getAtTheRacesHorseUrl(runner: any, race?: any): string {
 
   if (runner?.atrUrl) return runner.atrUrl
 
-  return ATR_SEARCH_URL + encodeURIComponent(horseName)
+  const slId = runner?.horse_id || runner?.horseId
+  if (slId) return `https://www.sportinglife.com/racing/profiles/horse/${slId}`
+
+  return `https://www.google.com/search?q=site:attheraces.com+${encodeURIComponent(horseName)}+form`
 }
 
 export function openAtTheRacesHorseForm(runner: any, race?: any) {

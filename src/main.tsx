@@ -149,10 +149,10 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
           
           {/* Essential metrics only */}
           <div className='flex gap-3 mt-4 flex-wrap items-center'>
-            {selection.valueEdge != null && selection.valueEdge > 0 ? (
-              <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-green-500/15 text-green-300' : 'bg-green-500/10 text-green-400'}`}>+{(selection.valueEdge * 100).toFixed(1)}% edge</span>
-            ) : selection.valueEdge != null && selection.valueEdge < 0 ? (
-              <span className='px-3 py-1.5 bg-red-500/10 text-red-400 rounded-lg text-sm font-bold'>{(selection.valueEdge * 100).toFixed(1)}% edge</span>
+            {selection.valueEdge != null && selection.valueEdge > 0 && (selection.odds ?? 0) >= 2.0 ? (
+              <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-green-500/15 text-green-300' : 'bg-green-500/10 text-green-400'}`}>+{(selection.valueEdge * 100).toFixed(1)}% underbet</span>
+            ) : selection.valueEdge != null && selection.valueEdge < 0 && (selection.odds ?? 0) >= 2.0 ? (
+              <span className='px-3 py-1.5 bg-red-500/10 text-red-400 rounded-lg text-sm font-bold'>{(selection.valueEdge * 100).toFixed(1)}% overbet</span>
             ) : null}
             {selection.odds != null && (
               <span className={`px-3 py-1.5 rounded-lg text-sm font-bold ${isNap ? 'bg-amber-500/15 text-amber-200' : 'bg-white/[0.06] text-white'}`}>
@@ -173,7 +173,7 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
           {/* Model diagnostics */}
           <div className='flex gap-2 mt-2 flex-wrap items-center'>
             {selection.winProb != null && selection.winProb > 0 && (
-              <span className='text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Model {selection.winProb.toFixed(1)}%</span>
+              <span className='text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Model {selection.winProb > 1 ? selection.winProb.toFixed(1) : (selection.winProb * 100).toFixed(1)}%</span>
             )}
             {selection.odds != null && parseOddsToNum(selection.odds) > 0 && (
               <span className='text-[10px] px-2 py-0.5 rounded bg-zinc-500/10 text-zinc-400 border border-white/5'>Mkt {(100 / parseOddsToNum(selection.odds)).toFixed(1)}%</span>
@@ -268,6 +268,9 @@ interface DailyPick {
   betType: string | null
   result: string | null
   position: number | null
+  personalAffinity?: { adjustment: number } | null
+  betQuality?: string | null
+  marketMovement?: { horse: string; lastOdds: number; movement: string; updatedAt: string } | null
 }
 
 interface DayStats {
@@ -285,7 +288,7 @@ interface DailyPicksEntry {
 
 function Home() {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
-  const [pickView, setPickView] = useState<'saved' | 'live'>('live')
+  const [pickView, setPickView] = useState<'saved' | 'live' | 'yesterday'>('live')
   const [abandoned, setAbandoned] = useState<any[]>([])
   const [livePicksStats, setLivePicksStats] = useState<{ stats: { won: number; placed: number; lost: number; nr: number; pending: number }; roi: number } | null>(null)
   const [homeWidgets, setHomeWidgets] = useState<any>(null)
@@ -353,6 +356,8 @@ function Home() {
 
   const today = new Date().toISOString().split('T')[0]
   const todaySaved = dailyPicksDb[today]
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+  const yesterdaySaved = dailyPicksDb[yesterday]
   const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const ukIreRaces = filterMinRunners(filterGBIRE(races))
   const allSelections = getHomeSelections(ukIreRaces)
@@ -414,7 +419,7 @@ function Home() {
       horse: s.horse,
       score: s.score,
       valueEdge: (s.valueEdge || 0).toFixed(3),
-      winProb: ((s.winProb || 0) * 100).toFixed(1) + '%',
+      winProb: (s.winProb > 1 ? s.winProb : (s.winProb || 0) * 100).toFixed(1) + '%',
       odds: s.odds,
       race: s.course + ' ' + s.offTime,
     })))
@@ -444,7 +449,7 @@ function Home() {
       horse: s.horse,
       score: s.score,
       valueEdge: (s.valueEdge || 0).toFixed(3),
-      winProb: ((s.winProb || 0) * 100).toFixed(1) + '%',
+      winProb: (s.winProb > 1 ? s.winProb : (s.winProb || 0) * 100).toFixed(1) + '%',
       odds: s.odds,
       failValue: (s.valueEdge || 0) <= 0.03,
       failProb: (s.winProb || 0) < 0.10,
@@ -459,7 +464,7 @@ function Home() {
       const bq = (s as any).betQuality || ''
       if (bq === 'NO BET') return false
       if (bq === 'WEAK_COMPAT') return false
-      if (parseOddsToNum(s.odds) < 1.5) return false
+      if (parseOddsToNum(s.odds) < 2.0) return false
       const apexScore = s.score || 0
       if (apexScore === 0) return true
       if (apexScore >= 60) return true
@@ -553,24 +558,71 @@ function Home() {
     }).catch(() => {})
   }, [allLivePicksKey])
   // Freeze picks from saved DB when available — match to live data for display
+  // Drop stale picks (horses no longer in today's racecards)
   const picks = todaySaved?.picks?.length
-    ? todaySaved.picks
-        .map((savedPick: any) => {
-          const liveMatch = allSelections.find((s: any) => s.horse === savedPick.horse && s.course === savedPick.course)
-          return liveMatch || { ...savedPick, race: null }
-        })
-        .slice(0, 15)
+    ? (() => {
+        const matched = todaySaved.picks
+          .map((savedPick: any) => {
+            const liveMatch = allSelections.find((s: any) => s.horse === savedPick.horse && s.course === savedPick.course)
+            if (!liveMatch) return null
+            return {
+              ...liveMatch,
+              result: savedPick.result || null,
+              position: savedPick.position || null,
+              winProb: savedPick.winProb ?? liveMatch.winProb,
+              personalAffinity: savedPick.personalAffinity ?? liveMatch.personalAffinity,
+              betQuality: savedPick.betQuality ?? liveMatch.betQuality,
+              valueEdge: savedPick.valueEdge ?? liveMatch.valueEdge,
+              betType: savedPick.betType ?? liveMatch.betType,
+              kellyStake: savedPick.kellyStake ?? liveMatch.kellyStake,
+            }
+          })
+          .filter(Boolean)
+        return matched.length > 0 ? matched.slice(0, 15) : picksLive
+      })()
     : picksLive
   console.log('[FINAL PICKS]', picks.length, picks.map((p: any) => `${p.horse} (${p.course} ${p.offTime}) score=${p.score} ev=${((p.winProb || 0) * (parseOddsToNum(p.odds) || 0) - 1).toFixed(2)}`))
   const picksKey = allPicks.map((p) => p.horse + p.course).join('|')
   const topScore = allPicks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
 
-  // View toggle: saved vs odds movers
+  // View toggle: saved vs system vs yesterday
   const hasSavedPicks = (todaySaved?.picks?.length || 0) > 0
-  const displayPicks = pickView === 'live' ? oddsMovers : picks
-  const liveBestBet = oddsMovers[0] || picksLive[0] || null
-  const displayBestBet = pickView === 'live' ? liveBestBet : bestBet
+  const hasYesterdayPicks = (yesterdaySaved?.picks?.length || 0) > 0
+
+  // Wrap yesterday DailyPick objects into Selection-compatible shape for PickCard
+  const yesterdaySelections = useMemo(() => {
+    if (!yesterdaySaved?.picks) return []
+    return yesterdaySaved.picks.map((p: DailyPick) => ({
+      ...p,
+      horse: p.horse,
+      course: p.course,
+      offTime: p.offTime,
+      raceName: p.raceName,
+      score: p.score,
+      winProb: p.winProb,
+      fairOdds: p.fairOdds,
+      probConfidence: p.probConfidence,
+      valueEdge: p.valueEdge,
+      kellyStake: p.kellyStake,
+      betType: p.betType,
+      odds: (p as any).odds,
+      personalAffinity: p.personalAffinity || null,
+      betQuality: p.betQuality || null,
+      movement: p.marketMovement?.movement === 'STRONG_STEAMER' ? -15
+        : p.marketMovement?.movement === 'STRONG_DRIFTER' ? 15
+        : p.marketMovement?.movement?.includes('STEAMER') ? -10
+        : p.marketMovement?.movement?.includes('DRIFTER') ? 10
+        : null,
+      race: { off_time: p.offTime, raceShape: null, paceMap: null },
+      frozenOdds: null,
+      currentOdds: null,
+    }))
+  }, [yesterdaySaved])
+
+  const displayPicks = pickView === 'live' ? picksLive : pickView === 'yesterday' ? yesterdaySelections : picks
+  const liveBestBet = picksLive[0] || null
+  const displayBestBet = pickView === 'live' ? liveBestBet : pickView === 'yesterday' ? (yesterdaySelections[0] || null) : bestBet
 
   // Next race off
   const nextRace = useMemo(() => {
@@ -599,12 +651,18 @@ function Home() {
 
   const noBetReason = allPicks.length === 0 && ukIreRaces.length > 0
     ? bettable.length === 0
-      ? 'No bettable edges found today — probability estimates too low or market too efficient'
+      ? 'No underbet horses found today — probability estimates too low or market too efficient'
       : getNoBetReason(ukIreRaces)
     : null
 
-  const todayResults = todaySaved?.picks || []
-  const todayStats = todaySaved?.stats || null
+  const todayResults = displayPicks
+  const todayStats = displayPicks.length > 0 ? {
+    won: displayPicks.filter((p: any) => p.result === 'won').length,
+    placed: displayPicks.filter((p: any) => p.result === 'placed').length,
+    lost: displayPicks.filter((p: any) => p.result === 'lost').length,
+    nr: displayPicks.filter((p: any) => p.result === 'nr').length,
+    pending: displayPicks.filter((p: any) => !p.result).length,
+  } : null
 
   // Top horse per race from ALL selections (regardless of bettable filter)
   // Used as fallback in full card so every race shows a pick
@@ -644,7 +702,7 @@ function Home() {
           raceName: r.race_name || '',
           horse: pick?.horse || winner?.horse || '—',
           score: pick?.score || winner?.score || 0,
-          winProb: (pick?.winProb || 0) * 100,
+          winProb: pick?.winProb || 0,
           odds: pick?.odds || winner?.odds || 0,
           going: r.going || '',
           isPick: !!pick,
@@ -709,6 +767,8 @@ function Home() {
           rpr: p.rpr,
           performanceRating: p.performanceRating,
           marketMovement: p.marketMovement || null,
+          personalAffinity: p.personalAffinity || null,
+          betQuality: (p as any).betQuality || null,
         })),
       }),
     })
@@ -748,6 +808,83 @@ function Home() {
       })
       .catch(() => {})
   }, [picksKey, today])
+
+  // When stale picks are detected and filtered out, re-save cleaned picks to server
+  const staleCount = (todaySaved?.picks?.length || 0) - picks.length
+  useEffect(() => {
+    if (staleCount <= 0) return
+    if (picks.length === 0) return
+    console.log(`[STALE PICKS] ${staleCount} stale picks removed, re-saving ${picks.length} valid picks`)
+    fetch('/api/daily-picks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: today,
+        force: true,
+        picks: picks.map((p: any) => ({
+          horse: p.horse,
+          course: p.course,
+          offTime: p.offTime,
+          raceName: p.raceName,
+          score: p.score,
+          grade: p.selectionQuality?.grade || '',
+          winProb: p.winProb,
+          fairOdds: p.fairOdds,
+          probConfidence: p.probConfidence,
+          odds: p.odds,
+          form: p.form,
+          draw: p.draw,
+          going: p.going || '',
+          fieldSize: p.fieldSize || 0,
+          valueEdge: p.valueEdge,
+          kellyStake: p.kellyStake,
+          betType: p.betType,
+          or: p.or,
+          rpr: p.rpr,
+          performanceRating: p.performanceRating,
+          marketMovement: p.marketMovement || null,
+          personalAffinity: p.personalAffinity || null,
+          betQuality: p.betQuality || null,
+        })),
+      }),
+    }).then(r => r.json()).then(result => {
+      if (result.saved) {
+        console.log(`[STALE PICKS] Re-saved ${picks.length} picks`)
+        setDailyPicksDb((prev) => ({
+          ...prev,
+          [today]: {
+            picks: picks.map((p: any) => ({
+              horse: p.horse,
+              course: p.course,
+              offTime: p.offTime,
+              raceName: p.raceName,
+              score: p.score,
+              winProb: p.winProb,
+              fairOdds: p.fairOdds,
+              probConfidence: p.probConfidence,
+              odds: p.odds,
+              form: p.form,
+              draw: p.draw,
+              going: p.going || '',
+              fieldSize: p.fieldSize || 0,
+              valueEdge: p.valueEdge,
+              kellyStake: p.kellyStake,
+              betType: p.betType,
+              or: p.or,
+              rpr: p.rpr,
+              performanceRating: p.performanceRating,
+              result: null,
+              position: null,
+              personalAffinity: p.personalAffinity || null,
+              betQuality: p.betQuality || null,
+              marketMovement: p.marketMovement || null,
+            })),
+            stats: { won: 0, placed: 0, lost: 0, pending: picks.length, nr: 0 },
+          },
+        }))
+      }
+    }).catch(() => {})
+  }, [staleCount])
 
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
@@ -795,7 +932,7 @@ function Home() {
                 <span className='text-lg font-black uppercase tracking-wider px-3 py-1 rounded-lg' style={{ backgroundColor: '#d97706', color: '#fff' }}>NAP</span>
                 {hasSavedPicks && (
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${pickView === 'live' ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
-                    {pickView === 'live' ? 'Moved' : 'Frozen'}
+                    {pickView === 'live' ? 'System' : 'Frozen'}
                   </span>
                 )}
               </div>
@@ -867,7 +1004,7 @@ function Home() {
               </div>
             </div>
           )}
-          {hasSavedPicks && (
+          {(hasSavedPicks || hasYesterdayPicks) && (
             <div className='flex gap-2 items-center mb-2'>
               <button type='button' onClick={() => setPickView('saved')}
                 className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${pickView === 'saved' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'}`}>
@@ -875,49 +1012,53 @@ function Home() {
               </button>
               <button type='button' onClick={() => setPickView('live')}
                 className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${pickView === 'live' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'}`}>
-                Odds Movers
+                System Picks
               </button>
-              {pickView === 'live' && oddsMovers.length > 0 && (
-                <span className='text-[10px] text-zinc-500 ml-1'>{oddsMovers.length} horses moved {'>'}15%</span>
-              )}
-              {pickView === 'live' && oddsMovers.length === 0 && (
-                <span className='text-[10px] text-zinc-500 ml-1'>No significant movements today</span>
+              {hasYesterdayPicks && (
+                <button type='button' onClick={() => setPickView('yesterday')}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${pickView === 'yesterday' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'}`}>
+                  Yesterday
+                </button>
               )}
             </div>
           )}
-          {todayStats && (
-            <div className='flex items-center gap-6 mb-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
-              <div className='flex items-center gap-2'>
-                <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Frozen</span>
-                <span className='text-sm font-bold text-green-400'>{todayStats.won}W</span>
-                <span className='text-zinc-600'>/</span>
-                <span className='text-sm font-bold text-amber-400'>{todayStats.placed}P</span>
-                <span className='text-zinc-600'>/</span>
-                <span className='text-sm font-bold text-red-400'>{todayStats.lost}L</span>
-                {todayStats.pending > 0 && (
-                  <>
-                    <span className='text-zinc-600'>/</span>
-                    <span className='text-sm font-bold text-zinc-400'>{todayStats.pending} pending</span>
-                  </>
-                )}
-              </div>
-              {livePicksStats && (
-                <div className='flex items-center gap-2 pl-4 border-l border-white/5'>
-                  <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20'>Live</span>
-                  <span className='text-sm font-bold text-green-400'>{livePicksStats.stats.won}W</span>
+          {(() => {
+            const activeStats = pickView === 'yesterday' ? yesterdaySaved?.stats : todayStats
+            const statsLabel = pickView === 'live' ? 'System' : pickView === 'yesterday' ? 'Yesterday' : 'Frozen'
+            return activeStats ? (
+              <div className='flex items-center gap-6 mb-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
+                <div className='flex items-center gap-2'>
+                  <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>{statsLabel}</span>
+                  <span className='text-sm font-bold text-green-400'>{activeStats.won}W</span>
                   <span className='text-zinc-600'>/</span>
-                  <span className='text-sm font-bold text-amber-400'>{livePicksStats.stats.placed}P</span>
+                  <span className='text-sm font-bold text-amber-400'>{activeStats.placed}P</span>
                   <span className='text-zinc-600'>/</span>
-                  <span className='text-sm font-bold text-red-400'>{livePicksStats.stats.lost}L</span>
-                  {livePicksStats.roi !== 0 && (
-                    <span className={`text-xs font-bold ${livePicksStats.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {livePicksStats.roi > 0 ? '+' : ''}{livePicksStats.roi}%
-                    </span>
+                  <span className='text-sm font-bold text-red-400'>{activeStats.lost}L</span>
+                  {activeStats.pending > 0 && (
+                    <>
+                      <span className='text-zinc-600'>/</span>
+                      <span className='text-sm font-bold text-zinc-400'>{activeStats.pending} pending</span>
+                    </>
                   )}
                 </div>
-              )}
-            </div>
-          )}
+                {pickView !== 'yesterday' && livePicksStats && (
+                  <div className='flex items-center gap-2 pl-4 border-l border-white/5'>
+                    <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20'>Live</span>
+                    <span className='text-sm font-bold text-green-400'>{livePicksStats.stats.won}W</span>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-sm font-bold text-amber-400'>{livePicksStats.stats.placed}P</span>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-sm font-bold text-red-400'>{livePicksStats.stats.lost}L</span>
+                    {livePicksStats.roi !== 0 && (
+                      <span className={`text-xs font-bold ${livePicksStats.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {livePicksStats.roi > 0 ? '+' : ''}{livePicksStats.roi}%
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : null
+          })()}
           {homeWidgets && (
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3 bg-black/40 border border-white/10 rounded-xl p-3 mb-4'>
               {/* PA COVERAGE */}
@@ -978,21 +1119,24 @@ function Home() {
           )}
           <div className='home-picks-grid grid grid-cols-1 lg:grid-cols-2 gap-6'>
             {displayPicks.map((s, i) => {
-              const saved = todayResults.find(
+              const isYesterdayPick = pickView === 'yesterday'
+              const saved = isYesterdayPick ? null : todayResults.find(
                 (r: any) => r.horse === s.horse && r.course === s.course
               )
+              const pickResult = isYesterdayPick ? (s as any).result : saved?.result || null
+              const pickPosition = isYesterdayPick ? (s as any).position : saved?.position || null
               const isNapPick = i === 0
               const isBombPick = s.odds && parseOddsToNum(s.odds) >= 10
               if (isNapPick) {
-                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={saved?.result || null} position={saved?.position || null} isNap isBomb={false} />
+                return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={pickResult} position={pickPosition} isNap isBomb={false} />
               }
               return (
                 <PickCard
                   key={`${s.course}-${s.offTime}-${s.horse}`}
                   selection={s}
                   rank={i + 1}
-                  result={saved?.result || null}
-                  position={saved?.position || null}
+                  result={pickResult}
+                  position={pickPosition}
                   isBomb={isBombPick}
                 />
               )
@@ -1041,7 +1185,7 @@ function Home() {
                           {hasSelection && r.score ? r.score : <span className='text-slate-700'>—</span>}
                         </td>
                         <td className='py-2 px-3 text-center font-mono text-[10px] text-slate-400'>
-                          {hasSelection && r.winProb > 0 ? `${r.winProb.toFixed(1)}%` : <span className='text-slate-700'>—</span>}
+                          {hasSelection && r.winProb > 0 ? `${r.winProb > 1 ? r.winProb.toFixed(1) : (r.winProb * 100).toFixed(1)}%` : <span className='text-slate-700'>—</span>}
                         </td>
                         <td className='py-2 px-3 text-right font-mono text-xs font-bold text-slate-300'>
                           {hasSelection && r.odds > 0 ? (
