@@ -2266,7 +2266,28 @@ app.get('/api/learning-stats', (_req, res) => {
 })
 
 app.get('/api/results', (_req, res) => {
-  res.json(LEARNING_DATABASE.races || [])
+  const results = LEARNING_DATABASE.races || []
+  const liveRaces = LIVE_STATE.racecards || []
+  if (liveRaces.length > 0) {
+    const oddsLookup = new Map()
+    for (const race of liveRaces) {
+      for (const runner of (race.runners || [])) {
+        const name = (runner.horse || '').toLowerCase().trim()
+        const odds = runner.sp || runner.odds || 0
+        if (name && odds > 0) oddsLookup.set(`${name}|${race.course}`, odds)
+      }
+    }
+    for (const race of results) {
+      for (const runner of (race.runners || [])) {
+        if ((!runner.odds || runner.odds === 0) && (!runner.sp || runner.sp === 0)) {
+          const name = (runner.horse || '').toLowerCase().trim()
+          const odds = oddsLookup.get(`${name}|${race.course}`)
+          if (odds) runner.sp = odds
+        }
+      }
+    }
+  }
+  res.json(results)
 })
 
 app.post('/api/backfill', async (_req, res) => {
@@ -3942,23 +3963,21 @@ server.listen(PORT, async () => {
     }
   }, 30 * 60 * 1000)
 
-  // Refresh racecards every 15 min to pick up odds changes and non-runners
+  // Refresh racecards every 2 min to pick up live odds changes and non-runners
+  let racecardRefreshRunning = false
   setInterval(async () => {
-    if (BACKFILL_IN_PROGRESS) return
+    if (BACKFILL_IN_PROGRESS || racecardRefreshRunning) return
+    racecardRefreshRunning = true
     try {
-      const today = new Date().toISOString().split('T')[0]
-      const cacheKey = 'racecards:sl'
-      const cached = API_CACHE.get(cacheKey)
-      if (cached && cached._date === today) {
-        console.log('[Scheduler] Skipping refresh — today\'s races already processed')
-        return
-      }
       console.log('[Scheduler] Periodic racecard refresh')
+      API_CACHE.delete('racecards:sl')
       await fetchLiveMeetings()
     } catch (e) {
       console.error('[Scheduler] Racecard refresh failed:', e.message)
+    } finally {
+      racecardRefreshRunning = false
     }
-  }, 15 * 60 * 1000)
+  }, 2 * 60 * 1000)
 })
 
 function gracefulShutdown(signal) {
