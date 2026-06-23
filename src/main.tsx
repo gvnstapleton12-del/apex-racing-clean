@@ -553,6 +553,11 @@ function Home() {
           offTime: p.offTime,
           odds: parseOddsToNum(p.odds),
           score: p.score,
+          winProb: p.winProb ?? null,
+          personalAffinity: p.personalAffinity?.adjustment ?? p.personalAffinity ?? null,
+          apexScore: p.score ?? null,
+          betQuality: p.betQuality ?? null,
+          raceId: p.race ? `${p.race.course}-${p.race.off_time}-${p.race.date}` : null,
         })),
       }),
     }).catch(() => {})

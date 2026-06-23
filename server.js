@@ -483,6 +483,7 @@ function logPrediction(race, runner, aiProfile) {
     estimatedWinProbability:
       aiProfile.estimatedWinProbability,
     predictedWinProb: aiProfile.estimatedWinProbability || 0,
+    plattProb: aiProfile.plattProb ?? null,
     predictedPlaceProb: aiProfile.placeProb || 0,
     impliedProbability:
       aiProfile.impliedProbability,
@@ -811,7 +812,7 @@ async function processRace(race) {
 
       const routed = applyEngineRouting(runner, engine, odds)
 
-      logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: routed.winProb, placeProb: routed.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.betQuality || runner.selectionQuality?.label || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
+      logPrediction(race, runner, { confidence: runner.finalScore, estimatedWinProbability: routed.winProb, plattProb: runner.plattProb ?? null, placeProb: routed.placeProb, grade: runner.selectionQuality?.grade || '', betQuality: runner.betQuality || runner.selectionQuality?.label || '', breakdown: { powerScore: runner.power?.total, paceScore: runner.pace?.score, humanAdj: runner.human?.score, marketAdj: runner.market?.score, runningStyle: runner.runningStyle } })
       storeHistoricalRecord(runner, race, apexResult)
       logActivationZone(runner, race, odds)
 
@@ -1991,6 +1992,11 @@ app.post('/api/live-picks/log', (req, res) => {
         offTime: p.offTime || '',
         odds: p.odds || 0,
         score: p.score || 0,
+        winProb: p.winProb ?? null,
+        personalAffinity: p.personalAffinity ?? null,
+        apexScore: p.apexScore ?? null,
+        betQuality: p.betQuality ?? null,
+        raceId: p.raceId ?? null,
         timestamp: new Date().toISOString(),
       })
     }
@@ -3260,7 +3266,7 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
     for (const race of races) {
       if (!race.runners) continue
       for (const r of race.runners) {
-        const key = `${race.course}|${race.off_time}|${race.date}|${(r.horse||'').toLowerCase()}`
+        const key = `${race.course}|${race.date}|${(r.horse||'').toLowerCase()}`
         resultMap[key] = r.position
       }
     }
@@ -3331,7 +3337,7 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
       if (!Array.isArray(racePreds)) continue
       for (const p of racePreds) {
         if (!p.date) continue
-        const key = `${p.course}|${p.offTime}|${p.date}|${(p.horse||'').toLowerCase()}`
+        const key = `${p.course}|${p.date}|${(p.horse||'').toLowerCase()}`
         const pos = resultMap[key]
         if (!pos) continue
         const won = pos === 1
@@ -3339,6 +3345,7 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
         const pl = won ? (odds - 1) : -1
         const pa = p.personalAffinity
         const wp = (p.estimatedWinProbability ?? p.predictedWinProb ?? 0) / 100
+        const pwp = (p.plattProb ?? p.estimatedWinProbability ?? p.predictedWinProb ?? 0) / 100
         const impliedProb = 1 / Number(odds || 2)
         const valEdge = wp - impliedProb
         const isRecent = p.date >= cutoff
@@ -3393,11 +3400,11 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
           }
         }
 
-        // ── Calibration: all with valid PA and wp>0 ──
-        if (pa !== null && wp > 0) {
+        // ── Calibration: all with valid PA and plattProb>0 ──
+        if (pa !== null && pwp > 0) {
           for (const band of calBands) {
             if (pa > band.min && pa <= band.max) {
-              band.count++; if (won) band.wins++; band.sumPred += wp
+              band.count++; if (won) band.wins++; band.sumPred += pwp
               break
             }
           }
@@ -3582,7 +3589,7 @@ app.get('/api/pa-by-position', (_req, res) => {
     for (const race of races) {
       if (!race.runners) continue
       for (const r of race.runners) {
-        const key = `${race.course}|${race.off_time}|${race.date}|${(r.horse||'').toLowerCase()}`
+        const key = `${race.course}|${race.date}|${(r.horse||'').toLowerCase()}`
         resultMap[key] = r.position
       }
     }
@@ -3591,7 +3598,7 @@ app.get('/api/pa-by-position', (_req, res) => {
     for (const racePreds of Object.values(db)) {
       if (!Array.isArray(racePreds)) continue
       for (const p of racePreds) {
-        const key = `${p.course}|${p.offTime}|${p.date}|${(p.horse||'').toLowerCase()}`
+        const key = `${p.course}|${p.date}|${(p.horse||'').toLowerCase()}`
         const pos = Number(resultMap[key])
         if (!pos || pos < 1) continue
 

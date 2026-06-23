@@ -451,7 +451,7 @@ export function formatSelection(race: Race, runner: Runner) {
   const codePenalty = 0 // Disabled as score modifier, kept for flags
 
   let betType: string | null = null
-  if (winProb >= 0.10 && odds >= 2.0) {
+  if (winProb >= 0.10 && odds >= 5.0) {
     if (isFavourite && winProb >= 0.30) {
       betType = 'PLACE'
     } else if (edge > 0.05) {
@@ -461,13 +461,21 @@ export function formatSelection(race: Race, runner: Runner) {
     } else {
       betType = 'SPEC'
     }
+  } else if (winProb >= 0.10 && odds >= 2.0) {
+    // Below E/W threshold — WIN or SPEC only
+    if (edge > 0.05) {
+      betType = 'WIN'
+    } else {
+      betType = 'SPEC'
+    }
   } else {
     betType = 'SPEC'
   }
 
   // PA modifier: downgrade weak PA (<2), upgrade strong PA (>=5)
+  // PLACE/E/W requires odds >= 5.0 to be profitable (1/4 or 1/5 place terms)
   const paAdj = (runner as any).personalAffinity?.adjustment ?? 0
-  if (paAdj < 2 && betType === 'WIN') betType = 'PLACE'
+  if (paAdj < 2 && betType === 'WIN' && odds >= 5.0) betType = 'PLACE'
   if (paAdj <= 0 && betType === 'PLACE') betType = 'SPEC'
   if (paAdj >= 5 && betType === 'SPEC') betType = 'WIN'
   if (paAdj >= 5 && betType === 'PLACE') betType = 'WIN'

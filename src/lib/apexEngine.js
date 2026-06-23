@@ -694,7 +694,18 @@ export function runApexEngine(runners, race, options = {}) {
     const calibrated = calibrateWinProbability(prob)
     plattWinProbs.push(calibrated)
     const dampened = dampenCalibration(calibrated)
-    return Math.round(dampened * 1000) / 10
+    // PA boost: tiered scalars from live calibration data.
+    // PA>10: 18% pred → 50.5% actual (×2.42), PA 2-5: 14.7% → 34.2% (×2.16), PA 0-2: 8% → 12.9% (×1.61)
+    const paAdj = sorted[i]?.personalAffinity?.adjustment ?? 0
+    let paBoosted = dampened
+    if (paAdj >= 5.0) {
+      paBoosted = Math.min(0.95, dampened * 2.42)
+    } else if (paAdj >= 2.0) {
+      paBoosted = Math.min(0.95, dampened * 2.16)
+    } else if (paAdj > 0) {
+      paBoosted = Math.min(0.95, dampened * 1.61)
+    }
+    return Math.round(paBoosted * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {
     const prob = p / 100
