@@ -6,8 +6,18 @@
 //   days  — number of days to backfill (default 30)
 //   host  — server URL (default http://127.0.0.1:3000)
 
-const days = parseInt(process.argv[2]) || 30
-const host = process.argv[3] || 'http://127.0.0.1:3000'
+// Parse --days N and positional args
+let days = 30
+let host = 'http://127.0.0.1:3000'
+for (let i = 2; i < process.argv.length; i++) {
+  if (process.argv[i] === '--days' && process.argv[i + 1]) {
+    days = parseInt(process.argv[++i]) || 30
+  } else if (process.argv[i] === '--host' && process.argv[i + 1]) {
+    host = process.argv[++i]
+  } else if (!isNaN(parseInt(process.argv[i])) && !process.argv[i].startsWith('-')) {
+    days = parseInt(process.argv[i]) || 30
+  }
+}
 
 function getDateStr(offset) {
   const d = new Date()
