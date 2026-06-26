@@ -65,7 +65,7 @@ export async function getHorseMemoryBatch(db, horseNames, currentORByHorse = {})
     for (const name of unique) {
       const runs = byHorse[name] || []
       const or = currentORByHorse[name] || 0
-      result[name] = computeHorseMemory(runs, name, or)
+      result[name] = { ...computeHorseMemory(runs, name, or), rawRuns: runs }
     }
     return result
   } catch (error) {

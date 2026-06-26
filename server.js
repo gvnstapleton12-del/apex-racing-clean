@@ -735,11 +735,16 @@ async function processRace(race) {
     const raceFieldSize = race.field_size || race.fieldSize || raceRunners.length || 0
     const raceClass = race.race_class || race.class || ''
     const raceDistF = race.distance_furlongs || 0
+    const uniqueTrainers = [...new Set(raceRunners.map(r => r.trainer).filter(Boolean))]
+    const trainerBaselines = {}
+    for (const t of uniqueTrainers) {
+      trainerBaselines[t] = await getCohortBaseline(HORSE_MEMORY_DB, t, race.course || '')
+    }
     for (const runner of raceRunners) {
       if (!runner.horse || !runner.horseMemory) continue
-      const runs = await getHorseRunsForZone(HORSE_MEMORY_DB, runner.horse)
+      const runs = runner.horseMemory.rawRuns
       if (!runs || !runs.length) continue
-      const cohort = await getCohortBaseline(HORSE_MEMORY_DB, runner.trainer || '', race.course || '')
+      const cohort = trainerBaselines[runner.trainer] || null
       const zone = computeProvenZoneScore(runs, {
         or: runner.or || 0,
         goingNum: raceGoingNum,
