@@ -4113,10 +4113,14 @@ server.listen(PORT, async () => {
   const picksDates = Object.keys(DAILY_PICKS_DATABASE)
   const picksCount = Object.values(DAILY_PICKS_DATABASE).reduce((sum, d) => sum + (d.picks?.length || 0), 0)
   console.log(`[STARTUP] DAILY_PICKS_DATABASE has ${picksDates.length} dates, ${picksCount} total picks`)
+  // Global processing lock — prevents scheduler from colliding with startup or backfill
+  let isProcessing = false
   // Fetch today's data on startup
   // Results scraping must wait until fetchLiveMeetings (racecards + ATR) fully completes
   // to avoid two browser processes competing for memory on Railway
+  isProcessing = true
   fetchLiveMeetings().then(() => {
+    isProcessing = false
     console.log('[Startup] Racecards complete, scheduling results fetch in 5s...')
     setTimeout(() => fetchTodayResults(), 5000)
   })
@@ -4216,43 +4220,45 @@ server.listen(PORT, async () => {
   }
   scheduleNext8am()
 
-  // Re-scrape today's results every 30 min to pick up newly finished races
-  // Also retry recent past dates that still have pending picks
-  setInterval(async () => {
-    if (BACKFILL_IN_PROGRESS) return
-    const today = new Date().toISOString().split('T')[0]
-    try {
-      console.log('[Scheduler] Periodic results refresh for', today)
-      await fetchResultsForDate(today)
-      // Retry past 3 days if they still have pending picks
-      for (let i = 1; i <= 3; i++) {
-        const d = new Date(Date.now() - i * 86400000).toISOString().split('T')[0]
-        const dp = DAILY_PICKS_DATABASE[d]
-        if (dp?.stats?.pending > 0) {
-          console.log(`[Scheduler] Retrying past date ${d} (${dp.stats.pending} pending)`)
-          await fetchResultsForDate(d)
+  // Set up schedulers — skip if DISABLE_SCHEDULER env flag is set
+  if (process.env.DISABLE_SCHEDULER === 'true') {
+    console.log('[Scheduler] Background automated tasks DISABLED via environment flag')
+  } else {
+    // Re-scrape today's results every 8 min to pick up newly finished races
+    setInterval(async () => {
+      if (BACKFILL_IN_PROGRESS || isProcessing) return
+      const today = new Date().toISOString().split('T')[0]
+      try {
+        console.log('[Scheduler] Periodic results refresh for', today)
+        await fetchResultsForDate(today)
+        for (let i = 1; i <= 3; i++) {
+          const d = new Date(Date.now() - i * 86400000).toISOString().split('T')[0]
+          const dp = DAILY_PICKS_DATABASE[d]
+          if (dp?.stats?.pending > 0) {
+            console.log(`[Scheduler] Retrying past date ${d} (${dp.stats.pending} pending)`)
+            await fetchResultsForDate(d)
+          }
         }
+      } catch (e) {
+        console.error('[Scheduler] Results refresh failed:', e.message)
       }
-    } catch (e) {
-      console.error('[Scheduler] Results refresh failed:', e.message)
-    }
-  }, 8 * 60 * 1000)
+    }, 8 * 60 * 1000)
 
-  // Refresh racecards every 2 min to pick up live odds changes and non-runners
-  let racecardRefreshRunning = false
-  setInterval(async () => {
-    if (BACKFILL_IN_PROGRESS || racecardRefreshRunning) return
-    racecardRefreshRunning = true
-    try {
-      console.log('[Scheduler] Periodic racecard refresh')
-      API_CACHE.delete('racecards:sl')
-      await fetchLiveMeetings()
-    } catch (e) {
-      console.error('[Scheduler] Racecard refresh failed:', e.message)
-    } finally {
-      racecardRefreshRunning = false
-    }
-  }, 2 * 60 * 1000)
+    // Refresh racecards every 2 min to pick up live odds changes and non-runners
+    setInterval(async () => {
+      if (BACKFILL_IN_PROGRESS || isProcessing) return
+      isProcessing = true
+      try {
+        console.log('[Scheduler] Periodic racecard refresh')
+        API_CACHE.delete('racecards:sl')
+        await fetchLiveMeetings()
+      } catch (e) {
+        console.error('[Scheduler] Racecard refresh failed:', e.message)
+      } finally {
+        isProcessing = false
+      }
+    }, 2 * 60 * 1000)
+  }
 })
 
 function gracefulShutdown(signal) {
