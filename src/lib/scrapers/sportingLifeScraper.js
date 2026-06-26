@@ -371,6 +371,11 @@ export async function fetchSlResults(dateStr) {
     const rawMeetings = nextData?.props?.pageProps?.meetings || []
     console.log(`[SL] Results: Found ${rawMeetings.length} meetings in __NEXT_DATA__`)
 
+    if (rawMeetings.length === 0) {
+      const pageProps = nextData?.props?.pageProps
+      console.log(`[SL] Results: Empty meetings for ${dateStr}. pageProps keys: ${Object.keys(pageProps || {}).join(', ')}`)
+    }
+
     const raceIds = []
     for (const m of rawMeetings) {
       const ms = m.meeting_summary
