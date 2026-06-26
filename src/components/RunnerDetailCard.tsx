@@ -438,11 +438,12 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               <div className='mt-2 flex gap-2 text-[10px] flex-wrap'>
                 <span className='text-zinc-500 font-medium uppercase tracking-wider'>PA:</span>
                 {Object.entries({
-                  Track: runner.personalAffinity.breakdown.track?.adjustment,
-                  Distance: runner.personalAffinity.breakdown.distance?.adjustment,
-                  Going: runner.personalAffinity.breakdown.going?.adjustment,
-                  'Draw/Style': runner.personalAffinity.breakdown.drawStyle?.adjustment,
-                }).map(([label, val]) => {
+                  Track: { val: runner.personalAffinity.breakdown.track?.adjustment, conf: runner.personalAffinity.breakdown.track?.confidence },
+                  Direction: { val: runner.personalAffinity.breakdown.direction?.adjustment, conf: runner.personalAffinity.breakdown.direction?.confidence },
+                  Distance: { val: runner.personalAffinity.breakdown.distance?.adjustment, conf: runner.personalAffinity.breakdown.distance?.confidence },
+                  Going: { val: runner.personalAffinity.breakdown.going?.adjustment, conf: runner.personalAffinity.breakdown.going?.confidence },
+                  'Draw/Style': { val: runner.personalAffinity.breakdown.drawStyle?.adjustment, conf: runner.personalAffinity.breakdown.drawStyle?.confidence },
+                }).filter(([_, v]) => v && (v.conf ?? 0) > 0.1).map(([label, { val }]) => {
                   const num = typeof val === 'number' ? Math.round(val * 10) / 10 : 0
                   const isPos = num > 0.1
                   const isNeg = num < -0.1
@@ -455,9 +456,29 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               </div>
             )}
             {runner.personalAffinity?.adjustment !== undefined && (
-              <span className={`px-2 py-0.5 rounded text-xs font-bold ${(runner.personalAffinity.adjustment ?? 0) > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
-                {(runner.personalAffinity.adjustment ?? 0) > 0 ? '✓' : '✗'} PA {(runner.personalAffinity.adjustment ?? 0) >= 5 ? 'Strong' : (runner.personalAffinity.adjustment ?? 0) >= 2 ? 'Positive' : (runner.personalAffinity.adjustment ?? 0) > 0 ? 'Weak' : 'Negative'}
-              </span>
+              <div className='mt-2'>
+                {/* Source: /api/pa-gate-monitor All-Time. Audit quarterly. */}
+                {(runner.personalAffinity.adjustment ?? 0) >= 5 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 outline-none'>
+                    🔥 PA Max Elite (+302% ROI • 50.6% Win Rate)
+                  </span>
+                )}
+                {(runner.personalAffinity.adjustment ?? 0) >= 2 && (runner.personalAffinity.adjustment ?? 0) < 5 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20 outline-none'>
+                    🎯 PA Target Value (+198% ROI • 28.6% Win Rate)
+                  </span>
+                )}
+                {(runner.personalAffinity.adjustment ?? 0) > 0 && (runner.personalAffinity.adjustment ?? 0) < 2 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 outline-none'>
+                    📊 PA Spec Edge (+63% ROI • 15.3% Win Rate)
+                  </span>
+                )}
+                {(runner.personalAffinity.adjustment ?? 0) <= 0 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-400 opacity-50 outline-none'>
+                    ✕ PA Negative Filter Active
+                  </span>
+                )}
+              </div>
             )}
 
             <div className='flex gap-2 mt-2 flex-wrap'>

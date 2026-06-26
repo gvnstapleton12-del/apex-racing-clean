@@ -136,18 +136,34 @@ export default function CalibrationDashboard() {
   const losses = records.filter(r => !r.actualWon && !r.actualPlaced).length
   const placeRate = records.length ? (((wins + places) / records.length) * 100).toFixed(1) : 0
 
-  // Compute value-pick metrics on-the-fly using the production gate
-  const valuePicks = records.filter(r => passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
-  const nonValuePicks = records.filter(r => !passesValueGate(Number(r.predictedWinProb), Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null))
+  // Build race-level apex score map for dynamic median gate
+  const raceApexMap = {}
+  records.forEach(r => {
+    const raceKey = `${r.course}|${r.date}|${r.race}`
+    if (!raceApexMap[raceKey]) raceApexMap[raceKey] = []
+    raceApexMap[raceKey].push(Number(r.predictedScore || 0))
+  })
+
+  // Compute value-pick metrics using plattProb (pre-dampened) and backtest gate logic
+  const valuePicks = records.filter(r => {
+    const prob = Number(r.plattProb || r.predictedWinProb) / 100
+    const raceKey = `${r.course}|${r.date}|${r.race}`
+    return passesValueGate(prob, Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null, raceApexMap[raceKey] || [])
+  })
+  const nonValuePicks = records.filter(r => {
+    const prob = Number(r.plattProb || r.predictedWinProb) / 100
+    const raceKey = `${r.course}|${r.date}|${r.race}`
+    return !passesValueGate(prob, Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null, raceApexMap[raceKey] || [])
+  })
   const vpWins = valuePicks.filter(r => r.actualWon).length
   const vpWR = valuePicks.length ? ((vpWins / valuePicks.length) * 100).toFixed(1) : '0.0'
   const vpPL = valuePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
   const vpROI = valuePicks.length ? ((vpPL / valuePicks.length) * 100).toFixed(1) : '0.0'
 
-  // Eighth-Kelly simulation
+  // Eighth-Kelly simulation using plattProb (pre-dampened)
   let kellyBankroll = 1000
   valuePicks.forEach(r => {
-    const p = Number(r.predictedWinProb) / 100
+    const p = Number(r.plattProb || r.predictedWinProb) / 100
     const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
     const b = odds - 1
     const edge = p * b - (1 - p)

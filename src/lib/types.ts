@@ -93,6 +93,17 @@ export interface Runner {
   atrUrl?: string
   atrFormUrl?: string
   horseMemory?: HorseMemory
+  personalAffinity?: {
+    adjustment: number
+    factor: number
+    confidence: number
+    breakdown?: {
+      track?: { adjustment: number }
+      distance?: { adjustment: number }
+      going?: { adjustment: number }
+      drawStyle?: { adjustment: number }
+    } | null
+  } | null
 }
 
 export interface HorseMemory {

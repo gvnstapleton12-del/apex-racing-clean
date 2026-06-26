@@ -87,15 +87,11 @@ function parseFractionalOdds(str) {
 
 async function fetchMeetingList(dateStr) {
   try {
-    console.log(`[SL] Fetching meeting list via HTTP for ${dateStr}...`)
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), 20000)
-    const resp = await fetch(`${SL_BASE}/racing/racecards/${dateStr}`, {
-      signal: controller.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
-    })
-    clearTimeout(timer)
-    const html = await resp.text()
+    console.log(`[SL] Fetching meeting list via browser for ${dateStr}...`)
+    const page = await getSharedPage()
+    await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    try { await page.waitForSelector('script#__NEXT_DATA__', { timeout: 10000 }) } catch {}
+    const html = await page.content()
 
     const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
     if (!nextDataMatch) {
@@ -358,12 +354,12 @@ export async function fetchSlRacecards(dateStr) {
 
 export async function fetchSlResults(dateStr) {
   try {
-    console.log(`[SL] Fetching results for ${dateStr}...`)
+    console.log(`[SL] Fetching results via browser for ${dateStr}...`)
 
-    const resp = await fetch(`${SL_BASE}/racing/results/${dateStr}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
-    })
-    const html = await resp.text()
+    const page = await getSharedPage()
+    await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    try { await page.waitForSelector('script#__NEXT_DATA__', { timeout: 10000 }) } catch {}
+    const html = await page.content()
 
     const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
     if (!nextDataMatch) {

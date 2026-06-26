@@ -16,7 +16,7 @@ import { REPLAY_TAG_LIBRARY, TAG_TO_CATEGORY, generateAutoSummary, computeWatchl
 import { getCourseProfile } from './src/lib/courseProfiles.js'
 import { buildHorseProfile, computeProfileAdjustment } from './src/lib/horseProfileEngine.js'
 import { fetchAtrRacecards, fetchAtrRatings } from './src/lib/scrapers/atrScraper.js'
-import { initHorseDb, createTables, closeHorseDb, saveJockeyRun } from './src/lib/horseMemoryDb.js'
+import { initHorseDb, createTables, closeHorseDb, saveJockeyRun, insertShadowWatch, getPendingShadowWatches, settleShadowWatch, getShadowWatchStats, insertBacktestRuns, getBacktestLabels, getBacktestSummary, deleteBacktestLabel } from './src/lib/horseMemoryDb.js'
 import { getHorseMemory, getHorseMemoryBatch, calculateHandicapScore, calculateAbilityFromMemory, computeProvenZoneScore, getCohortBaseline } from './src/lib/horseMemoryEngine.js'
 import { saveHorseRun, savePreviousResults } from './src/lib/saveHorseRun.js'
 import { recordTrackBiasResult, backfillFromHistorical, getAllTrackBiasStats, saveTrackBiasStore, getTrackBiasStore } from './src/lib/trackBiasLearner.js'
@@ -816,6 +816,25 @@ async function processRace(race) {
       storeHistoricalRecord(runner, race, apexResult)
       logActivationZone(runner, race, odds)
 
+      // Shadow sandbox: track close-miss selections (SPECULATIVE / BORDERLINE)
+      const bq = runner.betQuality || runner.selectionQuality?.label || ''
+      if ((bq === 'SPECULATIVE' || bq === 'BORDERLINE') && HORSE_MEMORY_DB && odds >= 2.0) {
+        const offTimeShort = (race.off_time || '').slice(0, 5)
+        insertShadowWatch(HORSE_MEMORY_DB, {
+          race_id: `${race.course}-${offTimeShort}-${race.date}`,
+          course: race.course,
+          off_time: offTimeShort,
+          race_date: race.date,
+          horse_name: runner.horse,
+          market_odds: odds,
+          model_wp: routed.winProb,
+          apex_score: runner.finalScore,
+          bet_quality: bq,
+          pa_adj: runner.personalAffinity?.adjustment ?? 0,
+          reason_logged: bq === 'BORDERLINE' ? 'PA near zero threshold' : 'Value below gate but score adequate',
+        })
+      }
+
       return {
         horse: runner.horse,
         horse_id: runner.horse_id,
@@ -1230,7 +1249,7 @@ function saveBacktestCache(races) {
   }
 }
 
-function matchResultsToCalibration(races) {
+async function matchResultsToCalibration(races) {
   let matched = 0
 
   // Build set of existing calibration record keys to avoid duplicates
@@ -1523,6 +1542,32 @@ function matchResultsToCalibration(races) {
   // Match results against daily picks so the home tab shows W/P/L
   matchDailyPicksWithResults(races)
   matchCounterfactualWithResults(races)
+
+  // Settle shadow watch records (SPECULATIVE / BORDERLINE close misses)
+  if (HORSE_MEMORY_DB) {
+    try {
+      const pending = await getPendingShadowWatches(HORSE_MEMORY_DB)
+      let settled = 0
+      const dateStr = races[0]?.date || ''
+      for (const watch of pending) {
+        if (dateStr && watch.race_date !== dateStr) continue
+        for (const race of races) {
+          if ((race.course || '').toLowerCase() !== (watch.course || '').toLowerCase()) continue
+          if (race.date !== watch.race_date) continue
+          const runner = (race.runners || []).find(r => (r.horse || '').toLowerCase() === (watch.horse_name || '').toLowerCase())
+          if (runner && runner.position > 0) {
+            const pnl = runner.position === 1 ? (watch.market_odds - 1) : -1
+            await settleShadowWatch(HORSE_MEMORY_DB, watch.id, runner.position, pnl)
+            settled++
+            break
+          }
+        }
+      }
+      if (settled > 0) console.log(`[Shadow Watch] Auto-settled ${settled} records for ${dateStr}`)
+    } catch (e) {
+      console.error(`[Shadow Watch] Settlement error: ${e.message}`)
+    }
+  }
 }
 
 async function fetchResultsForDate(dateStr) {
@@ -1532,10 +1577,37 @@ async function fetchResultsForDate(dateStr) {
     // For today, always re-scrape since races finish throughout the day
     if (dateStr !== today) {
       const existingDateRaces = (LEARNING_DATABASE.races || []).filter(r => r.date === dateStr && r.off_time)
-      if (existingDateRaces.length >= 10) {
+      const hasPendingPicks = DAILY_PICKS_DATABASE[dateStr]?.stats?.pending > 0
+      if (existingDateRaces.length >= 10 && !hasPendingPicks) {
         console.log(`[Results] Already have ${existingDateRaces.length} races for ${dateStr}, skipping scrape`)
         matchResultsToCalibration(existingDateRaces)
         matchCounterfactualWithResults(existingDateRaces)
+        matchDailyPicksWithResults(existingDateRaces)
+
+        // Settle shadow watch records on skip path too
+        if (HORSE_MEMORY_DB) {
+          try {
+            const pending = await getPendingShadowWatches(HORSE_MEMORY_DB)
+            let settled = 0
+            for (const watch of pending) {
+              if (watch.race_date !== dateStr) continue
+              for (const race of existingDateRaces) {
+                if ((race.course || '').toLowerCase() !== (watch.course || '').toLowerCase()) continue
+                if (race.date !== watch.race_date) continue
+                const runner = (race.runners || []).find(r => (r.horse || '').toLowerCase() === (watch.horse_name || '').toLowerCase())
+                if (runner && runner.position > 0) {
+                  const pnl = runner.position === 1 ? (watch.market_odds - 1) : -1
+                  await settleShadowWatch(HORSE_MEMORY_DB, watch.id, runner.position, pnl)
+                  settled++
+                  break
+                }
+              }
+            }
+            if (settled > 0) console.log(`[Shadow Watch] Auto-settled ${settled} records for ${dateStr}`)
+          } catch (e) {
+            console.error(`[Shadow Watch] Settlement error: ${e.message}`)
+          }
+        }
 
         // Also record runs for condition database on skip path
         let conditionRecorded = 0
@@ -1628,6 +1700,7 @@ async function fetchResultsForDate(dateStr) {
     // Match all scraped results (new + existing) against predictions for calibration
     const dateRaces = (LEARNING_DATABASE.races || []).filter(r => r.date === dateStr && r.off_time)
     matchResultsToCalibration(dateRaces)
+    matchDailyPicksWithResults(dateRaces)
 
     // Populate condition database so conditionAdj factor can activate
     let conditionRecorded = 0
@@ -1725,6 +1798,7 @@ function buildLightweightState() {
       classModel: r.classModel || null,
       finalScore: r.finalScore,
       winProb: r.winProb,
+      plattProb: r.plattProb ?? null,
       placeProb: r.placeProb,
       probBand: r.probBand,
       probRange: r.probRange,
@@ -1875,38 +1949,144 @@ app.post('/api/daily-picks', (req, res) => {
   }
 
   const existing = DAILY_PICKS_DATABASE[date]
-  if (existing && existing.picks && !force) {
-    return res.json({ saved: false, reason: 'picks already saved for this date' })
+  if (existing && existing.picks && existing.picks.length > 0 && !force) {
+    // Merge: keep picks that already have results, update pending ones, add new races
+    const existingByRace = new Map(existing.picks.map(p => [`${p.course}|${p.offTime}`, p]))
+    let updated = 0
+    let added = 0
+    let kept = 0
+    for (const p of picks) {
+      const key = `${p.course}|${p.offTime}`
+      const old = existingByRace.get(key)
+      if (old && old.result) {
+        // Pick already resulted — keep the result
+        kept++
+        continue
+      }
+      // Frozen pick — already locked within 30 min of off time
+      if (old && old.frozen) {
+        kept++
+        continue
+      }
+      // 30-minute execution lock — timezone-safe
+      const ukNowStr = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' })
+      const ukNow = new Date(ukNowStr)
+      const [year, month, day] = date.split('-')
+      const [hour, minute] = (p.offTime || '').split(':')
+      let isFrozen = false
+      if (year && hour) {
+        const raceUKStr = new Date(year, month - 1, day, hour, minute, 0).toLocaleString('en-US', { timeZone: 'Europe/London' })
+        const offDateTime = new Date(raceUKStr)
+        const minutesUntilOff = (offDateTime - ukNow) / 60000
+        if (minutesUntilOff <= 30 && minutesUntilOff > -60) {
+          isFrozen = true
+        }
+      }
+      // Update pending pick or add new race
+      if (old) updated++
+      else added++
+      existingByRace.set(key, {
+        horse: p.horse,
+        course: p.course,
+        offTime: p.offTime,
+        raceName: p.raceName,
+        score: p.score,
+        grade: p.grade,
+        odds: p.odds,
+        form: p.form,
+        draw: p.draw,
+        going: p.going || '',
+        fieldSize: p.fieldSize || 0,
+        winProb: p.winProb ?? null,
+        finalScore: p.finalScore ?? null,
+        plattProb: p.plattProb ?? null,
+        fairOdds: p.fairOdds ?? null,
+        probConfidence: p.probConfidence ?? null,
+        valueEdge: p.valueEdge ?? 0,
+        kellyStake: p.kellyStake ?? null,
+        betType: p.betType || null,
+        or: p.or ?? null,
+        rpr: p.rpr ?? null,
+        performanceRating: p.performanceRating ?? null,
+        marketMovement: p.marketMovement || null,
+        personalAffinity: p.personalAffinity || null,
+        betQuality: p.betQuality || null,
+        result: null,
+        position: null,
+        frozen: isFrozen,
+        frozenAt: isFrozen ? new Date().toISOString() : null,
+      })
+    }
+    existing.picks = Array.from(existingByRace.values())
+    existing.stats = {
+      won: existing.picks.filter(p => p.result === 'won').length,
+      placed: existing.picks.filter(p => p.result === 'placed').length,
+      lost: existing.picks.filter(p => p.result === 'lost').length,
+      nr: existing.picks.filter(p => p.result === 'nr').length,
+      pending: existing.picks.filter(p => !p.result).length,
+    }
+    if (updated + added > 0) {
+      console.log(`[DAILY PICKS] Merged ${date}: ${updated} updated, ${added} added, ${kept} kept (resulted)`)
+    }
+    saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+    pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
+
+    // Immediately match against any existing results
+    const dateResults = (LEARNING_DATABASE.races || []).filter(r => r.date === date && r.off_time)
+    if (dateResults.length > 0) {
+      matchDailyPicksWithResults(dateResults)
+      matchCounterfactualWithResults(dateResults)
+      saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+      pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
+    }
+    return res.json({ saved: true, merged: true, date, count: existing.picks.length, updated, added, kept })
   }
 
   DAILY_PICKS_DATABASE[date] = {
-    picks: picks.map((p) => ({
-      horse: p.horse,
-      course: p.course,
-      offTime: p.offTime,
-      raceName: p.raceName,
-      score: p.score,
-      grade: p.grade,
-      odds: p.odds,
-      form: p.form,
-      draw: p.draw,
-      going: p.going || '',
-      fieldSize: p.fieldSize || 0,
-      winProb: p.winProb ?? null,
-      fairOdds: p.fairOdds ?? null,
-      probConfidence: p.probConfidence ?? null,
-      valueEdge: p.valueEdge ?? 0,
-      kellyStake: p.kellyStake ?? null,
-      betType: p.betType || null,
-      or: p.or ?? null,
-      rpr: p.rpr ?? null,
-      performanceRating: p.performanceRating ?? null,
-      marketMovement: p.marketMovement || null,
-      personalAffinity: p.personalAffinity || null,
-      betQuality: p.betQuality || null,
-      result: p.result || null,
-      position: p.position || null,
-    })),
+    picks: picks.map((p) => {
+      const ukNowStr = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' })
+      const ukNow = new Date(ukNowStr)
+      const [year, month, day] = date.split('-')
+      const [hour, minute] = (p.offTime || '').split(':')
+      let isFrozen = false
+      if (year && hour) {
+        const raceUKStr = new Date(year, month - 1, day, hour, minute, 0).toLocaleString('en-US', { timeZone: 'Europe/London' })
+        const offDateTime = new Date(raceUKStr)
+        const minutesUntilOff = (offDateTime - ukNow) / 60000
+        if (minutesUntilOff <= 30 && minutesUntilOff > -60) isFrozen = true
+      }
+      return {
+        horse: p.horse,
+        course: p.course,
+        offTime: p.offTime,
+        raceName: p.raceName,
+        score: p.score,
+        grade: p.grade,
+        odds: p.odds,
+        form: p.form,
+        draw: p.draw,
+        going: p.going || '',
+        fieldSize: p.fieldSize || 0,
+        winProb: p.winProb ?? null,
+        finalScore: p.finalScore ?? null,
+        plattProb: p.plattProb ?? null,
+        fairOdds: p.fairOdds ?? null,
+        probConfidence: p.probConfidence ?? null,
+        valueEdge: p.valueEdge ?? 0,
+        kellyStake: p.kellyStake ?? null,
+        betType: p.betType || null,
+        or: p.or ?? null,
+        rpr: p.rpr ?? null,
+        performanceRating: p.performanceRating ?? null,
+        marketMovement: p.marketMovement || null,
+        personalAffinity: p.personalAffinity || null,
+        betQuality: p.betQuality || null,
+        result: p.result || null,
+        position: p.position || null,
+        frozen: isFrozen,
+        frozenAt: isFrozen ? new Date().toISOString() : null,
+      }
+    }),
     stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: picks.length },
   }
 
@@ -1996,6 +2176,7 @@ app.post('/api/live-picks/log', (req, res) => {
         personalAffinity: p.personalAffinity ?? null,
         apexScore: p.apexScore ?? null,
         betQuality: p.betQuality ?? null,
+        betType: p.betType ?? null,
         raceId: p.raceId ?? null,
         timestamp: new Date().toISOString(),
       })
@@ -2057,7 +2238,27 @@ app.get('/api/live-picks/stats', (_req, res) => {
   const resolved = won + placed + lost
   const roiPct = resolved > 0 ? (roi / resolved * 100).toFixed(1) : '0'
 
-  res.json({ date: today, stats: log.stats, roi: parseFloat(roiPct), picks: log.picks })
+  // Main bets only (WIN/PLACE bet types)
+  const mainPicks = log.picks.filter(p => p.betType === 'WIN' || p.betType === 'PLACE')
+  const mWon = mainPicks.filter(p => p.result === 'won').length
+  const mPlaced = mainPicks.filter(p => p.result === 'placed').length
+  const mLost = mainPicks.filter(p => p.result === 'lost').length
+  const mNr = mainPicks.filter(p => p.result === 'nr').length
+  let mRoi = 0
+  for (const p of mainPicks) {
+    if (p.result === 'won') mRoi += (p.odds - 1)
+    else if (p.result === 'lost') mRoi -= 1
+  }
+  const mResolved = mWon + mPlaced + mLost
+  const mRoiPct = mResolved > 0 ? (mRoi / mResolved * 100).toFixed(1) : '0'
+
+  res.json({
+    date: today,
+    stats: log.stats,
+    roi: parseFloat(roiPct),
+    mainBets: { won: mWon, placed: mPlaced, lost: mLost, nr: mNr, total: mainPicks.length, roi: parseFloat(mRoiPct) },
+    picks: log.picks,
+  })
 })
 
 // Home page widgets: PA coverage, PA signal performance, rolling calibration
@@ -3535,6 +3736,18 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
   }
 })
 
+// ── Shadow Watch Sandbox ──
+app.get('/api/shadow-watch', async (req, res) => {
+  try {
+    const days = Number(req.query.days) || 30
+    if (!HORSE_MEMORY_DB) return res.json({ records: [], summary: {} })
+    const data = await getShadowWatchStats(HORSE_MEMORY_DB, days)
+    res.json(data)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
+})
+
 // ── Counterfactual Activation Zone Log ──
 app.get('/api/counterfactual-log', (_req, res) => {
   try {
@@ -3668,7 +3881,8 @@ app.get('/api/backtest/stream', (req, res) => {
   const fromDate = req.query.from || '2026-05-21'
   const toDate = req.query.to || '2026-06-21'
   const paGate = req.query['pa-gate'] === 'true'
-  const label = req.query.label || `api-${fromDate}`
+  let label = req.query.label || `api-${fromDate}`
+  if (paGate) label = `${label}-pa-gate`
 
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -3693,8 +3907,24 @@ app.get('/api/backtest/stream', (req, res) => {
     res.write(`data: ${JSON.stringify({ type: 'error', message: data.toString().trim() })}\n\n`)
   })
 
-  proc.on('close', (code) => {
-    res.write(`data: ${JSON.stringify({ type: 'done', code, label })}\n\n`)
+  proc.on('close', async (code) => {
+    if (code === 0 && HORSE_MEMORY_DB) {
+      try {
+        const outputPath = path.join(process.cwd(), 'data', `backtest-results-${label}.json`)
+        const outputData = loadDatabase(outputPath)
+        const predictions = Array.isArray(outputData) ? outputData : outputData?.predictions || []
+        if (predictions.length > 0) {
+          const { saved } = await insertBacktestRuns(HORSE_MEMORY_DB, label, predictions)
+          res.write(`data: ${JSON.stringify({ type: 'done', code, label, stored: saved })}\n\n`)
+        } else {
+          res.write(`data: ${JSON.stringify({ type: 'done', code, label, stored: 0 })}\n\n`)
+        }
+      } catch (e) {
+        res.write(`data: ${JSON.stringify({ type: 'done', code, label, stored: 0, error: e.message })}\n\n`)
+      }
+    } else {
+      res.write(`data: ${JSON.stringify({ type: 'done', code, label })}\n\n`)
+    }
     res.end()
   })
 
@@ -3735,6 +3965,39 @@ app.post('/api/backtest/run', async (req, res) => {
     res.json({ ok: true, outputPath, label, stdout: result.stdout.slice(-2000) })
   } catch (err) {
     console.error(`[Backtest] Failed: ${err.message}`)
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// ── Backtest Labels ──
+app.get('/api/backtest/labels', async (_req, res) => {
+  try {
+    if (!HORSE_MEMORY_DB) return res.json([])
+    const labels = await getBacktestLabels(HORSE_MEMORY_DB)
+    res.json(labels)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// ── Backtest Summary ──
+app.get('/api/backtest/summary/:label', async (req, res) => {
+  try {
+    if (!HORSE_MEMORY_DB) return res.json(null)
+    const summary = await getBacktestSummary(HORSE_MEMORY_DB, req.params.label)
+    res.json(summary)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// ── Backtest Delete ──
+app.delete('/api/backtest/label/:label', async (req, res) => {
+  try {
+    if (!HORSE_MEMORY_DB) return res.json({ deleted: false })
+    const deleted = await deleteBacktestLabel(HORSE_MEMORY_DB, req.params.label)
+    res.json({ deleted })
+  } catch (err) {
     res.status(500).json({ error: err.message })
   }
 })
@@ -3968,7 +4231,7 @@ server.listen(PORT, async () => {
     } catch (e) {
       console.error('[Scheduler] Results refresh failed:', e.message)
     }
-  }, 30 * 60 * 1000)
+  }, 8 * 60 * 1000)
 
   // Refresh racecards every 2 min to pick up live odds changes and non-runners
   let racecardRefreshRunning = false

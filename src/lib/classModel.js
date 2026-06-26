@@ -102,7 +102,7 @@ export function computeRPRORFit(rpr, or, isHandicap, bhaTrend = 0, previousResul
   const hasBHATrend = or > 0 && bhaTrend !== 0
   const hasPrevResults = previousResults && previousResults.length > 0
 
-  if (!hasRPR && !hasBHATrend && !hasPrevResults) {
+  if (!hasRPR && !hasBHATrend && !hasPrevResults && !(or > 0)) {
     return { gap: 0, adjustment: 0, label: 'No data', source: 'none' }
   }
 
@@ -123,6 +123,9 @@ export function computeRPRORFit(rpr, or, isHandicap, bhaTrend = 0, previousResul
     if (hasBHATrend) {
       gap = -bhaTrend * 2.5
       source = 'BHA trend'
+    } else if (or > 0) {
+      gap = 5
+      source = 'OR proxy'
     } else {
       return { gap: 0, adjustment: 0, label: 'No data', source: 'none' }
     }

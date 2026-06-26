@@ -725,19 +725,35 @@ export function passesValueGate(
   odds: number,
   apexScore: number = 0,
   previousRuns: number = 0,
-  pa: number | null = null
+  pa: number | null = null,
+  raceApexScores: number[] = []
 ): boolean {
   if (!odds || odds <= 1 || !prob) return false
   if (pa !== null && pa <= 0) return false
-  const requiredApexFloor = previousRuns < 5 ? 50 : 40
-  if (apexScore > 0 && apexScore < requiredApexFloor) return false
 
-  // PA is a gate (line above), not a probability amplifier
-  const correctedProb = prob
+  const impliedProb = 1 / odds
+  if (impliedProb >= 1) return false
 
-  const implied = (1 / odds) * 100
-  const marginPct = implied > 0 ? ((correctedProb - implied) / implied) * 100 : 0
-  return correctedProb >= 15 && marginPct > 25
+  // Backtest gate: min 5% calibrated prob
+  if (prob < 0.05) return false
+
+  // Backtest gate: dynamic apex — race median + absolute floor
+  if (raceApexScores.length > 0 && apexScore > 0) {
+    const sorted = [...raceApexScores].sort((a, b) => a - b)
+    const mid = Math.floor(sorted.length / 2)
+    const median = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
+    if (apexScore < median || apexScore < 10) return false
+  } else if (apexScore > 0 && apexScore < 10) {
+    return false
+  }
+
+  // Backtest gate: dynamic edge — 25% base, 12% for 5-11 sweet spot
+  const rawEdge = prob - impliedProb
+  let minRequiredEdge = impliedProb * 0.25
+  if (odds >= 5.0 && odds <= 11.0) {
+    minRequiredEdge = impliedProb * 0.12
+  }
+  return rawEdge > minRequiredEdge
 }
 
 export function aggregateJockeyMetrics(races: Race[], minRides = 2, eliteThreshold = 80): JockeyMetric[] {

@@ -5,7 +5,7 @@ import { parseFinishDistance } from './performanceRating.js'
 import { hasPg, pgLoad, pgSave } from './pgStore.js'
 
 const LEAGUE_AVG_WR = 0.15
-const MIN_YEAR = 2025
+const MIN_YEAR = 2021
 const MAX_PREDICTIONS = 50
 const BLEND_WEIGHT_PERSISTED = 0.4
 const BLEND_WEIGHT_SL = 0.6
@@ -328,6 +328,22 @@ function calcGoingAffinity(history, targetGoing, k = 10) {
   return { winRate: posteriorWR, confidence, runs, surfaceMismatch }
 }
 
+function calcDirectionAffinity(history, targetHandedness, k = 5) {
+  if (!targetHandedness || targetHandedness === 'Unknown') return { winRate: LEAGUE_AVG_WR, confidence: 0, runs: 0, handedness: 'Unknown' }
+  let wins = 0
+  let runs = 0
+  for (const race of history) {
+    const arch = getMasterArchetype(race.trackName)
+    if (arch && arch.handedness === targetHandedness) {
+      runs++
+      if (race.position === 1) wins++
+    }
+  }
+  const posteriorWR = (wins + LEAGUE_AVG_WR * k) / (runs + k)
+  const confidence = runs / (runs + k)
+  return { winRate: posteriorWR, confidence, runs, handedness: targetHandedness }
+}
+
 function calcDrawStyleAffinity(history, targetDraw, targetStyle, targetTrack, k = 3, fieldFRCount, pacePressure) {
   const profile = getTrackProfile(targetTrack)
   if (!profile) return { bonus: 0, railLock: false, confidence: 0, dominantStyle: 'Midfield' }
@@ -418,6 +434,7 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
   let distAff = calcDistanceAffinity(recentHistory, target.distanceF || 0, distK)
   let goingAff = calcGoingAffinity(recentHistory, target.going || '', goingK)
   let dsAff = calcDrawStyleAffinity(recentHistory, target.draw, target.predictedRunStyle, target.trackName, dsK, options.fieldFRCount, options.pacePressure)
+  let dirAff = calcDirectionAffinity(recentHistory, getMasterArchetype(target.trackName)?.handedness, 5)
 
   if (persisted) {
     const ap = persisted.affinityProfiles
@@ -449,15 +466,16 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
   const goingGated = goingAff.runs < MIN_AFFINITY_RUNS || options.disableGoing
 
   const courseMultiplier = options.courseMultiplier || 1.0
-  const rawTrack = (trackAff.winRate - LEAGUE_AVG_WR) * 0.35 * courseMultiplier
-  const rawDist = distGated ? 0 : (distAff.winRate - LEAGUE_AVG_WR) * 0.30
-  const rawGoing = goingGated ? 0 : (goingAff.winRate - LEAGUE_AVG_WR) * 0.25
-  const rawDS = dsAff.bonus * 0.10
+  const rawTrack = (trackAff.winRate - LEAGUE_AVG_WR) * 0.30 * courseMultiplier
+  const rawDist = distGated ? 0 : (distAff.winRate - LEAGUE_AVG_WR) * 0.26
+  const rawGoing = goingGated ? 0 : (goingAff.winRate - LEAGUE_AVG_WR) * 0.22
+  const rawDS = dsAff.bonus * 0.09
+  const rawDir = dirAff.confidence > 0.1 ? (dirAff.winRate - LEAGUE_AVG_WR) * 0.13 : 0
 
-  const rawBonus = rawTrack + rawDist + rawGoing + rawDS
+  const rawBonus = rawTrack + rawDist + rawGoing + rawDS + rawDir
   const factor = Math.max(0.85, Math.min(1.20, 1.0 + rawBonus))
 
-  const confidences = [trackAff.confidence, distAff.confidence, goingAff.confidence, dsAff.confidence]
+  const confidences = [trackAff.confidence, dirAff.confidence, distAff.confidence, goingAff.confidence, dsAff.confidence]
   const avgConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length
 
   const persistedNote = persisted ? ' + verified store' : ''
@@ -473,6 +491,13 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
         surfaceMismatch: trackAff.surfaceMismatch || false,
         adjustment: rawTrack,
         persisted: !!persisted?.affinityProfiles?.track?.courses?.[target.trackName],
+      },
+      direction: {
+        winRate: dirAff.winRate,
+        confidence: dirAff.confidence,
+        runs: dirAff.runs,
+        handedness: dirAff.handedness || 'Unknown',
+        adjustment: rawDir,
       },
       distance: {
         winRate: distAff.winRate,

@@ -705,6 +705,12 @@ export function runApexEngine(runners, race, options = {}) {
     } else if (paAdj > 0) {
       paBoosted = Math.min(0.95, dampened * 1.61)
     }
+    // PA confidence discount: blend toward field average for sparse-data horses
+    const paConfidence = sorted[i]?.personalAffinity?.confidence ?? 1.0
+    if (paConfidence < 0.5) {
+      const fieldAvg = 1 / sorted.length
+      paBoosted = paBoosted * paConfidence + fieldAvg * (1 - paConfidence)
+    }
     return Math.round(paBoosted * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {

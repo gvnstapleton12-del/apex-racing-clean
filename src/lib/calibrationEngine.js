@@ -9,6 +9,7 @@ export function createCalibrationRecord(prediction, result) {
     trainer: prediction.trainer || '',
     raceType: prediction.raceType || '',
     predictedWinProb: prediction.predictedWinProb || prediction.estimatedWinProbability || prediction.winProb || 0,
+    plattProb: prediction.plattProb || prediction.predictedWinProb || prediction.estimatedWinProbability || prediction.winProb || 0,
     predictedPlaceProb: prediction.predictedPlaceProb || prediction.placeProb || 0,
     predictedScore: prediction.confidence || prediction.finalScore || 0,
     predictedGrade: prediction.grade || '',

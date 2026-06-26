@@ -625,18 +625,320 @@ function HistoryTab() {
   )
 }
 
+function SandboxTab() {
+  const [data, setData] = useState<any>(null)
+  const [days, setDays] = useState(30)
+
+  useEffect(() => {
+    const fetchData = () => {
+      fetch(apiUrl(`/api/shadow-watch?days=${days}`))
+        .then(r => r.json())
+        .then(setData)
+        .catch(() => {})
+    }
+    fetchData()
+    const interval = setInterval(fetchData, 60000)
+    return () => clearInterval(interval)
+  }, [days])
+
+  const summary = data?.summary || {}
+  const records = data?.records || []
+  const settled = records.filter((r: any) => r.status === 'SETTLED')
+  const pending = records.filter((r: any) => r.status === 'PENDING')
+
+  if (!data) return <div className='text-zinc-500'>Loading sandbox data...</div>
+
+  return (
+    <div className='space-y-6'>
+      <div className='flex items-center justify-between'>
+        <div>
+          <h2 className='text-xl font-bold text-amber-400'>Shadow Sandbox</h2>
+          <p className='text-zinc-500 text-sm'>Close-miss selections tracked with zero cash risk. SPECULATIVE + BORDERLINE only.</p>
+        </div>
+        <select value={days} onChange={e => setDays(Number(e.target.value))} className='bg-[#0f1720] border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-300'>
+          <option value={7}>7 days</option>
+          <option value={14}>14 days</option>
+          <option value={30}>30 days</option>
+          <option value={60}>60 days</option>
+        </select>
+      </div>
+
+      <div className='grid grid-cols-2 lg:grid-cols-6 gap-3'>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Total Tracked</span>
+          <span className='text-2xl font-black text-white'>{summary.total || 0}</span>
+        </div>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Settled</span>
+          <span className='text-2xl font-black text-zinc-300'>{summary.settled || 0}</span>
+        </div>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Wins</span>
+          <span className='text-2xl font-black text-green-400'>{summary.wins || 0}</span>
+        </div>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Win Rate</span>
+          <span className='text-2xl font-black text-blue-400'>{summary.winRate || '0.0'}%</span>
+        </div>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Level P&L</span>
+          <span className={`text-2xl font-black ${(summary.totalPnl || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {(summary.totalPnl || 0) >= 0 ? '+' : ''}{summary.totalPnl || 0}
+          </span>
+        </div>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>ROI</span>
+          <span className={`text-2xl font-black ${(summary.roi || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {(summary.roi || 0) >= 0 ? '+' : ''}{summary.roi || 0}%
+          </span>
+        </div>
+      </div>
+
+      {(summary.speculative || summary.borderline) && (
+        <div className='grid grid-cols-2 gap-3'>
+          {summary.speculative && summary.speculative.total > 0 && (
+            <div className='bg-[#0f1720]/80 border border-amber-500/10 rounded-xl p-4'>
+              <h3 className='text-sm font-bold text-amber-400 mb-2'>SPECULATIVE</h3>
+              <div className='grid grid-cols-4 gap-2 text-center text-xs'>
+                <div><span className='text-zinc-500 block'>N</span><span className='text-white font-bold'>{summary.speculative.total}</span></div>
+                <div><span className='text-zinc-500 block'>Wins</span><span className='text-green-400 font-bold'>{summary.speculative.wins}</span></div>
+                <div><span className='text-zinc-500 block'>WR</span><span className='text-blue-400 font-bold'>{summary.speculative.winRate}%</span></div>
+                <div><span className='text-zinc-500 block'>P&L</span><span className={`font-bold ${summary.speculative.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>{summary.speculative.pnl >= 0 ? '+' : ''}{summary.speculative.pnl}</span></div>
+              </div>
+            </div>
+          )}
+          {summary.borderline && summary.borderline.total > 0 && (
+            <div className='bg-[#0f1720]/80 border border-zinc-500/10 rounded-xl p-4'>
+              <h3 className='text-sm font-bold text-zinc-400 mb-2'>BORDERLINE</h3>
+              <div className='grid grid-cols-4 gap-2 text-center text-xs'>
+                <div><span className='text-zinc-500 block'>N</span><span className='text-white font-bold'>{summary.borderline.total}</span></div>
+                <div><span className='text-zinc-500 block'>Wins</span><span className='text-green-400 font-bold'>{summary.borderline.wins}</span></div>
+                <div><span className='text-zinc-500 block'>WR</span><span className='text-blue-400 font-bold'>{summary.borderline.winRate}%</span></div>
+                <div><span className='text-zinc-500 block'>P&L</span><span className={`font-bold ${summary.borderline.pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>{summary.borderline.pnl >= 0 ? '+' : ''}{summary.borderline.pnl}</span></div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {pending.length > 0 && (
+        <div className='bg-[#0f1720]/80 border border-amber-500/10 rounded-2xl p-4'>
+          <h3 className='text-sm font-bold text-amber-400 mb-3'>Pending ({pending.length})</h3>
+          <div className='space-y-1'>
+            {pending.slice(0, 10).map((r: any) => (
+              <div key={r.id} className='flex items-center justify-between text-xs py-1 border-b border-white/5'>
+                <span className='text-white font-medium'>{r.horse_name}</span>
+                <span className='text-zinc-400'>{r.course}</span>
+                <span className='text-zinc-500'>{r.race_date}</span>
+                <span className='text-zinc-300'>{r.market_odds}</span>
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${r.bet_quality === 'SPECULATIVE' ? 'bg-amber-500/15 text-amber-400' : 'bg-zinc-500/15 text-zinc-400'}`}>{r.bet_quality}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {settled.length > 0 && (
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+          <h3 className='text-sm font-bold text-zinc-300 mb-3'>Settled ({settled.length})</h3>
+          <div className='overflow-x-auto'>
+            <table className='w-full text-xs'>
+              <thead>
+                <tr className='text-zinc-500 border-b border-white/5'>
+                  <th className='text-left py-2 pr-2'>Horse</th>
+                  <th className='text-left py-2 pr-2'>Course</th>
+                  <th className='text-left py-2 pr-2'>Date</th>
+                  <th className='text-right py-2 pr-2'>Odds</th>
+                  <th className='text-right py-2 pr-2'>WP%</th>
+                  <th className='text-center py-2 pr-2'>Type</th>
+                  <th className='text-right py-2 pr-2'>Pos</th>
+                  <th className='text-right py-2'>P&L</th>
+                </tr>
+              </thead>
+              <tbody>
+                {settled.map((r: any) => (
+                  <tr key={r.id} className='border-b border-white/5'>
+                    <td className='py-1.5 pr-2 text-white font-medium'>{r.horse_name}</td>
+                    <td className='py-1.5 pr-2 text-zinc-400'>{r.course}</td>
+                    <td className='py-1.5 pr-2 text-zinc-500'>{r.race_date}</td>
+                    <td className='py-1.5 pr-2 text-right text-zinc-300'>{r.market_odds}</td>
+                    <td className='py-1.5 pr-2 text-right text-zinc-300'>{r.model_wp ? (r.model_wp).toFixed(1) : '-'}</td>
+                    <td className='py-1.5 pr-2 text-center'>
+                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${r.bet_quality === 'SPECULATIVE' ? 'bg-amber-500/15 text-amber-400' : 'bg-zinc-500/15 text-zinc-400'}`}>{r.bet_quality}</span>
+                    </td>
+                    <td className={`py-1.5 pr-2 text-right font-bold ${r.finishing_position === 1 ? 'text-green-400' : r.finishing_position <= 3 ? 'text-blue-400' : 'text-zinc-400'}`}>
+                      {r.finishing_position === 1 ? '1st' : r.finishing_position === 2 ? '2nd' : r.finishing_position === 3 ? '3rd' : `${r.finishing_position}th`}
+                    </td>
+                    <td className={`py-1.5 text-right font-bold ${r.virtual_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {r.virtual_pnl >= 0 ? '+' : ''}{r.virtual_pnl}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function BacktestTab() {
+  const [labels, setLabels] = useState<any[]>([])
+  const [selected, setSelected] = useState<string | null>(null)
+  const [summary, setSummary] = useState<any>(null)
+  const [fromDate, setFromDate] = useState('2026-05-21')
+  const [toDate, setToDate] = useState('2026-06-23')
+  const [paGate, setPaGate] = useState(true)
+  const [running, setRunning] = useState(false)
+  const [progress, setProgress] = useState('')
+
+  const fetchLabels = () => {
+    fetch(apiUrl('/api/backtest/labels')).then(r => r.json()).then(setLabels).catch(() => {})
+  }
+
+  useEffect(() => { fetchLabels() }, [])
+
+  useEffect(() => {
+    if (!selected) { setSummary(null); return }
+    fetch(apiUrl(`/api/backtest/summary/${selected}`)).then(r => r.json()).then(setSummary).catch(() => {})
+  }, [selected])
+
+  const runBacktest = () => {
+    setRunning(true)
+    setProgress('Starting backtest...')
+    const params = new URLSearchParams({ from: fromDate, to: toDate, 'pa-gate': paGate.toString() })
+    const sseBase = (typeof import.meta !== 'undefined' && import.meta.env?.PROD) ? apiUrl('') : 'http://localhost:3000'
+    const evtSource = new EventSource(`${sseBase}/api/backtest/stream?${params}`)
+    evtSource.onmessage = (e) => {
+      const data = JSON.parse(e.data)
+      if (data.type === 'progress') {
+        setProgress(data.message)
+      } else if (data.type === 'done') {
+        setProgress(data.code === 0 ? `Complete! ${data.stored || 0} predictions stored for "${data.label}"` : `Failed with exit code ${data.code}`)
+        if (data.stored > 0) {
+          setSelected(data.label)
+          fetchLabels()
+        }
+        setRunning(false)
+        evtSource.close()
+      } else if (data.type === 'error') {
+        setProgress(`Error: ${data.message}`)
+      }
+    }
+    evtSource.onerror = () => {
+      setProgress('Connection lost')
+      setRunning(false)
+      evtSource.close()
+    }
+  }
+
+  return (
+    <div className='space-y-6'>
+      <div>
+        <h2 className='text-xl font-bold text-amber-400'>Point-in-Time Backtest</h2>
+        <p className='text-zinc-500 text-sm'>Run engine against historical data with zero lookahead bias. Results stored in SQLite.</p>
+      </div>
+
+      {/* Run Form */}
+      <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+        <div className='flex flex-wrap items-end gap-4'>
+          <div>
+            <label className='text-[10px] text-zinc-500 uppercase tracking-wider block mb-1'>From</label>
+            <input type='date' value={fromDate} onChange={e => setFromDate(e.target.value)} className='bg-zinc-900 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-300' />
+          </div>
+          <div>
+            <label className='text-[10px] text-zinc-500 uppercase tracking-wider block mb-1'>To</label>
+            <input type='date' value={toDate} onChange={e => setToDate(e.target.value)} className='bg-zinc-900 border border-white/10 rounded-lg px-3 py-1.5 text-sm text-zinc-300' />
+          </div>
+          <div className='flex items-center gap-2'>
+            <input type='checkbox' checked={paGate} onChange={e => setPaGate(e.target.checked)} className='rounded' />
+            <label className='text-xs text-zinc-400'>PA Gate</label>
+          </div>
+          <button onClick={runBacktest} disabled={running} className={`px-4 py-1.5 rounded-lg text-sm font-bold transition ${running ? 'bg-zinc-700 text-zinc-500 cursor-not-allowed' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30'}`}>
+            {running ? 'Running...' : 'Run Backtest'}
+          </button>
+        </div>
+        {progress && <p className='text-xs text-zinc-500 mt-2'>{progress}</p>}
+      </div>
+
+      {/* Previous Runs */}
+      {labels.length > 0 && (
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+          <h3 className='text-sm font-bold text-zinc-300 mb-3'>Stored Runs ({labels.length})</h3>
+          <div className='space-y-1'>
+            {labels.map((l: any) => (
+              <div key={l.label} onClick={() => setSelected(l.label)} className={`flex items-center justify-between text-xs py-2 px-3 rounded-lg cursor-pointer transition ${selected === l.label ? 'bg-amber-500/10 border border-amber-500/20' : 'hover:bg-white/[0.02] border border-transparent'}`}>
+                <div className='flex items-center gap-3'>
+                  <span className='text-white font-medium'>{l.label}</span>
+                  <span className='text-zinc-500'>{l.fromDate} → {l.toDate}</span>
+                </div>
+                <div className='flex items-center gap-4 text-zinc-400'>
+                  <span>{l.total} bets</span>
+                  <span className='text-green-400'>{l.wins}W</span>
+                  <span className={Number(l.roi) >= 0 ? 'text-green-400' : 'text-red-400'}>{l.roi}% ROI</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Summary */}
+      {summary && (
+        <>
+          <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
+            <StatCard label='Total Bets' value={summary.overall.total?.toString() || '0'} subtitle={`${summary.overall.wr}% WR`} />
+            <StatCard label='Winners' value={summary.overall.wins?.toString() || '0'} subtitle={`${summary.overall.placed} placed`} color='#34d399' />
+            <StatCard label='Overall ROI' value={`${summary.overall.roi}%`} color={Number(summary.overall.roi) >= 0 ? '#34d399' : '#f87171'} />
+            <StatCard label='Value Picks' value={summary.value.total?.toString() || '0'} subtitle={`${summary.value.wr}% WR • ${summary.value.roi}% ROI`} />
+          </div>
+
+          {/* PA Band Breakdown */}
+          <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+            <h3 className='text-sm font-bold text-zinc-300 mb-3'>Performance by PA Band</h3>
+            <div className='grid grid-cols-2 lg:grid-cols-4 gap-3'>
+              {summary.byPa?.map((b: any) => (
+                <div key={b.band} className='bg-white/[0.02] rounded-lg p-3 border border-white/5'>
+                  <div className='text-[10px] text-zinc-500 uppercase tracking-wider mb-1'>{b.band}</div>
+                  <div className='text-lg font-bold text-white'>{b.total}</div>
+                  <div className='text-xs text-zinc-400'>{b.wins}W • {b.wr}% WR</div>
+                  <div className={`text-xs font-bold ${Number(b.roi) >= 0 ? 'text-green-400' : 'text-red-400'}`}>{b.roi}% ROI</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Odds Band Breakdown */}
+          <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+            <h3 className='text-sm font-bold text-zinc-300 mb-3'>Performance by Odds Band</h3>
+            <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
+              {summary.byOdds?.map((b: any) => (
+                <div key={b.band} className='bg-white/[0.02] rounded-lg p-3 border border-white/5'>
+                  <div className='text-[10px] text-zinc-500 uppercase tracking-wider mb-1'>{b.band}</div>
+                  <div className='text-lg font-bold text-white'>{b.total}</div>
+                  <div className='text-xs text-zinc-400'>{b.wins}W • {b.wr}% WR</div>
+                  <div className={`text-xs font-bold ${Number(b.roi) >= 0 ? 'text-green-400' : 'text-red-400'}`}>{b.roi}% ROI</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function Proof() {
   const [stats, setStats] = useState<any>(null)
-  const [preds, setPreds] = useState<any>(null)
   const [paGate, setPaGate] = useState<any>(null)
   const [counterfactual, setCounterfactual] = useState<any>(null)
   const [paByPosition, setPaByPosition] = useState<any>(null)
-  const [tab, setTab] = useState<'overview' | 'samples' | 'calibration' | 'history'>('overview')
+  const [tab, setTab] = useState<'overview' | 'calibration' | 'history' | 'sandbox' | 'backtest'>('overview')
 
   useEffect(() => {
     const fetchData = () => {
       fetch(apiUrl('/api/learning-stats')).then(r => r.json()).then(setStats).catch(() => {})
-      fetch(apiUrl('/api/predictions')).then(r => r.json()).then(setPreds).catch(() => {})
       fetch(apiUrl('/api/pa-gate-monitor')).then(r => r.json()).then(setPaGate).catch(() => {})
       fetch(apiUrl('/api/counterfactual-log')).then(r => r.json()).then(setCounterfactual).catch(() => {})
       fetch(apiUrl('/api/pa-by-position')).then(r => r.json()).then(setPaByPosition).catch(() => {})
@@ -646,8 +948,6 @@ export default function Proof() {
     return () => clearInterval(interval)
   }, [])
 
-  const recentPreds = preds ? Object.entries(preds).slice(-20).flatMap(([, v]: any) => v).slice(0, 50) : []
-  const strikeRate = stats?.totalBets ? calculateStrikeRate(stats.winners, stats.totalBets) : null
 
   return (
     <div className='p-6 max-w-6xl mx-auto space-y-6'>
@@ -657,25 +957,25 @@ export default function Proof() {
       </div>
 
       <div className='flex gap-2 flex-wrap'>
-        {(['overview', 'samples', 'calibration', 'history'] as const).map(t => (
+        {(['overview', 'calibration', 'history', 'sandbox', 'backtest'] as const).map(t => (
           <button
             key={t}
             type='button'
             onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition ${tab === t ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'text-zinc-400 hover:text-white border border-transparent'}`}
           >
-            {t === 'overview' ? 'Overview' : t === 'samples' ? 'Sample Races' : t === 'calibration' ? 'Calibration' : 'History'}
+            {t === 'overview' ? 'Overview' : t === 'calibration' ? 'Calibration' : t === 'sandbox' ? 'Sandbox' : t === 'backtest' ? 'Backtest' : 'History'}
           </button>
         ))}
       </div>
 
-      {tab === 'overview' && stats && (
+      {tab === 'overview' && (
         <>
           <div className='grid grid-cols-2 lg:grid-cols-4 gap-4'>
-            <StatCard label='Total Predictions' value={stats.totalBets?.toLocaleString() || '0'} subtitle='Across all race types' />
-            <StatCard label='Winners' value={stats.winners?.toLocaleString() || '0'} subtitle={strikeRate ? `${strikeRate}% strike rate` : ''} color='#34d399' />
-            <StatCard label='Lifetime ROI' value={`${stats.roi?.toFixed(1) || '0'}%`} color={stats.roi > 0 ? '#34d399' : '#f87171'} />
-            <StatCard label='Avg Confidence' value={`${stats.averageConfidence || 0}`} subtitle='Out of 100' />
+            <StatCard label='System Selections' value={paGate?.gate?.engineSelected?.count?.toLocaleString() || '0'} subtitle={`PA > 0 • ${paGate?.dataset?.paCoverage || 0}% PA coverage`} />
+            <StatCard label='Winners' value={paGate?.gate?.engineSelected?.wins?.toLocaleString() || '0'} subtitle={`${paGate?.gate?.engineSelected?.wr || 0}% strike rate`} color='#34d399' />
+            <StatCard label='System ROI' value={`${paGate?.gate?.engineSelected?.roi?.toFixed(1) || '0'}%`} color={paGate?.gate?.engineSelected?.roi > 0 ? '#34d399' : '#f87171'} />
+            <StatCard label='PA Killed' value={paGate?.gate?.paKilled?.count?.toLocaleString() || '0'} subtitle={`${paGate?.gate?.paKilled?.wr || 0}% WR (saved capital)`} color='#f87171' />
           </div>
 
             <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6'>
@@ -685,13 +985,18 @@ export default function Proof() {
               <>
               {/* ── Dataset Summary ── */}
               {paGate.dataset && (
-                <div className='mb-4 p-3 rounded-lg bg-white/[0.02] border border-white/5 text-xs text-zinc-500 flex flex-wrap gap-x-6 gap-y-1'>
-                  <span>Results: <b className='text-zinc-300'>{paGate.dataset.totalWithResults}</b></span>
-                  <span>With PA data: <b className='text-zinc-300'>{paGate.dataset.withPA}</b> ({paGate.dataset.paCoverage}% of results)</span>
-                  <span>PA &gt; 0: <b className='text-zinc-300'>{paGate.dataset.withPAPositive}</b></span>
-                  <span>PA null: <b className='text-zinc-300'>{paGate.dataset.withPANull}</b></span>
-                  <span>{paGate.dataset.dateRange?.[0]} to {paGate.dataset.dateRange?.[1]}</span>
-                  <span>Odds: {paGate.dataset.oddsSource}</span>
+                <div className='mb-4 p-3 rounded-lg bg-white/[0.02] border border-white/5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-zinc-400'>
+                  <div>Results: <span className='text-white font-semibold'>{paGate.dataset.totalWithResults}</span></div>
+                  <div className='text-zinc-600'>•</div>
+                  <div>With PA data: <span className='text-white font-semibold'>{paGate.dataset.withPA}</span> ({paGate.dataset.paCoverage}% of results)</div>
+                  <div className='text-zinc-600'>•</div>
+                  <div>PA &gt; 0: <span className='text-green-400 font-semibold'>{paGate.dataset.withPAPositive}</span></div>
+                  <div className='text-zinc-600'>•</div>
+                  <div>PA null: <span className='text-zinc-400 font-semibold'>{paGate.dataset.withPANull}</span></div>
+                  <div className='text-zinc-600'>|</div>
+                  <div className='text-zinc-500 font-medium'>{paGate.dataset.dateRange?.[0]} to {paGate.dataset.dateRange?.[1]}</div>
+                  <div className='text-zinc-600'>|</div>
+                  <div className='text-zinc-500'>Odds: {paGate.dataset.oddsSource}</div>
                 </div>
               )}
 
@@ -1084,7 +1389,7 @@ export default function Proof() {
             </div>
           </div>
 
-          {stats.lastLearningRun && (
+          {stats?.lastLearningRun && (
             <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-6'>
               <h2 className='text-lg font-bold mb-2'>Latest Learning Run</h2>
               <pre className='text-xs text-zinc-400 font-mono'>{JSON.stringify(stats.lastLearningRun, null, 2)}</pre>
@@ -1093,35 +1398,10 @@ export default function Proof() {
         </>
       )}
 
-      {tab === 'samples' && recentPreds.length > 0 && (
-        <div className='space-y-3'>
-          {recentPreds.slice(0, 20).map((pred: any, i: number) => (
-            <div key={i} className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4'>
-              <div className='flex items-center justify-between'>
-                <div>
-                  <span className='text-lg font-bold'>{pred.horse}</span>
-                  <span className='text-zinc-500 text-sm ml-3'>{pred.course}</span>
-                </div>
-                <div className='flex gap-4'>
-                  <span className='text-sm text-zinc-400'>Conf: {pred.confidence}</span>
-                  <span className='text-sm font-bold'>{pred.grade}</span>
-                  <span className='text-sm'>{pred.odds}x</span>
-                </div>
-              </div>
-              {(pred.breakdown || pred.predictedWinProb) && (
-                <div className='flex gap-4 mt-2 text-xs text-zinc-500'>
-                  {pred.predictedWinProb && <span>Win%: {pred.predictedWinProb}%</span>}
-                  {pred.valueEdge && <span>Edge: {(pred.valueEdge * 100).toFixed(1)}%</span>}
-                  {pred.breakdown?.powerScore && <span>Power: {pred.breakdown.powerScore}</span>}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
       {tab === 'calibration' && <CalibrationDashboard />}
       {tab === 'history' && <HistoryTab />}
+      {tab === 'sandbox' && <SandboxTab />}
+      {tab === 'backtest' && <BacktestTab />}
     </div>
   )
 }
