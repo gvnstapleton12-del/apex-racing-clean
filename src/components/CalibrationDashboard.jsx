@@ -160,14 +160,17 @@ export default function CalibrationDashboard() {
     const raceKey = `${r.course}|${r.date}|${r.race}`
     return !passesValueGate(prob, Number(r.predictedOdds), Number(r.predictedScore || 0), Number(r.previousRuns || 0), r.personalAffinity ?? null, raceApexMap[raceKey] || [])
   })
-  const vpWins = valuePicks.filter(r => r.actualWon).length
-  const vpWR = valuePicks.length ? ((vpWins / valuePicks.length) * 100).toFixed(1) : '0.0'
-  const vpPL = valuePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
-  const vpROI = valuePicks.length ? ((vpPL / valuePicks.length) * 100).toFixed(1) : '0.0'
+  // Only compute P/L from records with valid odds — zero odds corrupt ROI
+  const pricedPicks = valuePicks.filter(r => Number(r.actualOdds) > 0)
+  const missingOddsCount = valuePicks.length - pricedPicks.length
+  const vpWins = pricedPicks.filter(r => r.actualWon).length
+  const vpWR = pricedPicks.length ? ((vpWins / pricedPicks.length) * 100).toFixed(1) : '0.0'
+  const vpPL = pricedPicks.reduce((s, r) => s + (r.actualWon ? Number(r.actualOdds) - 1 : -1), 0)
+  const vpROI = pricedPicks.length ? ((vpPL / pricedPicks.length) * 100).toFixed(1) : '0.0'
 
   // Eighth-Kelly simulation using plattProb (pre-dampened)
   let kellyBankroll = 1000
-  valuePicks.forEach(r => {
+  pricedPicks.forEach(r => {
     const p = Number(r.plattProb || r.predictedWinProb) / 100
     const odds = Number(r.actualOdds) || Number(r.predictedOdds) || 2
     const b = odds - 1
@@ -181,13 +184,13 @@ export default function CalibrationDashboard() {
   const kellyRoi = ((kellyBankroll - 1000) / 1000) * 100
 
   // Dense vs sparse breakdown using previousRuns (actual historical runs)
-  const densePicks = valuePicks.filter(r => (r.previousRuns || 0) >= 5)
-  const sparsePicks = valuePicks.filter(r => (r.previousRuns || 0) < 5)
+  const densePicks = pricedPicks.filter(r => (r.previousRuns || 0) >= 5)
+  const sparsePicks = pricedPicks.filter(r => (r.previousRuns || 0) < 5)
   const denseWR = densePicks.length ? ((densePicks.filter(r => r.actualWon).length / densePicks.length) * 100).toFixed(1) : '0.0'
-  const densePL = densePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
+  const densePL = densePicks.reduce((s, r) => s + (r.actualWon ? Number(r.actualOdds) - 1 : -1), 0)
   const denseROI = densePicks.length ? ((densePL / densePicks.length) * 100).toFixed(1) : '0.0'
   const sparseWR = sparsePicks.length ? ((sparsePicks.filter(r => r.actualWon).length / sparsePicks.length) * 100).toFixed(1) : '0.0'
-  const sparsePL = sparsePicks.reduce((s, r) => s + (r.actualWon ? (Number(r.actualOdds) || 0) - 1 : -1), 0)
+  const sparsePL = sparsePicks.reduce((s, r) => s + (r.actualWon ? Number(r.actualOdds) - 1 : -1), 0)
   const sparseROI = sparsePicks.length ? ((sparsePL / sparsePicks.length) * 100).toFixed(1) : '0.0'
 
   return (
@@ -241,7 +244,7 @@ export default function CalibrationDashboard() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
             <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
               <span style={{ color: '#94a3b8', fontSize: '0.875rem', display: 'block' }}>Bets</span>
-              <strong style={{ color: '#e2e8f0', fontSize: '1.5rem', fontWeight: 700 }}>{valuePicks.length}</strong>
+              <strong style={{ color: '#e2e8f0', fontSize: '1.5rem', fontWeight: 700 }}>{pricedPicks.length}{missingOddsCount > 0 && <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 400 }}> priced ({missingOddsCount} no odds)</span>}</strong>
             </div>
             <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
               <span style={{ color: '#94a3b8', fontSize: '0.875rem', display: 'block' }}>Win Rate</span>

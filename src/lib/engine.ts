@@ -730,6 +730,7 @@ export function passesValueGate(
   raceApexScores: number[] = []
 ): boolean {
   if (!odds || odds <= 1 || !prob) return false
+  if (odds < 2.5) return false
   if (pa !== null && pa <= 0) return false
 
   const impliedProb = 1 / odds

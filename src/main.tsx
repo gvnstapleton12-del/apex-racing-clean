@@ -695,13 +695,21 @@ function Home() {
     : null
 
   const todayResults = displayPicks
-  const todayStats = displayPicks.length > 0 ? {
-    won: displayPicks.filter((p: any) => p.result === 'won').length,
-    placed: displayPicks.filter((p: any) => p.result === 'placed').length,
-    lost: displayPicks.filter((p: any) => p.result === 'lost').length,
-    nr: displayPicks.filter((p: any) => p.result === 'nr').length,
-    pending: displayPicks.filter((p: any) => !p.result).length,
-  } : null
+  // Position-aware stats — derives W/L/P from runner positions (same logic as full card)
+  const computedStats = displayPicks.length > 0 ? (() => {
+    let won = 0, placed = 0, lost = 0, pending = 0
+    for (const p of displayPicks) {
+      const pos = (p as any).position || null
+      if (!pos || pos <= 0) { pending++; continue }
+      const race = races.find((r: any) => r.course === p.course && formatOffTime(r) === p.offTime)
+      const fieldSize = race?.runners?.length || 0
+      const placedThreshold = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
+      if (pos === 1) won++
+      else if (pos <= placedThreshold) placed++
+      else lost++
+    }
+    return { won, placed, lost, nr: 0, pending }
+  })() : null
 
   // Top horse per race from ALL selections (regardless of bettable filter)
   // Used as fallback in full card so every race shows a pick
@@ -983,7 +991,7 @@ function Home() {
             </div>
           )}
           {(() => {
-            const activeStats = pickView === 'yesterday' ? yesterdaySaved?.stats : (todaySaved?.stats || todayStats)
+            const activeStats = pickView === 'yesterday' ? yesterdaySaved?.stats : computedStats || todaySaved?.stats
             const statsLabel = pickView === 'yesterday' ? 'Yesterday' : 'System'
             return activeStats ? (
               <div className='flex items-center gap-6 mb-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
