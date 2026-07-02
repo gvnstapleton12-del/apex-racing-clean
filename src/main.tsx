@@ -10,7 +10,8 @@ import {
 
 import Racecards from './pages/Racecards'
 import { ResultsList } from './pages/Results'
-import { fetchRacecards } from './lib/racingApi'
+import { fetchLiveState } from './lib/racingApi'
+import type { LiveState } from './lib/racingApi'
 import { formatOffTime } from './lib/formatTime'
 import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
 import type { Race, Runner } from './lib/types'
@@ -343,13 +344,16 @@ function Home() {
   const [livePicksStats, setLivePicksStats] = useState<{ stats: { won: number; placed: number; lost: number; nr: number; pending: number }; roi: number; mainBets: { won: number; placed: number; lost: number; nr: number; total: number; roi: number } } | null>(null)
   const [homeWidgets, setHomeWidgets] = useState<any>(null)
   const {
-    data: races = [],
+    data: liveState,
     isLoading,
-  } = useQuery<Race[]>({
+    refetch: refetchRacecards,
+  } = useQuery<LiveState>({
     queryKey: ['home-racecards'],
-    queryFn: fetchRacecards,
+    queryFn: fetchLiveState,
     refetchInterval: 60000,
   })
+  const races = liveState?.racecards || []
+  const processingComplete = liveState != null && !liveState.loading
 
   useEffect(() => {
     fetch('/api/daily-picks')
@@ -453,17 +457,18 @@ function Home() {
       const bq = s.betQuality || ''
       if (bq === 'NO BET') return false
       if (bq === 'WEAK_COMPAT') return false
+      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      if (pa <= 0) return false
       if ((s.valueEdge || 0) <= 0.03) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
       if ((s.winProb || 0) < 0.10) return false
       const apexScore = s.score || 0
-      if (apexScore === 0) return true
-      if (apexScore >= 60) return true
-      if (apexScore < 40) return false
-      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      if (apexScore === 0) return false
+      if (apexScore >= 50) return true
+      if (apexScore < 35) return false
       const edge = s.valueEdge || 0
       const wp = s.winProb || 0
-      return pa > 2.5 || edge > 0.20 || (wp > 0.30 && pa > 1)
+      return pa > 1.0 || edge > 0.10 || (wp > 0.20 && pa > 0.5)
     })
     console.table('[TOP 20 PASS]', passing.slice(0, 20).map((s: any) => ({
       horse: s.horse,
@@ -514,15 +519,18 @@ function Home() {
       const bq = (s as any).betQuality || ''
       if (bq === 'NO BET') return false
       if (bq === 'WEAK_COMPAT') return false
+      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      if (pa <= 0) return false
+      if ((s.valueEdge || 0) < 0) return false
+      if ((s.winProb || 0) < 0.12) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
       const apexScore = s.score || 0
-      if (apexScore === 0) return true
-      if (apexScore >= 60) return true
-      if (apexScore < 40) return false
-      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      if (apexScore === 0) return false
+      if (apexScore >= 50) return true
+      if (apexScore < 35) return false
       const edge = s.valueEdge || 0
       const wp = s.winProb || 0
-      return pa > 2.5 || edge > 0.20 || (wp > 0.30 && pa > 1)
+      return pa > 1.0 || edge > 0.10 || (wp > 0.20 && pa > 0.5)
     })
   const upcoming = bettable
     .filter((s) => {
@@ -541,10 +549,10 @@ function Home() {
   })
   // One pick per race — keep the best per course+offTime, max 5 total
   const seenRaces = new Set<string>()
-  if (bestBet) seenRaces.add(`${bestBet.course}-${bestBet.offTime}`)
+  if (bestBet) seenRaces.add(bestBet.race_id || `${bestBet.course}-${bestBet.offTime}`)
   const onePerRace = sortedByTime.filter((s) => {
     if (s === bestBet) return false
-    const raceKey = `${s.course}-${s.offTime}`
+    const raceKey = s.race_id || `${s.course}-${s.offTime}`
     if (seenRaces.has(raceKey)) return false
     seenRaces.add(raceKey)
     return true
@@ -560,10 +568,10 @@ function Home() {
     return aTime.localeCompare(bTime)
   })
   const seenUpcoming = new Set<string>()
-  if (upcomingBest) seenUpcoming.add(`${upcomingBest.course}-${upcomingBest.offTime}`)
+  if (upcomingBest) seenUpcoming.add(upcomingBest.race_id || `${upcomingBest.course}-${upcomingBest.offTime}`)
   const upcomingOnePerRace = upcomingSorted.filter((s) => {
     if (s === upcomingBest) return false
-    const raceKey = `${s.course}-${s.offTime}`
+    const raceKey = s.race_id || `${s.course}-${s.offTime}`
     if (seenUpcoming.has(raceKey)) return false
     seenUpcoming.add(raceKey)
     return true
@@ -588,7 +596,7 @@ function Home() {
   }, [todaySaved, allSelections])
 
   // Log ALL live picks to server for honest performance tracking (not just upcoming)
-  const allLivePicksKey = allPicks.map(p => p.horse + p.course).join('|')
+  const allLivePicksKey = allPicks.map(p => p.race_id || p.horse + p.course).join('|')
   useEffect(() => {
     if (allPicks.length === 0) return
     const dateStr = new Date().toISOString().split('T')[0]
@@ -608,13 +616,13 @@ function Home() {
           apexScore: p.score ?? null,
           betQuality: p.betQuality ?? null,
           betType: p.betType ?? null,
-          raceId: p.race ? `${p.race.course}-${p.race.off_time}-${p.race.date}` : null,
+          raceId: p.race_id || null,
         })),
       }),
     }).catch(() => {})
   }, [allLivePicksKey])
   console.log('[FINAL PICKS]', picksLive.length, picksLive.map((p: any) => `${p.horse} (${p.course} ${p.offTime}) score=${p.score} ev=${((p.winProb || 0) * (parseOddsToNum(p.odds) || 0) - 1).toFixed(2)}`))
-  const picksKey = allPicks.map((p) => p.horse + p.course).join('|')
+  const picksKey = allPicks.map((p) => p.race_id || p.horse + p.course).join('|')
   const topScore = allPicks[0]?.score || bettable[0]?.score || allSelections[0]?.score || 0
   const totalRunners = countRunners(ukIreRaces)
 
@@ -700,7 +708,7 @@ function Home() {
   const topPerRace = useMemo(() => {
     const map = new Map<string, any>()
     for (const s of allSelections) {
-      const key = `${s.course}|${s.offTime}`
+      const key = s.race_id || `${s.course}|${s.offTime}`
       if (!map.has(key)) map.set(key, s)
     }
     return map
@@ -708,18 +716,18 @@ function Home() {
 
   // All races card — every race, system picks highlighted
   const allRacesCard = useMemo(() => {
-    const pickSource = allPicks
+    const pickSource = todaySaved?.picks?.length ? todaySaved.picks : allPicks
     const pickByRace = new Map<string, any>()
     for (const p of pickSource) {
-      const key = `${p.course}|${p.offTime}`
+      const key = p.race_id || `${p.course}|${p.offTime}`
       if (!pickByRace.has(key)) pickByRace.set(key, p)
     }
     return (races || [])
       .filter(r => (r.runners || []).length >= 2)
       .map(r => {
         const offTime = formatOffTime(r)
-        const pickKey = `${r.course}|${offTime}`
-        const pick = pickByRace.get(pickKey) || topPerRace.get(pickKey)
+        const pickKey = r.race_id || `${r.course}|${offTime}`
+        const pick = pickByRace.get(pickKey) || (!todaySaved?.picks?.length ? topPerRace.get(pickKey) : null)
         const fieldSize = r.runners?.length || 0
         const placed = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
         const pos = pick?.position || r.runners?.find((run: any) => run.horse === pick?.horse)?.position || null
@@ -745,7 +753,7 @@ function Home() {
         }
       })
       .sort((a, b) => (a.offTime || '').localeCompare(b.offTime || ''))
-  }, [races, allPicks])
+  }, [races, allPicks, todaySaved])
 
   const liveStats = useMemo(() => {
     let won = 0, placed = 0, lost = 0, pending = 0
@@ -782,6 +790,7 @@ function Home() {
           course: p.course,
           offTime: p.offTime,
           raceName: p.raceName,
+          race_id: p.race_id || null,
           score: p.score,
           grade: p.selectionQuality?.grade || '',
           winProb: p.winProb,
@@ -809,35 +818,10 @@ function Home() {
       .then((r) => r.json())
       .then((result) => {
         if (result.saved) {
-          setDailyPicksDb((prev) => ({
-            ...prev,
-            [today]: {
-              picks: allPicks.map((p) => ({
-                horse: p.horse,
-                course: p.course,
-                offTime: p.offTime,
-                raceName: p.raceName,
-                score: p.score,
-                winProb: p.winProb,
-                fairOdds: p.fairOdds,
-                probConfidence: p.probConfidence,
-                odds: p.odds,
-                form: p.form,
-                draw: p.draw,
-                going: p.going || '',
-                fieldSize: p.fieldSize || 0,
-                valueEdge: p.valueEdge,
-                kellyStake: p.kellyStake,
-                betType: p.betType,
-                or: p.or,
-                rpr: p.rpr,
-                performanceRating: p.performanceRating,
-                result: null,
-                position: null,
-              })),
-              stats: { won: 0, placed: 0, lost: 0, pending: allPicks.length, nr: 0 },
-            },
-          }))
+          fetch('/api/daily-picks')
+            .then((r) => r.json())
+            .then((data) => setDailyPicksDb(data))
+            .catch(() => {})
         }
       })
       .catch(() => {})
@@ -866,9 +850,24 @@ function Home() {
               <div className='text-xs text-zinc-400 uppercase tracking-wider'>Top Score</div>
             </div>
             <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{allPicks.length}</div>
+              <div className='text-3xl font-bold text-amber-400'>{todaySaved?.picks?.length || allPicks.length}</div>
               <div className='text-xs text-zinc-400 uppercase tracking-wider'>Picks</div>
             </div>
+            <button
+              type='button'
+              onClick={() => {
+                const t = new Date().toISOString().split('T')[0]
+                fetch(`/api/daily-picks/${t}`, { method: 'DELETE' })
+                  .then(() => {
+                    setDailyPicksDb(prev => ({ ...prev, [t]: undefined }))
+                    refetchRacecards()
+                  })
+                  .catch(() => {})
+              }}
+              className='px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition'
+            >
+              🔄 Repick
+            </button>
             {nextRace && (
               <div className='text-center pl-6 border-l border-white/10'>
                 <div className='text-3xl font-bold text-amber-400'>{nextRace.offTime}</div>
@@ -879,8 +878,19 @@ function Home() {
         </div>
       </section>
 
-      {/* Top Pick Hero */}
-      {displayBestBet && (() => {
+      {/* Top Pick Hero — suppressed during processing */}
+      {!processingComplete && !isLoading ? (
+        <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/10 rounded-2xl p-8 mb-6'>
+          <div className='flex items-center gap-4 relative z-10'>
+            <div className='pulse-dot' />
+            <div>
+              <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>Processing</span>
+              <h2 className='text-2xl font-black text-zinc-300 mt-1'>Scoring {races.length} races...</h2>
+              <p className='text-sm text-zinc-500 mt-1'>NAP will appear once all races are scored</p>
+            </div>
+          </div>
+        </section>
+      ) : displayBestBet && (() => {
         const napResult = todayResults.find((r: any) => r.horse === displayBestBet.horse && r.course === displayBestBet.course)
         const napHasRaced = napResult && (napResult.result === 'won' || napResult.result === 'placed' || napResult.result === 'lost')
         return (
@@ -1097,7 +1107,7 @@ function Home() {
                 const r = todayResults.find((res: any) => res.horse === p.horse && res.course === p.course)
                 return r && (r.result === 'won' || r.result === 'placed' || r.result === 'lost')
               })
-              const isNapPick = i === 0 && !alreadyRaced
+              const isNapPick = i === 0 && !alreadyRaced && s.betType !== 'SPEC'
               const isBombPick = s.odds && parseOddsToNum(s.odds) >= 10
               if (isNapPick) {
                 return <PickCard key={`${s.course}-${s.offTime}-${s.horse}`} selection={s} rank={i + 1} result={pickResult} position={pickPosition} isNap isBomb={false} />
@@ -1151,15 +1161,18 @@ function Home() {
                     const resultBadge = r.result === 'won' ? 'W' : r.result === 'placed' ? 'P' : r.result === 'lost' ? 'L' : r.result === 'nr' ? 'NR' : '-'
                     const badgeBg = r.result === 'won' ? 'bg-green-500/20 text-green-400' : r.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : r.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
                     const isMainPick = mainPickKeys.has(`${r.horse}|${r.course}`)
+                    const isSpecMainPick = isMainPick && r.betType === 'SPEC'
                     const hasSelection = !!r.horse && r.horse !== '—' && r.horse !== ''
                     return (
                       <tr key={i} className={`border-b border-slate-800/30 ${
-                        isMainPick ? 'bg-amber-500/5' : r.isWinner ? 'bg-green-500/5' : 'opacity-50'
+                        isSpecMainPick ? 'bg-slate-500/5' : isMainPick ? 'bg-amber-500/5' : r.isWinner ? 'bg-green-500/5' : 'opacity-50'
                       }`}>
                         <td className='py-2 px-3 font-mono text-xs text-slate-300'>{r.offTime}</td>
                         <td className='py-2 px-3 font-semibold text-xs text-slate-200 truncate'>{r.course}</td>
                         <td className='py-2 px-3'>
-                          {isMainPick ? (
+                          {isSpecMainPick ? (
+                            <span className='font-semibold text-slate-400 text-xs tracking-wide'>{r.horse}</span>
+                          ) : isMainPick ? (
                             <span className='font-bold text-amber-400 text-xs tracking-wide'>{r.horse}</span>
                           ) : r.horse && r.horse !== '—' ? (
                             <span className='font-semibold text-slate-200 text-xs tracking-wide'>{r.horse}</span>

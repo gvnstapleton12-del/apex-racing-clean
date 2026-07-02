@@ -12558,7 +12558,13 @@
         "draw": 3
       },
       "isJumps": false,
-      "discipline": "Dual-purpose (Flat + National Hunt)"
+      "discipline": "Dual-purpose (Flat + National Hunt)",
+      "systemExclusions": [
+        {
+          "type": "race_type_exclusion",
+          "note": "All Epsom races excluded by request"
+        }
+      ]
     },
     "Fairyhouse": {
       "handedness": "Right",
@@ -19430,7 +19436,7 @@
         "positioning": 2,
         "draw": 2
       },
-      "isJumps": true
+      "isJumps": false
     },
     "Sandown": {
       "aka": "Sandown Park Racecourse (Esher, Surrey)",

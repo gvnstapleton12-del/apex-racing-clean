@@ -422,18 +422,18 @@ export function runApexEngine(runners, race, options = {}) {
     }
     const courseAffinity = computeCourseAffinity(runner.previous_results, race.course)
 
-    const finalScore = Math.round(Math.max(1, Math.min(99, layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + awTransferAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment + personalAffinityAdj + courseAffinity)))
+    const rawFinalScore = layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + awTransferAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment + personalAffinityAdj + courseAffinity
+    const finalScore = Number.isFinite(rawFinalScore) ? Math.round(Math.max(1, Math.min(99, rawFinalScore))) : 50
 
     // Store courseAffinity on runner for output
     runner.courseAffinity = courseAffinity
     runner.trackCategory = trackCategory
     runner.courseMultiplierUsed = courseMultiplier
 
-    const qualityAdjustedScore = Math.round(
-      horseQuality.finalScore * 0.50 +
-      finalScore * 0.30 +
-      raceShapeSuitability * 0.20
-    )
+    const rawQAS = (horseQuality.finalScore || 0) * 0.50 +
+      (finalScore || 0) * 0.30 +
+      (raceShapeSuitability || 0) * 0.20
+    const qualityAdjustedScore = Number.isFinite(rawQAS) ? Math.round(rawQAS) : 50
 
     // Spread multiplier — widen compressed 32-60 band back to 20-80
     const SCORE_SPREAD_MULTIPLIER = 1.6
@@ -444,7 +444,8 @@ export function runApexEngine(runners, race, options = {}) {
 
     // Confidence-weighted scoring: discount finalScore when PA signal is weak
     // sqrt creates steep penalty for ultra-low confidence but flattens quickly
-    const paConfidence = personalAffinity.confidence ?? 1.0
+    const paConfidence = (Number.isFinite(personalAffinity.confidence) && personalAffinity.confidence >= 0)
+      ? personalAffinity.confidence : 1.0
     const scoreWithConfidence = Math.round(rescaledScore * Math.sqrt(paConfidence))
 
     // Chaos detection: widen probability distributions for high-volatility races

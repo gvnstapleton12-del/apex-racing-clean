@@ -227,7 +227,7 @@ export function updatePerformanceRating(horseName, actualPerformance, currentPR)
     lastUpdated: new Date().toISOString().slice(0, 10),
   }
 
-  return { newPR, delta: Math.round((newPR - existing.pr) * 10) / 10, runCount }
+  return { newPR, delta: runCount === 1 ? 0 : Math.round((newPR - existing.pr) * 10) / 10, runCount }
 }
 
 export function getStoredPR(horseName) {

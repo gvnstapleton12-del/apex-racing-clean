@@ -75,6 +75,7 @@ async function run() {
           const count = data.results[date]
           if (typeof count === 'number') {
             totalRaces += count
+            allResults[date] = count
             console.log(`${progress} ${date}: ${count} races`)
           } else {
             console.error(`${progress} ${date}: ${count}`)

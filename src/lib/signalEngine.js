@@ -39,9 +39,7 @@ export function generateSignals(runner) {
   }
 
   if (
-    runner.replayTriggers?.includes(
-      'Strong Finish'
-    )
+    runner.replayTriggers?.some(t => t.key === 'FAST_FINISHER')
   ) {
     signals.push({
       type: 'REPLAY HORSE',
@@ -52,9 +50,7 @@ export function generateSignals(runner) {
   }
 
   if (
-    runner.replayTriggers?.includes(
-      'Hidden Value Runner'
-    )
+    runner.replayTriggers?.some(t => t.key === 'TRAFFIC_TROUBLE')
   ) {
     signals.push({
       type: 'HIDDEN RUNNER',

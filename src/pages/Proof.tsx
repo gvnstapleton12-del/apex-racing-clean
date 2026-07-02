@@ -3,6 +3,11 @@ import { apiUrl } from '../lib/api'
 import { calculateStrikeRate, calculateWinPercentage } from '../lib/engine'
 import CalibrationDashboard from '../components/CalibrationDashboard'
 
+function slHorseUrl(name: string, id?: string | null) {
+  if (id) return `https://www.sportinglife.com/racing/profiles/horse/${id}`
+  return `https://www.sportinglife.com/search?q=${encodeURIComponent(name)}`
+}
+
 function StatCard({ label, value, subtitle, color }: { label: string; value: string; subtitle?: string; color?: string }) {
   return (
     <div className='bg-[#0f1720]/80 border border-green-500/10 rounded-2xl p-6 text-center'>
@@ -627,18 +632,29 @@ function HistoryTab() {
 
 function SandboxTab() {
   const [data, setData] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
   const [days, setDays] = useState(30)
 
   useEffect(() => {
+    const controller = new AbortController()
     const fetchData = () => {
-      fetch(apiUrl(`/api/shadow-watch?days=${days}`))
-        .then(r => r.json())
-        .then(setData)
-        .catch(() => {})
+      const ac = new AbortController()
+      const timer = setTimeout(() => ac.abort(), 8000)
+      fetch(apiUrl(`/api/shadow-watch?days=${days}`), { signal: ac.signal })
+        .then(r => {
+          clearTimeout(timer)
+          if (!r.ok) throw new Error(`HTTP ${r.status}`)
+          return r.json()
+        })
+        .then(d => { setData(d); setError(null) })
+        .catch(e => {
+          clearTimeout(timer)
+          if (e.name !== 'AbortError') setError(e.message || 'Failed to load')
+        })
     }
     fetchData()
     const interval = setInterval(fetchData, 60000)
-    return () => clearInterval(interval)
+    return () => { clearInterval(interval); controller.abort() }
   }, [days])
 
   const summary = data?.summary || {}
@@ -646,6 +662,7 @@ function SandboxTab() {
   const settled = records.filter((r: any) => r.status === 'SETTLED')
   const pending = records.filter((r: any) => r.status === 'PENDING')
 
+  if (error && !data) return <div className='text-zinc-500'>Failed to load sandbox data: {error}</div>
   if (!data) return <div className='text-zinc-500'>Loading sandbox data...</div>
 
   return (
@@ -727,7 +744,7 @@ function SandboxTab() {
           <div className='space-y-1'>
             {pending.slice(0, 10).map((r: any) => (
               <div key={r.id} className='flex items-center justify-between text-xs py-1 border-b border-white/5'>
-                <span className='text-white font-medium'>{r.horse_name}</span>
+                <a href={slHorseUrl(r.horse_name, r.horse_id)} target='_blank' rel='noopener noreferrer' className='text-white font-medium hover:text-amber-400 underline underline-offset-2 decoration-white/20 hover:decoration-amber-400/50 transition-colors'>{r.horse_name}</a>
                 <span className='text-zinc-400'>{r.course}</span>
                 <span className='text-zinc-500'>{r.race_date}</span>
                 <span className='text-zinc-300'>{r.market_odds}</span>
@@ -758,7 +775,7 @@ function SandboxTab() {
               <tbody>
                 {settled.map((r: any) => (
                   <tr key={r.id} className='border-b border-white/5'>
-                    <td className='py-1.5 pr-2 text-white font-medium'>{r.horse_name}</td>
+                    <td className='py-1.5 pr-2'><a href={slHorseUrl(r.horse_name, r.horse_id)} target='_blank' rel='noopener noreferrer' className='text-white font-medium hover:text-amber-400 underline underline-offset-2 decoration-white/20 hover:decoration-amber-400/50 transition-colors'>{r.horse_name}</a></td>
                     <td className='py-1.5 pr-2 text-zinc-400'>{r.course}</td>
                     <td className='py-1.5 pr-2 text-zinc-500'>{r.race_date}</td>
                     <td className='py-1.5 pr-2 text-right text-zinc-300'>{r.market_odds}</td>

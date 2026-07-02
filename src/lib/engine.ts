@@ -477,12 +477,13 @@ export function formatSelection(race: Race, runner: Runner) {
   const paAdj = (runner as any).personalAffinity?.adjustment ?? 0
   if (paAdj < 2 && betType === 'WIN' && odds >= 5.0) betType = 'PLACE'
   if (paAdj <= 0 && betType === 'PLACE') betType = 'SPEC'
-  if (paAdj >= 5 && betType === 'SPEC') betType = 'WIN'
+  if (paAdj >= 5 && betType === 'SPEC' && edge > 0) betType = 'WIN'
   if (paAdj >= 5 && betType === 'PLACE') betType = 'WIN'
 
   return {
     ...runner,
     race,
+    race_id: race.race_id || null,
     raceName: race.race_name,
     course: race.course,
     offTime: formatOffTime(race),

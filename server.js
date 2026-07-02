@@ -53,6 +53,7 @@ import {
   applyProtectedAdjustment,
 } from './src/lib/antiOverfit.js'
 import { retry } from './src/lib/utils/retry.js'
+import { processPostRaceCommentary, bootstrapReplaysFromLearningDb } from './src/lib/replayBridge.js'
 import { LruCache } from './src/lib/utils/lruCache.js'
 import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLifeScraper.js'
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
@@ -61,6 +62,7 @@ import { buildORHistory } from './src/lib/classModel.js'
 import { recordRun, recordRunBatch } from './src/lib/conditionDB.js'
 import { computePerformanceRating, updatePerformanceRating, computeActualPerformance, getStoredPR, savePerformanceRatingStore } from './src/lib/performanceRating.js'
 import { normalizeGoingString } from './src/lib/normalizeGoing.js'
+
 
 dotenv.config()
 
@@ -393,6 +395,20 @@ const CALIBRATION_DATABASE = loadDatabase(CALIBRATION_DB_PATH)?.records
       analytics: {},
     }
 
+// Recompute calibration analytics on startup if missing or stale
+if (CALIBRATION_DATABASE.records?.length > 0 && (!CALIBRATION_DATABASE.analytics?.byProbability?.buckets || CALIBRATION_DATABASE.analytics.buckets?.length === 0)) {
+  console.log(`[Startup] Recomputing calibration analytics from ${CALIBRATION_DATABASE.records.length} records`)
+  CALIBRATION_DATABASE.analytics = {
+    byProbability: computeCalibrationBuckets(CALIBRATION_DATABASE.records),
+    byPlaceProbability: computePlaceCalibration(CALIBRATION_DATABASE.records),
+    byGrade: computeCalibrationByGrade(CALIBRATION_DATABASE.records),
+    byBetQuality: computeCalibrationByBetQuality(CALIBRATION_DATABASE.records),
+    segments: computeAllSegmentations(CALIBRATION_DATABASE.records),
+    lastUpdated: new Date().toISOString(),
+  }
+  saveDatabase(CALIBRATION_DB_PATH, CALIBRATION_DATABASE)
+}
+
 // ensure seeded multipliers even if loading existing file with empty weights
 if (!learningDb.weights?.multiplier?.class) {
   learningDb.weights = {
@@ -402,6 +418,12 @@ if (!learningDb.weights?.multiplier?.class) {
 
 const DAILY_PICKS_DATABASE = loadDatabase(DAILY_PICKS_PATH)
 const REPLAY_NOTES_DATABASE = loadDatabase(REPLAY_NOTES_PATH)
+
+// Auto-bootstrap replay notes from historical commentary if file is empty/missing
+if (Object.keys(REPLAY_NOTES_DATABASE).length === 0 && LEARNING_DATABASE.races?.length > 0) {
+  bootstrapReplaysFromLearningDb(LEARNING_DATABASE)
+  Object.assign(REPLAY_NOTES_DATABASE, loadDatabase(REPLAY_NOTES_PATH))
+}
 
 const TRAINER_FORM_DATABASE = loadDatabase(TRAINER_FORM_PATH) || {}
 const JOCKEY_FORM_DATABASE = loadDatabase(JOCKEY_FORM_PATH) || {}
@@ -523,9 +545,9 @@ function logActivationZone(runner, race, odds) {
   if (pa === null || pa === undefined) return
   if (pa < PA_ACTIVATION_ZONE_MIN || pa > PA_ACTIVATION_ZONE_MAX) return
 
-  const key = `${race.course}-${race.off_time}-${race.date}`
+  const raceKey = race.race_id || `${race.course}-${race.off_time}-${race.date}`
   const horseName = String(runner.horse || '').trim()
-  const obsId = `${key}--${horseName}`
+  const obsId = `${raceKey}--${horseName}`
 
   const fieldSize = (race.runners || []).length
   const score = runner.finalScore || 0
@@ -535,6 +557,7 @@ function logActivationZone(runner, race, odds) {
 
   const entry = {
     id: obsId,
+    race_id: race.race_id || null,
     date: race.date,
     course: race.course,
     offTime: race.off_time,
@@ -581,12 +604,17 @@ function matchCounterfactualWithResults(races) {
     runners.forEach((runner) => {
       const rName = normalizeHorseName(runner.horse)
       const rCourse = normalizeCourse(race.course)
-      const entry = obs.find(o =>
-        normalizeHorseName(o.horse) === rName &&
-        normalizeCourse(o.course) === rCourse &&
-        o.date === date &&
-        o.result === null
-      )
+      const entry = obs.find(o => {
+        if (o.race_id && race.race_id) {
+          return o.race_id === race.race_id &&
+            normalizeHorseName(o.horse) === rName &&
+            o.result === null
+        }
+        return normalizeHorseName(o.horse) === rName &&
+          normalizeCourse(o.course) === rCourse &&
+          o.date === date &&
+          o.result === null
+      })
       if (!entry) return
 
       const pos = normalizePosition(runner.position || runner.pos)
@@ -831,6 +859,7 @@ async function processRace(race) {
           off_time: offTimeShort,
           race_date: race.date,
           horse_name: runner.horse,
+          horse_id: runner.horse_id || null,
           market_odds: odds,
           model_wp: routed.winProb,
           apex_score: runner.finalScore,
@@ -925,6 +954,7 @@ async function processRace(race) {
       } catch { /* silent */ }
     }
     try { saveAffinityStore() } catch { /* silent */ }
+
     console.timeEnd(`[processRace] ${raceLabel} enrich`)
 
     return {
@@ -1017,7 +1047,7 @@ async function fetchLiveMeetings() {
     console.log(`[LiveMeetings] Processing ${rawRaces.length} races from Sporting Life...`)
 
     // Phase 1: Process races immediately WITHOUT waiting for ATR ratings
-    console.time('[Startup] processRaces')
+    console.time('[LiveMeetings] processRaces')
     const processed = []
 
     for (let i = 0; i < rawRaces.length; i++) {
@@ -1034,12 +1064,17 @@ async function fetchLiveMeetings() {
       if (i % 5 === 4) {
         const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
         console.log(`[LiveMeetings] ${i + 1}/${rawRaces.length} races processed, ${totalRunners} runners`)
+        LIVE_STATE.racecards = [...processed]
+        LIVE_STATE.updatedAt = new Date().toISOString()
+        LIVE_STATE.loading = false
+        API_CACHE.set(cacheKey, processed)
+        io.emit('live-update', buildLightweightState())
         await new Promise(resolve => setTimeout(resolve, 0))
       }
     }
 
     // Broadcast scored races IMMEDIATELY — picks visible within ~30s
-    console.timeEnd('[Startup] processRaces')
+    console.timeEnd('[LiveMeetings] processRaces')
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
@@ -1575,6 +1610,41 @@ async function matchResultsToCalibration(races) {
   }
 }
 
+function isBstDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00Z')
+  const year = d.getUTCFullYear()
+  const bstStart = new Date(Date.UTC(year, 2, 31))
+  bstStart.setUTCDate(bstStart.getUTCDate() - bstStart.getUTCDay())
+  bstStart.setUTCHours(1, 0, 0, 0)
+  const bstEnd = new Date(Date.UTC(year, 9, 31))
+  bstEnd.setUTCDate(bstEnd.getUTCDate() - bstEnd.getUTCDay())
+  bstEnd.setUTCHours(1, 0, 0, 0)
+  return d >= bstStart && d < bstEnd
+}
+
+let migrationDone = false
+function migrateLearningDb() {
+  if (migrationDone) return
+  migrationDone = true
+  const existingRaces = LEARNING_DATABASE.races || []
+  let migrated = false
+  for (const r of existingRaces) {
+    if (r.race_id && /^\D+\-\d+/.test(r.race_id)) {
+      r.race_id = r.race_id.replace(/^.*-/, '')
+      migrated = true
+    }
+    if (r.off_time && r.date && /^\d{1,2}:\d{2}:\d{2}$/.test(r.off_time) && isBstDate(r.date)) {
+      const [h, m, s] = r.off_time.split(':')
+      r.off_time = `${String(parseInt(h, 10) + 1).padStart(2, '0')}:${m}:${s}`
+      migrated = true
+    }
+  }
+  if (migrated) {
+    saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+    console.log('[Migration] Updated learning.json race_id format + BST times')
+  }
+}
+
 async function fetchResultsForDate(dateStr) {
   try {
     const today = new Date().toISOString().slice(0, 10)
@@ -1648,6 +1718,7 @@ async function fetchResultsForDate(dateStr) {
 
     try {
       const existingRaces = LEARNING_DATABASE.races || []
+
       const existingById = new Map(existingRaces.map(r => [r.race_id, r]))
 
       // Load enriched racecard cache for race-level metadata (going, distance, class)
@@ -1697,6 +1768,23 @@ async function fetchResultsForDate(dateStr) {
       LEARNING_DATABASE.races = [...unchangedRaces, ...mergedRaces]
       console.log(`[Results] Stored/merged ${mergedRaces.length} races for ${dateStr}`)
       saveDatabase(LEARNING_DB_PATH, LEARNING_DATABASE)
+
+      // Auto-populate replay notes from post-race run descriptions
+      for (const race of mergedRaces) {
+        for (const runner of race.runners || []) {
+          const postRaceText = runner.ride_description || runner.commentary || ''
+          if (postRaceText && runner.horse) {
+            processPostRaceCommentary({
+              horse: runner.horse,
+              course: race.course,
+              date: dateStr,
+              commentary: postRaceText,
+              position: runner.position,
+              finishDistance: runner.finish_distance,
+            })
+          }
+        }
+      }
     } catch (saveError) {
       console.error(`[Results] Error saving ${dateStr}:`, saveError.message)
       return 0
@@ -1740,7 +1828,9 @@ async function fetchTodayResults() {
   })
 
   console.time('[Results] fetchTodayResults')
-  await Promise.all(dates.map(d => fetchResultsForDate(d)))
+  for (const d of dates) {
+    await fetchResultsForDate(d)
+  }
   console.timeEnd('[Results] fetchTodayResults')
 }
 
@@ -1913,9 +2003,14 @@ function matchDailyPicksWithResults(races) {
 
     runners.forEach((runner) => {
       const match = dailyPicks.find(
-        (p) =>
-          normalizeHorseName(p.horse) === normalizeHorseName(runner.horse) &&
-          normalizeCourse(p.course) === normalizeCourse(race.course)
+        (p) => {
+          if (p.race_id && race.race_id) {
+            return p.race_id === race.race_id &&
+              normalizeHorseName(p.horse) === normalizeHorseName(runner.horse)
+          }
+          return normalizeHorseName(p.horse) === normalizeHorseName(runner.horse) &&
+            normalizeCourse(p.course) === normalizeCourse(race.course)
+        }
       )
       if (match && match.result === null) {
         const pos = normalizePosition(runner.position || runner.pos)
@@ -1956,12 +2051,33 @@ app.post('/api/daily-picks', (req, res) => {
   const existing = DAILY_PICKS_DATABASE[date]
   if (existing && existing.picks && existing.picks.length > 0 && !force) {
     // Merge: keep picks that already have results, update pending ones, add new races
-    const existingByRace = new Map(existing.picks.map(p => [`${p.course}|${p.offTime}`, p]))
+    const existingByRace = new Map(existing.picks.map(p => [p.race_id || `${p.course}|${p.offTime}`, p]))
+    const incomingKeys = new Set(picks.map(p => p.race_id || `${p.course}|${p.offTime}`))
     let updated = 0
     let added = 0
     let kept = 0
+    let pruned = 0
+
+    // Prune stale picks: pending picks for races no longer in the racecard AND off time has passed
+    const ukNowStr = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' })
+    const ukNow = new Date(ukNowStr)
+    const [pYear, pMonth, pDay] = date.split('-')
+    for (const [key, pick] of existingByRace) {
+      if (pick.result || pick.frozen) continue
+      if (incomingKeys.has(key)) continue
+      const [h, m] = (pick.offTime || '').split(':')
+      if (pYear && h) {
+        const raceUK = new Date(pYear, pMonth - 1, pDay, h, m, 0).toLocaleString('en-US', { timeZone: 'Europe/London' })
+        const offDT = new Date(raceUK)
+        if (ukNow.getTime() > offDT.getTime() + 60 * 60 * 1000) {
+          existingByRace.delete(key)
+          pruned++
+        }
+      }
+    }
+
     for (const p of picks) {
-      const key = `${p.course}|${p.offTime}`
+      const key = p.race_id || `${p.course}|${p.offTime}`
       const old = existingByRace.get(key)
       if (old && old.result) {
         // Pick already resulted — keep the result
@@ -1973,9 +2089,7 @@ app.post('/api/daily-picks', (req, res) => {
         kept++
         continue
       }
-      // 30-minute execution lock — timezone-safe
-      const ukNowStr = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' })
-      const ukNow = new Date(ukNowStr)
+      // 30-minute execution lock — reuse ukNow from prune block above
       const [year, month, day] = date.split('-')
       const [hour, minute] = (p.offTime || '').split(':')
       let isFrozen = false
@@ -1991,6 +2105,7 @@ app.post('/api/daily-picks', (req, res) => {
       if (old) updated++
       else added++
       existingByRace.set(key, {
+        race_id: p.race_id || null,
         horse: p.horse,
         course: p.course,
         offTime: p.offTime,
@@ -2030,8 +2145,8 @@ app.post('/api/daily-picks', (req, res) => {
       nr: existing.picks.filter(p => p.result === 'nr').length,
       pending: existing.picks.filter(p => !p.result).length,
     }
-    if (updated + added > 0) {
-      console.log(`[DAILY PICKS] Merged ${date}: ${updated} updated, ${added} added, ${kept} kept (resulted)`)
+    if (updated + added + pruned > 0) {
+      console.log(`[DAILY PICKS] Merged ${date}: ${updated} updated, ${added} added, ${kept} kept, ${pruned} pruned`)
     }
     saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
     pgSaveDebounced('daily-picks', DAILY_PICKS_DATABASE)
@@ -2061,6 +2176,7 @@ app.post('/api/daily-picks', (req, res) => {
         if (minutesUntilOff <= 30 && minutesUntilOff > -60) isFrozen = true
       }
       return {
+        race_id: p.race_id || null,
         horse: p.horse,
         course: p.course,
         offTime: p.offTime,
@@ -3744,12 +3860,16 @@ app.get('/api/pa-gate-monitor', (_req, res) => {
 // ── Shadow Watch Sandbox ──
 app.get('/api/shadow-watch', async (req, res) => {
   try {
-    const days = Number(req.query.days) || 30
+    const days = Math.min(Number(req.query.days) || 30, 60)
     if (!HORSE_MEMORY_DB) return res.json({ records: [], summary: {} })
+    const timeout = setTimeout(() => {
+      if (!res.headersSent) res.status(504).json({ error: 'Request timeout — database busy' })
+    }, 5000)
     const data = await getShadowWatchStats(HORSE_MEMORY_DB, days)
-    res.json(data)
+    clearTimeout(timeout)
+    if (!res.headersSent) res.json(data)
   } catch (e) {
-    res.status(500).json({ error: e.message })
+    if (!res.headersSent) res.status(500).json({ error: e.message })
   }
 })
 
@@ -4115,6 +4235,8 @@ server.listen(PORT, async () => {
   console.log(`[STARTUP] DAILY_PICKS_DATABASE has ${picksDates.length} dates, ${picksCount} total picks`)
   // Global processing lock — prevents scheduler from colliding with startup or backfill
   let isProcessing = false
+  // One-time migration: fix race_id format + GMT→BST times in learning.json
+  migrateLearningDb()
   // Fetch today's data on startup
   // Results scraping must wait until fetchLiveMeetings (racecards + ATR) fully completes
   // to avoid two browser processes competing for memory on Railway
@@ -4122,7 +4244,17 @@ server.listen(PORT, async () => {
   fetchLiveMeetings().then(() => {
     isProcessing = false
     console.log('[Startup] Racecards complete, scheduling results fetch in 5s...')
-    setTimeout(() => fetchTodayResults(), 5000)
+    setTimeout(async () => {
+      isProcessing = true
+      try {
+        await fetchTodayResults()
+      } finally {
+        isProcessing = false
+      }
+    }, 5000)
+  }).catch((err) => {
+    console.error('[Startup] fetchLiveMeetings() failed:', err.message)
+    isProcessing = false
   })
 
   // Backfill track bias learning from historical records
@@ -4224,10 +4356,44 @@ server.listen(PORT, async () => {
   if (process.env.DISABLE_SCHEDULER === 'true') {
     console.log('[Scheduler] Background automated tasks DISABLED via environment flag')
   } else {
-    // Re-scrape today's results every 8 min to pick up newly finished races
+    // Results refresh: every 5 min, but only after first race + 2 min buffer
+    let firstRaceFinishedAt = null
     setInterval(async () => {
       if (BACKFILL_IN_PROGRESS || isProcessing) return
+      isProcessing = true
       const today = new Date().toISOString().split('T')[0]
+
+      // Check if any race today has finished
+      if (!firstRaceFinishedAt) {
+        const races = LIVE_STATE.racecards || []
+        const ukNowStr = new Date().toLocaleString('en-US', { timeZone: 'Europe/London' })
+        const ukNow = new Date(ukNowStr)
+        for (const race of races) {
+          const raceDate = race.date || ''
+          const offTime = race.off_time || ''
+          if (!raceDate || !offTime) continue
+          const [year, month, day] = raceDate.split('-')
+          const [hour, minute] = offTime.split(':')
+          if (!year || !hour) continue
+          const raceUKStr = new Date(year, month - 1, day, hour, minute, 0).toLocaleString('en-US', { timeZone: 'Europe/London' })
+          const offDateTime = new Date(raceUKStr)
+          if (ukNow.getTime() > offDateTime.getTime()) {
+            firstRaceFinishedAt = Date.now()
+            console.log(`[Scheduler] First race finished (${race.course} ${offTime}), results scraping starts in 2 min`)
+            isProcessing = false
+            return
+          }
+        }
+        isProcessing = false
+        return
+      }
+
+      // 2 min buffer after first race finished
+      if (Date.now() - firstRaceFinishedAt < 2 * 60 * 1000) {
+        isProcessing = false
+        return
+      }
+
       try {
         console.log('[Scheduler] Periodic results refresh for', today)
         await fetchResultsForDate(today)
@@ -4241,8 +4407,10 @@ server.listen(PORT, async () => {
         }
       } catch (e) {
         console.error('[Scheduler] Results refresh failed:', e.message)
+      } finally {
+        isProcessing = false
       }
-    }, 8 * 60 * 1000)
+    }, 5 * 60 * 1000)
 
     // Refresh racecards every 2 min to pick up live odds changes and non-runners
     setInterval(async () => {

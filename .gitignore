@@ -2,7 +2,6 @@ node_modules
 .env
 data/*
 !data/trackProfiles.json
-!data/horseProfiles.json
 dist/
 *.log
 *.csv

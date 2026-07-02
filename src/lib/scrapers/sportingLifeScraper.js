@@ -1,4 +1,4 @@
-import { createPage } from './browserPool.js'
+import { createPage, getBrowser } from './browserPool.js'
 
 const SL_BASE = 'https://www.sportinglife.com'
 const SL_API = 'https://www.sportinglife.com/api/horse-racing'
@@ -8,7 +8,14 @@ let _sharedPage = null
 let _sharedContext = null
 
 async function getSharedPage() {
-  if (_sharedPage && !_sharedPage.isClosed()) return _sharedPage
+  if (_sharedPage && !_sharedPage.isClosed()) {
+    try {
+      const br = await getBrowser()
+      if (br && br.isConnected()) return _sharedPage
+    } catch (_) {}
+    console.log('[SL] Browser dead, recreating shared page')
+    await closeSharedPage()
+  }
   _sharedContext = await createPage()
   _sharedPage = await _sharedContext.newPage()
   return _sharedPage
@@ -32,8 +39,7 @@ async function fetchJson(url) {
     return data
   } catch (err) {
     if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
-      _sharedPage = null
-      _sharedContext = null
+      await closeSharedPage()
     }
     throw err
   }
@@ -52,6 +58,13 @@ const UK_IRE_COURSES = new Set([
   'bellewstown', 'clonmel', 'cork', 'downpatrick', 'kilbeggan', 'limerick', 'thurles',
 ])
 
+const IRE_COURSES = new Set([
+  'ballinrobe', 'curragh', 'dundalk', 'galway', 'killarney', 'laytown', 'leopardstown',
+  'listowel', 'naas', 'navan', 'punchestown', 'roscommon', 'sligo', 'tipperary', 'tramore',
+  'wexford', 'gowran-park', 'bellewstown', 'clonmel', 'cork', 'downpatrick', 'kilbeggan',
+  'limerick', 'thurles', 'down-royal', 'fairyhouse',
+])
+
 function isUkIre(course) {
   const slug = course.toLowerCase()
     .replace(/\s*\(.*?\)\s*/g, '')
@@ -67,6 +80,22 @@ function isUkIre(course) {
   // Handle compound names e.g. "Royal Ascot" → 'royal-ascot' → check each token
   const tokens = slug.split('-')
   return tokens.some(t => UK_IRE_COURSES.has(t))
+}
+
+function isIre(course) {
+  const slug = course.toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/'/g, '')
+    .trim()
+    .replace(/-downs$/, '')
+    .replace(/-park$/, '')
+    .replace(/-city$/, '')
+    .replace(/-racecourse$/, '')
+  if (IRE_COURSES.has(slug)) return true
+  if (IRE_COURSES.has(slug + '-downs') || IRE_COURSES.has(slug + '-park') || IRE_COURSES.has(slug + '-city')) return true
+  const tokens = slug.split('-')
+  return tokens.some(t => IRE_COURSES.has(t))
 }
 
 function deriveRaceType(raceName = '') {
@@ -88,8 +117,16 @@ function parseFractionalOdds(str) {
 async function fetchMeetingList(dateStr) {
   try {
     console.log(`[SL] Fetching meeting list via browser for ${dateStr}...`)
-    const page = await getSharedPage()
-    await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    let page
+    try {
+      page = await getSharedPage()
+      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    } catch (navErr) {
+      console.warn(`[SL] Meeting list navigation failed (${navErr.message}), resetting browser...`)
+      await closeSharedPage()
+      page = await getSharedPage()
+      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    }
     try { await page.waitForSelector('script#__NEXT_DATA__', { timeout: 10000 }) } catch {}
     const html = await page.content()
 
@@ -194,6 +231,7 @@ export async function fetchMeetingRaces(meetingId) {
 
     return races.map(race => {
       const isUk = isUkIre(race.course_name)
+      const region = isIre(race.course_name) ? 'IRE' : 'GB'
       const localTime = isUk && race.date && isBst(race.date) ? gmtToBstTime(race.time) : race.time
       const offDt = race.date && localTime ? `${race.date}T${localTime}:00` : null
       const course = resolveNewmarketCourse(race.course_name, race.date)
@@ -203,7 +241,7 @@ export async function fetchMeetingRaces(meetingId) {
         off_time: localTime,
         off_dt: offDt,
         date: race.date,
-        region: isUk ? 'GB' : 'IRE',
+        region,
         race_name: race.name,
         type: deriveRaceType(race.name),
         going: race.going || meeting.going || '',
@@ -271,6 +309,7 @@ async function fetchRaceRunners(raceId) {
       sex: ride.horse?.sex?.type || '',
       last_run: lastRun,
       commentary: ride.commentary || '',
+      ride_description: ride.ride_description || '',
       headgear: (() => {
         const hg = ride.horse?.headgear || ride.headgear || []
         if (!Array.isArray(hg)) return { items: [], firstTimeItems: [] }
@@ -356,8 +395,16 @@ export async function fetchSlResults(dateStr) {
   try {
     console.log(`[SL] Fetching results via browser for ${dateStr}...`)
 
-    const page = await getSharedPage()
-    await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    let page
+    try {
+      page = await getSharedPage()
+      await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    } catch (navErr) {
+      console.warn(`[SL] Results navigation failed (${navErr.message}), resetting browser...`)
+      await closeSharedPage()
+      page = await getSharedPage()
+      await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+    }
     try { await page.waitForSelector('script#__NEXT_DATA__', { timeout: 10000 }) } catch {}
     const html = await page.content()
 
@@ -417,13 +464,14 @@ export async function fetchSlResults(dateStr) {
         const courseSlug = race.course.toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
         if (!isUkIre(courseSlug)) continue
 
+        const bstOffTime = isBst(dateStr) ? gmtToBstTime(race.offTime) : race.offTime
         allRaces.push({
-          race_id: `${race.course}-${race.id}`,
+          race_id: String(race.id),
           course: race.course,
-          off_time: race.offTime,
-          off_dt: race.offTime ? `${dateStr}T${race.offTime}:00` : '',
+          off_time: bstOffTime,
+          off_dt: bstOffTime ? `${dateStr}T${bstOffTime}:00` : '',
           date: dateStr,
-          region: 'GB',
+          region: isIre(courseSlug) ? 'IRE' : 'GB',
           race_name: race.raceName,
           type: race.type,
           going: race.going,
@@ -451,6 +499,7 @@ export async function fetchSlResults(dateStr) {
               age: r.horse?.age || 0,
               sex: r.horse?.sex?.type || '',
               commentary: r.commentary || '',
+              ride_description: r.ride_description || '',
               previous_results: (r.horse?.previous_results || []).slice(0, 6),
             }
           }).sort((a, b) => a.position - b.position),

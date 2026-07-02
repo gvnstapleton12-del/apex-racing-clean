@@ -101,13 +101,18 @@ export default function CalibrationDashboard() {
   const [activeTab, setActiveTab] = useState('probability')
 
   useEffect(() => {
-    fetch('/api/calibration')
-      .then((r) => r.json())
-      .then((data) => {
-        setCalibration(data)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+    const fetchData = () => {
+      fetch('/api/calibration')
+        .then((r) => r.json())
+        .then((data) => {
+          setCalibration(data)
+          setLoading(false)
+        })
+        .catch(() => setLoading(false))
+    }
+    fetchData()
+    const interval = setInterval(fetchData, 60000)
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) {

@@ -92,6 +92,7 @@ export async function createTables(db) {
       off_time TEXT,
       race_date TEXT NOT NULL,
       horse_name TEXT NOT NULL,
+      horse_id TEXT,
       market_odds REAL NOT NULL,
       model_wp REAL NOT NULL,
       apex_score REAL,
@@ -108,6 +109,7 @@ export async function createTables(db) {
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_shadow_pending ON shadow_watch_log (status, race_date)`)
   await db.exec(`CREATE INDEX IF NOT EXISTS idx_shadow_date ON shadow_watch_log (race_date)`)
   await db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_shadow_dedup ON shadow_watch_log (race_id, horse_name, race_date)`)
+  try { await db.exec(`ALTER TABLE shadow_watch_log ADD COLUMN horse_id TEXT`) } catch (_) {}
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS backtest_runs (
@@ -293,11 +295,11 @@ export async function insertShadowWatch(db, record) {
   if (!db) return false
   try {
     await db.run(`
-      INSERT OR IGNORE INTO shadow_watch_log (race_id, course, off_time, race_date, horse_name, market_odds, model_wp, apex_score, bet_quality, pa_adj, reason_logged)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT OR IGNORE INTO shadow_watch_log (race_id, course, off_time, race_date, horse_name, horse_id, market_odds, model_wp, apex_score, bet_quality, pa_adj, reason_logged)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       record.race_id, record.course, record.off_time || '', record.race_date,
-      record.horse_name, record.market_odds, record.model_wp,
+      record.horse_name, record.horse_id || null, record.market_odds, record.model_wp,
       record.apex_score || 0, record.bet_quality || '', record.pa_adj ?? 0,
       record.reason_logged || '',
     ])

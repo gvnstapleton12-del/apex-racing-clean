@@ -5,13 +5,18 @@ export default function AntiOverfitDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/anti-overfit')
-      .then((r) => r.json())
-      .then((data) => {
-        setReport(data)
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+    const fetchData = () => {
+      fetch('/api/anti-overfit')
+        .then((r) => r.json())
+        .then((data) => {
+          setReport(data)
+          setLoading(false)
+        })
+        .catch(() => setLoading(false))
+    }
+    fetchData()
+    const interval = setInterval(fetchData, 60000)
+    return () => clearInterval(interval)
   }, [])
 
   if (loading) {

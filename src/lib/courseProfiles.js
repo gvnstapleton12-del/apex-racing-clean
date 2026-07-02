@@ -44,7 +44,7 @@ export const COURSE_PROFILES = {
   ballinrobe: { handed: 'left', type: 'oval', uphill: false, group: 'GALLOPING_JUMP', drawBias: 0.3, paceBias: 0.4, staminaBias: 0.5, specialistFactor: 0.3 },
   bellewstown: { handed: 'left', type: 'oval', uphill: false, group: 'GALLOPING_FLAT', drawBias: 0.3, paceBias: 0.4, staminaBias: 0.5, specialistFactor: 0.3 },
   cork: { handed: 'left', type: 'oval', uphill: true, group: 'GALLOPING_FLAT', drawBias: 0.3, paceBias: 0.4, staminaBias: 0.5, specialistFactor: 0.3 },
-  curragh: { handed: 'left', type: 'oval', uphill: false, group: 'GALLOPING_FLAT', drawBias: 0.3, paceBias: 0.3, staminaBias: 0.6, specialistFactor: 0.2 },
+  curragh: { handed: 'right', type: 'oval', uphill: true, group: 'GALLOPING_FLAT', drawBias: 0.3, paceBias: 0.3, staminaBias: 0.6, specialistFactor: 0.2 },
   downpatrick: { handed: 'left', type: 'oval', uphill: false, group: 'GALLOPING_JUMP', drawBias: 0.3, paceBias: 0.4, staminaBias: 0.5, specialistFactor: 0.3 },
   dundalk: { handed: 'left', type: 'oval', uphill: false, group: 'ALL_WEATHER', drawBias: 0.4, paceBias: 0.4, staminaBias: 0.5, specialistFactor: 0.2 },
   fairyhouse: { handed: 'right', type: 'oval', uphill: false, group: 'GALLOPING_JUMP', drawBias: 0.3, paceBias: 0.4, staminaBias: 0.5, specialistFactor: 0.3 },

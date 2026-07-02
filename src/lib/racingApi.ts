@@ -3,6 +3,36 @@ import { validateRaces } from './validate'
 import { validateRacecards } from './schemas'
 import { apiUrl } from './api'
 
+export interface LiveState {
+  racecards: Race[]
+  loading: boolean
+  atrLoading: boolean
+  updatedAt: string | null
+}
+
+export async function fetchLiveState(): Promise<LiveState> {
+  try {
+    const response = await fetch(apiUrl('/api/live-state'))
+    const data = await response.json()
+    const raw = data.racecards || []
+    const result = validateRacecards(raw)
+    const racecards = result.success ? result.data : (() => {
+      console.warn(`Zod validation failed: ${result.error.issues.length} issues`)
+      const { valid } = validateRaces(raw)
+      return valid
+    })()
+    return {
+      racecards,
+      loading: !!data.loading,
+      atrLoading: !!data.atrLoading,
+      updatedAt: data.updatedAt || null,
+    }
+  } catch (error) {
+    console.error('Failed to fetch live state:', error)
+    return { racecards: [], loading: true, atrLoading: false, updatedAt: null }
+  }
+}
+
 export async function fetchRacecards(): Promise<Race[]> {
   try {
     const response = await fetch(apiUrl('/api/live-state'))

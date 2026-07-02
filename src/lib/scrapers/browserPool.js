@@ -1,4 +1,5 @@
 import { chromium } from 'playwright'
+import { execSync } from 'child_process'
 
 let browser = null
 let browserPromise = null
@@ -12,6 +13,16 @@ function getRandomProxy() {
   return PROXIES[Math.floor(Math.random() * PROXIES.length)]
 }
 
+function killZombieChromium() {
+  try {
+    if (process.platform === 'win32') {
+      execSync('taskkill /F /IM chromium.exe /T 2>nul', { stdio: 'ignore' })
+    } else {
+      execSync('pkill -9 -f chromium 2>/dev/null || true', { stdio: 'ignore' })
+    }
+  } catch (_) {}
+}
+
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0',
@@ -23,8 +34,13 @@ function randomAgent() {
 }
 
 export async function getBrowser() {
-  if (browser && browser.isConnected()) {
-    return browser
+  if (browser) {
+    try {
+      if (browser.isConnected()) return browser
+    } catch (_) {
+      console.log('[BrowserPool] isConnected() threw, forcing relaunch')
+      browser = null
+    }
   }
 
   if (browserPromise) {
@@ -34,43 +50,55 @@ export async function getBrowser() {
   browserPromise = (async () => {
     const proxy = getRandomProxy()
     const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || (process.platform === 'linux' ? '/usr/bin/chromium' : undefined)
-    browser = await chromium.launch({
-      headless: true,
-      executablePath,
-      args: [
-        '--disable-blink-features=AutomationControlled',
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-        '--disable-software-rasterizer',
-        '--disable-vulkan',
-        '--use-angle=swiftshader',
-        '--no-proxy-server',
-        '--ignore-certificate-errors',
-        '--disable-features=NetworkService,UseSkiaRenderer,Vulkan',
-        '--no-zygote',
-        '--disable-site-isolation-trials',
-        '--disable-extensions',
-        '--disable-background-networking',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-renderer-backgrounding',
-        '--disable-ipc-flooding-protection',
-        '--disable-hang-monitor',
-        '--disable-popup-blocking',
-        '--disable-prompt-on-repost',
-        '--password-store=basic',
-        '--use-mock-keychain',
-        '--no-first-run',
-        '--hide-scrollbars',
-        '--mute-audio',
-        '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
-        '--disable-accelerated-2d-canvas',
-        '--disable-features=NetworkService,Translate,BackForwardCache,AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,UseSkiaRenderer,Vulkan',
-      ],
-      ...(proxy ? { proxy: { server: proxy } } : {}),
-    })
+
+    killZombieChromium()
+    await new Promise(r => setTimeout(r, 1000))
+
+    try {
+      browser = await chromium.launch({
+        headless: true,
+        executablePath,
+        args: [
+          '--disable-blink-features=AutomationControlled',
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--disable-software-rasterizer',
+          '--disable-vulkan',
+          '--use-angle=swiftshader',
+          '--use-gl=swiftshader',
+          '--no-proxy-server',
+          '--ignore-certificate-errors',
+          '--disable-features=NetworkService,UseSkiaRenderer,Vulkan',
+          '--no-zygote',
+          '--disable-site-isolation-trials',
+          '--disable-extensions',
+          '--disable-background-networking',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding',
+          '--disable-ipc-flooding-protection',
+          '--disable-hang-monitor',
+          '--disable-popup-blocking',
+          '--disable-prompt-on-repost',
+          '--password-store=basic',
+          '--use-mock-keychain',
+          '--no-first-run',
+          '--hide-scrollbars',
+          '--mute-audio',
+          '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4',
+          '--disable-accelerated-2d-canvas',
+          '--disable-features=NetworkService,Translate,BackForwardCache,AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,UseSkiaRenderer,Vulkan',
+        ],
+        ...(proxy ? { proxy: { server: proxy } } : {}),
+      })
+    } catch (err) {
+      console.error(`[BrowserPool] Launch failed: ${err.message}`)
+      browserPromise = null
+      killZombieChromium()
+      throw err
+    }
 
     browser.on('disconnected', () => {
       console.log('[BrowserPool] Browser disconnected, will relaunch on next request')
@@ -109,7 +137,15 @@ export async function createPage() {
 
 export async function closeBrowser() {
   if (browser) {
-    await browser.close()
+    try {
+      await Promise.race([
+        browser.close(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('browser.close() timed out')), 30000)),
+      ])
+    } catch (e) {
+      console.error('[BrowserPool] closeBrowser failed:', e.message)
+      killZombieChromium()
+    }
     browser = null
     browserPromise = null
   }

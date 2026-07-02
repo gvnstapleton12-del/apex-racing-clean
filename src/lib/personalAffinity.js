@@ -476,7 +476,8 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
   const factor = Math.max(0.85, Math.min(1.20, 1.0 + rawBonus))
 
   const confidences = [trackAff.confidence, dirAff.confidence, distAff.confidence, goingAff.confidence, dsAff.confidence]
-  const avgConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length
+  const validConfidences = confidences.filter(c => Number.isFinite(c))
+  const avgConfidence = validConfidences.length ? validConfidences.reduce((a, b) => a + b, 0) / validConfidences.length : 0
 
   const persistedNote = persisted ? ' + verified store' : ''
 
