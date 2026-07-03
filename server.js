@@ -463,6 +463,7 @@ const LIVE_STATE = {
   racecards: [],
   updatedAt: null,
   loading: true,
+  processingComplete: false,
   atrLoading: false,
 }
 
@@ -998,6 +999,7 @@ async function processRace(race) {
 async function fetchLiveMeetings() {
   try {
     console.log('[LiveMeetings] Fetching Sporting Life racecards...')
+    LIVE_STATE.processingComplete = false
 
     const cacheKey = 'racecards:sl'
     const cached = API_CACHE.get(cacheKey)
@@ -1006,6 +1008,7 @@ async function fetchLiveMeetings() {
       LIVE_STATE.racecards = cached
       LIVE_STATE.updatedAt = new Date().toISOString()
       LIVE_STATE.loading = false
+      LIVE_STATE.processingComplete = true
       io.emit('live-update', buildLightweightState())
       return
     }
@@ -1078,6 +1081,7 @@ async function fetchLiveMeetings() {
     LIVE_STATE.racecards = processed
     LIVE_STATE.updatedAt = new Date().toISOString()
     LIVE_STATE.loading = false
+    LIVE_STATE.processingComplete = true
     LIVE_STATE.atrLoading = true
     API_CACHE.set(cacheKey, processed)
     io.emit('live-update', buildLightweightState())
@@ -1919,6 +1923,7 @@ function buildLightweightState() {
     abandoned: LIVE_STATE.abandoned || [],
     updatedAt: LIVE_STATE.updatedAt,
     loading: LIVE_STATE.loading,
+    processingComplete: LIVE_STATE.processingComplete,
     atrLoading: LIVE_STATE.atrLoading,
   }
 }

@@ -353,7 +353,7 @@ function Home() {
     refetchInterval: 60000,
   })
   const races = liveState?.racecards || []
-  const processingComplete = liveState != null && !liveState.loading
+  const processingComplete = liveState?.processingComplete ?? false
 
   useEffect(() => {
     fetch('/api/daily-picks')

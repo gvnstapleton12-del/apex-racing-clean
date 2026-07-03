@@ -6,6 +6,7 @@ import { apiUrl } from './api'
 export interface LiveState {
   racecards: Race[]
   loading: boolean
+  processingComplete: boolean
   atrLoading: boolean
   updatedAt: string | null
 }
@@ -24,12 +25,13 @@ export async function fetchLiveState(): Promise<LiveState> {
     return {
       racecards,
       loading: !!data.loading,
+      processingComplete: !!data.processingComplete,
       atrLoading: !!data.atrLoading,
       updatedAt: data.updatedAt || null,
     }
   } catch (error) {
     console.error('Failed to fetch live state:', error)
-    return { racecards: [], loading: true, atrLoading: false, updatedAt: null }
+    return { racecards: [], loading: true, processingComplete: false, atrLoading: false, updatedAt: null }
   }
 }
 
