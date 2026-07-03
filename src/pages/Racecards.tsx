@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, Fragment } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Race, Runner } from '../lib/types'
-import { fetchRacecards } from '../lib/racingApi'
+import { fetchLiveState } from '../lib/racingApi'
+import type { LiveState } from '../lib/racingApi'
 import { formatOffTime } from '../lib/formatTime'
 import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
 import { filterGBIRE, filterToday, filterUnfinished, sortByOffTime, sortByScore, getScore, scoreRunners, countRunners } from '../lib/engine'
@@ -15,11 +16,13 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
   const [search, setSearch] = useState('')
   const scrollTarget = useRef<HTMLDivElement>(null)
 
-  const { data: races = [], isLoading } = useQuery<Race[]>({
+  const { data: liveState, isLoading } = useQuery<LiveState>({
     queryKey: ['racecards'],
-    queryFn: fetchRacecards,
+    queryFn: fetchLiveState,
     refetchInterval: 60000,
   })
+  const races = liveState?.racecards || []
+  const processingComplete = liveState?.processingComplete ?? false
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -52,12 +55,23 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
     }
   }, [selectHorse, races])
 
-  if (isLoading) {
+  if (isLoading || (!processingComplete && races.length === 0)) {
     return (
       <div className='dashboard-page max-w-7xl mx-auto'>
         <div className='loading-card bg-white/[0.02] rounded-2xl border border-white/5 p-12 flex items-center gap-4'>
           <div className='pulse-dot' />
           <span className='text-zinc-400'>Loading live racecards...</span>
+        </div>
+      </div>
+    )
+  }
+
+  if (!processingComplete) {
+    return (
+      <div className='dashboard-page max-w-7xl mx-auto'>
+        <div className='loading-card bg-white/[0.02] rounded-2xl border border-amber-500/10 p-12 flex items-center gap-4'>
+          <div className='pulse-dot' />
+          <span className='text-zinc-400'>Processing {races.length} races... racecards will appear shortly</span>
         </div>
       </div>
     )
