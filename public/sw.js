@@ -1,4 +1,4 @@
-const CACHE_NAME = 'apex-v1'
+const CACHE_NAME = 'apex-v2'
 const PRECACHE = ['/', '/index.html']
 
 self.addEventListener('install', (e) => {
@@ -18,6 +18,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return
   if (e.request.url.includes('/api/')) return
+  if (e.request.url.includes('/socket.io/')) return
+  if (e.request.url.includes('localhost:3000')) return
   e.respondWith(
     fetch(e.request)
       .then((res) => {
@@ -25,6 +27,6 @@ self.addEventListener('fetch', (e) => {
         caches.open(CACHE_NAME).then((c) => c.put(e.request, clone))
         return res
       })
-      .catch(() => caches.match(e.request))
+      .catch(() => caches.match(e.request).then(cached => cached || new Response('', { status: 503, statusText: 'Offline' })))
   )
 })

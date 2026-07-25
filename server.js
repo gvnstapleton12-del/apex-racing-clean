@@ -53,7 +53,7 @@ import {
   applyProtectedAdjustment,
 } from './src/lib/antiOverfit.js'
 import { retry } from './src/lib/utils/retry.js'
-import { processPostRaceCommentary, bootstrapReplaysFromLearningDb } from './src/lib/replayBridge.js'
+import { processPostRaceCommentary, flushReplayDb, bootstrapReplaysFromLearningDb } from './src/lib/replayBridge.js'
 import { LruCache } from './src/lib/utils/lruCache.js'
 import { fetchSlRacecards, fetchSlResults } from './src/lib/scrapers/sportingLifeScraper.js'
 import { closeBrowser } from './src/lib/scrapers/browserPool.js'
@@ -237,8 +237,7 @@ function applyEngineRouting(runner, engine, odds) {
 
 function storeHistoricalRecord(runner, race, apexResult) {
   const id = `${race.course}-${race.off_time}-${race.date}-${runner.horse}`
-  const exists = HISTORICAL_DATABASE.records.some((r) => r.id === id)
-  if (exists) return
+  if (HISTORICAL_ID_SET.has(id)) return
   const odds = runner.odds || runner.price || 0
   const grade = runner.selectionQuality?.grade || ''
   
@@ -288,6 +287,8 @@ function storeHistoricalRecord(runner, race, apexResult) {
     jockey: runner.jockey || '',
     finalScore: score,
     winProb: prob,
+    rawBayesianProb: runner.rawBayesianProb ?? null,
+    plattProb: runner.plattProb ?? null,
     placeProb: runner.placeProb,
     valueEdge: edge,
     fairOdds: runner.fairOdds || runner.selectionQuality?.fairOdds || 0,
@@ -319,6 +320,7 @@ function storeHistoricalRecord(runner, race, apexResult) {
     resulted: false,
     timestamp: new Date().toISOString(),
   })
+  HISTORICAL_ID_SET.add(id)
 }
 
 function loadDatabase(filePath) {
@@ -336,16 +338,21 @@ function loadDatabase(filePath) {
   }
 }
 
-function saveDatabase(filePath, database) {
+async function saveDatabase(filePath, database) {
   try {
-    fs.mkdirSync(path.dirname(filePath), {
+    await fs.promises.mkdir(path.dirname(filePath), {
       recursive: true,
     })
 
-    fs.writeFileSync(
-      filePath,
-      JSON.stringify(database, null, 2)
-    )
+    const json = JSON.stringify(database)
+    const tmpPath = filePath + '.tmp'
+    try {
+      await fs.promises.writeFile(tmpPath, json)
+      await fs.promises.rename(tmpPath, filePath)
+    } catch (atomicErr) {
+      // Fallback: direct write if atomic fails (Windows rename issues with large files)
+      await fs.promises.writeFile(filePath, json)
+    }
   } catch (error) {
     console.error('Failed to save DB:', error)
   }
@@ -438,6 +445,13 @@ let TRAINER_FRESHNESS_DB = (() => {
 })()
 let OR_HISTORY = buildORHistory(LEARNING_DATABASE.records || [])
 const TRACK_PROFILES = loadDatabase(TRACK_PROFILES_PATH) || {}
+
+// O(1) lookup sets — avoid O(n) scans in storeHistoricalRecord and logActivationZone
+const HISTORICAL_ID_SET = new Set((HISTORICAL_DATABASE.records || []).map(r => r.id))
+const COUNTERFACTUAL_ID_MAP = new Map()
+for (const obs of (COUNTERFACTUAL_DATABASE.observations || [])) {
+  if (obs.id) COUNTERFACTUAL_ID_MAP.set(obs.id, obs)
+}
 
 let HORSE_PROFILES_DATABASE = {}
 try {
@@ -581,11 +595,13 @@ function logActivationZone(runner, race, odds) {
     timestamp: new Date().toISOString(),
   }
 
-  const existing = COUNTERFACTUAL_DATABASE.observations.findIndex(o => o.id === obsId)
-  if (existing >= 0) {
-    COUNTERFACTUAL_DATABASE.observations[existing] = entry
+  const existingIdx = COUNTERFACTUAL_ID_MAP.get(obsId)
+  if (existingIdx !== undefined) {
+    COUNTERFACTUAL_DATABASE.observations[existingIdx] = entry
   } else {
+    const newIdx = COUNTERFACTUAL_DATABASE.observations.length
     COUNTERFACTUAL_DATABASE.observations.push(entry)
+    COUNTERFACTUAL_ID_MAP.set(obsId, newIdx)
   }
 }
 
@@ -999,7 +1015,9 @@ async function processRace(race) {
 async function fetchLiveMeetings() {
   try {
     console.log('[LiveMeetings] Fetching Sporting Life racecards...')
-    LIVE_STATE.processingComplete = false
+    if (!LIVE_STATE.racecards || LIVE_STATE.racecards.length === 0) {
+      LIVE_STATE.processingComplete = false
+    }
 
     const cacheKey = 'racecards:sl'
     const cached = API_CACHE.get(cacheKey)
@@ -1087,12 +1105,12 @@ async function fetchLiveMeetings() {
     io.emit('live-update', buildLightweightState())
     console.log(`[LiveMeetings] Broadcasted ${processed.length} races (pre-ATR)`)
 
-    // Phase 2: ATR ratings in background — re-merge + re-broadcast when done
+    // Phase 2: ATR ratings in background — runs in child_process to avoid event loop block
     ;(async () => {
       try {
         console.time('[ATR] fetchAtrRatings')
-        console.log('[ATR] Fetching ratings in background...')
-        const atrRatings = await retry(() => fetchAtrRatings(today, rawRaces), 2, 2000)
+        console.log('[ATR] Fetching ratings in background (child process)...')
+        const atrRatings = await spawnAtrWorker(today, rawRaces)
         const atrCount = Object.keys(atrRatings).length
         console.timeEnd('[ATR] fetchAtrRatings')
         console.log(`[ATR] Got ${atrCount} ratings, merging into processed races...`)
@@ -1117,7 +1135,6 @@ async function fetchLiveMeetings() {
           })
           if (raceChanged) {
             race.runners = updatedRunners
-            // Re-score race with updated RPR values
             try {
               const rescored = await processRace({
                 ...race,
@@ -1145,47 +1162,122 @@ async function fetchLiveMeetings() {
       }
     })()
 
-    // Fetch ATR odds as secondary source (non-blocking with 30s hard timeout)
-    try {
-      console.log('[LiveMeetings] Fetching ATR odds (background)...')
-      const atrRaces = await Promise.race([
-        fetchAtrRacecards(today),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('ATR odds timeout (30s)')), 30000))
-      ])
-      if (atrRaces && atrRaces.length > 0) {
-        let oddsMerged = 0
-        processed.forEach((race) => {
-          const atrMatch = atrRaces.find(
-            (ar) => normalizeCourse(ar.course) === normalizeCourse(race.course) &&
-              String(ar.off_time || '').replace(':', '') === String(race.off_time || '').replace(':', '')
-          )
-          if (atrMatch && atrMatch.runners) {
-            race.runners = (race.runners || []).map((runner) => {
-              const atrRunner = atrMatch.runners.find(
-                (ar) => normalizeHorseName(ar.horse) === normalizeHorseName(runner.horse)
-              )
-              if (atrRunner && atrRunner.sp && atrRunner.sp > 0) {
-                const slOdds = runner.odds
-                const atrOdds = atrRunner.sp
-                if (String(slOdds) !== String(atrOdds)) {
-                  console.log(`[ODDS] ${runner.horse}: SL=${slOdds} ATR=${atrOdds} → using ATR`)
-                  oddsMerged++
+    // Phase 3: Racing Post data in background — adds RPR, TopSpeed, stats
+    ;(async () => {
+      try {
+        console.log('[RP] Fetching Racing Post data (background)...')
+        const rpData = await spawnRPWorker(today)
+        const rpCount = Object.keys(rpData).length
+        console.log(`[RP] Got data for ${rpCount} horses`)
+
+        if (rpCount > 0) {
+          // Merge RP data into runners — add TopSpeed and stats where missing
+          let rpMerged = 0
+          for (const race of processed) {
+            let raceChanged = false
+            const updatedRunners = (race.runners || []).map(runner => {
+              const key = normalizeHorseName(runner.horse || runner.horse_name || '')
+              const rp = rpData[key]
+              if (!rp) return runner
+
+              const updates = {}
+
+              // Add TopSpeed if not present
+              if (rp.ts && (!runner.ts || runner.ts === 0)) {
+                updates.ts = rp.ts
+                raceChanged = true
+              }
+
+              // Merge RP stats into runner for engine access
+              if (rp.courseRuns > 0 || rp.distRuns > 0 || rp.goingRuns > 0) {
+                updates.rpStats = {
+                  courseWins: rp.courseWinRate,
+                  courseRuns: rp.courseRuns,
+                  distWins: rp.distWinRate,
+                  distRuns: rp.distRuns,
+                  goingWins: rp.goingWinRate,
+                  goingRuns: rp.goingRuns,
                 }
-                return { ...runner, odds: atrOdds, atrOdds }
+                raceChanged = true
+              }
+
+              // Store speed trend for outlier detection
+              if (rp.speedTrend && rp.speedTrend.length >= 2) {
+                updates.speedTrend = rp.speedTrend
+                raceChanged = true
+              }
+
+              if (Object.keys(updates).length > 0) {
+                rpMerged++
+                return { ...runner, ...updates }
               }
               return runner
             })
+
+            if (raceChanged) {
+              race.runners = updatedRunners
+              try {
+                const rescored = await processRace({ ...race, runners: updatedRunners })
+                Object.assign(race, rescored)
+              } catch (e) {
+                console.error(`[RP] Re-score failed ${race.course}: ${e.message}`)
+              }
+            }
           }
-        })
-        console.log(`[LiveMeetings] Merged ${oddsMerged} ATR odds`)
-        // Re-broadcast with updated ATR odds
-        LIVE_STATE.racecards = processed
-    API_CACHE.set(cacheKey, { ...processed, _date: today })
-        io.emit('live-update', buildLightweightState())
+
+          console.log(`[RP] Merged ${rpMerged} horse profiles, re-scored affected races`)
+          LIVE_STATE.racecards = processed
+          API_CACHE.set(cacheKey, processed)
+          io.emit('live-update', buildLightweightState())
+          console.log('[RP] Re-broadcasted with RP data')
+        }
+      } catch (error) {
+        console.error('[RP] Background fetch failed:', error.message)
       }
-    } catch (error) {
-      console.error('[LiveMeetings] ATR odds fetch failed:', error.message)
-    }
+    })()
+
+    // Fetch ATR odds as secondary source — fire and forget, never blocks fetchLiveMeetings
+    ;(async () => {
+      try {
+        console.log('[ATR Odds] Fetching ATR odds (background)...')
+        const atrRaces = await Promise.race([
+          fetchAtrRacecards(today),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('ATR odds timeout (30s)')), 30000))
+        ])
+        if (atrRaces && atrRaces.length > 0) {
+          let oddsMerged = 0
+          processed.forEach((race) => {
+            const atrMatch = atrRaces.find(
+              (ar) => normalizeCourse(ar.course) === normalizeCourse(race.course) &&
+                String(ar.off_time || '').replace(':', '') === String(race.off_time || '').replace(':', '')
+            )
+            if (atrMatch && atrMatch.runners) {
+              race.runners = (race.runners || []).map((runner) => {
+                const atrRunner = atrMatch.runners.find(
+                  (ar) => normalizeHorseName(ar.horse) === normalizeHorseName(runner.horse)
+                )
+                if (atrRunner && atrRunner.sp && atrRunner.sp > 0) {
+                  const slOdds = runner.odds
+                  const atrOdds = atrRunner.sp
+                  if (String(slOdds) !== String(atrOdds)) {
+                    console.log(`[ODDS] ${runner.horse}: SL=${slOdds} ATR=${atrOdds} → using ATR`)
+                    oddsMerged++
+                  }
+                  return { ...runner, odds: atrOdds, atrOdds }
+                }
+                return runner
+              })
+            }
+          })
+          console.log(`[ATR Odds] Merged ${oddsMerged} ATR odds`)
+          LIVE_STATE.racecards = processed
+          API_CACHE.set(cacheKey, { ...processed, _date: today })
+          io.emit('live-update', buildLightweightState())
+        }
+      } catch (error) {
+        console.error('[ATR Odds] Fetch failed:', error.message)
+      }
+    })()
 
     // Persist enriched racecard data for OR/PR gap backfill
     try {
@@ -1203,6 +1295,8 @@ async function fetchLiveMeetings() {
         exclusionReason: race.exclusionReason || null,
         runners: (race.runners || []).map(r => ({
           horse: r.horse,
+          jockey: r.jockey || '',
+          trainer: r.trainer || '',
           or: r.or,
           previous_results: r.previous_results || [],
           performanceRating: r.performanceRating || null,
@@ -1789,6 +1883,7 @@ async function fetchResultsForDate(dateStr) {
           }
         }
       }
+      flushReplayDb()
     } catch (saveError) {
       console.error(`[Results] Error saving ${dateStr}:`, saveError.message)
       return 0
@@ -1822,6 +1917,66 @@ async function fetchResultsForDate(dateStr) {
     console.error(`[Results] Error fetching ${dateStr}:`, error.message)
     return 0
   }
+}
+
+function spawnAtrWorker(dateStr, races) {
+  return new Promise((resolve, reject) => {
+    let settled = false
+    const settle = (fn, val) => { if (!settled) { settled = true; fn(val) } }
+    const workerPath = path.join(process.cwd(), 'src', 'lib', 'scrapers', 'atrWorker.js')
+    const worker = spawn('node', [workerPath], { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] })
+    let stdout = '', stderr = ''
+    worker.stdout?.on('data', d => { stdout += d; process.stdout.write(`[ATR Worker] ${d}`) })
+    worker.stderr?.on('data', d => { stderr += d; process.stderr.write(`[ATR Worker] ${d}`) })
+    const timeout = setTimeout(() => {
+      worker.kill('SIGTERM')
+      settle(reject, new Error('ATR worker timeout (5min)'))
+    }, 5 * 60 * 1000)
+    worker.on('message', (msg) => {
+      clearTimeout(timeout)
+      if (msg.type === 'result') settle(resolve, msg.ratings)
+      else if (msg.type === 'error') settle(reject, new Error(msg.error))
+    })
+    worker.on('error', (err) => { clearTimeout(timeout); settle(reject, err) })
+    worker.on('exit', (code) => {
+      clearTimeout(timeout)
+      if (!settled) settle(reject, new Error(`ATR worker exited ${code}: ${stderr.slice(-200)}`))
+    })
+    worker.send({ type: 'scrape', dateStr, races })
+  })
+}
+
+function spawnRPWorker(dateStr) {
+  return new Promise((resolve, reject) => {
+    let settled = false
+    const settle = (fn, val) => { if (!settled) { settled = true; fn(val) } }
+    const workerPath = path.join(process.cwd(), 'src', 'lib', 'scrapers', 'rpWorker.js')
+    const worker = spawn('node', [workerPath], { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] })
+    let stdout = '', stderr = ''
+    worker.stdout?.on('data', d => { stdout += d; process.stdout.write(`[RP Worker] ${d}`) })
+    worker.stderr?.on('data', d => { stderr += d; process.stderr.write(`[RP Worker] ${d}`) })
+    const timeout = setTimeout(() => {
+      worker.kill('SIGTERM')
+      settle(resolve, {}) // Resolve empty on timeout — don't block pipeline
+    }, 5 * 60 * 1000)
+    worker.on('message', (msg) => {
+      clearTimeout(timeout)
+      if (msg.type === 'result') settle(resolve, msg.data || {})
+      else if (msg.type === 'error') {
+        console.error(`[RP Worker] Error: ${msg.error}`)
+        settle(resolve, {}) // Resolve empty on error
+      }
+    })
+    worker.on('error', (err) => { clearTimeout(timeout); settle(resolve, {}) })
+    worker.on('exit', (code) => {
+      clearTimeout(timeout)
+      if (!settled) {
+        console.error(`[RP Worker] exited ${code}: ${stderr.slice(-200)}`)
+        settle(resolve, {}) // Resolve empty on exit
+      }
+    })
+    worker.send({ type: 'scrape', dateStr })
+  })
 }
 
 async function fetchTodayResults() {
@@ -1915,6 +2070,8 @@ function buildLightweightState() {
       horseProfile: r.horseProfile || null,
       marketMovement: MARKET_DATABASE[r.horse_id] || MARKET_DATABASE[r.horse] || null,
       personalAffinity: r.personalAffinity || null,
+      engineLabel: r.engineLabel || null,
+      triggerReason: r.triggerReason || null,
     })),
   }))
 
@@ -1936,6 +2093,25 @@ io.on('connection', (socket) => {
     console.error('[Socket] live-update error:', error.message)
     socket.emit('live-update', { racecards: [], loading: false })
   }
+})
+
+// Health check endpoint — returns server status for monitoring
+app.get('/api/health', (_req, res) => {
+  const uptime = process.uptime()
+  const mem = process.memoryUsage()
+  const raceCount = LIVE_STATE.racecards?.length || 0
+  const runnerCount = (LIVE_STATE.racecards || []).reduce((s, r) => s + (r.runners?.length || 0), 0)
+
+  res.json({
+    status: raceCount > 0 ? 'ok' : 'degraded',
+    uptime: Math.round(uptime),
+    races: raceCount,
+    runners: runnerCount,
+    processingComplete: LIVE_STATE.processingComplete,
+    atrLoading: LIVE_STATE.atrLoading,
+    updatedAt: LIVE_STATE.updatedAt,
+    memory: { rss: Math.round(mem.rss / 1024 / 1024), heap: Math.round(mem.heapUsed / 1024 / 1024) },
+  })
 })
 
 app.get('/api/live-state', (_req, res) => {
@@ -2136,6 +2312,8 @@ app.post('/api/daily-picks', (req, res) => {
         marketMovement: p.marketMovement || null,
         personalAffinity: p.personalAffinity || null,
         betQuality: p.betQuality || null,
+        engineLabel: p.engineLabel || null,
+        triggerReason: p.triggerReason || null,
         result: null,
         position: null,
         frozen: isFrozen,
@@ -2207,6 +2385,8 @@ app.post('/api/daily-picks', (req, res) => {
         marketMovement: p.marketMovement || null,
         personalAffinity: p.personalAffinity || null,
         betQuality: p.betQuality || null,
+        engineLabel: p.engineLabel || null,
+        triggerReason: p.triggerReason || null,
         result: p.result || null,
         position: p.position || null,
         frozen: isFrozen,
@@ -2285,13 +2465,21 @@ app.post('/api/live-picks/log', (req, res) => {
     LIVE_PICKS_LOG[date] = { picks: [], stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: 0 } }
   }
   const log = LIVE_PICKS_LOG[date]
+  // Prune picks for races no longer in the current racecard (stale non-resulted picks)
+  const activeKeys = new Set(picks.map(p => `${p.course}|${p.offTime}`))
+  log.picks = log.picks.filter(p => {
+    const key = `${p.course}|${p.offTime}`
+    return activeKeys.has(key) || p.result
+  })
   // Dedupe by race (course|offTime) — one pick per race, replace on refresh
+  // If the horse changed, always replace (even if old pick has a result)
   const raceMap = new Map(log.picks.map(p => [`${p.course}|${p.offTime}`, p]))
   for (const p of picks) {
     const raceKey = `${p.course}|${p.offTime}`
     const existing = raceMap.get(raceKey)
-    // Replace if new pick has higher score, or if no result yet on existing
-    if (!existing || (p.score > (existing.score || 0) && !existing.result)) {
+    const horseChanged = existing && existing.horse !== p.horse
+    // Replace if: different horse, or higher score with no result yet, or no existing pick
+    if (!existing || horseChanged || (p.score > (existing.score || 0) && !existing.result)) {
       raceMap.set(raceKey, {
         horse: p.horse,
         course: p.course,
@@ -2302,6 +2490,8 @@ app.post('/api/live-picks/log', (req, res) => {
         personalAffinity: p.personalAffinity ?? null,
         apexScore: p.apexScore ?? null,
         betQuality: p.betQuality ?? null,
+        engineLabel: p.engineLabel ?? null,
+        triggerReason: p.triggerReason ?? null,
         betType: p.betType ?? null,
         raceId: p.raceId ?? null,
         timestamp: new Date().toISOString(),
@@ -4240,27 +4430,63 @@ server.listen(PORT, async () => {
   console.log(`[STARTUP] DAILY_PICKS_DATABASE has ${picksDates.length} dates, ${picksCount} total picks`)
   // Global processing lock — prevents scheduler from colliding with startup or backfill
   let isProcessing = false
+  let resultsRefreshing = false
   // One-time migration: fix race_id format + GMT→BST times in learning.json
   migrateLearningDb()
-  // Fetch today's data on startup
-  // Results scraping must wait until fetchLiveMeetings (racecards + ATR) fully completes
-  // to avoid two browser processes competing for memory on Railway
-  isProcessing = true
-  fetchLiveMeetings().then(() => {
-    isProcessing = false
-    console.log('[Startup] Racecards complete, scheduling results fetch in 5s...')
-    setTimeout(async () => {
-      isProcessing = true
-      try {
-        await fetchTodayResults()
-      } finally {
-        isProcessing = false
+
+  // Fetch today's data on startup with automatic retry (up to 3 attempts)
+  async function startupFetchWithRetry(attempt = 1) {
+    const MAX_ATTEMPTS = 3
+    isProcessing = true
+    try {
+      await fetchLiveMeetings()
+      isProcessing = false
+
+      // Check if we actually got races — if not, retry after delay
+      if ((!LIVE_STATE.racecards || LIVE_STATE.racecards.length === 0) && attempt < MAX_ATTEMPTS) {
+        console.log(`[Startup] No races loaded (attempt ${attempt}/${MAX_ATTEMPTS}), retrying in 60s...`)
+        setTimeout(() => startupFetchWithRetry(attempt + 1), 60 * 1000)
+        return
       }
-    }, 5000)
-  }).catch((err) => {
-    console.error('[Startup] fetchLiveMeetings() failed:', err.message)
-    isProcessing = false
-  })
+
+      if (LIVE_STATE.racecards && LIVE_STATE.racecards.length > 0) {
+        console.log(`[Startup] Racecards complete (${LIVE_STATE.racecards.length} races), scheduling results fetch in 5s...`)
+      } else {
+        // Fallback: load from enriched racecard cache if live scrape returned 0
+        try {
+          const enrichedDb = loadDatabase(path.join(process.cwd(), 'data', 'racecard-enriched.json'))
+          const todayStr = new Date().toISOString().split('T')[0]
+          const cachedRaces = (enrichedDb.races || []).filter(r => r.date === todayStr)
+          if (cachedRaces.length > 0) {
+            console.log(`[Startup] Live scrape returned 0 races, falling back to enriched cache: ${cachedRaces.length} races`)
+            LIVE_STATE.racecards = cachedRaces
+            LIVE_STATE.processingComplete = true
+          } else {
+            console.log(`[Startup] No races available after ${MAX_ATTEMPTS} attempts — will retry on next scheduler cycle`)
+          }
+        } catch (e) {
+          console.log(`[Startup] No races available after ${MAX_ATTEMPTS} attempts — will retry on next scheduler cycle`)
+        }
+      }
+
+      setTimeout(async () => {
+        isProcessing = true
+        try {
+          if (!resultsRefreshing) await fetchTodayResults()
+        } finally {
+          isProcessing = false
+        }
+      }, 5000)
+    } catch (err) {
+      console.error(`[Startup] fetchLiveMeetings() failed (attempt ${attempt}/${MAX_ATTEMPTS}):`, err.message)
+      isProcessing = false
+      if (attempt < MAX_ATTEMPTS) {
+        console.log(`[Startup] Retrying in 60s...`)
+        setTimeout(() => startupFetchWithRetry(attempt + 1), 60 * 1000)
+      }
+    }
+  }
+  startupFetchWithRetry()
 
   // Backfill track bias learning from historical records
   const trackBiasStore = getTrackBiasStore()
@@ -4362,10 +4588,11 @@ server.listen(PORT, async () => {
     console.log('[Scheduler] Background automated tasks DISABLED via environment flag')
   } else {
     // Results refresh: every 5 min, but only after first race + 2 min buffer
+    // Runs independently of isProcessing — results fetch is lightweight
+    // Guard against concurrent execution (Playwright + shared page can deadlock)
     let firstRaceFinishedAt = null
     setInterval(async () => {
-      if (BACKFILL_IN_PROGRESS || isProcessing) return
-      isProcessing = true
+      if (BACKFILL_IN_PROGRESS || resultsRefreshing) return
       const today = new Date().toISOString().split('T')[0]
 
       // Check if any race today has finished
@@ -4385,21 +4612,19 @@ server.listen(PORT, async () => {
           if (ukNow.getTime() > offDateTime.getTime()) {
             firstRaceFinishedAt = Date.now()
             console.log(`[Scheduler] First race finished (${race.course} ${offTime}), results scraping starts in 2 min`)
-            isProcessing = false
             return
           }
         }
-        isProcessing = false
         return
       }
 
       // 2 min buffer after first race finished
       if (Date.now() - firstRaceFinishedAt < 2 * 60 * 1000) {
-        isProcessing = false
         return
       }
 
       try {
+        resultsRefreshing = true
         console.log('[Scheduler] Periodic results refresh for', today)
         await fetchResultsForDate(today)
         for (let i = 1; i <= 3; i++) {
@@ -4413,17 +4638,21 @@ server.listen(PORT, async () => {
       } catch (e) {
         console.error('[Scheduler] Results refresh failed:', e.message)
       } finally {
-        isProcessing = false
+        resultsRefreshing = false
       }
     }, 5 * 60 * 1000)
 
-    // Refresh racecards every 2 min to pick up live odds changes and non-runners
+    // Refresh racecards every 5 min — only re-scrape when cache expires
+    // Cache TTL is 5min, so this picks up odds/NR changes without full reprocess
     setInterval(async () => {
-      if (BACKFILL_IN_PROGRESS || isProcessing) return
+      if (BACKFILL_IN_PROGRESS || isProcessing || LIVE_STATE.atrLoading) return
+      // If races already loaded and fully processed, don't re-scrape — data doesn't change mid-day
+      if (LIVE_STATE.racecards?.length > 0 && LIVE_STATE.processingComplete) {
+        return
+      }
       isProcessing = true
       try {
         console.log('[Scheduler] Periodic racecard refresh')
-        API_CACHE.delete('racecards:sl')
         await fetchLiveMeetings()
       } catch (e) {
         console.error('[Scheduler] Racecard refresh failed:', e.message)

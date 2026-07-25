@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, Fragment } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { Race, Runner } from '../lib/types'
 import { fetchLiveState } from '../lib/racingApi'
 import type { LiveState } from '../lib/racingApi'
+import { useSocketLiveUpdate } from '../lib/useSocket'
 import { formatOffTime } from '../lib/formatTime'
 import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
 import { filterGBIRE, filterToday, filterUnfinished, sortByOffTime, sortByScore, getScore, scoreRunners, countRunners } from '../lib/engine'
@@ -20,7 +21,11 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
     queryKey: ['racecards'],
     queryFn: fetchLiveState,
     refetchInterval: 60000,
+    placeholderData: keepPreviousData,
+    retry: 3,
+    retryDelay: 5000,
   })
+  useSocketLiveUpdate(['racecards', 'home-racecards'])
   const races = liveState?.racecards || []
   const processingComplete = liveState?.processingComplete ?? false
 

@@ -32,7 +32,7 @@ export function ResultsList({ results }: ResultsListProps) {
   })
 
   const now = new Date()
-  const todayStr = now.toISOString().slice(0, 10)
+  const todayStr = now.toLocaleDateString('en-CA', { timeZone: 'Europe/London' })
 
   const allStored = [...results, ...storedRaces].filter(
     (r, i, arr) => arr.findIndex((x) => {
@@ -216,7 +216,7 @@ export function ResultsList({ results }: ResultsListProps) {
 
 function RaceResultCard({ race }: { race: any }) {
   const [expanded, setExpanded] = useState(false)
-  const todayStr = new Date().toISOString().slice(0, 10)
+  const todayStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/London' })
   const allRunners = race.runners || []
   const sorted = [...allRunners].sort((a: any, b: any) => {
     const aPos = Number(a.position || a.pos || a.finish_position || a.finishing_position || a.result_position || a.place || 999)

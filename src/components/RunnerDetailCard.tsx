@@ -377,6 +377,19 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
               {runner.jockey}{runner.jockey && runner.trainer && ' · '}{runner.trainer}
             </p>
 
+            {runner.form && (
+              <div className='flex items-center gap-1.5 mt-1'>
+                <span className='text-[10px] text-zinc-500 font-medium'>Form:</span>
+                <span className='flex gap-0.5'>
+                  {runner.form.split(/[-–]/).filter(Boolean).map((pos: string, i: number) => {
+                    const n = parseInt(pos)
+                    const bg = isNaN(n) ? 'bg-zinc-700 text-zinc-400' : n === 1 ? 'bg-green-500/20 text-green-400 border border-green-500/30' : n <= 3 ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' : 'bg-white/[0.04] text-zinc-400 border border-white/5'
+                    return <span key={i} className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${bg}`}>{pos}</span>
+                  })}
+                </span>
+              </div>
+            )}
+
             {runner.horseProfile && (
               <div className='mt-2 grid grid-cols-4 gap-1.5 text-[10px]'>
                 <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>

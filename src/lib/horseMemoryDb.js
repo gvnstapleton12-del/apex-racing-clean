@@ -64,6 +64,7 @@ export async function createTables(db) {
   try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN rpr_rating REAL`) } catch (_) {}
   try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN starting_price REAL`) } catch (_) {}
   try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN proven_zone TEXT`) } catch (_) {}
+  try { await db.exec(`ALTER TABLE horse_runs ADD COLUMN last_race_margin REAL`) } catch (_) {}
 
   await db.exec(`
     CREATE TABLE IF NOT EXISTS jockey_runs (
@@ -492,8 +493,8 @@ export async function bulkInsertHorseRuns(db, runs) {
     for (const r of runs) {
       try {
         await db.run(`
-          INSERT OR IGNORE INTO horse_runs (horse_name, horse_id, race_date, course, distance, distance_furlongs, going, race_class, field_size, finish_position, sp_odds, starting_price, weight_carried, jockey, trainer, official_rating, or_rating, rpr_rating, speed_figure, pace_score)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT OR IGNORE INTO horse_runs (horse_name, horse_id, race_date, course, distance, distance_furlongs, going, race_class, field_size, finish_position, sp_odds, starting_price, weight_carried, jockey, trainer, official_rating, or_rating, rpr_rating, speed_figure, pace_score, last_race_margin)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
           r.horse_name || '', r.horse_id || '', r.race_date || '', r.course || '',
           r.distance || '', r.distance_furlongs || 0, r.going || '', r.race_class || '',
@@ -501,6 +502,7 @@ export async function bulkInsertHorseRuns(db, runs) {
           r.weight_carried || '', r.jockey || '', r.trainer || '',
           r.official_rating || 0, r.or_rating || r.official_rating || 0,
           r.rpr_rating || 0, r.speed_figure || 0, r.pace_score || 0,
+          r.last_race_margin || 0,
         ])
         saved++
       } catch { failed++ }
@@ -550,4 +552,54 @@ export async function getHorseRunDateRange(db) {
     console.error('[Import] Date range query failed:', error.message)
     return null
   }
+}
+
+/**
+ * Get RP data batch for a list of horse names — returns last race margin
+ * and recent RPR history for speed trend computation.
+ * @param {object} db - SQLite database instance
+ * @param {string[]} horseNames - Array of horse names to look up
+ * @returns {Promise<Record<string, { lastRaceMargin: number, speedTrend: number[], highestRPR: number }>>}
+ */
+export async function getRPDataBatch(db, horseNames = []) {
+  if (!db || !horseNames.length) return {}
+  const result = {}
+  try {
+    // Get last race margin + recent RPRs for each horse (last 5 runs)
+    const placeholders = horseNames.map(() => '?').join(',')
+    const rows = await db.all(`
+      SELECT horse_name, last_race_margin, rpr_rating, race_date
+      FROM horse_runs
+      WHERE horse_name IN (${placeholders})
+        AND rpr_rating > 0
+      ORDER BY horse_name, race_date DESC
+    `, horseNames)
+
+    // Group by horse name
+    const grouped = {}
+    for (const row of rows) {
+      const key = (row.horse_name || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim()
+      if (!grouped[key]) grouped[key] = { margin: 0, rprs: [] }
+      if (row.last_race_margin > 0 && grouped[key].margin === 0) {
+        grouped[key].margin = row.last_race_margin
+      }
+      if (row.rpr_rating > 0) {
+        grouped[key].rprs.push(row.rpr_rating)
+      }
+    }
+
+    // Build result with speed trend (last 3 RPRs, chronological order)
+    for (const [key, data] of Object.entries(grouped)) {
+      const speedTrend = data.rprs.slice(0, 3).reverse() // chronological
+      const highestRPR = Math.max(...data.rprs, 0)
+      result[key] = {
+        lastRaceMargin: data.margin,
+        speedTrend,
+        highestRPR,
+      }
+    }
+  } catch (error) {
+    console.error('[RP] getRPDataBatch failed:', error.message)
+  }
+  return result
 }

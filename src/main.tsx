@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 
 import {
   QueryClient,
   QueryClientProvider,
+  keepPreviousData,
   useQuery,
 } from '@tanstack/react-query'
 
@@ -12,6 +13,7 @@ import Racecards from './pages/Racecards'
 import { ResultsList } from './pages/Results'
 import { fetchLiveState } from './lib/racingApi'
 import type { LiveState } from './lib/racingApi'
+import { useSocketLiveUpdate } from './lib/useSocket'
 import { formatOffTime } from './lib/formatTime'
 import { filterGBIRE, filterMinRunners, countRunners, getGrade, gradeClass, resultLabel, getHomeSelections, getNoBetReason, calculateStrikeRate } from './lib/engine'
 import type { Race, Runner } from './lib/types'
@@ -34,6 +36,24 @@ function parseOddsToNum(odds: unknown): number {
   }
   const val = parseFloat(str)
   return isNaN(val) ? 0 : val
+}
+
+function shortGoing(going: string): string {
+  if (!going) return ''
+  const g = going.toLowerCase()
+  if (g.includes('heavy')) return 'Hvy'
+  if (g.includes('soft')) return 'Sft'
+  if (g.includes('yielding') && g.includes('good')) return 'Gd-Yld'
+  if (g.includes('yielding')) return 'Yld'
+  if (g.includes('good to firm') || g.includes('good-to-firm')) return 'Gd-Fm'
+  if (g.includes('good')) {
+    const extra = going.replace(/^good/i, '').trim().replace(/[()]/g, '').trim()
+    return extra ? `Gd (${extra.length > 10 ? extra.slice(0, 10) + '…' : extra})` : 'Gd'
+  }
+  if (g.includes('firm')) return 'Fm'
+  if (g.includes('standard')) return 'Std'
+  if (g.includes('slow')) return 'Slow'
+  return going.length > 8 ? going.slice(0, 8) + '…' : going
 }
 
 const queryClient = new QueryClient()
@@ -177,6 +197,9 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             {selection.horse && selection.horse !== '—' ? selection.horse : 'Unknown Runner'}
           </a>
           <p className='text-zinc-500 text-xs mt-1'>{selection.raceName}</p>
+          {selection.jockey && (
+            <p className='text-zinc-600 text-[11px] mt-0.5'>Jockey: {selection.jockey}</p>
+          )}
 
           {/* ── 4. STRATEGY FLAGS ── */}
           <div className='flex items-center gap-1.5 mt-3 mb-4'>
@@ -243,6 +266,16 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
                 (selection as any).betQuality === 'WEAK_COMPAT' ? 'bg-zinc-500/10 text-zinc-500 border-white/5' :
                 'bg-red-500/10 text-red-400/70 border-red-500/10'
               }`}>{(selection as any).betQuality}</span>
+            )}
+            {(selection as any).engineLabel && (
+              <span className={`text-[10px] px-2 py-0.5 rounded border ml-1 ${
+                (selection as any).engineLabel === 'STRONG FAVORITE' ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400/30' :
+                (selection as any).engineLabel === 'VALUE PLAY' ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20' :
+                (selection as any).engineLabel === 'OUTLIER' ? 'bg-amber-500/15 text-amber-300 border-amber-400/30' :
+                'bg-zinc-500/10 text-zinc-400 border-white/5'
+              }`} title={(selection as any).triggerReason || ''}>
+                {(selection as any).engineLabel === 'OUTLIER' ? `⚡ ${(selection as any).engineLabel}` : (selection as any).engineLabel}
+              </span>
             )}
           </div>
 
@@ -336,13 +369,27 @@ interface DailyPicksEntry {
   stats: DayStats
 }
 
-function Home() {
+function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string | null; onMeetingChange?: (m: string | null) => void } = {}) {
   const [dailyPicksDb, setDailyPicksDb] = useState<Record<string, DailyPicksEntry>>({})
   const [pickView, setPickView] = useState<'live' | 'yesterday'>('live')
   const [fullCardFilter, setFullCardFilter] = useState<'all' | 'bets'>('all')
+  const [expandedRaces, setExpandedRaces] = useState<Set<string>>(new Set())
+  const [selectedMeeting, setSelectedMeeting] = useState<string | null>(null)
+  const eventPicksRef = useRef<HTMLDivElement>(null)
   const [abandoned, setAbandoned] = useState<any[]>([])
   const [livePicksStats, setLivePicksStats] = useState<{ stats: { won: number; placed: number; lost: number; nr: number; pending: number }; roi: number; mainBets: { won: number; placed: number; lost: number; nr: number; total: number; roi: number } } | null>(null)
   const [homeWidgets, setHomeWidgets] = useState<any>(null)
+
+  // Sync sidebar meeting selection with Event Picks
+  useEffect(() => {
+    if (externalMeeting !== undefined) {
+      setSelectedMeeting(externalMeeting)
+      if (externalMeeting) {
+        setTimeout(() => eventPicksRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200)
+      }
+    }
+  }, [externalMeeting])
+
   const {
     data: liveState,
     isLoading,
@@ -351,7 +398,11 @@ function Home() {
     queryKey: ['home-racecards'],
     queryFn: fetchLiveState,
     refetchInterval: 60000,
+    placeholderData: keepPreviousData,
+    retry: 3,
+    retryDelay: 5000,
   })
+  useSocketLiveUpdate(['home-racecards', 'racecards'])
   const races = liveState?.racecards || []
   const processingComplete = liveState?.processingComplete ?? false
 
@@ -461,6 +512,7 @@ function Home() {
       if (pa <= 0) return false
       if ((s.valueEdge || 0) <= 0.03) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
+      if (parseOddsToNum(s.odds) >= 8.0 && parseOddsToNum(s.odds) <= 12.0) return false
       if ((s.winProb || 0) < 0.10) return false
       const apexScore = s.score || 0
       if (apexScore === 0) return false
@@ -519,15 +571,17 @@ function Home() {
       const bq = (s as any).betQuality || ''
       if (bq === 'NO BET') return false
       if (bq === 'WEAK_COMPAT') return false
-      const pa = (s as any).personalAffinity?.adjustment ?? 0
-      if (pa <= 0) return false
       if ((s.valueEdge || 0) < 0) return false
-      if ((s.winProb || 0) < 0.12) return false
       if (parseOddsToNum(s.odds) < 2.0) return false
+      // 8-12 dead zone — OUTLIER picks bypass this gate
+      const isOutlierBet = (s as any).engineLabel === 'OUTLIER'
+      if (parseOddsToNum(s.odds) >= 8.0 && parseOddsToNum(s.odds) <= 12.0 && !isOutlierBet) return false
       const apexScore = s.score || 0
       if (apexScore === 0) return false
       if (apexScore >= 50) return true
+      if ((s.winProb || 0) < 0.12) return false
       if (apexScore < 35) return false
+      const pa = (s as any).personalAffinity?.adjustment ?? 0
       const edge = s.valueEdge || 0
       const wp = s.winProb || 0
       return pa > 1.0 || edge > 0.10 || (wp > 0.20 && pa > 0.5)
@@ -695,61 +749,109 @@ function Home() {
     : null
 
   const todayResults = displayPicks
-  // Position-aware stats — derives W/L/P from runner positions (same logic as full card)
-  const computedStats = displayPicks.length > 0 ? (() => {
-    let won = 0, placed = 0, lost = 0, pending = 0
-    for (const p of displayPicks) {
-      const pos = (p as any).position || null
-      if (!pos || pos <= 0) { pending++; continue }
-      const race = races.find((r: any) => r.course === p.course && formatOffTime(r) === p.offTime)
-      const fieldSize = race?.runners?.length || 0
-      const placedThreshold = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
-      if (pos === 1) won++
-      else if (pos <= placedThreshold) placed++
-      else lost++
-    }
-    return { won, placed, lost, nr: 0, pending }
-  })() : null
 
-  // Top horse per race from ALL selections (regardless of bettable filter)
-  // Used as fallback in full card so every race shows a pick
+  // All qualifying runners per race from selections that pass quality gates
+  // Used as fallback in full card + secondary picks display
   const topPerRace = useMemo(() => {
-    const map = new Map<string, any>()
+    const map = new Map<string, any[]>()
+    const isSaturday = new Date(today).getDay() === 6
     for (const s of allSelections) {
+      if (s.noBet) continue
+      if ((s.winProb || 0) < 0.06) continue
+      const bq = (s as any).betQuality || ''
+      const isOutlier = (s as any).engineLabel === 'OUTLIER'
+      // OUTLIER picks bypass betQuality gate — they're structurally triggered
+      if (!isOutlier && (bq === 'NO BET' || bq === 'WEAK_COMPAT' || bq === 'BORDERLINE')) continue
+      // Saturday protection: only STRONG VALUE on high-competition days (14.3% WR vs 31.3% weekday)
+      // OUTLIER picks bypass this — they're structurally triggered, not speculative
+      if (isSaturday && bq !== 'STRONG VALUE' && !isOutlier) continue
+      const pa = (s as any).personalAffinity?.adjustment ?? 0
+      // 8-12 odds dead zone kill — 12.1% WR vs 36.7% outside, no signal works here
+      // Exception: OUTLIER picks bypass the dead zone (structurally triggered longshots)
+      const odds = parseOddsToNum(s.odds)
+      if (odds >= 8.0 && odds <= 12.0 && !isOutlier) continue
       const key = s.race_id || `${s.course}|${s.offTime}`
-      if (!map.has(key)) map.set(key, s)
+      const existing = map.get(key) || []
+      existing.push(s)
+      map.set(key, existing)
+    }
+    // Sort each race's picks by score descending
+    for (const [, picks] of map) {
+      picks.sort((a, b) => (b.score || 0) - (a.score || 0))
     }
     return map
-  }, [allSelections])
+  }, [allSelections, today])
 
-  // All races card — every race, system picks highlighted
+  // All races card — every race, system picks highlighted + secondary picks
   const allRacesCard = useMemo(() => {
-    const pickSource = todaySaved?.picks?.length ? todaySaved.picks : allPicks
-    const pickByRace = new Map<string, any>()
+    const rawPickSource = todaySaved?.picks?.length ? todaySaved.picks : allPicks
+    const pickSource = rawPickSource.filter((p: any) => {
+      const o = parseOddsToNum(p.odds)
+      return !(o >= 8.0 && o <= 12.0)
+    })
+    const picksByRace = new Map<string, any[]>()
     for (const p of pickSource) {
       const key = p.race_id || `${p.course}|${p.offTime}`
-      if (!pickByRace.has(key)) pickByRace.set(key, p)
+      const existing = picksByRace.get(key) || []
+      existing.push(p)
+      picksByRace.set(key, existing)
     }
     return (races || [])
       .filter(r => (r.runners || []).length >= 2)
       .map(r => {
         const offTime = formatOffTime(r)
         const pickKey = r.race_id || `${r.course}|${offTime}`
-        const pick = pickByRace.get(pickKey) || (!todaySaved?.picks?.length ? topPerRace.get(pickKey) : null)
+        const savedPicks = picksByRace.get(pickKey) || []
+        const fallbackPicks = topPerRace.get(pickKey) || []
+        const allRacePicks = savedPicks.length > 0 ? savedPicks : fallbackPicks
+        const pick = allRacePicks[0] || null
         const fieldSize = r.runners?.length || 0
         const placed = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
         const pos = pick?.position || r.runners?.find((run: any) => run.horse === pick?.horse)?.position || null
         const result = pick?.result ?? (pos === 1 ? 'won' : pos > 0 && pos <= placed ? 'placed' : pos > placed ? 'lost' : null)
         const movement = pick?.marketMovement || null
         const winner = !pick ? (r.runners || []).find((run: any) => run.position === 1) : null
+        const topScorer = !pick && !winner ? (r.runners || []).sort((a: any, b: any) => (b.finalScore || 0) - (a.finalScore || 0))[0] : null
+        const pickJockey = pick?.jockey || r.runners?.find((run: any) => run.horse === pick?.horse)?.jockey || winner?.jockey || topScorer?.jockey || ''
+        const secondaryPicks = allRacePicks.slice(1).map(sp => {
+          const spPos = sp.position || r.runners?.find((run: any) => run.horse === sp.horse)?.position || null
+          const spResult = sp.result ?? (spPos === 1 ? 'won' : spPos > 0 && spPos <= placed ? 'placed' : spPos > placed ? 'lost' : null)
+          const spJockey = sp.jockey || r.runners?.find((run: any) => run.horse === sp.horse)?.jockey || ''
+          return {
+            horse: sp.horse,
+            score: sp.score || 0,
+            winProb: sp.winProb || 0,
+            odds: sp.odds || 0,
+            position: spPos,
+            result: spResult,
+            betQuality: sp.betQuality || null,
+            jockey: spJockey,
+          }
+        })
+        const allRunners = (r.runners || [])
+          .map((run: any) => {
+            const runPos = run.position || null
+            const runResult = runPos === 1 ? 'won' : runPos > 0 && runPos <= placed ? 'placed' : runPos > placed ? 'lost' : null
+            return {
+              horse: run.horse || '',
+              score: run.score || run.finalScore || 0,
+              winProb: run.winProb || 0,
+              odds: run.odds || 0,
+              position: runPos,
+              result: runResult,
+              jockey: run.jockey || '',
+              betQuality: run.betQuality || '',
+            }
+          })
+          .sort((a: any, b: any) => (b.score || 0) - (a.score || 0))
         return {
           course: r.course,
           offTime,
           raceName: r.race_name || '',
-          horse: pick?.horse || winner?.horse || '—',
-          score: pick?.score || winner?.score || 0,
+          horse: pick?.horse || winner?.horse || topScorer?.horse || '—',
+          score: pick?.score || winner?.score || topScorer?.finalScore || 0,
           winProb: pick?.winProb || 0,
-          odds: pick?.odds || winner?.odds || 0,
+          odds: pick?.odds || winner?.odds || topScorer?.odds || 0,
           going: r.going || '',
           isPick: !!pick,
           isWinner: !!winner,
@@ -758,10 +860,90 @@ function Home() {
           movement,
           betQuality: pick?.betQuality || null,
           betType: pick?.betType || null,
+          jockey: pickJockey,
+          secondaryPicks,
+          allRunners,
+          raceId: pickKey,
+          fieldSize,
         }
       })
       .sort((a, b) => (a.offTime || '').localeCompare(b.offTime || ''))
-  }, [races, allPicks, todaySaved])
+  }, [races, allPicks, todaySaved, topPerRace])
+
+  // Unique meetings from today's races, sorted by race count
+  const meetings = useMemo(() => {
+    const map = new Map<string, { course: string; raceCount: number; hasGroup: boolean }>()
+    for (const r of races || []) {
+      const existing = map.get(r.course)
+      const isGroup = /group|listed|stakes/i.test(r.race_name || '')
+      if (existing) {
+        existing.raceCount++
+        if (isGroup) existing.hasGroup = true
+      } else {
+        map.set(r.course, { course: r.course, raceCount: 1, hasGroup: isGroup })
+      }
+    }
+    return [...map.values()].sort((a, b) => b.raceCount - a.raceCount)
+  }, [races])
+
+  // Event picks: one pick per race at the selected meeting
+  const eventPicks = useMemo(() => {
+    if (!selectedMeeting) return []
+    const meetingRaces = (races || []).filter(r => r.course === selectedMeeting)
+    return meetingRaces
+      .map(r => {
+        const offTime = formatOffTime(r)
+        const pickKey = r.race_id || `${r.course}|${offTime}`
+        // Get all qualifying runners for this race, sorted by score
+        const raceRunners = (r.runners || [])
+          .filter((run: any) => {
+            if ((run.winProb || 0) < 0.03) return false
+            const bq = (run as any).betQuality || ''
+            if (bq === 'NO BET') return false
+            if (bq === 'WEAK_COMPAT') return false
+            const odds = parseOddsToNum(run.odds)
+            const isOutlierRun = (run as any).engineLabel === 'OUTLIER'
+            if (odds >= 8.0 && odds <= 12.0 && !isOutlierRun) return false
+            return true
+          })
+          .sort((a: any, b: any) => (b.finalScore || 0) - (a.finalScore || 0))
+        // Always pick the top horse — even if it's low confidence, every race needs a pick
+        const pick = raceRunners[0] || (r.runners || []).sort((a: any, b: any) => (b.finalScore || 0) - (a.finalScore || 0))[0] || null
+        const fieldSize = r.runners?.length || 0
+        const placed = fieldSize >= 16 ? 4 : fieldSize >= 8 ? 3 : fieldSize >= 5 ? 2 : 1
+        const pos = pick?.position || null
+        const result = pos === 1 ? 'won' : pos > 0 && pos <= placed ? 'placed' : pos > placed ? 'lost' : null
+        return {
+          race_id: r.race_id,
+          course: r.course,
+          offTime,
+          raceName: r.race_name || '',
+          going: r.going || '',
+          distance: r.distance_f || '',
+          raceClass: r.race_class || 0,
+          horse: pick?.horse || '—',
+          score: pick?.finalScore || pick?.score || 0,
+          winProb: pick?.winProb || 0,
+          odds: pick?.odds || 0,
+          jockey: pick?.jockey || '',
+          trainer: pick?.trainer || '',
+          betQuality: pick?.betQuality || null,
+          engineLabel: pick?.engineLabel || null,
+          triggerReason: pick?.triggerReason || null,
+          position: pos,
+          result,
+          fieldSize,
+          // Secondary picks for info
+          allRunners: raceRunners.slice(0, 5).map((run: any) => ({
+            horse: run.horse,
+            score: run.finalScore || run.score || 0,
+            odds: run.odds || 0,
+            jockey: run.jockey || '',
+          })),
+        }
+      })
+      .sort((a, b) => (a.offTime || '').localeCompare(b.offTime || ''))
+  }, [selectedMeeting, races])
 
   const liveStats = useMemo(() => {
     let won = 0, placed = 0, lost = 0, pending = 0
@@ -858,7 +1040,7 @@ function Home() {
               <div className='text-xs text-zinc-400 uppercase tracking-wider'>Top Score</div>
             </div>
             <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{todaySaved?.picks?.length || allPicks.length}</div>
+              <div className='text-3xl font-bold text-amber-400'>{livePicksStats?.picks?.length || todaySaved?.picks?.length || allPicks.length}</div>
               <div className='text-xs text-zinc-400 uppercase tracking-wider'>Picks</div>
             </div>
             <button
@@ -991,56 +1173,45 @@ function Home() {
             </div>
           )}
           {(() => {
-            const activeStats = pickView === 'yesterday' ? yesterdaySaved?.stats : computedStats || todaySaved?.stats
-            const statsLabel = pickView === 'yesterday' ? 'Yesterday' : 'System'
-            return activeStats ? (
+            const activeStats = pickView === 'yesterday' ? yesterdaySaved?.stats : null
+            const showBets = pickView !== 'yesterday' && livePicksStats?.mainBets
+            if (!activeStats && !showBets) return null
+            return (
               <div className='flex items-center gap-6 mb-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
-                <div className='flex items-center gap-2'>
-                  <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>{statsLabel}</span>
-                  <span className='text-sm font-bold text-green-400'>{activeStats.won}W</span>
-                  <span className='text-zinc-600'>/</span>
-                  <span className='text-sm font-bold text-amber-400'>{activeStats.placed}P</span>
-                  <span className='text-zinc-600'>/</span>
-                  <span className='text-sm font-bold text-red-400'>{activeStats.lost}L</span>
-                  {activeStats.pending > 0 && (
-                    <>
-                      <span className='text-zinc-600'>/</span>
-                      <span className='text-sm font-bold text-zinc-400'>{activeStats.pending} pending</span>
-                    </>
-                  )}
-                </div>
-                {pickView !== 'yesterday' && livePicksStats?.mainBets && (
-                  <div className='flex items-center gap-3 pl-4 border-l border-white/5'>
-                    <div className='flex items-center gap-1.5'>
-                      <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20'>Bets</span>
-                      <span className='text-sm font-bold text-green-400'>{livePicksStats.mainBets.won}W</span>
-                      <span className='text-zinc-600'>/</span>
-                      <span className='text-sm font-bold text-amber-400'>{livePicksStats.mainBets.placed}P</span>
-                      <span className='text-zinc-600'>/</span>
-                      <span className='text-sm font-bold text-red-400'>{livePicksStats.mainBets.lost}L</span>
-                      {livePicksStats.mainBets.total > 0 && (
-                        <span className={`text-xs font-bold ${livePicksStats.mainBets.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {livePicksStats.mainBets.roi > 0 ? '+' : ''}{livePicksStats.mainBets.roi}%
-                        </span>
-                      )}
-                    </div>
-                    <div className='flex items-center gap-1.5'>
-                      <span className='text-[10px] text-zinc-600 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-zinc-500/10 text-zinc-500 border border-zinc-500/20'>All</span>
-                      <span className='text-xs font-bold text-green-400/70'>{livePicksStats.stats.won}W</span>
-                      <span className='text-zinc-700'>/</span>
-                      <span className='text-xs font-bold text-amber-400/70'>{livePicksStats.stats.placed}P</span>
-                      <span className='text-zinc-700'>/</span>
-                      <span className='text-xs font-bold text-red-400/70'>{livePicksStats.stats.lost}L</span>
-                      {livePicksStats.roi !== 0 && (
-                        <span className={`text-[10px] font-bold ${livePicksStats.roi > 0 ? 'text-green-400/70' : 'text-red-400/70'}`}>
-                          {livePicksStats.roi > 0 ? '+' : ''}{livePicksStats.roi}%
-                        </span>
-                      )}
-                    </div>
+                {activeStats && (
+                  <div className='flex items-center gap-2'>
+                    <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Yesterday</span>
+                    <span className='text-sm font-bold text-green-400'>{activeStats.won}W</span>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-sm font-bold text-amber-400'>{activeStats.placed}P</span>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-sm font-bold text-red-400'>{activeStats.lost}L</span>
                   </div>
                 )}
+                {showBets && (() => {
+                  const mb = livePicksStats.mainBets
+                  const pending = mb.total - mb.won - mb.placed - mb.lost - (mb.nr || 0)
+                  return (
+                    <div className='flex items-center gap-1.5'>
+                      <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20'>Bets</span>
+                      <span className='text-sm font-bold text-green-400'>{mb.won}W</span>
+                      <span className='text-zinc-600'>/</span>
+                      <span className='text-sm font-bold text-amber-400'>{mb.placed}P</span>
+                      <span className='text-zinc-600'>/</span>
+                      <span className='text-sm font-bold text-red-400'>{mb.lost}L</span>
+                      {mb.total > 0 && (
+                        <span className={`text-xs font-bold ${mb.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {mb.roi > 0 ? '+' : ''}{mb.roi}%
+                        </span>
+                      )}
+                      {pending > 0 && (
+                        <span className='text-xs text-zinc-500'>· {pending} pending</span>
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
-            ) : null
+            )
           })()}
           <p className='text-center text-[10px] text-zinc-600 italic mb-2'>
             Selections dynamically stabilize on morning weights and automatically freeze 30 minutes prior to official race off-time.
@@ -1132,6 +1303,88 @@ function Home() {
               )
             })}
           </div>
+
+          {/* ── EVENT PICKS ── */}
+          {meetings.length >= 2 && (
+            <div ref={eventPicksRef} className='w-full rounded-xl border border-purple-500/20 bg-[#0f1720]/80 p-4'>
+              <div className='mb-3 border-b border-purple-500/10 pb-3 flex items-center justify-between'>
+                <div className='flex items-center gap-2'>
+                  <h3 className='text-sm font-bold text-purple-400 uppercase tracking-wider'>Event Picks</h3>
+                  <span className='text-[10px] text-zinc-500'>One from every race</span>
+                </div>
+              </div>
+              <div className='flex flex-wrap gap-2 mb-4'>
+                {meetings.map(m => (
+                  <button
+                    key={m.course}
+                    type='button'
+                    onClick={() => {
+                      const next = selectedMeeting === m.course ? null : m.course
+                      setSelectedMeeting(next)
+                      onMeetingChange?.(next)
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-[11px] font-bold uppercase tracking-wider transition-all ${
+                      selectedMeeting === m.course
+                        ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                        : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'
+                    }`}
+                  >
+                    {m.course}
+                    <span className='ml-1 text-[9px] opacity-60'>{m.raceCount}R</span>
+                    {m.hasGroup && <span className='ml-1 text-[9px] text-amber-400'>★</span>}
+                  </button>
+                ))}
+              </div>
+              {selectedMeeting && eventPicks.length > 0 && (
+                <div className='space-y-1'>
+                  {eventPicks.map((ep, i) => {
+                    const resultBadge = ep.result === 'won' ? 'W' : ep.result === 'placed' ? 'P' : ep.result === 'lost' ? 'L' : '-'
+                    const badgeBg = ep.result === 'won' ? 'bg-green-500/20 text-green-400' : ep.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : ep.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
+                    const isGroup = /group|listed|stakes/i.test(ep.raceName)
+                    return (
+                      <div key={i} className={`flex items-center gap-3 px-3 py-2 rounded-lg ${isGroup ? 'bg-amber-500/5 border border-amber-500/10' : 'bg-white/[0.02] border border-white/5'}`}>
+                        <div className='w-[50px] text-center'>
+                          <div className='text-[10px] font-mono text-zinc-400'>{ep.offTime}</div>
+                        </div>
+                        <div className='flex-1 min-w-0'>
+                          <div className='flex items-center gap-2'>
+                            <span className='text-xs font-bold text-white truncate'>{ep.horse}</span>
+                            {ep.jockey && <span className='text-[9px] text-zinc-500'>({ep.jockey})</span>}
+                          </div>
+                          <div className='text-[9px] text-zinc-500 truncate'>{ep.raceName}</div>
+                        </div>
+                        <div className='text-right shrink-0'>
+                          <div className='text-xs font-mono font-bold text-zinc-300'>{ep.score}</div>
+                          <div className='text-[9px] text-zinc-500'>{ep.odds > 0 ? `${ep.odds}` : '—'}</div>
+                        </div>
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
+                      </div>
+                    )
+                  })}
+                  {/* Event summary */}
+                  {eventPicks.some(ep => ep.result) && (
+                    <div className='flex items-center gap-3 px-3 py-2 mt-1 rounded-lg bg-purple-500/5 border border-purple-500/10'>
+                      <span className='text-[10px] text-purple-400 font-bold uppercase tracking-wider'>Event Total</span>
+                      <span className='text-[10px] text-green-400 font-bold'>{eventPicks.filter(ep => ep.result === 'won').length}W</span>
+                      <span className='text-[10px] text-amber-400 font-bold'>{eventPicks.filter(ep => ep.result === 'placed').length}P</span>
+                      <span className='text-[10px] text-red-400 font-bold'>{eventPicks.filter(ep => ep.result === 'lost').length}L</span>
+                      <span className='text-[10px] text-zinc-500'>· {eventPicks.filter(ep => !ep.result).length} pending</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              {selectedMeeting && eventPicks.length === 0 && races.length === 0 && (
+                <div className='text-xs text-zinc-500 py-4 text-center flex items-center justify-center gap-2'>
+                  <div className='pulse-dot' />
+                  Loading {selectedMeeting} picks — waiting for race data...
+                </div>
+              )}
+              {selectedMeeting && eventPicks.length === 0 && races.length > 0 && (
+                <div className='text-xs text-zinc-500 py-4 text-center'>No runners found for this meeting</div>
+              )}
+            </div>
+          )}
+
           {allRacesCard.length > 0 && (() => {
             const mainPickKeys = new Set(allPicks.map((p: any) => `${p.horse}|${p.course}`))
             return (
@@ -1171,11 +1424,30 @@ function Home() {
                     const isMainPick = mainPickKeys.has(`${r.horse}|${r.course}`)
                     const isSpecMainPick = isMainPick && r.betType === 'SPEC'
                     const hasSelection = !!r.horse && r.horse !== '—' && r.horse !== ''
+                    const isExpanded = expandedRaces.has(r.raceId)
+                    const hasRunners = r.allRunners && r.allRunners.length > 0
+                    const topRunnerScore = r.allRunners?.[0]?.score || 0
+                    const secondScore = r.allRunners?.[1]?.score || 0
+                    const scoreGap = topRunnerScore && secondScore ? topRunnerScore - secondScore : 0
                     return (
-                      <tr key={i} className={`border-b border-slate-800/30 ${
-                        isSpecMainPick ? 'bg-slate-500/5' : isMainPick ? 'bg-amber-500/5' : r.isWinner ? 'bg-green-500/5' : 'opacity-50'
-                      }`}>
-                        <td className='py-2 px-3 font-mono text-xs text-slate-300'>{r.offTime}</td>
+                      <React.Fragment key={i}>
+                      <tr
+                        onClick={() => {
+                          const next = new Set(expandedRaces)
+                          if (next.has(r.raceId)) next.delete(r.raceId)
+                          else next.add(r.raceId)
+                          setExpandedRaces(next)
+                        }}
+                        className={`border-b border-slate-800/30 transition-colors cursor-pointer hover:bg-slate-500/5 ${
+                          isSpecMainPick ? 'bg-slate-500/5' : isMainPick ? 'bg-amber-500/10 text-slate-100' : r.isWinner ? 'bg-green-500/5' : hasSelection ? 'text-slate-300' : 'text-slate-500 opacity-30'
+                        }`}
+                      >
+                        <td className='py-2 px-3 font-mono text-xs text-slate-300'>
+                          {r.offTime}
+                          {hasRunners && (
+                            <span className='ml-1 text-[9px] text-slate-600'>{r.allRunners.length}R</span>
+                          )}
+                        </td>
                         <td className='py-2 px-3 font-semibold text-xs text-slate-200 truncate'>{r.course}</td>
                         <td className='py-2 px-3'>
                           {isSpecMainPick ? (
@@ -1185,15 +1457,23 @@ function Home() {
                           ) : r.horse && r.horse !== '—' ? (
                             <span className='font-semibold text-slate-200 text-xs tracking-wide'>{r.horse}</span>
                           ) : (
-                            <span className='text-slate-600'>—</span>
+                            <span className='text-slate-700/40'>—</span>
+                          )}
+                          {r.jockey && hasSelection && (
+                            <div className='text-[9px] text-slate-500 mt-0.5'>{r.jockey}</div>
                           )}
                         </td>
-                        <td className='py-2 px-3 text-xs text-slate-400 truncate'>{r.going || '—'}</td>
+                        <td className='py-2 px-3 text-xs text-slate-400 max-w-[120px] truncate' title={r.going}>{shortGoing(r.going)}</td>
                         <td className='py-2 px-3 text-center font-mono text-xs font-bold text-slate-300'>
-                          {hasSelection && r.score ? r.score : <span className='text-slate-700'>—</span>}
+                          {hasSelection && r.score ? (
+                            <span className='inline-flex items-center gap-1'>
+                              {r.score}
+                              {scoreGap > 10 && <span className='text-[9px] text-green-400/60' title={`+${scoreGap} gap to 2nd`}>+{scoreGap}</span>}
+                            </span>
+                          ) : <span className='text-slate-700/40'>—</span>}
                         </td>
                         <td className='py-2 px-3 text-center font-mono text-[10px] text-slate-400'>
-                          {hasSelection && r.winProb > 0 ? `${r.winProb > 1 ? r.winProb.toFixed(1) : (r.winProb * 100).toFixed(1)}%` : <span className='text-slate-700'>—</span>}
+                          {hasSelection && r.winProb > 0 ? `${r.winProb > 1 ? r.winProb.toFixed(1) : (r.winProb * 100).toFixed(1)}%` : <span className='text-slate-700/40'>—</span>}
                         </td>
                         <td className='py-2 px-3 text-right font-mono text-xs font-bold text-slate-300'>
                           {hasSelection && r.odds > 0 ? (
@@ -1207,13 +1487,51 @@ function Home() {
                               )}
                             </span>
                           ) : (
-                            <span className='text-slate-700'>—</span>
+                            <span className='text-slate-700/40'>—</span>
                           )}
                         </td>
                         <td className='py-2 px-3 text-right'>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
+                          <div className='flex items-center justify-end gap-1'>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badgeBg}`}>{resultBadge}</span>
+                            {hasRunners && (
+                              <span className={`text-[10px] transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''} text-slate-600`}>›</span>
+                            )}
+                          </div>
                         </td>
                       </tr>
+                      {isExpanded && hasRunners && r.allRunners.map((run: any, ri: number) => {
+                        const isPick = run.horse === r.horse
+                        const runBadge = run.result === 'won' ? 'W' : run.result === 'placed' ? 'P' : run.result === 'lost' ? 'L' : '-'
+                        const runBadgeBg = run.result === 'won' ? 'bg-green-500/20 text-green-400' : run.result === 'placed' ? 'bg-amber-500/20 text-amber-400' : run.result === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-500/10 text-zinc-500'
+                        return (
+                          <tr key={`run-${ri}`} className={`border-b border-slate-800/20 ${
+                            isPick ? 'bg-amber-500/5' : run.result === 'won' ? 'bg-green-500/5' : ri % 2 === 0 ? 'bg-slate-500/[0.02]' : ''
+                          }`}>
+                            <td className='py-1.5 px-3 font-mono text-[10px] text-slate-600'>{r.offTime}</td>
+                            <td className='py-1.5 px-3 text-[10px] text-slate-600'>{r.course}</td>
+                            <td className='py-1.5 px-3'>
+                              <span className={`text-[10px] tracking-wide ${isPick ? 'font-bold text-amber-400' : run.result === 'won' ? 'font-bold text-green-400' : 'text-slate-400'}`}>
+                                {run.horse}
+                              </span>
+                              {run.jockey && <span className='text-[8px] text-slate-600 ml-1.5'>{run.jockey}</span>}
+                            </td>
+                            <td className='py-1.5 px-3'></td>
+                            <td className='py-1.5 px-3 text-center font-mono text-[10px] text-slate-400'>
+                              {run.score > 0 ? run.score : <span className='text-slate-700/30'>—</span>}
+                            </td>
+                            <td className='py-1.5 px-3 text-center font-mono text-[10px] text-slate-500'>
+                              {run.winProb > 0 ? `${run.winProb > 1 ? run.winProb.toFixed(1) : (run.winProb * 100).toFixed(1)}%` : ''}
+                            </td>
+                            <td className='py-1.5 px-3 text-right font-mono text-[10px] text-slate-400'>
+                              {run.odds > 0 ? run.odds : ''}
+                            </td>
+                            <td className='py-1.5 px-3 text-right'>
+                              <span className={`text-[9px] font-bold px-1 py-0.5 rounded ${runBadgeBg}`}>{runBadge}</span>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                      </React.Fragment>
                     )
                   })}
                 </tbody>
@@ -1318,6 +1636,45 @@ function App() {
   const [uploadedResults, setUploadedResults] = useState<any[]>([])
   const [selectedHorse, setSelectedHorse] = useState<any>(null)
   const [carouselIndex, setCarouselIndex] = useState(0)
+  const [meetings, setMeetings] = useState<any[]>([])
+  const [itvSchedule, setItvSchedule] = useState<any>(null)
+  const [sidebarMeeting, setSidebarMeeting] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/racingCalendar.json')
+      .then(r => r.json())
+      .then(data => {
+        const today = new Date().toISOString().split('T')[0]
+        const meetings = (data.meetings || []).map((m: any) => {
+          const isLive = today >= m.start && today <= m.end
+          const isPast = today > m.end
+          const isUpcoming = today < m.start
+          const daysUntil = isUpcoming ? Math.ceil((new Date(m.start).getTime() - new Date(today).getTime()) / 86400000) : null
+          return { ...m, isLive, isPast, isUpcoming, daysUntil }
+        })
+        setMeetings(meetings)
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetch('/itvSchedule.json')
+      .then(r => r.json())
+      .then(data => {
+        const today = new Date().toISOString().split('T')[0]
+        const todayBroadcasts = (data.broadcasts || []).filter((b: any) => b.date === today)
+        const allCourses = [...new Set(todayBroadcasts.flatMap((b: any) => b.courses || []))]
+        const allRaces = todayBroadcasts.flatMap((b: any) => b.races || [])
+        setItvSchedule({
+          date: today,
+          isITVDay: todayBroadcasts.length > 0,
+          broadcasts: todayBroadcasts,
+          courses: allCourses,
+          races: allRaces,
+        })
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -1366,7 +1723,7 @@ function App() {
     }
 
     if (activeTab === 'Home') {
-      return <Home />
+      return <Home externalMeeting={sidebarMeeting} onMeetingChange={setSidebarMeeting} />
     }
 
     if (activeTab === 'Calibration') {
@@ -1403,6 +1760,79 @@ function App() {
         </div>
 
         <nav>
+          {meetings.filter(m => m.isLive || m.isUpcoming).length > 0 && (
+            <div className='mb-6'>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Featured</div>
+              <div className='space-y-0.5'>
+                {meetings
+                  .filter(m => m.isLive || (m.isUpcoming && (m.daysUntil || 99) <= 30))
+                  .sort((a, b) => {
+                    if (a.isLive && !b.isLive) return -1
+                    if (!a.isLive && b.isLive) return 1
+                    return (a.daysUntil || 99) - (b.daysUntil || 99)
+                  })
+                  .slice(0, 6)
+                  .map(m => (
+                    <button
+                      key={m.name}
+                      type='button'
+                      className={`w-full px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left flex items-center gap-2 ${
+                        sidebarMeeting === m.course
+                          ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30'
+                          : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                      }`}
+                      onClick={() => {
+                        setSidebarMeeting(sidebarMeeting === m.course ? null : m.course)
+                        setActiveTab('Home')
+                      }}
+                    >
+                      {m.isLive && <span className='w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse' />}
+                      {!m.isLive && m.isUpcoming && <span className='w-1.5 h-1.5 rounded-full bg-amber-400' />}
+                      <span className='flex-1 truncate'>{m.name}</span>
+                      {m.isLive && <span className='text-[9px] font-bold text-green-400 uppercase'>Live</span>}
+                      {m.isUpcoming && m.daysUntil != null && m.daysUntil <= 7 && (
+                        <span className='text-[9px] text-zinc-500'>{m.daysUntil}d</span>
+                      )}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {itvSchedule?.isITVDay && (
+            <div className='mb-6'>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>ITV Racing 📺</div>
+              <div className='space-y-0.5'>
+                {itvSchedule.broadcasts.map((b: any) =>
+                  b.courses.map((course: string) => {
+                    const courseRaces = b.races.filter((r: any) => r.course === course)
+                    const firstTime = courseRaces[0]?.offTime || ''
+                    const lastTime = courseRaces[courseRaces.length - 1]?.offTime || ''
+                    return (
+                      <button
+                        key={`${b.date}-${course}`}
+                        type='button'
+                        className={`w-full px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left flex items-center gap-2 ${
+                          sidebarMeeting === course
+                            ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30'
+                            : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                        }`}
+                        onClick={() => {
+                          setSidebarMeeting(sidebarMeeting === course ? null : course)
+                          setActiveTab('Home')
+                        }}
+                      >
+                        <span className='text-[10px]'>📺</span>
+                        <span className='flex-1 truncate'>{course}</span>
+                        <span className='text-[9px] text-zinc-500 shrink-0'>{b.channel} {firstTime}–{lastTime}</span>
+                      </button>
+                    )
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
           <div className='mb-6'>
             <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Main</div>
             <div className='space-y-1'>

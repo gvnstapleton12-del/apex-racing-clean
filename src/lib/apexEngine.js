@@ -36,6 +36,7 @@ import { computeTrackBiasFactor, getDrawBias, isAW, checkDrawEligibility } from 
 import { evaluateAWTransfer } from './awTransfer.js'
 import { classifyClassLevel, computeORFit, computeWeightFit, computeORProfileAdjustment, computeRPRORFit } from './classModel.js'
 import { computePerformanceRating } from './performanceRating.js'
+import { identifyWinPatterns } from './winPatternMatrix.js'
 import { writeFileSync, appendFileSync } from 'fs'
 import { join } from 'path'
 
@@ -48,7 +49,6 @@ function probBand(winProb) {
 }
 
 function betQuality(probBand, winProb, marketAdj, odds) {
-  if (odds > 0 && odds < 2.0) return 'NO BET'
   if (probBand.tier >= 5) return 'NO BET'
   if (probBand.tier >= 4 && winProb < 8) return 'NO BET'
 
@@ -61,12 +61,88 @@ function betQuality(probBand, winProb, marketAdj, odds) {
   return 'SPECULATIVE'
 }
 
+// --- DUAL-MODE ENGINE: Outlier detection for longshot bypass valve ---
+
+const ELITE_YARDS = [
+  'willie mullins', 'w. p. mullins', 'nicholas gifford', 'dan skelton',
+  'n Henderson', 'nicky henderson', 'gordon elliott', 'olly murphy',
+  'john mcconnell', 'p. n. murphy', 'emily upton', 'jonjo o\'neill',
+  'paul nicholls', 'colin tizzard', 'kim bailey', 'venetia williams',
+]
+
+function checkOutlierTriggers(runner, rpPerformance) {
+  const { lastRaceMargin = 0, speedTrend = [], highestRPR = 0 } = rpPerformance
+  const trainerName = (runner.trainer || '').toLowerCase()
+
+  // Rule 1: Multi-length dominant win (margin >= 5 lengths)
+  if (lastRaceMargin >= 5.0) {
+    return { isTriggered: true, reason: `Dominant Prep (${lastRaceMargin}L)` }
+  }
+
+  // Rule 2: Elite yard class reset — top trainer + high career RPR
+  const matchesYard = ELITE_YARDS.some(yard => trainerName.includes(yard))
+  if (matchesYard && highestRPR >= 125) {
+    return { isTriggered: true, reason: `Elite Yard Reset (RPR ${highestRPR})` }
+  }
+
+  // Rule 3: Progressive speed curve — 3 consecutive improving RPRs
+  if (speedTrend.length === 3) {
+    const improving = speedTrend[2] > speedTrend[1] && speedTrend[1] > speedTrend[0]
+    const gain = speedTrend[2] - speedTrend[0]
+    if (improving && gain >= 15) {
+      return { isTriggered: true, reason: `Speed Curve (${speedTrend.join('→')})` }
+    }
+  }
+
+  return { isTriggered: false, reason: null }
+}
+
+function evaluateRunnerDualMode(runner, rpDataMap) {
+  const odds = Number(runner.odds) || 0
+  const paConf = runner.personalAffinity?.confidence ?? 0
+
+  // Use winnerScore (raw, pre-PA-discount) to avoid double-penalizing
+  // finalScore already has sqrt(paConfidence) applied
+  const score = runner.winnerScore || runner.finalScore || runner.score || 0
+
+  const horseKey = (runner.horse || runner.horse_name || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim()
+  const rpData = rpDataMap?.[horseKey] || null
+
+  // MODE A: Favorites grinder (odds <= 8.0)
+  // Checks raw winnerScore to avoid double-penalty with PA confidence
+  if (odds > 0 && odds <= 8.0) {
+    const passesScore = score >= 25
+    const passesPA = paConf >= 0.25
+
+    if (passesScore && passesPA) {
+      return {
+        engineLabel: odds <= 3.5 ? 'STRONG FAVORITE' : 'VALUE PLAY',
+        triggerReason: null,
+      }
+    }
+  }
+
+  // MODE B: Outlier bypass valve (odds > 8.0)
+  if (odds > 8.0 && rpData) {
+    const check = checkOutlierTriggers(runner, rpData)
+    if (check.isTriggered) {
+      return {
+        engineLabel: 'OUTLIER',
+        triggerReason: check.reason,
+      }
+    }
+  }
+
+  return { engineLabel: null, triggerReason: null }
+}
+
 export function runApexEngine(runners, race, options = {}) {
 
   const goingDb = options.goingDb || {}
   const distanceDb = options.distanceDb || {}
   const replayDb = options.replayDb || {}
   const bucketDb = options.bucketDb || {}
+  const rpDataMap = options.rpDataMap || {}
 
   // Track category lookup for per-category course affinity multipliers
   const trackProfiles = options.trackProfiles || null
@@ -423,7 +499,19 @@ export function runApexEngine(runners, race, options = {}) {
     const courseAffinity = computeCourseAffinity(runner.previous_results, race.course)
 
     const rawFinalScore = layeredWithChaos + energy.energyAdj + paceCompatAdj + formAdj + conditionAdj + trackAdj + awTransferAdj + classAdj + orProfileAdj.adjustment + rprORFit.adjustment + personalAffinityAdj + courseAffinity
-    const finalScore = Number.isFinite(rawFinalScore) ? Math.round(Math.max(1, Math.min(99, rawFinalScore))) : 50
+
+    // Win Pattern Matrix — historical winning shape modifier
+    const winPattern = identifyWinPatterns(runner, race, paceMap, raceShape, runningStyle, options.horseProfileDb?.[runner.horse])
+    const winPatternAdj = winPattern.adjustment
+
+    const finalScore = Number.isFinite(rawFinalScore + winPatternAdj) ? Math.round(Math.max(1, Math.min(99, rawFinalScore + winPatternAdj))) : 50
+
+    // Early race bonus — pre-15:00 races have 57.1% WR vs 24.0% late (14-day live data)
+    let earlyBonus = 0
+    if (race.off_time) {
+      const hour = parseInt(race.off_time.split(':')[0], 10)
+      if (hour < 15) earlyBonus = 1.5
+    }
 
     // Store courseAffinity on runner for output
     runner.courseAffinity = courseAffinity
@@ -431,7 +519,7 @@ export function runApexEngine(runners, race, options = {}) {
     runner.courseMultiplierUsed = courseMultiplier
 
     const rawQAS = (horseQuality.finalScore || 0) * 0.50 +
-      (finalScore || 0) * 0.30 +
+      (finalScore + earlyBonus) * 0.30 +
       (raceShapeSuitability || 0) * 0.20
     const qualityAdjustedScore = Number.isFinite(rawQAS) ? Math.round(rawQAS) : 50
 
@@ -525,6 +613,7 @@ export function runApexEngine(runners, race, options = {}) {
       componentBlend: Math.round(components.finalScore * 0.65 + (withMovement) * 0.35),
       marketAdjustment: Math.round(marketAdj * 10) / 10,
       volatilityAdjustment: Math.round(chaosSuppression * 100) / 100,
+      winPatternAdjustment: Math.round(winPatternAdj * 10) / 10,
       finalScore: rescaledScore,
     }
 
@@ -569,6 +658,10 @@ export function runApexEngine(runners, race, options = {}) {
       improver,
       stableIntent,
       conditionMatch,
+      winPattern: {
+        adjustment: winPatternAdj,
+        patterns: winPattern.patterns,
+      },
       personalAffinity: {
         factor: Math.round(personalAffinity.factor * 1000) / 1000,
         confidence: Math.round(personalAffinity.confidence * 100) / 100,
@@ -677,16 +770,6 @@ export function runApexEngine(runners, race, options = {}) {
     return Math.max(0.01, Math.min(0.99, calibratedProb))
   }
 
-  function dampenCalibration(p) {
-    if (p <= 0.05) return p * 0.50
-    if (p <= 0.10) return p * 0.43
-    if (p <= 0.15) return p * 0.51
-    if (p <= 0.20) return p * 0.73
-    if (p <= 0.30) return p * 0.78
-    if (p <= 0.40) return p
-    return Math.min(0.99, p * 1.19)
-  }
-
   const enablePaCalibration = options.enablePaCalibration !== false
   const paCalibrationCap = options.paCalibrationCap ?? 0.45
   const plattWinProbs = []
@@ -694,31 +777,12 @@ export function runApexEngine(runners, race, options = {}) {
     const prob = p / 100
     const calibrated = calibrateWinProbability(prob)
     plattWinProbs.push(calibrated)
-    const dampened = dampenCalibration(calibrated)
-    // PA boost: tiered scalars from live calibration data.
-    // PA>10: 18% pred → 50.5% actual (×2.42), PA 2-5: 14.7% → 34.2% (×2.16), PA 0-2: 8% → 12.9% (×1.61)
-    const paAdj = sorted[i]?.personalAffinity?.adjustment ?? 0
-    let paBoosted = dampened
-    if (paAdj >= 5.0) {
-      paBoosted = Math.min(0.95, dampened * 2.42)
-    } else if (paAdj >= 2.0) {
-      paBoosted = Math.min(0.95, dampened * 2.16)
-    } else if (paAdj > 0) {
-      paBoosted = Math.min(0.95, dampened * 1.61)
-    }
-    // PA confidence discount: blend toward field average for sparse-data horses
-    const paConfidence = sorted[i]?.personalAffinity?.confidence ?? 1.0
-    if (paConfidence < 0.5) {
-      const fieldAvg = 1 / sorted.length
-      paBoosted = paBoosted * paConfidence + fieldAvg * (1 - paConfidence)
-    }
-    return Math.round(paBoosted * 1000) / 10
+    return Math.round(calibrated * 1000) / 10
   })
   const adjustedPlaceProbs = placeProbs.map((p) => {
     const prob = p / 100
     const calibrated = calibrateWinProbability(prob)
-    const dampened = dampenCalibration(calibrated)
-    return Math.round(dampened * 1000) / 10
+    return Math.round(calibrated * 1000) / 10
   })
 
   // Engine 2: Race Shape Simulation
@@ -795,43 +859,20 @@ export function runApexEngine(runners, race, options = {}) {
       ...r,
       courseAffinity: r.courseAffinity || 0,
       winProb: Math.round(adjustedWinProbs[i] * 10) / 10,
+      rawBayesianProb: Math.round(winProbs[i] * 10) / 10,
       plattProb: Math.round(plattWinProbs[i] * 10000) / 100,
       placeProb: Math.round(Math.max(adjustedPlaceProbs[i], adjustedWinProbs[i]) * 10) / 10,
       probBand: band.label,
       probRange: band.range,
       probTier: band.tier,
       confidenceScore: r.finalScore,
-      betQuality: (() => {
-        const paAdj = r.personalAffinity?.adjustment ?? 0
-        const components = r.newComponents || r.components || {}
-        const classDrop = components.classDrop || 0
-        const marketScore = r.market?.score || 0
-        const paceCompatScore = r.paceCompat?.score || 0
-        const trainerForm = components.trainerForm || 50
-        const distance = components.distance || 50
-
-        // Override detection: PA < -2 but strong compensating signals
-        let overrideCount = 0
-        const overrideReasons = []
-        if (classDrop > 2) { overrideCount++; overrideReasons.push('class_drop') }
-        if (marketScore > 70) { overrideCount++; overrideReasons.push('market_support') }
-        if (paceCompatScore > 70) { overrideCount++; overrideReasons.push('pace_advantage') }
-        if ((r.formAdj || 0) > 5) { overrideCount++; overrideReasons.push('form_spike') }
-        if (trainerForm > 70) { overrideCount++; overrideReasons.push('trainer_hot') }
-        if (distance > 70) { overrideCount++; overrideReasons.push('distance_suitable') }
-        const overrideTriggered = paAdj <= -2 && overrideCount >= 2
-
-        // PA eligibility zones — PA is a gate, not a probability amplifier
-        if (paAdj > 0) {
-          return betQuality(band, adjustedWinProbs[i], r.market.score, odds)
-        } else if (paAdj > -0.5) {
-          return 'BORDERLINE'
-        } else if (paAdj > -2) {
-          return 'WEAK_COMPAT'
-        } else if (overrideTriggered) {
-          return 'OVERRIDE_' + overrideReasons.slice(0, 2).join('_').toUpperCase()
-        } else {
-          return 'NO BET'
+      betQuality: betQuality(band, adjustedWinProbs[i], r.market.score, odds),
+      // Dual-mode engine label — additive, doesn't replace betQuality
+      ...(() => {
+        const dualMode = evaluateRunnerDualMode(r, rpDataMap)
+        return {
+          engineLabel: dualMode.engineLabel,
+          triggerReason: dualMode.triggerReason,
         }
       })(),
       selectionQuality: selectionQuality(

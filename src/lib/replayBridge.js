@@ -4,14 +4,34 @@ import { extractTagsFromNotes, computeCategoryScores, computeWatchlistPriority, 
 
 const NOTES_PATH = path.join(process.cwd(), 'data', 'replay-notes.json')
 
+let _replayDbCache = null
+let _replayDbDirty = false
+
 function readReplayDb() {
-  if (!fs.existsSync(NOTES_PATH)) return {}
+  if (_replayDbCache) return _replayDbCache
+  if (!fs.existsSync(NOTES_PATH)) { _replayDbCache = {}; return _replayDbCache }
   try {
-    return JSON.parse(fs.readFileSync(NOTES_PATH, 'utf-8'))
+    _replayDbCache = JSON.parse(fs.readFileSync(NOTES_PATH, 'utf-8'))
   } catch (e) {
     console.error('[Replay Bridge] Error reading replay-notes.json:', e.message)
-    return {}
+    _replayDbCache = {}
   }
+  return _replayDbCache
+}
+
+export function flushReplayDb() {
+  if (!_replayDbDirty || !_replayDbCache) return
+  try {
+    fs.writeFileSync(NOTES_PATH, JSON.stringify(_replayDbCache, null, 2))
+    _replayDbDirty = false
+  } catch (e) {
+    console.error('[Replay Bridge] Error writing replay-notes.json:', e.message)
+  }
+}
+
+export function resetReplayDbCache() {
+  _replayDbCache = null
+  _replayDbDirty = false
 }
 
 const POSITIVE_EYECATCHER_TAGS = [
@@ -103,8 +123,7 @@ export function processPostRaceCommentary({ horse, course, date, commentary, pos
 
   const newRunNode = buildRunNode({ date, commentary, tags, position, finishDistance, dynamicAdjustment })
   upsertEntry(replayDb, lookupKey, normalizedHorse, normalizedCourse, newRunNode)
-
-  fs.writeFileSync(NOTES_PATH, JSON.stringify(replayDb, null, 2))
+  _replayDbDirty = true
 }
 
 export function bootstrapReplaysFromLearningDb(learningDb) {

@@ -1,3 +1,8 @@
+/**
+ * ATR Ratings Worker — runs in a separate child_process
+ * Receives date + race data via IPC, returns ratings via IPC
+ * Isolates Playwright from the main server event loop
+ */
 import { chromium } from 'playwright'
 import { readFileSync, writeFileSync, mkdirSync } from 'fs'
 import { resolve, dirname } from 'path'
@@ -96,13 +101,8 @@ async function fetchAtrWithPlaywright(url) {
       viewport: { width: 1920, height: 1080 },
     })
     const page = await context.newPage()
-    await page.route('**/*', (route) => {
-      const type = route.request().resourceType()
-      if (['image', 'media', 'font', 'stylesheet'].includes(type)) return route.abort()
-      return route.continue()
-    })
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 })
-    await page.waitForTimeout(Math.floor(Math.random() * 1500) + 500)
+    await page.waitForTimeout(3000)
     const html = await page.content()
     return html
   } finally {
@@ -115,102 +115,23 @@ async function fetchAtrSafe(url) {
     return await fetchAtr(url)
   } catch (err) {
     if (err.message.includes('403') || err.message.includes('401')) {
-      console.log(`[ATR] Fetch blocked (${err.message}), falling back to Playwright...`)
       return await fetchAtrWithPlaywright(url)
     }
     throw err
   }
 }
 
-function parseFractionalOdds(str) {
-  if (!str) return 0
-  const match = str.match(/(\d+)\/(\d+)/)
-  if (match) return parseInt(match[1]) / parseInt(match[2]) + 1
-  const num = parseFloat(str)
-  return num > 1 ? num : 0
-}
+const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-function extractResultsFromHtml(html, dateStr) {
-  const races = []
-  const raceBlocks = [...html.matchAll(/<div[^>]*class="[^"]*racecard[^"]*"[^>]*>/gi)]
-
-  for (const block of raceBlocks) {
-    const blockStart = block.index
-    const blockEnd = Math.min(html.length, blockStart + 30000)
-    const blockHtml = html.substring(blockStart, blockEnd)
-
-    const courseMatch = blockHtml.match(/<h[23][^>]*class="[^"]*course[^"]*"[^>]*>([^<]+)<\/h[23]>/i)
-    if (!courseMatch) continue
-
-    const course = courseMatch[1].trim()
-    const timeMatch = blockHtml.match(/<span[^>]*class="[^"]*time[^"]*"[^>]*>(\d{2}:\d{2})<\/span>/i)
-    const offTime = timeMatch ? timeMatch[1] : null
-
-    const runners = []
-    const runnerRows = [...blockHtml.matchAll(/<tr[^>]*class="[^"]*runner[^"]*"[^>]*>([\s\S]*?)<\/tr>/gi)]
-
-    for (const row of runnerRows) {
-      const rowHtml = row[1]
-      const posMatch = rowHtml.match(/<td[^>]*class="[^"]*position[^"]*"[^>]*>(\d+)<\/td>/i)
-      const horseMatch = rowHtml.match(/<a[^>]*href="[^"]*\/horse\/[^"]*"[^>]*>([^<]+)<\/a>/i)
-      const spMatch = rowHtml.match(/<td[^>]*class="[^"]*sp[^"]*"[^>]*>([^<]+)<\/td>/i)
-
-      if (horseMatch) {
-        runners.push({
-          horse: horseMatch[1].trim(),
-          position: posMatch ? parseInt(posMatch[1]) : 0,
-          sp: spMatch ? parseFractionalOdds(spMatch[1].trim()) : 0,
-        })
-      }
-    }
-
-    if (runners.length > 0) {
-      const region = course.toLowerCase().includes('(ire)') || course.toLowerCase().includes('down royal') || course.toLowerCase().includes('curragh') || course.toLowerCase().includes('leopardstown') ? 'IRE' : 'GB'
-      races.push({
-        course,
-        off_time: offTime,
-        date: dateStr,
-        region,
-        runners,
-      })
-    }
-  }
-
-  return races
-}
-
-export async function fetchAtrResults(dateStr) {
-  try {
-    const html = await fetchAtrSafe(`${ATR_BASE}/results/${dateStr}`)
-    return extractResultsFromHtml(html, dateStr)
-  } catch (err) {
-    console.error(`[ATR Results] Failed for ${dateStr}:`, err.message)
-    return []
-  }
-}
-
-export async function fetchAtrRacecards(dateStr) {
-  try {
-    const html = await fetchAtr(`${ATR_BASE}/racecard/${dateStr}`)
-    return extractResultsFromHtml(html, dateStr)
-  } catch (err) {
-    console.warn(`[ATR Racecards] HTTP failed for ${dateStr}: ${err.message} (skipping, no Playwright fallback)`)
-    return []
-  }
-}
-
-export async function fetchAtrRatings(dateStr, races = []) {
+async function scrapeRatings(dateStr, races) {
   const cache = loadRatingsCache()
   const todayKey = dateStr
   if (cache[todayKey] && Object.keys(cache[todayKey]).length > 0) {
-    console.log(`[ATR Ratings] Loaded ${Object.keys(cache[todayKey]).length} cached ratings for ${dateStr}`)
+    console.log(`[ATR Worker] Loaded ${Object.keys(cache[todayKey]).length} cached ratings for ${dateStr}`)
     return cache[todayKey]
   }
 
   const ratings = {}
-  let browser
-
-  const MONTHS = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
   const raceUrls = races.map(r => {
     const courseSlug = (r.course || '').toLowerCase().replace(/\s+/g, '-').replace(/'/g, '')
@@ -220,7 +141,7 @@ export async function fetchAtrRatings(dateStr, races = []) {
   })
 
   if (raceUrls.length === 0) {
-    console.log(`[ATR Ratings] No race URLs to scrape`)
+    console.log('[ATR Worker] No race URLs to scrape')
     return ratings
   }
 
@@ -258,9 +179,11 @@ export async function fetchAtrRatings(dateStr, races = []) {
     '--disable-features=NetworkService,Translate,BackForwardCache,AcceptCHFrame,AutoExpandDetailsElement,AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,UseSkiaRenderer,Vulkan',
     '--disable-accelerated-2d-canvas',
   ]
+
+  let browser
   try {
     browser = await chromium.launch({ headless: true, executablePath, args: launchArgs })
-    console.log(`[ATR Ratings] Scraping ${raceUrls.length} race pages...`)
+    console.log(`[ATR Worker] Scraping ${raceUrls.length} race pages...`)
 
     let ctx = await browser.newContext({ userAgent: randomAgent(), viewport: { width: 1920, height: 1080 } })
     let pg = await ctx.newPage()
@@ -314,20 +237,20 @@ export async function fetchAtrRatings(dateStr, races = []) {
         Object.assign(ratings, raceRatings)
         if (i < raceUrls.length - 1) await new Promise(r => setTimeout(r, 800))
       } catch (err) {
-        console.warn(`[ATR Ratings] Failed race ${i + 1}/${raceUrls.length}: ${err.message}`)
+        console.warn(`[ATR Worker] Failed race ${i + 1}/${raceUrls.length}: ${err.message}`)
         if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
-          console.warn('[ATR Ratings] Page crashed, recreating context...')
+          console.warn('[ATR Worker] Page crashed, recreating context...')
           await freshContext()
         }
       }
     }
     await ctx.close().catch(() => {})
 
-    console.log(`[ATR Ratings] Scraped ${Object.keys(ratings).length} horse ratings`)
+    console.log(`[ATR Worker] Scraped ${Object.keys(ratings).length} horse ratings`)
   } catch (err) {
-    console.error(`[ATR Ratings] Failed: ${err.message}`)
+    console.error(`[ATR Worker] Failed: ${err.message}`)
   } finally {
-    if (browser) await browser.close()
+    if (browser) await browser.close().catch(() => {})
   }
 
   if (Object.keys(ratings).length > 0) {
@@ -336,4 +259,34 @@ export async function fetchAtrRatings(dateStr, races = []) {
   }
 
   return ratings
+}
+
+// IPC mode: receive { dateStr, races } from parent, send back ratings
+process.on('message', async (msg) => {
+  if (msg.type === 'scrape') {
+    try {
+      console.log(`[ATR Worker] Received scrape request for ${msg.dateStr} (${msg.races.length} races)`)
+      const ratings = await scrapeRatings(msg.dateStr, msg.races)
+      process.send({ type: 'result', ratings })
+    } catch (err) {
+      process.send({ type: 'error', error: err.message })
+    }
+    process.exit(0)
+  }
+})
+
+// CLI mode: node atrWorker.js <dateStr> <racesJsonFile>
+if (process.argv.length >= 4) {
+  const dateStr = process.argv[2]
+  const racesFile = process.argv[3]
+  try {
+    const races = JSON.parse(readFileSync(racesFile, 'utf8'))
+    scrapeRatings(dateStr, races).then(ratings => {
+      writeFileSync(racesFile + '.result', JSON.stringify(ratings))
+      process.exit(0)
+    })
+  } catch (err) {
+    console.error(`[ATR Worker] CLI error: ${err.message}`)
+    process.exit(1)
+  }
 }

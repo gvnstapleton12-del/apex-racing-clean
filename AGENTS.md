@@ -87,6 +87,9 @@ Three-layer separation:
 - [ ] RaceModal — convert to use same Tailwind card pattern as RacePage
 - [ ] Speed up results scraper (5+ min per date is slow; consider parallel fetching)
 - [ ] Replace template paceBiasByGoing with calculated historical data
+- [x] **Startup retry logic** — `startupFetchWithRetry()` retries up to 3 times at 60s intervals if no races loaded
+- [x] **ATR child process isolation** — ATR Playwright scraping runs in `atrWorker.js` via `child_process.spawn()`, preventing event loop blocking
+- [x] **Health check + auto-restart** — `/api/health` endpoint + self-ping every 60s. After 3 consecutive failures, triggers `gracefulShutdown('HEALTH_CHECK_RESTART')`
 - [x] **Horse memory SQLite fix** — Schema now includes `or_rating`/`rpr_rating`/`starting_price` columns (matching saveHorseRun.js inserts). WAL mode + synchronous=NORMAL added for concurrent reads. Batch query (`getHorseMemoryBatch`) replaces N serial queries with 1 `WHERE horse_name IN (...)` — estimated 60s→~3s per race.
 
 ## Validated Findings

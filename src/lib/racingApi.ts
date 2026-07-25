@@ -12,26 +12,22 @@ export interface LiveState {
 }
 
 export async function fetchLiveState(): Promise<LiveState> {
-  try {
-    const response = await fetch(apiUrl('/api/live-state'))
-    const data = await response.json()
-    const raw = data.racecards || []
-    const result = validateRacecards(raw)
-    const racecards = result.success ? result.data : (() => {
-      console.warn(`Zod validation failed: ${result.error.issues.length} issues`)
-      const { valid } = validateRaces(raw)
-      return valid
-    })()
-    return {
-      racecards,
-      loading: !!data.loading,
-      processingComplete: !!data.processingComplete,
-      atrLoading: !!data.atrLoading,
-      updatedAt: data.updatedAt || null,
-    }
-  } catch (error) {
-    console.error('Failed to fetch live state:', error)
-    return { racecards: [], loading: true, processingComplete: false, atrLoading: false, updatedAt: null }
+  const response = await fetch(apiUrl('/api/live-state'))
+  if (!response.ok) throw new Error(`live-state ${response.status}`)
+  const data = await response.json()
+  const raw = data.racecards || []
+  const result = validateRacecards(raw)
+  const racecards = result.success ? result.data : (() => {
+    console.warn(`Zod validation failed: ${result.error.issues.length} issues`)
+    const { valid } = validateRaces(raw)
+    return valid
+  })()
+  return {
+    racecards,
+    loading: !!data.loading,
+    processingComplete: !!data.processingComplete,
+    atrLoading: !!data.atrLoading,
+    updatedAt: data.updatedAt || null,
   }
 }
 

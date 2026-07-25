@@ -727,19 +727,16 @@ export function passesValueGate(
   apexScore: number = 0,
   previousRuns: number = 0,
   pa: number | null = null,
-  raceApexScores: number[] = []
+  raceApexScores: number[] = [],
+  paConf: number | null = null
 ): boolean {
   if (!odds || odds <= 1 || !prob) return false
-  if (odds < 2.5) return false
-  if (pa !== null && pa <= 0) return false
 
   const impliedProb = 1 / odds
   if (impliedProb >= 1) return false
 
-  // Backtest gate: min 5% calibrated prob
   if (prob < 0.05) return false
 
-  // Backtest gate: dynamic apex — race median + absolute floor
   if (raceApexScores.length > 0 && apexScore > 0) {
     const sorted = [...raceApexScores].sort((a, b) => a - b)
     const mid = Math.floor(sorted.length / 2)
@@ -749,7 +746,6 @@ export function passesValueGate(
     return false
   }
 
-  // Backtest gate: dynamic edge — 25% base, 12% for 5-11 sweet spot
   const rawEdge = prob - impliedProb
   let minRequiredEdge = impliedProb * 0.25
   if (odds >= 5.0 && odds <= 11.0) {
