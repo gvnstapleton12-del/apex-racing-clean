@@ -4561,28 +4561,6 @@ server.listen(PORT, async () => {
     console.error('[ConditionDB] Backfill error:', e.message)
   }
 
-  // Schedule daily racecard fetch at 8am UK time
-  function scheduleNext8am() {
-    const now = new Date()
-    const ukNow = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/London' }))
-    const target = new Date(ukNow)
-    target.setHours(8, 0, 0, 0)
-    if (target <= ukNow) target.setDate(target.getDate() + 1)
-    const msUntil = target.getTime() - ukNow.getTime()
-    console.log(`[Scheduler] Next racecard fetch in ${(msUntil / 3600000).toFixed(1)}h`)
-    setTimeout(async () => {
-      console.log('[Scheduler] 8am racecard fetch triggered')
-      try {
-        const races = await fetchLiveMeetings()
-        console.log(`[Scheduler] Fetched ${Array.isArray(races) ? races.length : '?'} races`)
-      } catch (e) {
-        console.error('[Scheduler] Fetch failed:', e.message)
-      }
-      scheduleNext8am()
-    }, msUntil)
-  }
-  scheduleNext8am()
-
   // Set up schedulers — skip if DISABLE_SCHEDULER env flag is set
   if (process.env.DISABLE_SCHEDULER === 'true') {
     console.log('[Scheduler] Background automated tasks DISABLED via environment flag')
