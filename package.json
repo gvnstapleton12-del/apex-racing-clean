@@ -8,7 +8,7 @@
     "start": "node server.js",
     "frontend": "vite",
     "build": "vite build",
-    "postinstall": "npx playwright install chromium && pnpm rebuild sqlite3"
+    "postinstall": "pnpm rebuild sqlite3"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.11",
