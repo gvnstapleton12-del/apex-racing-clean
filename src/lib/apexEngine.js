@@ -787,7 +787,7 @@ export function runApexEngine(runners, race, options = {}) {
 
   // Engine 2: Race Shape Simulation
   const simulation = runRaceSimulation(sorted, race, paceMap, {
-    numSimulations: options.numSimulations ?? 100,
+    numSimulations: options.numSimulations ?? 50,
     seed: Date.now(),
   })
 
