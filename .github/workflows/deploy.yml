@@ -15,7 +15,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/apex-racing-clean
+            cd /mnt/storage/apex-racing-clean
             git pull --rebase origin main
             npm install --omit=dev
-            pm2 restart apex || (pm2 start server.js --name apex && pm2 save)
+            pm2 restart apex-api || (pm2 start ecosystem.config.cjs && pm2 save)
