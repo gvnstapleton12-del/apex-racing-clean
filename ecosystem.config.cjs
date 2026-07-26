@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'apex-api',
+    name: 'apex',
     script: 'server.js',
     node_args: '--max-old-space-size=768',
     max_restarts: 10,
