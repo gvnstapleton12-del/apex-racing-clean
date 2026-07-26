@@ -1,48 +1,28 @@
-import { createPage, getBrowser } from './browserPool.js'
-
 const SL_BASE = 'https://www.sportinglife.com'
 const SL_API = 'https://www.sportinglife.com/api/horse-racing'
 
-// Shared browser page for all API calls — one context reused across all races
-let _sharedPage = null
-let _sharedContext = null
-
-async function getSharedPage() {
-  if (_sharedPage && !_sharedPage.isClosed()) {
-    try {
-      const br = await getBrowser()
-      if (br && br.isConnected()) return _sharedPage
-    } catch (_) {}
-    console.log('[SL] Browser dead, recreating shared page')
-    await closeSharedPage()
-  }
-  _sharedContext = await createPage()
-  _sharedPage = await _sharedContext.newPage()
-  return _sharedPage
-}
-
-async function closeSharedPage() {
-  try { if (_sharedPage && !_sharedPage.isClosed()) await _sharedPage.close() } catch {}
-  try { if (_sharedContext) await _sharedContext.close() } catch {}
-  _sharedPage = null
-  _sharedContext = null
+const FETCH_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/json,*/*',
+  'Accept-Language': 'en-GB,en',
 }
 
 async function fetchJson(url) {
-  try {
-    const page = await getSharedPage()
-    const data = await page.evaluate(async (u) => {
-      const res = await fetch(u)
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      return await res.json()
-    }, url)
-    return data
-  } catch (err) {
-    if (err.message?.includes('crashed') || err.message?.includes('Target') || err.message?.includes('destroyed')) {
-      await closeSharedPage()
-    }
-    throw err
-  }
+  const res = await fetch(url, { headers: { ...FETCH_HEADERS, Accept: 'application/json' } })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return await res.json()
+}
+
+async function fetchHtml(url) {
+  const res = await fetch(url, { headers: FETCH_HEADERS })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return await res.text()
+}
+
+function extractNextData(html) {
+  const match = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
+  if (!match) return null
+  return JSON.parse(match[1])
 }
 
 const UK_IRE_COURSES = new Set([
@@ -116,27 +96,13 @@ function parseFractionalOdds(str) {
 
 async function fetchMeetingList(dateStr) {
   try {
-    console.log(`[SL] Fetching meeting list via browser for ${dateStr}...`)
-    let page
-    try {
-      page = await getSharedPage()
-      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-    } catch (navErr) {
-      console.warn(`[SL] Meeting list navigation failed (${navErr.message}), resetting browser...`)
-      await closeSharedPage()
-      page = await getSharedPage()
-      await page.goto(`${SL_BASE}/racing/racecards/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-    }
-    try { await page.waitForSelector('script#__NEXT_DATA__', { timeout: 10000 }) } catch {}
-    const html = await page.content()
-
-    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
-    if (!nextDataMatch) {
+    console.log(`[SL] Fetching meeting list for ${dateStr}...`)
+    const html = await fetchHtml(`${SL_BASE}/racing/racecards/${dateStr}`)
+    const nextData = extractNextData(html)
+    if (!nextData) {
       console.error('[SL] No __NEXT_DATA__ found in page')
       return []
     }
-
-    const nextData = JSON.parse(nextDataMatch[1])
     const rawMeetings = nextData?.props?.pageProps?.meetings || []
     console.log(`[SL] Found ${rawMeetings.length} total meetings in __NEXT_DATA__`)
 
@@ -380,41 +346,24 @@ export async function fetchSlRacecards(dateStr) {
     }
     console.timeEnd('[SL] fetchAllRunners')
 
-    // Close shared browser page — racecards done, free memory for ATR
-    await closeSharedPage()
-
     return { races: allRaces, abandoned }
   } catch (err) {
     console.error(`[SL Racecards] Failed for ${dateStr}:`, err.message)
-    await closeSharedPage()
     return []
   }
 }
 
 export async function fetchSlResults(dateStr) {
   try {
-    console.log(`[SL] Fetching results via browser for ${dateStr}...`)
+    console.log(`[SL] Fetching results for ${dateStr}...`)
 
-    let page
-    try {
-      page = await getSharedPage()
-      await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-    } catch (navErr) {
-      console.warn(`[SL] Results navigation failed (${navErr.message}), resetting browser...`)
-      await closeSharedPage()
-      page = await getSharedPage()
-      await page.goto(`${SL_BASE}/racing/results/${dateStr}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
-    }
-    try { await page.waitForSelector('script#__NEXT_DATA__', { timeout: 10000 }) } catch {}
-    const html = await page.content()
-
-    const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s)
-    if (!nextDataMatch) {
+    const html = await fetchHtml(`${SL_BASE}/racing/results/${dateStr}`)
+    const nextData = extractNextData(html)
+    if (!nextData) {
       console.error('[SL] Results: No __NEXT_DATA__ found')
       return []
     }
 
-    const nextData = JSON.parse(nextDataMatch[1])
     const rawMeetings = nextData?.props?.pageProps?.meetings || []
     console.log(`[SL] Results: Found ${rawMeetings.length} meetings in __NEXT_DATA__`)
 
@@ -511,11 +460,9 @@ export async function fetchSlResults(dateStr) {
     }
 
     console.log(`[SL] Results: ${allRaces.length}/${raceIds.length} races with results`)
-    await closeSharedPage()
     return allRaces
   } catch (err) {
     console.error(`[SL Results] Failed for ${dateStr}:`, err.message)
-    await closeSharedPage()
     return []
   }
 }
