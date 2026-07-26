@@ -1067,31 +1067,33 @@ async function fetchLiveMeetings() {
 
     console.log(`[LiveMeetings] Processing ${rawRaces.length} races from Sporting Life...`)
 
-    // Phase 1: Process races immediately WITHOUT waiting for ATR ratings
+    // Phase 1: Process races in parallel batches (concurrency = 4)
     console.time('[LiveMeetings] processRaces')
     const processed = []
+    const CONCURRENCY = 4
 
-    for (let i = 0; i < rawRaces.length; i++) {
-      const race = rawRaces[i]
-      try {
-        const result = await Promise.race([
-          processRace(race),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 25000))
-        ])
-        processed.push(result)
-      } catch (e) {
-        console.error(`[processRace] Error ${race.course} ${race.off_time}: ${e.message}`)
+    for (let batch = 0; batch < rawRaces.length; batch += CONCURRENCY) {
+      const batchRaces = rawRaces.slice(batch, batch + CONCURRENCY)
+      const results = await Promise.allSettled(
+        batchRaces.map(race => processRace(race))
+      )
+      for (let j = 0; j < results.length; j++) {
+        if (results[j].status === 'fulfilled') {
+          processed.push(results[j].value)
+        } else {
+          const race = batchRaces[j]
+          console.error(`[processRace] Error ${race.course} ${race.off_time}: ${results[j].reason?.message}`)
+        }
       }
-      if (i % 5 === 4) {
-        const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
-        console.log(`[LiveMeetings] ${i + 1}/${rawRaces.length} races processed, ${totalRunners} runners`)
-        LIVE_STATE.racecards = [...processed]
-        LIVE_STATE.updatedAt = new Date().toISOString()
-        LIVE_STATE.loading = false
-        API_CACHE.set(cacheKey, processed)
-        io.emit('live-update', buildLightweightState())
-        await new Promise(resolve => setTimeout(resolve, 0))
-      }
+
+      const totalRunners = processed.reduce((sum, r) => sum + (r.runners?.length || 0), 0)
+      console.log(`[LiveMeetings] ${Math.min(batch + CONCURRENCY, rawRaces.length)}/${rawRaces.length} races processed, ${totalRunners} runners`)
+      LIVE_STATE.racecards = [...processed]
+      LIVE_STATE.updatedAt = new Date().toISOString()
+      LIVE_STATE.loading = false
+      API_CACHE.set(cacheKey, processed)
+      io.emit('live-update', buildLightweightState())
+      await new Promise(resolve => setTimeout(resolve, 0))
     }
 
     // Broadcast scored races IMMEDIATELY — picks visible within ~30s
