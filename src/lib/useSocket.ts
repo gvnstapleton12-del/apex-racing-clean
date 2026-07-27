@@ -2,9 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { io, Socket } from 'socket.io-client'
 
-const SOCKET_URL = (typeof import.meta !== 'undefined' && import.meta.env?.PROD)
-  ? 'https://apex-racing-clean-production.up.railway.app'
-  : 'http://localhost:3000'
+const SOCKET_URL = ''
 
 export function useSocketLiveUpdate(queryKeys: string[]) {
   const queryClient = useQueryClient()
