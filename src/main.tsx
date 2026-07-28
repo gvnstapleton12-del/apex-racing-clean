@@ -1019,30 +1019,30 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   }, [picksKey, today])
 
   return (
-    <div className='dashboard-page max-w-7xl mx-auto'>
-      <section className='dashboard-hero' style={{ padding: '24px 32px' }}>
-        <div className='flex items-center justify-between gap-8'>
+    <div className='dashboard-page max-w-7xl mx-auto overflow-x-hidden w-full max-w-full'>
+      <section className='dashboard-hero px-4 py-6 sm:px-8 sm:py-8'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6'>
           <div>
             <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
-            <h1 className='text-4xl font-black tracking-tight mt-2'>Today's Picks</h1>
+            <h1 className='text-2xl sm:text-4xl font-black tracking-tight mt-2'>Today&apos;s Picks</h1>
           </div>
           
-          <div className='flex items-center gap-6'>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{ukIreRaces.length}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
+          <div className='grid grid-cols-4 sm:flex sm:items-center gap-3 sm:gap-6 w-full sm:w-auto'>
+            <div className='text-center min-w-0'>
+              <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{ukIreRaces.length}</div>
+              <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
             </div>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{totalRunners}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Runners</div>
+            <div className='text-center min-w-0'>
+              <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{totalRunners}</div>
+              <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Runners</div>
             </div>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{topScore || '--'}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Top Score</div>
+            <div className='text-center min-w-0'>
+              <div className='text-2xl sm:text-3xl font-bold text-amber-400 truncate'>{topScore || '--'}</div>
+              <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Top Score</div>
             </div>
-            <div className='text-center'>
-              <div className='text-3xl font-bold text-amber-400'>{livePicksStats?.picks?.length || todaySaved?.picks?.length || allPicks.length}</div>
-              <div className='text-xs text-zinc-400 uppercase tracking-wider'>Picks</div>
+            <div className='text-center min-w-0'>
+              <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{livePicksStats?.picks?.length || todaySaved?.picks?.length || allPicks.length}</div>
+              <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Picks</div>
             </div>
             <button
               type='button'
@@ -1055,14 +1055,14 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                   })
                   .catch(() => {})
               }}
-              className='px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition'
+              className='col-span-4 sm:col-span-1 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition whitespace-nowrap justify-self-start sm:justify-self-auto'
             >
               🔄 Repick
             </button>
             {nextRace && (
-              <div className='text-center pl-6 border-l border-white/10'>
-                <div className='text-3xl font-bold text-amber-400'>{nextRace.offTime}</div>
-                <div className='text-xs text-zinc-400 uppercase tracking-wider'>Next Off</div>
+              <div className='col-span-4 sm:col-span-1 text-center sm:pl-6 sm:border-l sm:border-white/10'>
+                <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{nextRace.offTime}</div>
+                <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Next Off</div>
               </div>
             )}
           </div>
