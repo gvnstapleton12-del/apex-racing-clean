@@ -1121,62 +1121,8 @@ async function fetchLiveMeetings() {
       }
     }
 
-    // Phase 2: ATR ratings in background — runs in child_process to avoid event loop block
-    ;(async () => {
-      try {
-        console.time('[ATR] fetchAtrRatings')
-        console.log('[ATR] Fetching ratings in background (child process)...')
-        const atrRatings = await spawnAtrWorker(today, rawRaces)
-        const atrCount = Object.keys(atrRatings).length
-        console.timeEnd('[ATR] fetchAtrRatings')
-        console.log(`[ATR] Got ${atrCount} ratings, merging into processed races...`)
-
-        const normalizedAtrRatings = {}
-        for (const [name, rating] of Object.entries(atrRatings)) {
-          normalizedAtrRatings[normalizeHorseName(name)] = rating
-        }
-
-        let merged = 0
-        for (const race of processed) {
-          let raceChanged = false
-          const updatedRunners = (race.runners || []).map(runner => {
-            const key = normalizeHorseName(runner.horse)
-            const rating = normalizedAtrRatings[key]
-            if (rating && rating > 0 && (!runner.rpr || runner.rpr === 0)) {
-              raceChanged = true
-              merged++
-              return { ...runner, rpr: rating }
-            }
-            return runner
-          })
-          if (raceChanged) {
-            race.runners = updatedRunners
-            try {
-              const rescored = await processRace({
-                ...race,
-                runners: updatedRunners,
-              })
-              Object.assign(race, rescored)
-            } catch (e) {
-              console.error(`[ATR] Re-score failed ${race.course}: ${e.message}`)
-            }
-          }
-        }
-
-        console.log(`[ATR] Merged ${merged} ratings, re-scored affected races`)
-        LIVE_STATE.atrLoading = false
-        LIVE_STATE.updatedAt = new Date().toISOString()
-        LIVE_STATE.racecards = processed
-        API_CACHE.set(cacheKey, processed)
-        io.emit('live-update', buildLightweightState())
-        console.log('[ATR] Re-broadcasted with ATR ratings')
-      } catch (error) {
-        console.timeEnd('[ATR] fetchAtrRatings')
-        console.error('[ATR] Background fetch failed:', error.message)
-        LIVE_STATE.atrLoading = false
-        io.emit('live-update', buildLightweightState())
-      }
-    })()
+    // Phase 2: ATR ratings — DISABLED (source returns 404, Chromium crashes on 1.5Gi RAM)
+    LIVE_STATE.atrLoading = false
 
     // Phase 3: Racing Post data in background — adds RPR, TopSpeed, stats
     ;(async () => {
