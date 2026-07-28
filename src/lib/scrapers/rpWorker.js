@@ -104,7 +104,7 @@ function runRacecardsScraper(dateStr) {
   return new Promise((resolve, reject) => {
     console.log(`[RP Worker] Running: python "${RACECARDS_SCRIPT}" --day 1 --region gb`)
 
-    const pythonProcess = spawn('python', [
+    const pythonProcess = spawn('/usr/bin/python3', [
       RACECARDS_SCRIPT,
       '--day', '1',
       '--region', 'gb'
