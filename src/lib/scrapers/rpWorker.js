@@ -110,7 +110,8 @@ function runRacecardsScraper(dateStr) {
       '--region', 'gb'
     ], {
       cwd: join(RPSCRAPE_DIR, 'scripts'),
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: true
     })
 
     let stdout = ''
