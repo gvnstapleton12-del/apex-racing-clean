@@ -405,6 +405,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   useSocketLiveUpdate(['home-racecards', 'racecards'])
   const races = liveState?.racecards || []
   const processingComplete = liveState?.processingComplete ?? false
+  const serverLockedNap = liveState?.lockedNap || null
 
   useEffect(() => {
     fetch('/api/daily-picks')
@@ -714,7 +715,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   }, [yesterdaySaved])
 
   const displayPicks = pickView === 'yesterday' ? yesterdaySelections : picksLive
-  const liveBestBet = picksLive[0] || null
+  const liveBestBet = serverLockedNap || picksLive[0] || null
   const displayBestBet = pickView === 'yesterday' ? (yesterdaySelections[0] || null) : liveBestBet
 
   // Next race off

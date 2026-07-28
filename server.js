@@ -479,6 +479,9 @@ const LIVE_STATE = {
   loading: true,
   processingComplete: false,
   atrLoading: false,
+  lockedNap: null,
+  lockedPicks: null,
+  lockedDate: null,
 }
 
 function findPredictionForRunner(race, runner) {
@@ -1106,6 +1109,17 @@ async function fetchLiveMeetings() {
     API_CACHE.set(cacheKey, processed)
     io.emit('live-update', buildLightweightState())
     console.log(`[LiveMeetings] Broadcasted ${processed.length} races (pre-ATR)`)
+
+    if (!LIVE_STATE.lockedDate || LIVE_STATE.lockedDate !== today) {
+      const allRunners = processed.flatMap(r => (r.runners || []).map(runner => ({ ...runner, course: r.course, off_time: r.off_time, race_id: r.race_id })))
+      const bettable = allRunners.filter(r => r.betQuality !== 'NO BET' && (r.score || 0) > 0 && r.odds > 0)
+      const sorted = bettable.sort((a, b) => (b.score || 0) - (a.score || 0))
+      if (sorted.length > 0) {
+        LIVE_STATE.lockedNap = sorted[0]
+        LIVE_STATE.lockedDate = today
+        console.log(`[NAP] Locked: ${sorted[0].horse} at ${sorted[0].course} ${sorted[0].off_time} (score: ${sorted[0].score})`)
+      }
+    }
 
     // Phase 2: ATR ratings in background — runs in child_process to avoid event loop block
     ;(async () => {
@@ -2084,6 +2098,7 @@ function buildLightweightState() {
     loading: LIVE_STATE.loading,
     processingComplete: LIVE_STATE.processingComplete,
     atrLoading: LIVE_STATE.atrLoading,
+    lockedNap: LIVE_STATE.lockedNap || null,
   }
 }
 
