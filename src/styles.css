@@ -115,6 +115,10 @@ button {
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
 }
 
+.mobile-nav-toggle {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     position: relative;
@@ -135,10 +139,44 @@ button {
     gap: 12px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    flex-wrap: wrap;
   }
 
   .sidebar::after {
     display: none;
+  }
+
+  .mobile-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #a1a1aa;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mobile-nav-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  .sidebar nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .sidebar nav.mobile-nav-open {
+    display: flex;
   }
 
   .brand {
@@ -156,10 +194,6 @@ button {
   }
 
   .brand p {
-    display: none;
-  }
-
-  .sidebar nav {
     display: none;
   }
 

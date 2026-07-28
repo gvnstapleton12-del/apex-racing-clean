@@ -1027,7 +1027,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
             <h1 className='text-2xl sm:text-4xl font-black tracking-tight mt-2'>Today&apos;s Picks</h1>
           </div>
           
-          <div className='grid grid-cols-4 sm:flex sm:items-center gap-3 sm:gap-6 w-full sm:w-auto'>
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full sm:w-auto'>
             <div className='text-center min-w-0'>
               <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{ukIreRaces.length}</div>
               <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
@@ -1055,12 +1055,12 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                   })
                   .catch(() => {})
               }}
-              className='col-span-4 sm:col-span-1 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition whitespace-nowrap justify-self-start sm:justify-self-auto'
+              className='col-span-2 sm:col-span-1 px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition whitespace-nowrap justify-self-start sm:justify-self-auto'
             >
               🔄 Repick
             </button>
             {nextRace && (
-              <div className='col-span-4 sm:col-span-1 text-center sm:pl-6 sm:border-l sm:border-white/10'>
+              <div className='col-span-2 sm:col-span-1 text-center sm:pl-6 sm:border-l sm:border-white/10'>
                 <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{nextRace.offTime}</div>
                 <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Next Off</div>
               </div>
@@ -1640,6 +1640,7 @@ function App() {
   const [meetings, setMeetings] = useState<any[]>([])
   const [itvSchedule, setItvSchedule] = useState<any>(null)
   const [sidebarMeeting, setSidebarMeeting] = useState<string | null>(null)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   useEffect(() => {
     fetch('/racingCalendar.json')
@@ -1760,7 +1761,16 @@ function App() {
           </div>
         </div>
 
-        <nav>
+        <button
+          type='button'
+          className='mobile-nav-toggle'
+          onClick={() => setMobileNavOpen(!mobileNavOpen)}
+          aria-label='Toggle navigation'
+        >
+          {mobileNavOpen ? '✕' : '☰'}
+        </button>
+
+        <nav className={mobileNavOpen ? 'mobile-nav-open' : ''}>
           {meetings.filter(m => m.isLive || m.isUpcoming).length > 0 && (
             <div className='mb-6'>
               <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Featured</div>
@@ -1785,6 +1795,7 @@ function App() {
                       onClick={() => {
                         setSidebarMeeting(sidebarMeeting === m.course ? null : m.course)
                         setActiveTab('Home')
+                        setMobileNavOpen(false)
                       }}
                     >
                       {m.isLive && <span className='w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse' />}
@@ -1821,6 +1832,7 @@ function App() {
                         onClick={() => {
                           setSidebarMeeting(sidebarMeeting === course ? null : course)
                           setActiveTab('Home')
+                          setMobileNavOpen(false)
                         }}
                       >
                         <span className='text-[10px]'>📺</span>
@@ -1846,7 +1858,7 @@ function App() {
                       ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                       : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
                   }`}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => { setActiveTab(tab); setMobileNavOpen(false) }}
                 >
                   {tab}
                 </button>
@@ -1866,7 +1878,7 @@ function App() {
                       ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                       : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
                   }`}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => { setActiveTab(tab); setMobileNavOpen(false) }}
                 >
                   {tab}
                 </button>
@@ -1886,7 +1898,7 @@ function App() {
                       ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
                       : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
                   }`}
-                  onClick={() => setActiveTab(tab)}
+                  onClick={() => { setActiveTab(tab); setMobileNavOpen(false) }}
                 >
                   {tab}
                 </button>
