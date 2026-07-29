@@ -1198,48 +1198,49 @@ async function fetchLiveMeetings() {
       }
     })()
 
-    // Fetch ATR odds as secondary source — fire and forget, never blocks fetchLiveMeetings
-    ;(async () => {
-      try {
-        console.log('[ATR Odds] Fetching ATR odds (background)...')
-        const atrRaces = await Promise.race([
-          fetchAtrRacecards(today),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('ATR odds timeout (30s)')), 30000))
-        ])
-        if (atrRaces && atrRaces.length > 0) {
-          let oddsMerged = 0
-          processed.forEach((race) => {
-            const atrMatch = atrRaces.find(
-              (ar) => normalizeCourse(ar.course) === normalizeCourse(race.course) &&
-                String(ar.off_time || '').replace(':', '') === String(race.off_time || '').replace(':', '')
-            )
-            if (atrMatch && atrMatch.runners) {
-              race.runners = (race.runners || []).map((runner) => {
-                const atrRunner = atrMatch.runners.find(
-                  (ar) => normalizeHorseName(ar.horse) === normalizeHorseName(runner.horse)
-                )
-                if (atrRunner && atrRunner.sp && atrRunner.sp > 0) {
-                  const slOdds = runner.odds
-                  const atrOdds = atrRunner.sp
-                  if (String(slOdds) !== String(atrOdds)) {
-                    console.log(`[ODDS] ${runner.horse}: SL=${slOdds} ATR=${atrOdds} → using ATR`)
-                    oddsMerged++
-                  }
-                  return { ...runner, odds: atrOdds, atrOdds }
-                }
-                return runner
-              })
-            }
-          })
-          console.log(`[ATR Odds] Merged ${oddsMerged} ATR odds`)
-          LIVE_STATE.racecards = processed
-          API_CACHE.set(cacheKey, { ...processed, _date: today })
-          io.emit('live-update', buildLightweightState())
-        }
-      } catch (error) {
-        console.error('[ATR Odds] Fetch failed:', error.message)
-      }
-    })()
+    // ATR Odds disabled — ATR racecard pages require JavaScript rendering (Chromium),
+    // which can't run on 1.5Gi RAM server. SL odds + RP Worker cover this data.
+    // ;(async () => {
+    //   try {
+    //     console.log('[ATR Odds] Fetching ATR odds (background)...')
+    //     const atrRaces = await Promise.race([
+    //       fetchAtrRacecards(today),
+    //       new Promise((_, reject) => setTimeout(() => reject(new Error('ATR odds timeout (30s)')), 30000))
+    //     ])
+    //     if (atrRaces && atrRaces.length > 0) {
+    //       let oddsMerged = 0
+    //       processed.forEach((race) => {
+    //         const atrMatch = atrRaces.find(
+    //           (ar) => normalizeCourse(ar.course) === normalizeCourse(race.course) &&
+    //             String(ar.off_time || '').replace(':', '') === String(race.off_time || '').replace(':', '')
+    //         )
+    //         if (atrMatch && atrMatch.runners) {
+    //           race.runners = (race.runners || []).map((runner) => {
+    //             const atrRunner = atrMatch.runners.find(
+    //               (ar) => normalizeHorseName(ar.horse) === normalizeHorseName(runner.horse)
+    //             )
+    //             if (atrRunner && atrRunner.sp && atrRunner.sp > 0) {
+    //               const slOdds = runner.odds
+    //               const atrOdds = atrRunner.sp
+    //               if (String(slOdds) !== String(atrOdds)) {
+    //                 console.log(`[ODDS] ${runner.horse}: SL=${slOdds} ATR=${atrOdds} → using ATR`)
+    //                 oddsMerged++
+    //               }
+    //               return { ...runner, odds: atrOdds, atrOdds }
+    //             }
+    //             return runner
+    //           })
+    //         }
+    //       })
+    //       console.log(`[ATR Odds] Merged ${oddsMerged} ATR odds`)
+    //       LIVE_STATE.racecards = processed
+    //       API_CACHE.set(cacheKey, { ...processed, _date: today })
+    //       io.emit('live-update', buildLightweightState())
+    //     }
+    //   } catch (error) {
+    //     console.error('[ATR Odds] Fetch failed:', error.message)
+    //   }
+    // })()
 
     // Persist enriched racecard data for OR/PR gap backfill
     try {
