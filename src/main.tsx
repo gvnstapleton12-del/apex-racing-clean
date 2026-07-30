@@ -1022,9 +1022,9 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
     <div className='dashboard-page max-w-7xl mx-auto overflow-x-hidden w-full max-w-full'>
       <section className='dashboard-hero px-4 py-6 sm:px-8 sm:py-8'>
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6'>
-          <div>
+          <div className='min-w-0'>
             <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
-            <h1 className='text-2xl sm:text-4xl font-black tracking-tight mt-2'>Today&apos;s Picks</h1>
+            <h1 className='text-2xl sm:text-4xl font-black tracking-tight mt-2 break-words'>Today&apos;s Picks</h1>
           </div>
           
           <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full sm:w-auto'>
@@ -1751,6 +1751,10 @@ function App() {
 
   return (
     <div className='layout bg-gradient-to-br from-[#071018] to-[#0b1220]'>
+      <div
+        className={`mobile-nav-backdrop ${mobileNavOpen ? 'active' : ''}`}
+        onClick={() => setMobileNavOpen(false)}
+      />
       <aside className='sidebar'>
         <div className='brand'>
           <div className='brand-mark'>A</div>

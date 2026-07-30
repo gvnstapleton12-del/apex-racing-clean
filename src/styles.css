@@ -121,7 +121,7 @@ button {
 
 @media (max-width: 768px) {
   .sidebar {
-    position: relative;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -139,7 +139,8 @@ button {
     gap: 12px;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    border-radius: 0;
   }
 
   .sidebar::after {
@@ -159,6 +160,7 @@ button {
     font-size: 18px;
     cursor: pointer;
     transition: all 0.2s;
+    flex-shrink: 0;
   }
 
   .mobile-nav-toggle:hover {
@@ -166,13 +168,38 @@ button {
     color: #fff;
   }
 
+  .mobile-nav-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+  }
+
+  .mobile-nav-backdrop.active {
+    display: block;
+  }
+
   .sidebar nav {
     display: none;
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
     width: 100%;
     flex-direction: column;
-    gap: 8px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 4px;
+    padding: 12px 16px;
+    border-top: none;
+    border-bottom: 1px solid var(--line);
+    background: rgba(5, 7, 10, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 51;
   }
 
   .sidebar nav.mobile-nav-open {
@@ -206,7 +233,7 @@ button {
   }
 
   .main {
-    padding: 16px 12px 24px;
+    padding: 72px 12px 24px;
     width: 100%;
   }
 }
