@@ -1214,7 +1214,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
               </div>
             )
           })()}
-          <p className='text-center text-[10px] text-zinc-600 italic mb-2'>
+          <p className='text-center text-[10px] text-zinc-600 italic mb-2 px-2 break-words'>
             Selections dynamically stabilize on morning weights and automatically freeze 30 minutes prior to official race off-time.
           </p>
           {homeWidgets && (
@@ -1239,15 +1239,15 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
               <div className='border-r border-white/10 px-3'>
                 <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>PA Signal</div>
                 {homeWidgets.paCoverage.withPA > 0 ? (
-                  <div className='mt-1.5 space-y-0.5 text-[11px]'>
+                  <div className='mt-1.5 grid grid-cols-2 gap-1 text-[11px]'>
                     {homeWidgets.paSignal.map((band: any) => (
-                      <div key={band.label} className='flex justify-between'>
+                      <div key={band.label} className='flex items-center gap-1 bg-white/[0.03] rounded px-1.5 py-0.5'>
                         <span className={
                           band.label.includes('Strong') ? 'text-emerald-400' :
                           band.label.includes('Positive') ? 'text-green-400' :
                           band.label.includes('Weak') ? 'text-yellow-400' : 'text-red-400'
                         }>{band.label.split('(')[0].trim()}</span>
-                        <span className='text-zinc-300'>{band.total} | {band.wr}% | {band.roiPct}%</span>
+                        <span className='text-zinc-500 text-[10px] ml-auto'>{band.wr}%</span>
                       </div>
                     ))}
                   </div>
@@ -1258,16 +1258,16 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
               {/* CALIBRATION */}
               <div className='pl-3'>
                 <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>Calibration (90d)</div>
-                <div className='mt-1.5 space-y-0.5 text-[11px]'>
+                <div className='mt-1.5 grid grid-cols-2 gap-1 text-[11px]'>
                   {homeWidgets.cal90.filter((band: any) => band.n > 0).map((band: any) => {
                     const err = Number(band.error)
                     return (
-                      <div key={band.label} className='flex justify-between'>
+                      <div key={band.label} className='flex items-center gap-1 bg-white/[0.03] rounded px-1.5 py-0.5'>
                         <span className='text-zinc-300'>{band.label}</span>
                         <span className={
-                          Math.abs(err) < 3 ? 'text-emerald-400' :
-                          Math.abs(err) < 6 ? 'text-yellow-400' : 'text-red-400'
-                        }>{band.n} | {band.actualWR}% | {err}pp</span>
+                          Math.abs(err) < 3 ? 'text-emerald-400 ml-auto' :
+                          Math.abs(err) < 6 ? 'text-yellow-400 ml-auto' : 'text-red-400 ml-auto'
+                        }>{err}pp</span>
                       </div>
                     )
                   })}
@@ -1444,10 +1444,12 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                         }`}
                       >
                         <td className='py-2 px-3 font-mono text-xs text-slate-300'>
-                          {r.offTime}
-                          {hasRunners && (
-                            <span className='ml-1 text-[9px] text-slate-600'>{r.allRunners.length}R</span>
-                          )}
+                          <div className='flex flex-col'>
+                            <span className='font-bold'>{r.offTime}</span>
+                            {hasRunners && (
+                              <span className='text-[9px] text-slate-600'>{r.allRunners.length}R</span>
+                            )}
+                          </div>
                         </td>
                         <td className='py-2 px-3 font-semibold text-xs text-slate-200 truncate'>{r.course}</td>
                         <td className='py-2 px-3'>
