@@ -14,7 +14,7 @@
  * CLI mode: node rpWorker.js <dateStr> <outputJsonFile>
  */
 
-import { spawn } from 'child_process'
+import { execFile } from 'child_process'
 import { readFileSync, writeFileSync, existsSync } from 'fs'
 import { resolve, dirname, join } from 'path'
 import { fileURLToPath } from 'url'
@@ -104,14 +104,13 @@ function runRacecardsScraper(dateStr) {
   return new Promise((resolve, reject) => {
     console.log(`[RP Worker] Running: python "${RACECARDS_SCRIPT}" --day 1 --region gb`)
 
-    const pythonProcess = spawn('/usr/bin/python3', [
+    const pythonProcess = execFile('/usr/bin/python3', [
       RACECARDS_SCRIPT,
       '--day', '1',
       '--region', 'gb'
     ], {
       cwd: join(RPSCRAPE_DIR, 'scripts'),
-      stdio: ['pipe', 'pipe', 'pipe'],
-      shell: true
+      maxBuffer: 10 * 1024 * 1024
     })
 
     let stdout = ''
