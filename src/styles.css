@@ -189,19 +189,33 @@ button {
   /* Layout: sidebar gone, main takes full width */
   .layout {
     display: block;
-    overflow: hidden;
   }
   .main {
     padding: 60px 12px 24px;
     width: 100%;
     max-width: 100%;
-    overflow: hidden;
   }
 
   /* Contain everything inside dashboard-page */
   .dashboard-page {
-    overflow: hidden;
     max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Ensure no grid child pushes past viewport */
+  .dashboard-page > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* All flex containers constrained on mobile */
+  .dashboard-page .flex-wrap {
+    min-width: 0;
+  }
+
+  /* Pick card badges: force wrap, never overflow */
+  .pick-card, .pick-card-featured {
+    overflow: hidden;
   }
 
   /* Full card table: horizontal scroll, not page overflow */
@@ -213,7 +227,6 @@ button {
 
   .full-card-table-wrap table {
     table-layout: fixed;
-    min-width: 520px;
   }
 
   /* Hero metrics: 2-col then stack on tiny */
