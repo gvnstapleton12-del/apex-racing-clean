@@ -1142,8 +1142,8 @@ export default function Proof() {
                         <th className='text-right py-2 pr-4'>Wins</th>
                         <th className='text-right py-2 pr-4'>WR</th>
                         <th className='text-right py-2 pr-4'>ROI</th>
-                        <th className='text-right py-2 pr-4'>Avg Odds</th>
-                        <th className='text-right py-2 pr-4'>Avg Edge</th>
+                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Odds</th>
+                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Edge</th>
                         <th className='text-right py-2 pr-2'>Sample</th>
                       </tr>
                     </thead>
@@ -1166,8 +1166,8 @@ export default function Proof() {
                                 <span title="Insufficient sample">{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
                               )}
                             </td>
-                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgOdds}</td>
-                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgEdge}%</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgOdds}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgEdge}%</td>
                             <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}{b.reliable ? '' : ` (\u00B1${b.ci95}pp)`}</td>
                           </tr>
                         )
@@ -1195,8 +1195,8 @@ export default function Proof() {
                         <th className='text-right py-2 pr-4'>Wins</th>
                         <th className='text-right py-2 pr-4'>WR</th>
                         <th className='text-right py-2 pr-4'>ROI</th>
-                        <th className='text-right py-2 pr-4'>Avg Odds</th>
-                        <th className='text-right py-2 pr-4'>Avg Edge</th>
+                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Odds</th>
+                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Edge</th>
                         <th className='text-right py-2 pr-2'>Sample</th>
                       </tr>
                     </thead>
@@ -1219,8 +1219,8 @@ export default function Proof() {
                                 <span title="Insufficient sample">{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
                               )}
                             </td>
-                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgOdds}</td>
-                            <td className='text-right py-2 pr-4 text-zinc-400'>{b.avgEdge}%</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgOdds}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgEdge}%</td>
                             <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}{b.reliable ? '' : ` (\u00B1${b.ci95}pp)`}</td>
                           </tr>
                         )
