@@ -768,7 +768,7 @@ function SandboxTab() {
                   <th className='text-right py-2 pr-2'>Odds</th>
                   <th className='text-right py-2 pr-2 col-hide-mobile'>WP%</th>
                   <th className='text-center py-2 pr-2'>Type</th>
-                  <th className='text-right py-2 pr-2'>Pos</th>
+                  <th className='text-right py-2 pr-2 col-hide-mobile'>Pos</th>
                   <th className='text-right py-2'>P&L</th>
                 </tr>
               </thead>
@@ -783,7 +783,7 @@ function SandboxTab() {
                     <td className='py-1.5 pr-2 text-center'>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${r.bet_quality === 'SPECULATIVE' ? 'bg-amber-500/15 text-amber-400' : 'bg-zinc-500/15 text-zinc-400'}`}>{r.bet_quality}</span>
                     </td>
-                    <td className={`py-1.5 pr-2 text-right font-bold ${r.finishing_position === 1 ? 'text-green-400' : r.finishing_position <= 3 ? 'text-blue-400' : 'text-zinc-400'}`}>
+                    <td className={`py-1.5 pr-2 text-right font-bold col-hide-mobile ${r.finishing_position === 1 ? 'text-green-400' : r.finishing_position <= 3 ? 'text-blue-400' : 'text-zinc-400'}`}>
                       {r.finishing_position === 1 ? '1st' : r.finishing_position === 2 ? '2nd' : r.finishing_position === 3 ? '3rd' : `${r.finishing_position}th`}
                     </td>
                     <td className={`py-1.5 text-right font-bold ${r.virtual_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
