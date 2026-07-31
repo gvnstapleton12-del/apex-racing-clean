@@ -271,7 +271,7 @@ function HistoryTab() {
       )}
 
       {stats.engines?.calibration && (
-        <div className='grid grid-cols-2 gap-4'>
+        <div className='grid grid-cols-2 gap-4 cal-engines-grid'>
           <div className='bg-[#0f1720]/80 border border-blue-500/20 rounded-2xl p-6'>
             <h2 className='text-lg font-bold mb-4 text-blue-400'>CORE Calibration</h2>
             <div className='space-y-2'>
