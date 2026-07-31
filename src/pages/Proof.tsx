@@ -597,7 +597,7 @@ function HistoryTab() {
                 <th className='text-right py-2 pr-3'>Odds</th>
                 <th className='text-center py-2 pr-3 col-hide-mobile'>Grade</th>
                 <th className='text-center py-2 pr-3'>Quality</th>
-                <th className='text-center py-2 pr-3'>Result</th>
+                <th className='text-center py-2 pr-3 col-hide-mobile'>Result</th>
               </tr>
             </thead>
             <tbody>
@@ -611,7 +611,7 @@ function HistoryTab() {
                    <td className='py-2 pr-3 text-right text-zinc-400'>{r.odds ? `${r.odds}` : '-'}</td>
                    <td className='py-2 pr-3 text-center col-hide-mobile'><span className={`px-2 py-0.5 rounded text-xs font-bold ${r.grade?.startsWith('A') ? 'text-green-400 bg-green-500/10' : r.grade?.startsWith('B') ? 'text-blue-400 bg-blue-500/10' : r.grade?.startsWith('C') ? 'text-amber-400 bg-amber-500/10' : r.grade === 'D' ? 'text-orange-400 bg-orange-500/10' : 'text-zinc-400 bg-white/5'}`}>{r.grade || '-'}</span></td>
                    <td className='py-2 pr-3 text-center'><span className={`px-2 py-0.5 rounded text-xs font-bold ${r.betQuality === 'STRONG BET' || r.betQuality === 'STRONG VALUE' ? 'text-green-400 bg-green-500/10' : r.betQuality === 'BET' || r.betQuality === 'VALUE' || r.betQuality === 'PLAYABLE' ? 'text-blue-400 bg-blue-500/10' : r.betQuality === 'CONSIDER' || r.betQuality === 'SPECULATIVE' ? 'text-amber-400 bg-amber-500/10' : r.betQuality === 'AVOID' ? 'text-red-400/60 bg-red-500/5' : 'text-zinc-400 bg-white/5'}`}>{r.betQuality || '-'}</span></td>
-                  <td className='py-2 pr-3 text-center'>
+                   <td className='py-2 pr-3 text-center col-hide-mobile'>
                     {r.resulted ? (
                       <span className={`px-2 py-0.5 rounded text-xs font-bold ${r.actual_won ? 'text-green-400 bg-green-500/20' : 'text-zinc-400 bg-zinc-500/20'}`}>
                         {r.actual_won ? 'WON' : `${r.actual_position}th`}
