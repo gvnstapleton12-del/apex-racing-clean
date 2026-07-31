@@ -1071,7 +1071,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
 
       {/* Top Pick Hero — suppressed during processing */}
       {!processingComplete && !isLoading ? (
-        <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/10 rounded-2xl p-8 mb-6'>
+        <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/10 rounded-2xl p-4 sm:p-8 mb-6'>
           <div className='flex items-center gap-4 relative z-10'>
             <div className='pulse-dot' />
             <div>
@@ -1085,14 +1085,14 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
         const napResult = todayResults.find((r: any) => r.horse === displayBestBet.horse && r.course === displayBestBet.course)
         const napHasRaced = napResult && (napResult.result === 'won' || napResult.result === 'placed' || napResult.result === 'lost')
         return (
-        <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/20 rounded-2xl p-8 mb-6'>
+        <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/20 rounded-2xl p-4 sm:p-8 mb-6'>
           <div className='absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
-          <div className='flex items-center justify-between relative z-10'>
-            <div className='flex-1'>
+          <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10'>
+            <div className='flex-1 min-w-0'>
               <div className='flex items-center gap-3 mb-3'>
                 {!napHasRaced && <span className='text-lg font-black uppercase tracking-wider px-3 py-1 rounded-lg' style={{ backgroundColor: '#d97706', color: '#fff' }}>NAP</span>}
               </div>
-              <h2 className='text-5xl font-black text-amber-400 mb-2 drop-shadow-[0_0_16px_rgba(251,191,36,0.3)]'>{displayBestBet.horse}</h2>
+              <h2 className='text-3xl sm:text-5xl font-black text-amber-400 mb-2 drop-shadow-[0_0_16px_rgba(251,191,36,0.3)] break-words'>{displayBestBet.horse}</h2>
               <div className='flex items-center gap-2 text-sm text-zinc-400 flex-wrap'>
                 <span className='text-zinc-300 font-medium'>{displayBestBet.course}</span>
                 <span className='text-zinc-600'>·</span>
@@ -1178,7 +1178,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
             const showBets = pickView !== 'yesterday' && livePicksStats?.mainBets
             if (!activeStats && !showBets) return null
             return (
-              <div className='flex items-center gap-6 mb-4 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
+              <div className='flex flex-wrap items-center gap-2 sm:gap-6 mb-4 px-3 sm:px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
                 {activeStats && (
                   <div className='flex items-center gap-2'>
                     <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Yesterday</span>
@@ -1193,20 +1193,20 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                   const mb = livePicksStats.mainBets
                   const pending = mb.total - mb.won - mb.placed - mb.lost - (mb.nr || 0)
                   return (
-                    <div className='flex items-center gap-1.5'>
+                    <div className='flex items-center gap-1.5 flex-wrap'>
                       <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20'>Bets</span>
-                      <span className='text-sm font-bold text-green-400'>{mb.won}W</span>
+                      <span className='text-xs sm:text-sm font-bold text-green-400'>{mb.won}W</span>
                       <span className='text-zinc-600'>/</span>
-                      <span className='text-sm font-bold text-amber-400'>{mb.placed}P</span>
+                      <span className='text-xs sm:text-sm font-bold text-amber-400'>{mb.placed}P</span>
                       <span className='text-zinc-600'>/</span>
-                      <span className='text-sm font-bold text-red-400'>{mb.lost}L</span>
+                      <span className='text-xs sm:text-sm font-bold text-red-400'>{mb.lost}L</span>
                       {mb.total > 0 && (
-                        <span className={`text-xs font-bold ${mb.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <span className={`text-[11px] sm:text-xs font-bold ${mb.roi > 0 ? 'text-green-400' : 'text-red-400'}`}>
                           {mb.roi > 0 ? '+' : ''}{mb.roi}%
                         </span>
                       )}
                       {pending > 0 && (
-                        <span className='text-xs text-zinc-500'>· {pending} pending</span>
+                        <span className='text-[11px] sm:text-xs text-zinc-500'>· {pending} pending</span>
                       )}
                     </div>
                   )
@@ -1930,7 +1930,7 @@ function App() {
         </div>
       </aside>
 
-      <main className='main'>
+      <main className='main overflow-x-hidden'>
         <section className='dashboard-hero mb-6'>
           <img src='/images/racecourse-grandstand.jpg' alt='' className='dashboard-hero-img' />
           <div className='dashboard-hero-gradient' />
