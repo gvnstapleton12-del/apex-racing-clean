@@ -1757,16 +1757,13 @@ function App() {
         className={`mobile-nav-backdrop ${mobileNavOpen ? 'active' : ''}`}
         onClick={() => setMobileNavOpen(false)}
       />
-      <aside className='sidebar'>
-        <div className='brand'>
-          <div className='brand-mark'>A</div>
 
-          <div>
-            <h1>APEX</h1>
-            <p>Racing Intelligence</p>
-          </div>
+      {/* Mobile header */}
+      <div className='mobile-header'>
+        <div className='flex items-center gap-2'>
+          <div className='w-7 h-7 bg-amber-500 rounded-lg flex items-center justify-center text-xs font-bold text-black'>A</div>
+          <span className='text-sm font-bold text-white'>APEX</span>
         </div>
-
         <button
           type='button'
           className='mobile-nav-toggle'
@@ -1775,8 +1772,11 @@ function App() {
         >
           {mobileNavOpen ? '✕' : '☰'}
         </button>
+      </div>
 
-        <nav className={mobileNavOpen ? 'mobile-nav-open' : ''}>
+      {/* Mobile nav overlay */}
+      <div className={`mobile-nav-overlay ${mobileNavOpen ? 'open' : ''}`}>
+        <nav>
           {meetings.filter(m => m.isLive || m.isUpcoming).length > 0 && (
             <div className='mb-6'>
               <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Featured</div>
@@ -1819,7 +1819,7 @@ function App() {
 
           {itvSchedule?.isITVDay && (
             <div className='mb-6'>
-              <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>ITV Racing 📺</div>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>ITV Racing</div>
               <div className='space-y-0.5'>
                 {itvSchedule.broadcasts.map((b: any) =>
                   b.courses.map((course: string) => {
@@ -1841,9 +1841,8 @@ function App() {
                           setMobileNavOpen(false)
                         }}
                       >
-                        <span className='text-[10px]'>📺</span>
                         <span className='flex-1 truncate'>{course}</span>
-                        <span className='text-[9px] text-zinc-500 shrink-0'>{b.channel} {firstTime}–{lastTime}</span>
+                        <span className='text-[9px] text-zinc-500 shrink-0'>{b.channel} {firstTime}-{lastTime}</span>
                       </button>
                     )
                   })
@@ -1912,25 +1911,159 @@ function App() {
             </div>
           </div>
         </nav>
+      </div>
+
+      {/* Desktop sidebar */}
+      <aside className='sidebar'>
+        <div className='brand'>
+          <div className='brand-mark'>A</div>
+          <div>
+            <h1>APEX</h1>
+            <p>Racing Intelligence</p>
+          </div>
+        </div>
+
+        <nav>
+          {meetings.filter(m => m.isLive || m.isUpcoming).length > 0 && (
+            <div className='mb-6'>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Featured</div>
+              <div className='space-y-0.5'>
+                {meetings
+                  .filter(m => m.isLive || (m.isUpcoming && (m.daysUntil || 99) <= 30))
+                  .sort((a, b) => {
+                    if (a.isLive && !b.isLive) return -1
+                    if (!a.isLive && b.isLive) return 1
+                    return (a.daysUntil || 99) - (b.daysUntil || 99)
+                  })
+                  .slice(0, 6)
+                  .map(m => (
+                    <button
+                      key={`desktop-${m.name}`}
+                      type='button'
+                      className={`w-full px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left flex items-center gap-2 ${
+                        sidebarMeeting === m.course
+                          ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30'
+                          : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                      }`}
+                      onClick={() => {
+                        setSidebarMeeting(sidebarMeeting === m.course ? null : m.course)
+                        setActiveTab('Home')
+                      }}
+                    >
+                      {m.isLive && <span className='w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse' />}
+                      {!m.isLive && m.isUpcoming && <span className='w-1.5 h-1.5 rounded-full bg-amber-400' />}
+                      <span className='flex-1 truncate'>{m.name}</span>
+                      {m.isLive && <span className='text-[9px] font-bold text-green-400 uppercase'>Live</span>}
+                      {m.isUpcoming && m.daysUntil != null && m.daysUntil <= 7 && (
+                        <span className='text-[9px] text-zinc-500'>{m.daysUntil}d</span>
+                      )}
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {itvSchedule?.isITVDay && (
+            <div className='mb-6'>
+              <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>ITV Racing</div>
+              <div className='space-y-0.5'>
+                {itvSchedule.broadcasts.map((b: any) =>
+                  b.courses.map((course: string) => {
+                    const courseRaces = b.races.filter((r: any) => r.course === course)
+                    const firstTime = courseRaces[0]?.offTime || ''
+                    const lastTime = courseRaces[courseRaces.length - 1]?.offTime || ''
+                    return (
+                      <button
+                        key={`desktop-${b.date}-${course}`}
+                        type='button'
+                        className={`w-full px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 text-left flex items-center gap-2 ${
+                          sidebarMeeting === course
+                            ? 'bg-purple-500/15 text-purple-300 border border-purple-500/30'
+                            : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                        }`}
+                        onClick={() => {
+                          setSidebarMeeting(sidebarMeeting === course ? null : course)
+                          setActiveTab('Home')
+                        }}
+                      >
+                        <span className='flex-1 truncate'>{course}</span>
+                        <span className='text-[9px] text-zinc-500 shrink-0'>{b.channel} {firstTime}-{lastTime}</span>
+                      </button>
+                    )
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className='mb-6'>
+            <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Main</div>
+            <div className='space-y-1'>
+              {['Home', 'Racecards', 'Results'].map((tab) => (
+                <button
+                  key={`desktop-${tab}`}
+                  type='button'
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                    activeTab === tab
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className='mb-6'>
+            <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>Tools</div>
+            <div className='space-y-1'>
+              {['Evidence', 'Rating Edge', 'Tracks'].map((tab) => (
+                <button
+                  key={`desktop-${tab}`}
+                  type='button'
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                    activeTab === tab
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className='text-xs text-zinc-500 uppercase tracking-[0.2em] mb-3 px-4'>System</div>
+            <div className='space-y-1'>
+              {['Calibration', 'About'].map((tab) => (
+                <button
+                  key={`desktop-${tab}`}
+                  type='button'
+                  className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left ${
+                    activeTab === tab
+                      ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                      : 'text-zinc-400 hover:bg-white/[0.03] hover:text-white border border-transparent'
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+        </nav>
 
         <div className='sidebar-panel bg-white/[0.02] rounded-xl p-4 border border-white/5 mt-auto'>
           <span className='text-zinc-500 text-xs uppercase tracking-wider'>APEX Racing</span>
           <strong className='text-zinc-400 text-sm'>v1.1.0</strong>
         </div>
-
-        <div className='sidebar-carousel'>
-          {[1, 2, 3].map(n => (
-            <img
-              key={n}
-              src={`/images/horse-race-${n}.jpg`}
-              alt=''
-              className={n === carouselIndex ? 'active' : ''}
-            />
-          ))}
-        </div>
       </aside>
 
-      <main className='main overflow-x-hidden'>
+      <main className='main'>
         <section className='dashboard-hero mb-6'>
           <img src='/images/racecourse-grandstand.jpg' alt='' className='dashboard-hero-img' />
           <div className='dashboard-hero-gradient' />
