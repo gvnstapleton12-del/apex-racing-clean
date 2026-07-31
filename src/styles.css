@@ -4758,5 +4758,6 @@ body::after {
   .calibration-dashboard { padding: 12px; }
   .cal-value-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
   .cal-engines-grid { grid-template-columns: 1fr !important; }
+  .history-table .col-hide-mobile { display: none !important; }
 }
 

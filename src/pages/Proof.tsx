@@ -586,16 +586,16 @@ function HistoryTab() {
           </div>
         </div>
         <div className='overflow-x-auto'>
-          <table className='w-full text-sm'>
+          <table className='w-full text-sm history-table'>
             <thead>
               <tr className='text-zinc-500 text-xs uppercase border-b border-white/5'>
                 <th className='text-left py-2 pr-3'>Horse</th>
                 <th className='text-left py-2 pr-3'>Course</th>
-                <th className='text-left py-2 pr-3'>Date</th>
+                <th className='text-left py-2 pr-3 col-hide-mobile'>Date</th>
                 <th className='text-right py-2 pr-3'>Score</th>
-                <th className='text-right py-2 pr-3'>Win%</th>
+                <th className='text-right py-2 pr-3 col-hide-mobile'>Win%</th>
                 <th className='text-right py-2 pr-3'>Odds</th>
-                <th className='text-center py-2 pr-3'>Grade</th>
+                <th className='text-center py-2 pr-3 col-hide-mobile'>Grade</th>
                 <th className='text-center py-2 pr-3'>Quality</th>
                 <th className='text-center py-2 pr-3'>Result</th>
               </tr>
@@ -605,11 +605,11 @@ function HistoryTab() {
                 <tr key={r.id} className='border-b border-white/[0.02] hover:bg-white/[0.02]'>
                   <td className='py-2 pr-3 font-medium'>{r.horse}</td>
                   <td className='py-2 pr-3 text-zinc-400'>{r.course}</td>
-                  <td className='py-2 pr-3 text-zinc-400 text-xs'>{r.date}</td>
+                  <td className='py-2 pr-3 text-zinc-400 text-xs col-hide-mobile'>{r.date}</td>
                   <td className='py-2 pr-3 text-right'>{(r.finalScore || 0).toFixed(0)}</td>
-                   <td className='py-2 pr-3 text-right'>{(r.winProb || 0).toFixed(1)}%</td>
+                   <td className='py-2 pr-3 text-right col-hide-mobile'>{(r.winProb || 0).toFixed(1)}%</td>
                    <td className='py-2 pr-3 text-right text-zinc-400'>{r.odds ? `${r.odds}` : '-'}</td>
-                   <td className='py-2 pr-3 text-center'><span className={`px-2 py-0.5 rounded text-xs font-bold ${r.grade?.startsWith('A') ? 'text-green-400 bg-green-500/10' : r.grade?.startsWith('B') ? 'text-blue-400 bg-blue-500/10' : r.grade?.startsWith('C') ? 'text-amber-400 bg-amber-500/10' : r.grade === 'D' ? 'text-orange-400 bg-orange-500/10' : 'text-zinc-400 bg-white/5'}`}>{r.grade || '-'}</span></td>
+                   <td className='py-2 pr-3 text-center col-hide-mobile'><span className={`px-2 py-0.5 rounded text-xs font-bold ${r.grade?.startsWith('A') ? 'text-green-400 bg-green-500/10' : r.grade?.startsWith('B') ? 'text-blue-400 bg-blue-500/10' : r.grade?.startsWith('C') ? 'text-amber-400 bg-amber-500/10' : r.grade === 'D' ? 'text-orange-400 bg-orange-500/10' : 'text-zinc-400 bg-white/5'}`}>{r.grade || '-'}</span></td>
                    <td className='py-2 pr-3 text-center'><span className={`px-2 py-0.5 rounded text-xs font-bold ${r.betQuality === 'STRONG BET' || r.betQuality === 'STRONG VALUE' ? 'text-green-400 bg-green-500/10' : r.betQuality === 'BET' || r.betQuality === 'VALUE' || r.betQuality === 'PLAYABLE' ? 'text-blue-400 bg-blue-500/10' : r.betQuality === 'CONSIDER' || r.betQuality === 'SPECULATIVE' ? 'text-amber-400 bg-amber-500/10' : r.betQuality === 'AVOID' ? 'text-red-400/60 bg-red-500/5' : 'text-zinc-400 bg-white/5'}`}>{r.betQuality || '-'}</span></td>
                   <td className='py-2 pr-3 text-center'>
                     {r.resulted ? (
