@@ -1019,7 +1019,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   }, [picksKey, today])
 
   return (
-    <div className='dashboard-page max-w-7xl mx-auto overflow-x-hidden w-full max-w-full'>
+    <div className='dashboard-page max-w-7xl mx-auto w-full max-w-full'>
       <section className='dashboard-hero px-4 py-6 sm:px-8 sm:py-8'>
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6'>
           <div className='min-w-0'>
@@ -1389,7 +1389,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
           {allRacesCard.length > 0 && (() => {
             const mainPickKeys = new Set(allPicks.map((p: any) => `${p.horse}|${p.course}`))
             return (
-            <div className='w-full rounded-xl border border-slate-800 bg-[#0f1720]/80 p-4 overflow-x-auto'>
+            <div className='w-full rounded-xl border border-slate-800 bg-[#0f1720]/80 p-4 overflow-x-auto full-card-table-wrap'>
               <div className='mb-3 border-b border-slate-800 pb-3 flex items-center justify-between'>
                 <h3 className='text-sm font-bold text-slate-400 uppercase tracking-wider'>Today&apos;s Full Card</h3>
                 <div className='flex gap-1'>
