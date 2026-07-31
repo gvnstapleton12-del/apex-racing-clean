@@ -3749,6 +3749,8 @@ body::after {
   flex-direction: column;
   gap: 4px;
   padding: 12px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .cal-stat-value {
@@ -3792,6 +3794,7 @@ body::after {
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .cal-tab {
@@ -4751,5 +4754,8 @@ body::after {
 
 @media (max-width: 640px) {
   .pa-band-table .col-hide-mobile { display: none !important; }
+  .cal-header-stats { grid-template-columns: repeat(2, 1fr); }
+  .calibration-dashboard { padding: 12px; }
+  .cal-value-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
 }
 

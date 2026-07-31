@@ -241,7 +241,7 @@ export default function CalibrationDashboard() {
             <h3 style={{ color: '#e2e8f0', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>Value Picks Performance</h3>
             <p style={{ color: '#94a3b8', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>Gate: P ≥ 10% + 15% margin + APEX ≥ 40</p>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+          <div className='cal-value-grid-4' style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
             <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
               <span style={{ color: '#94a3b8', fontSize: '0.875rem', display: 'block' }}>Bets</span>
               <strong style={{ color: '#e2e8f0', fontSize: '1.5rem', fontWeight: 700 }}>{pricedPicks.length}{missingOddsCount > 0 && <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 400 }}> priced ({missingOddsCount} no odds)</span>}</strong>
