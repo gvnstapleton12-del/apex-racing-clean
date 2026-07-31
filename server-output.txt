@@ -1,0 +1,736 @@
+
+> apex-racing-clean@1.1.0 dev
+> concurrently "node server.js" "vite --host"
+
+[1] 
+[1]   [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m14866[22m[2m[0m ms[22m
+[1] 
+[1]   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5173[22m/[39m
+[1]   [32m➜[39m  [1mNetwork[22m: [36mhttp://169.254.123.4:[1m5173[22m/[39m
+[1]   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.4.41:[1m5173[22m/[39m
+[0] ◇ injected env (4) from .env // tip: ⌘ enable debugging { debug: true }
+[0] [Init] Loaded 63419 horse profiles
+[0] APEX websocket engine running on 3000
+[0] [PG] No DATABASE_URL — using file-based storage
+[0] [STARTUP] APEX_DIAGNOSTIC = undefined
+[0] [STARTUP] DAILY_PICKS_DATABASE has 51 dates, 753 total picks
+[0] [LiveMeetings] Fetching Sporting Life racecards...
+[0] [SL] Fetching racecards for 2026-07-23...
+[0] [SL] Fetching meeting list via browser for 2026-07-23...
+[0] [Track Bias] Loaded existing data for 21 courses
+[0] [OR/PR Gap] Loaded 39 enriched racecard records for backfill
+[0] [ConditionDB] Loaded existing data for 11179 horses
+[0] [Scheduler] Next racecard fetch in 21.9h
+[0] [Horse Memory] Database initialized
+[0] [BrowserPool] Browser launched
+[0] [SL] Found 20 total meetings in __NEXT_DATA__
+[0] [SL] Found meeting: "Sandown" (7 races, ID: 120289)
+[0] [SL] Found meeting: "Doncaster" (7 races, ID: 120288)
+[0] [SL] Found meeting: "Newbury" (6 races, ID: 120287)
+[0] [SL] Found meeting: "Yarmouth" (7 races, ID: 120286)
+[0] [SL] Found meeting: "Southwell" (8 races, ID: 120290)
+[0] [SL] Found meeting: "Leopardstown" (7 races, ID: 120260)
+[0] [SL] Found meeting: "Wexford" (8 races, ID: 120259)
+[0] [SL] 7 UK/IRE meetings, 0 abandoned
+[0] [SL] fetchMeetingList: 25.824s
+[0] [SL] Found 7 UK/IRE meetings, 0 abandoned
+[0] [SL] Fetching Sandown...
+[0] [SL] Meeting 120289 status: DORMANT, course: unknown
+[0] [SL] Sandown: 7 races
+[0] [SL] Fetching Doncaster...
+[0] [SL] Meeting 120288 status: DORMANT, course: unknown
+[0] [SL] Doncaster: 7 races
+[0] [SL] Fetching Newbury...
+[0] [SL] Meeting 120287 status: DORMANT, course: unknown
+[0] [SL] Newbury: 6 races
+[0] [SL] Fetching Yarmouth...
+[0] [SL] Meeting 120286 status: DORMANT, course: unknown
+[0] [SL] Yarmouth: 7 races
+[0] [SL] Fetching Southwell...
+[0] [SL] Meeting 120290 status: DORMANT, course: unknown
+[0] [SL] Southwell: 8 races
+[0] [SL] Fetching Leopardstown...
+[0] [SL] Meeting 120260 status: DORMANT, course: unknown
+[0] [SL] Leopardstown: 7 races
+[0] [SL] Fetching Wexford...
+[0] [SL] Meeting 120259 status: DORMANT, course: unknown
+[0] [SL] Wexford: 8 races
+[0] [SL] fetchMeetingRaces: 4.288s
+[0] [SL] Total 50 UK/IRE races
+[0] [SL] Fetched Sandown 13:55 (7 runners)
+[0] [SL] Fetched Sandown 14:55 (8 runners)
+[0] [SL] Fetched Sandown 14:25 (9 runners)
+[0] [SL] Runner batch 1/17 | RSS: 757MB
+[0] [SL] Fetched Sandown 16:42 (7 runners)
+[0] [SL] Filtering non-runner: Thinthread (status: NONRUNNER)
+[0] [SL] Fetched Sandown 15:30 (6 runners)
+[0] [SL] Fetched Sandown 16:07 (3 runners)
+[0] [SL] Runner batch 2/17 | RSS: 761MB
+[0] [SL] Fetched Sandown 17:17 (12 runners)
+[0] [SL] Fetched Doncaster 14:10 (9 runners)
+[0] [SL] Fetched Doncaster 14:40 (4 runners)
+[0] [SL] Runner batch 3/17 | RSS: 766MB
+[0] [SL] Fetched Doncaster 15:10 (5 runners)
+[0] [SL] Fetched Doncaster 15:45 (8 runners)
+[0] [SL] Filtering non-runner: Evocative Spark (status: NONRUNNER)
+[0] [SL] Fetched Doncaster 16:15 (7 runners)
+[0] [SL] Runner batch 4/17 | RSS: 772MB
+[0] [SL] Fetched Doncaster 16:48 (8 runners)
+[0] [SL] Fetched Doncaster 17:23 (6 runners)
+[0] [SL] Fetched Newbury 17:55 (5 runners)
+[0] [SL] Runner batch 5/17 | RSS: 779MB
+[0] [SL] Filtering non-runner: Babzini (status: NONRUNNER)
+[0] [SL] Fetched Newbury 18:30 (7 runners)
+[0] [SL] Filtering non-runner: Jimmy Knocker (status: NONRUNNER)
+[0] [SL] Fetched Newbury 19:05 (9 runners)
+[0] [SL] Fetched Newbury 19:40 (4 runners)
+[0] [SL] Runner batch 6/17 | RSS: 784MB
+[0] [SL] Filtering non-runner: Alazwar (status: NONRUNNER)
+[0] [SL] Fetched Newbury 20:48 (8 runners)
+[0] [SL] Filtering non-runner: Port George (status: NONRUNNER)
+[0] [SL] Fetched Newbury 20:15 (4 runners)
+[0] [SL] Fetched Yarmouth 17:04 (4 runners)
+[0] [SL] Runner batch 7/17 | RSS: 790MB
+[0] [SL] Fetched Yarmouth 18:49 (6 runners)
+[0] [SL] Fetched Yarmouth 17:39 (7 runners)
+[0] [SL] Fetched Yarmouth 18:14 (4 runners)
+[0] [SL] Runner batch 8/17 | RSS: 795MB
+[0] [SL] Fetched Yarmouth 19:59 (8 runners)
+[0] [SL] Fetched Yarmouth 20:34 (4 runners)
+[0] [SL] Fetched Yarmouth 19:24 (5 runners)
+[0] [SL] Runner batch 9/17 | RSS: 800MB
+[0] [SL] Filtering non-runner: Gunfighter (status: NONRUNNER)
+[0] [SL] Fetched Southwell 16:53 (13 runners)
+[0] [SL] Fetched Southwell 18:01 (13 runners)
+[0] [SL] Fetched Southwell 17:28 (13 runners)
+[0] [SL] Runner batch 10/17 | RSS: 809MB
+[0] [SL] Filtering non-runner: Zohar (status: NONRUNNER)
+[0] [SL] Filtering non-runner: Harry Who (status: NONRUNNER)
+[0] [SL] Fetched Southwell 18:36 (12 runners)
+[0] [SL] Filtering non-runner: Ongombo (status: NONRUNNER)
+[0] [SL] Fetched Southwell 19:11 (12 runners)
+[0] [SL] Fetched Southwell 19:46 (10 runners)
+[0] [SL] Runner batch 11/17 | RSS: 817MB
+[0] [SL] Filtering non-runner: Maleo Matteo (status: NONRUNNER)
+[0] [SL] Fetched Leopardstown 16:58 (6 runners)
+[0] [SL] Fetched Southwell 20:56 (7 runners)
+[0] [SL] Filtering non-runner: Dijon Gone (status: NONRUNNER)
+[0] [SL] Fetched Southwell 20:21 (10 runners)
+[0] [SL] Runner batch 12/17 | RSS: 824MB
+[0] [SL] Fetched Leopardstown 17:33 (12 runners)
+[0] [SL] Filtering non-runner: Alpine Wedding (status: NONRUNNER)
+[0] [SL] Filtering non-runner: Green Empress (status: NONRUNNER)
+[0] [SL] Fetched Leopardstown 18:08 (6 runners)
+[0] [SL] Fetched Leopardstown 18:43 (6 runners)
+[0] [SL] Runner batch 13/17 | RSS: 828MB
+[0] [SL] Filtering non-runner: Mr Ballynonty (status: NONRUNNER)
+[0] [SL] Fetched Leopardstown 19:18 (8 runners)
+[0] [SL] Fetched Leopardstown 19:53 (4 runners)
+[0] [SL] Fetched Leopardstown 20:28 (9 runners)
+[0] [SL] Runner batch 14/17 | RSS: 835MB
+[0] [SL] Fetched Wexford 17:10 (16 runners)
+[0] [SL] Filtering non-runner: Among The Pines (status: NONRUNNER)
+[0] [SL] Fetched Wexford 16:00 (15 runners)
+[0] [SL] Filtering non-runner: My Girl Rosie (status: NONRUNNER)
+[0] [SL] Filtering non-runner: Louve D'arc (status: NONRUNNER)
+[0] [SL] Fetched Wexford 16:35 (15 runners)
+[0] [SL] Runner batch 15/17 | RSS: 848MB
+[0] [SL] Filtering non-runner: John Storey (status: NONRUNNER)
+[0] [SL] Fetched Wexford 17:45 (14 runners)
+[0] [SL] Fetched Wexford 18:55 (13 runners)
+[0] [SL] Filtering non-runner: Urbs Intacta Manet (status: NONRUNNER)
+[0] [SL] Fetched Wexford 18:20 (14 runners)
+[0] [SL] Runner batch 16/17 | RSS: 864MB
+[0] [SL] Filtering non-runner: The Ocean Queen (status: NONRUNNER)
+[0] [SL] Fetched Wexford 20:05 (15 runners)
+[0] [SL] Fetched Wexford 19:30 (12 runners)
+[0] [SL] Runner batch 17/17 | RSS: 872MB
+[0] [SL] fetchAllRunners: 15.924s
+[0] [Startup] fetchSlRacecards: 46.095s
+[0] [BrowserPool] Browser disconnected, will relaunch on next request
+[0] [LiveMeetings] Processing 50 races from Sporting Life...
+[0] [processRace] Sandown 13:55 horseMemory: 9.341s
+[0] [processRace] Sandown 13:55 apexEngine: 37.459s
+[0] [processRace] Sandown 13:55 enrich: 18.154s
+[0] [EXCLUDE] Sandown 14:25 - Martin Densham & Peter Deal Memorial British EBF Maiden Stakes (GBB Race) - All Maiden races = SYSTEM EXCLUDE (Maiden races strictly restricted from protocol)
+[0] [processRace] Sandown 14:55 horseMemory: 4.113s
+[0] [processRace] Sandown 14:55 apexEngine: 30.719s
+[0] [processRace] Sandown 14:55 enrich: 8.982s
+[0] [processRace] Sandown 15:30 horseMemory: 1.980s
+[0] [processRace] Sandown 15:30 apexEngine: 28.479s
+[0] [processRace] Sandown 15:30 enrich: 11.093s
+[0] [LiveMeetings] 5/50 races processed, 24 runners
+[0] [processRace] Sandown 16:42 horseMemory: 3.682s
+[0] [processRace] Sandown 16:42 apexEngine: 40.983s
+[0] [processRace] Sandown 16:42 enrich: 7.548s
+[0] [EXCLUDE] Sandown 17:17 - Billy Ocean Live At Sandown Park 29 July Handicap - Class 5 Handicap with 12+ runners = SYSTEM EXCLUDE
+[0] [processRace] Doncaster 14:10 horseMemory: 2.698s
+[0] [processRace] Doncaster 14:10 apexEngine: 47.507s
+[0] [processRace] Doncaster 14:10 enrich: 13.164s
+[0] [processRace] Doncaster 15:10 horseMemory: 2.416s
+[0] [processRace] Doncaster 15:10 apexEngine: 31.339s
+[0] [processRace] Doncaster 15:10 enrich: 13.818s
+[0] [LiveMeetings] 10/50 races processed, 49 runners
+[0] [processRace] Doncaster 15:45 horseMemory: 4.133s
+[0] [processRace] Doncaster 15:45 apexEngine: 34.621s
+[0] [processRace] Doncaster 15:45 enrich: 5.504s
+[0] [processRace] Doncaster 16:15 horseMemory: 1.679s
+[0] [processRace] Doncaster 16:15 apexEngine: 16.528s
+[0] [processRace] Doncaster 16:15 enrich: 5.811s
+[0] [processRace] Doncaster 16:48 horseMemory: 1.459s
+[0] [processRace] Doncaster 16:48 apexEngine: 18.227s
+[0] [processRace] Doncaster 16:48 enrich: 5.733s
+[0] [processRace] Doncaster 17:23 horseMemory: 1.236s
+[0] [processRace] Doncaster 17:23 apexEngine: 13.233s
+[0] [processRace] Doncaster 17:23 enrich: 5.780s
+[0] [processRace] Newbury 17:55 horseMemory: 1.068s
+[0] [processRace] Newbury 17:55 apexEngine: 11.494s
+[0] [processRace] Newbury 17:55 enrich: 6.153s
+[0] [LiveMeetings] 15/50 races processed, 83 runners
+[0] [processRace] Newbury 18:30 horseMemory: 1.231s
+[0] [processRace] Newbury 18:30 apexEngine: 16.247s
+[0] [processRace] Newbury 18:30 enrich: 5.771s
+[0] [processRace] Newbury 19:05 horseMemory: 1.612s
+[0] [processRace] Newbury 19:05 apexEngine: 24.499s
+[0] [processRace] Newbury 19:05 enrich: 8.335s
+[0] [processRace] Newbury 20:48 horseMemory: 4.448s
+[0] [processRace] Newbury 20:48 apexEngine: 36.251s
+[0] [processRace] Newbury 20:48 enrich: 9.723s
+[0] [LiveMeetings] 20/50 races processed, 115 runners
+[0] [processRace] Yarmouth 17:39 horseMemory: 3.683s
+[0] [processRace] Yarmouth 17:39 apexEngine: 48.617s
+[0] [processRace] Yarmouth 17:39 enrich: 16.444s
+[0] [processRace] Yarmouth 18:49 horseMemory: 12.863s
+[0] [processRace] Yarmouth 18:49 apexEngine: 40.465s
+[0] [processRace] Yarmouth 18:49 enrich: 18.018s
+[0] [processRace] Error Yarmouth 19:24: Timeout
+[0] [LiveMeetings] 25/50 races processed, 136 runners
+[0] Client connected
+[0] [processRace] Yarmouth 19:24 horseMemory: 47.959s
+[0] [processRace] Yarmouth 19:24 apexEngine: 35.686s
+[0] [processRace] Yarmouth 19:24 enrich: 11.819s
+[0] [processRace] Error Yarmouth 19:59: Timeout
+[0] Client connected
+[0] [processRace] Yarmouth 19:59 horseMemory: 1:24.689 (m:ss.mmm)
+[0] [processRace] Yarmouth 19:59 apexEngine: 44.893s
+[0] [processRace] Yarmouth 19:59 enrich: 15.381s
+[0] [processRace] Error Southwell 16:53: Timeout
+[0] Client connected
+[0] [processRace] Southwell 16:53 horseMemory: 1:35.556 (m:ss.mmm)
+[0] [processRace] Southwell 16:53 apexEngine: 1:00.334 (m:ss.mmm)
+[0] [processRace] Southwell 16:53 enrich: 6.466s
+[0] [processRace] Error Southwell 17:28: Timeout
+[0] Client connected
+[0] [processRace] Southwell 17:28 horseMemory: 1:39.551 (m:ss.mmm)
+[0] [processRace] Southwell 17:28 apexEngine: 35.995s
+[0] [processRace] Southwell 17:28 enrich: 6.228s
+[0] [processRace] Error Southwell 18:01: Timeout
+[0] [LiveMeetings] 30/50 races processed, 140 runners
+[0] Client connected
+[0] [processRace] Southwell 18:01 horseMemory: 1:03.472 (m:ss.mmm)
+[0] [processRace] Southwell 18:01 apexEngine: 37.425s
+[0] [processRace] Southwell 18:01 enrich: 6.813s
+[0] [processRace] Error Southwell 18:36: Timeout
+[0] Client connected
+[0] [processRace] Southwell 18:36 horseMemory: 55.372s
+[0] [processRace] Southwell 18:36 apexEngine: 28.835s
+[0] [processRace] Southwell 18:36 enrich: 6.027s
+[0] [processRace] Error Southwell 19:11: Timeout
+[0] [processRace] Southwell 19:11 horseMemory: 45.079s
+[0] [processRace] Southwell 19:11 apexEngine: 29.050s
+[0] [processRace] Southwell 19:11 enrich: 5.179s
+[0] [processRace] Error Southwell 19:46: Timeout
+[0] [processRace] Southwell 19:46 horseMemory: 46.978s
+[0] [processRace] Southwell 19:46 apexEngine: 26.508s
+[0] [processRace] Southwell 19:46 enrich: 6.188s
+[0] [processRace] Error Southwell 20:21: Timeout
+[0] [processRace] Southwell 20:21 horseMemory: 40.670s
+[0] [processRace] Southwell 20:21 apexEngine: 24.075s
+[0] [processRace] Southwell 20:21 enrich: 5.194s
+[0] [processRace] Error Southwell 20:56: Timeout
+[0] [LiveMeetings] 35/50 races processed, 140 runners
+[0] [processRace] Southwell 20:56 horseMemory: 32.583s
+[0] [processRace] Southwell 20:56 apexEngine: 17.234s
+[0] [processRace] Southwell 20:56 enrich: 6.277s
+[0] Client connected
+[0] [processRace] Leopardstown 16:58 horseMemory: 4.957s
+[0] [processRace] Leopardstown 16:58 apexEngine: 16.267s
+[0] [processRace] Leopardstown 16:58 enrich: 6.037s
+[0] [processRace] Leopardstown 17:33 horseMemory: 7.311s
+[0] [processRace] Leopardstown 17:33 apexEngine: 32.391s
+[0] [processRace] Leopardstown 17:33 enrich: 5.120s
+[0] [processRace] Leopardstown 18:08 horseMemory: 673.567ms
+[0] [processRace] Leopardstown 18:08 apexEngine: 15.611s
+[0] [processRace] Leopardstown 18:08 enrich: 5.104s
+[0] [processRace] Leopardstown 18:43 horseMemory: 4.188s
+[0] [processRace] Leopardstown 18:43 apexEngine: 17.688s
+[0] [processRace] Leopardstown 18:43 enrich: 5.197s
+[0] [processRace] Leopardstown 19:18 horseMemory: 1.769s
+[0] [processRace] Leopardstown 19:18 apexEngine: 18.815s
+[0] [processRace] Leopardstown 19:18 enrich: 6.017s
+[0] [LiveMeetings] 40/50 races processed, 178 runners
+[0] [processRace] Leopardstown 20:28 horseMemory: 6.451s
+[0] [processRace] Leopardstown 20:28 apexEngine: 23.044s
+[0] [processRace] Leopardstown 20:28 enrich: 5.091s
+[0] [processRace] Wexford 16:00 horseMemory: 2.632s
+[0] [processRace] Wexford 16:00 apexEngine: 36.193s
+[0] [processRace] Wexford 16:00 enrich: 5.157s
+[0] [processRace] Wexford 16:35 horseMemory: 7.897s
+[0] [processRace] Wexford 16:35 apexEngine: 34.795s
+[0] [processRace] Wexford 16:35 enrich: 5.184s
+[0] Client connected
+[0] [processRace] Wexford 17:10 horseMemory: 7.586s
+[0] [processRace] Wexford 17:10 apexEngine: 40.050s
+[0] [processRace] Wexford 17:10 enrich: 5.916s
+[0] [LiveMeetings] 45/50 races processed, 237 runners
+[0] Client connected
+[0] [processRace] Wexford 17:45 horseMemory: 8.134s
+[0] [processRace] Wexford 17:45 apexEngine: 35.273s
+[0] [processRace] Wexford 17:45 enrich: 6.025s
+[0] Client connected
+[0] [processRace] Wexford 18:20 horseMemory: 7.923s
+[0] [processRace] Wexford 18:20 apexEngine: 31.586s
+[0] [processRace] Wexford 18:20 enrich: 5.835s
+[0] [processRace] Wexford 18:55 horseMemory: 2.774s
+[0] [processRace] Wexford 18:55 apexEngine: 30.376s
+[0] [processRace] Wexford 18:55 enrich: 4.957s
+[0] [processRace] Wexford 19:30 horseMemory: 7.304s
+[0] [processRace] Wexford 19:30 apexEngine: 27.457s
+[0] [processRace] Wexford 19:30 enrich: 5.111s
+[0] [EXCLUDE] Wexford 20:05 - Save The Date Ladies Day At Wexford Races Friday 7th August Flat Race - Pure National Hunt venue
+[0] [LiveMeetings] 50/50 races processed, 290 runners
+[0] [LiveMeetings] processRaces: 28:53.032 (m:ss.mmm)
+[0] [LiveMeetings] Broadcasted 40 races (pre-ATR)
+[0] [ATR] Fetching ratings in background (child process)...
+[0] [RP] Fetching Racing Post data (background)...
+[0] [ATR Odds] Fetching ATR odds (background)...
+[0] Broadcasted 40 races from Sporting Life
+[0] [Startup] Racecards complete (40 races), scheduling results fetch in 5s...
+[0] [RP Worker] [RP Worker] Received scrape request for 2026-07-23
+[0] [RP Worker] Running: python "C:\Users\gvnst\Documents\GitHub\rpscrape\scripts\racecards.py" --day 1 --region gb
+[0] [ATR Worker] [ATR Worker] Received scrape request for 2026-07-23 (50 races)
+[0] [ATR Worker] Scraping 50 race pages...
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [ATR Racecards] HTTP failed for 2026-07-23: HTTP 403 (skipping, no Playwright fallback)
+[0] Client connected
+[0] [BrowserPool] Browser launched
+[0] [RP Worker] [RP Python] 2026-07-23:   0% |                                                 | 0/6 ETA ?[SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [RP Worker] [RP Python] 2026-07-23:  17% |########1                                        | 1/6 ETA 02:01[SL] Results: 0/50 races with results
+[0] [Results] No results scraped for 2026-07-23, matching against existing DB races
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [RP Worker] [RP Python] 2026-07-23:  33% |################3                                | 2/6 ETA 01:32[SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] [PerfRating] Buckland Belle: PR 59.4 → 58.7 (-0.7, run #3)
+[0] [PerfRating] Lope Y Linda: PR 54.9 → 55.3 (+0.4, run #4)
+[0] [PerfRating] Sporty Socks: PR 44 → 43.9 (-0.1, run #3)
+[0] [PerfRating] Kameel: PR 59.2 → 56.9 (-2.3, run #2)
+[0] [PerfRating] Hachiman: PR 59.2 → 56.6 (-2.6, run #3)
+[0] [PerfRating] Cotai Belle: PR 87.7 → 85.5 (-2.2, run #2)
+[0] [PerfRating] Amelia's Joy: PR 68.8 → 70 (+1.2, run #3)
+[0] [PerfRating] Maximum Velocity: PR 62.9 → 65 (+2.1, run #2)
+[0] [PerfRating] Apex Star: PR 60.5 → 60.3 (-0.2, run #3)
+[0] [PerfRating] Pimentel: PR 58.8 → 57.5 (-1.3, run #2)
+[0] [PerfRating] The Craftymaster: PR 58.9 → 58.3 (-0.6, run #4)
+[0] [PerfRating] Lilykoy: PR 43 → 44.4 (+1.4, run #3)
+[0] [PerfRating] Marinakis: PR 46.1 → 44.9 (-1.2, run #4)
+[0] [PerfRating] Dancing Saxon: PR 89.5 → 91.5 (+2, run #3)
+[0] [PerfRating] Fregada: PR 105.3 → 107 (+1.7, run #3)
+[0] [PerfRating] Treasure Rose: PR 90.8 → 92.3 (+1.5, run #3)
+[0] [PerfRating] Sarahmae: PR 96.8 → 101.2 (+4.4, run #3)
+[0] [PerfRating] Focaccia: PR 80.5 → 82 (+1.5, run #3)
+[0] [PerfRating] Likedbymike: PR 100.8 → 101.4 (+0.6, run #4)
+[0] [PerfRating] Xerling: PR 90.3 → 93.1 (+2.8, run #3)
+[0] [PerfRating] Oh Cecelia: PR 102.6 → 102.8 (+0.2, run #3)
+[0] [PerfRating] Yellowstone Lake: PR 91.5 → 91.2 (-0.3, run #3)
+[0] [Learning] Weights adjusted: {"class":4.174,"stride":9.976,"trainer":0.7,"traffic":0.07,"clv":0.8}
+[0] [Freshness] Updated trainer freshness: 0 trainers
+[0] [TrainerForm] Updated: 670 trainers in last 14 days
+[0] [JockeyForm] Updated: 537 jockeys in last 14 days
+[0] [OR History] Built OR profiles for 2433 horses
+[0] [Track Bias] Saved track bias learning data
+[0] [PerfRating] Saved performance rating data
+[0] [Calibration] Matched 47 runners for calibration, saved learning records
+[0] [BacktestCache] Saved 9 new races for 2026-07-22 (total: 39)
+[0] [DAILY PICKS] Matched 2 runners with results
+[0] [COUNTERFACTUAL] Matched 5 activation zone observations with results
+[0] [ConditionDB] Recorded 39 races with full metadata
+[0] [Results] Already have 28 races for 2026-07-21, skipping scrape
+[0] [ATR] fetchAtrRatings: 9:18.765 (m:ss.mmm)
+[0] [ATR] Background fetch failed: ATR worker timeout (5min)
+[0] [RP] Got data for 0 horses
+[0] [RP Worker] [RP Python] 2026-07-23:  50% |########################5                        | 3/6 ETA 01:31[RP Python] 2026-07-23:  67% |################################6                | 4/6 ETA 00:51[RP Python] 2026-07-23:  83% |########################################8        | 5/6 ETA 00:23[RP Python] 2026-07-23: 100% |#################################################| 6/6 ETA 00:00[RP Python] 2026-07-23: 100% |#################################################| 6/6 ETA 00:00
+[0] [RP Worker] [RP Python] Failed to get racecard data.
+[0] status: 200 url: https://www.racingpost.com/racecards/1083/chelmsford-aw/2026-07-23/923396/
+[0] status: 404 url: https://www.racingpost.com/profile/horse/data/cardrunners/923396.json
+[0] Failed to get racecard data.
+[0] status: 200 url: https://www.racingpost.com/racecards/1083/chelmsford-aw/2026-07-23/923398/
+[0] status: 404 url: https://www.racingpost.com/profile/horse/data/cardrunners/923398.json
+[0] Failed to get racecard data.
+[0] status: 200 url: https://www.racingpost.com/racecards/1083/chelmsford-aw/2026-07-23/923400/
+[0] status: 404 url: https://www.racingpost.com/profile/horse/data/cardrunners/923400.json
+[0] Failed to get racecard data.
+[0] status: 200 url: https://www.racingpost.com/racecards/1083/chelmsford-aw/2026-07-23/923395/
+[0] status: 404 url: https://www.racingpost.com/profile/horse/data/cardrunners/923395.json
+[0] Failed to get racecard data.
+[0] status: 200 url: https://www.racingpost.com/racecards/1083/chelmsford-aw/2026-07-23/923399/
+[0] status: 404 url: https://www.racingpost.com/profile/horse/data/cardrunners/923399.json
+[0] Failed to get racecard data.
+[0] status: 200 url: https://www.racingpost.com/racecards/1083/chelmsford-aw/2026-07-23/923397/
+[0] status: 404 url: https://www.racingpost.com/profile/horse/data/cardrunners/923397.json
+[0] [RP Worker] Parsed 275 horses from racecards
+[0] [ATR Worker] [ATR Worker] Scraped 434 horse ratings
+[0] [ConditionDB] Recorded 28 races with full metadata
+[0] [Results] Fetching results for 2026-07-20...
+[0] [SL] Fetching results via browser for 2026-07-20...
+[0] Client connected
+[0] [Shadow Watch] Auto-settled 24 records for 2026-07-22
+[0] Client connected
+[0] [SL] Results: Found 16 meetings in __NEXT_DATA__
+[0] [SL] Results: 34 race IDs to fetch via API
+[0] [SL] Results: 31/34 races with results
+[0] [Results] Found 31 races for 2026-07-20
+[0] [Results] Stored/merged 31 races for 2026-07-20
+[0] [ConditionDB] Recorded 31 races with full metadata
+[0] [Results] fetchTodayResults: 19:53.685 (m:ss.mmm)
+[0] Client connected
+[0] [Scheduler] First race finished (Sandown 13:55), results scraping starts in 2 min
+[0] [Scheduler] Periodic results refresh for 2026-07-23
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [SL] Results: 1/50 races with results
+[0] [Results] Found 1 races for 2026-07-23
+[0] [Results] Stored/merged 1 races for 2026-07-23
+[0] [BacktestCache] Saved 1 new races for 2026-07-23 (total: 1)
+[0] [ConditionDB] Recorded 1 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-22 (2 pending)
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] [ConditionDB] Recorded 39 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-20 (5 pending)
+[0] [Results] Fetching results for 2026-07-20...
+[0] [SL] Fetching results via browser for 2026-07-20...
+[0] Client connected
+[0] [SL] Results: Found 16 meetings in __NEXT_DATA__
+[0] [SL] Results: 34 race IDs to fetch via API
+[0] [SL] Results: 31/34 races with results
+[0] [Results] Found 31 races for 2026-07-20
+[0] [Results] Stored/merged 31 races for 2026-07-20
+[0] [ConditionDB] Recorded 31 races with full metadata
+[0] [Scheduler] Periodic results refresh for 2026-07-23
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [SL] Results: 1/50 races with results
+[0] [Results] Found 1 races for 2026-07-23
+[0] [Results] Stored/merged 1 races for 2026-07-23
+[0] [ConditionDB] Recorded 1 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-22 (2 pending)
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] [ConditionDB] Recorded 39 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-20 (5 pending)
+[0] [Results] Fetching results for 2026-07-20...
+[0] [SL] Fetching results via browser for 2026-07-20...
+[0] [SL] Results: Found 16 meetings in __NEXT_DATA__
+[0] [SL] Results: 34 race IDs to fetch via API
+[0] [SL] Results: 31/34 races with results
+[0] [Results] Found 31 races for 2026-07-20
+[0] [Results] Stored/merged 31 races for 2026-07-20
+[0] [ConditionDB] Recorded 31 races with full metadata
+[0] [Scheduler] Periodic results refresh for 2026-07-23
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [SL] Results: 2/50 races with results
+[0] [Results] Found 2 races for 2026-07-23
+[0] [Results] Stored/merged 2 races for 2026-07-23
+[0] [Learning] Weights adjusted: {"class":4.189,"stride":10.006,"trainer":0.7,"traffic":0.07,"clv":0.8}
+[0] [Freshness] Updated trainer freshness: 0 trainers
+[0] [TrainerForm] Updated: 670 trainers in last 14 days
+[0] [JockeyForm] Updated: 537 jockeys in last 14 days
+[0] [OR History] Built OR profiles for 2433 horses
+[0] [Track Bias] Saved track bias learning data
+[0] [PerfRating] Saved performance rating data
+[0] [Calibration] Matched 4 runners for calibration, saved learning records
+[0] [BacktestCache] Saved 1 new races for 2026-07-23 (total: 2)
+[0] [ConditionDB] Recorded 2 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-22 (2 pending)
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [Shadow Watch] Auto-settled 3 records for 2026-07-23
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] [ConditionDB] Recorded 39 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-20 (5 pending)
+[0] [Results] Fetching results for 2026-07-20...
+[0] [SL] Fetching results via browser for 2026-07-20...
+[0] [SL] Results: Found 16 meetings in __NEXT_DATA__
+[0] [SL] Results: 34 race IDs to fetch via API
+[0] [SL] Results: 31/34 races with results
+[0] [Results] Found 31 races for 2026-07-20
+[0] [Results] Stored/merged 31 races for 2026-07-20
+[0] [ConditionDB] Recorded 31 races with full metadata
+[0] [Scheduler] Periodic results refresh for 2026-07-23
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [SL] Results: 2/50 races with results
+[0] [Results] Found 2 races for 2026-07-23
+[0] [Results] Stored/merged 2 races for 2026-07-23
+[0] [Learning] Weights adjusted: {"class":4.204,"stride":10.036,"trainer":0.7,"traffic":0.07,"clv":0.8}
+[0] [Freshness] Updated trainer freshness: 0 trainers
+[0] [TrainerForm] Updated: 670 trainers in last 14 days
+[0] [JockeyForm] Updated: 537 jockeys in last 14 days
+[0] [OR History] Built OR profiles for 2433 horses
+[0] [Track Bias] Saved track bias learning data
+[0] [PerfRating] Saved performance rating data
+[0] [Calibration] Matched 5 runners for calibration, saved learning records
+[0] [ConditionDB] Recorded 2 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-22 (2 pending)
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [Shadow Watch] Auto-settled 1 records for 2026-07-23
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] [ConditionDB] Recorded 39 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-20 (5 pending)
+[0] [Results] Fetching results for 2026-07-20...
+[0] [SL] Fetching results via browser for 2026-07-20...
+[0] [SL] Results: Found 16 meetings in __NEXT_DATA__
+[0] [SL] Results: 34 race IDs to fetch via API
+[0] [SL] Results: 31/34 races with results
+[0] [Results] Found 31 races for 2026-07-20
+[0] [Results] Stored/merged 31 races for 2026-07-20
+[0] [ConditionDB] Recorded 31 races with full metadata
+[0] [Scheduler] Periodic results refresh for 2026-07-23
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [SL] Results: 3/50 races with results
+[0] [Results] Found 3 races for 2026-07-23
+[0] [Results] Stored/merged 3 races for 2026-07-23
+[0] [BacktestCache] Saved 1 new races for 2026-07-23 (total: 3)
+[0] [ConditionDB] Recorded 3 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-22 (2 pending)
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] [ConditionDB] Recorded 39 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-20 (5 pending)
+[0] [Results] Fetching results for 2026-07-20...
+[0] [SL] Fetching results via browser for 2026-07-20...
+[0] [SL] Results: Found 16 meetings in __NEXT_DATA__
+[0] [SL] Results: 34 race IDs to fetch via API
+[0] [SL] Results: 31/34 races with results
+[0] [Results] Found 31 races for 2026-07-20
+[0] [Results] Stored/merged 31 races for 2026-07-20
+[0] [ConditionDB] Recorded 31 races with full metadata
+[0] [Scheduler] Periodic results refresh for 2026-07-23
+[0] [Results] Fetching results for 2026-07-23...
+[0] [SL] Fetching results via browser for 2026-07-23...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 50 race IDs to fetch via API
+[0] [SL] Results: 3/50 races with results
+[0] [Results] Found 3 races for 2026-07-23
+[0] [Results] Stored/merged 3 races for 2026-07-23
+[0] [ConditionDB] Recorded 3 races with full metadata
+[0] [Scheduler] Retrying past date 2026-07-22 (2 pending)
+[0] [Results] Fetching results for 2026-07-22...
+[0] [SL] Fetching results via browser for 2026-07-22...
+[0] [SL] Results: Found 20 meetings in __NEXT_DATA__
+[0] [SL] Results: 39 race IDs to fetch via API
+[0] [SL] Results: 39/39 races with results
+[0] [Results] Found 39 races for 2026-07-22
+[0] [Results] Stored/merged 39 races for 2026-07-22
+[0] node server.js exited with code 4294967295
+[1] [2m15:27:20[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/main.tsx[22m
+[1] [2m15:27:21[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/main.tsx[22m
+[1] [2m19:40:39[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:39[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:39[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [36m[1m[vite][22m[39m [33mhmr invalidate [39m[2m/src/main.tsx[22m Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/results[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/home-widgets[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/main.tsx[22m
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/results[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/home-widgets[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:40[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/home-widgets[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/results[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/home-widgets[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/results[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:41[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/home-widgets[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/results[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/daily-picks[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-picks/stats[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/home-widgets[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/results[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:42[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] [2m19:40:47[22m [31m[1m[vite][22m[39m [31mhttp proxy error: /api/live-state[39m
+[1] AggregateError [ECONNREFUSED]: 
+[1]     at internalConnectMultiple (node:net:1122:18)
+[1]     at afterConnectMultiple (node:net:1689:7)
+[1] ^C
+[1] vite --host exited with code 3221225786
+^C
