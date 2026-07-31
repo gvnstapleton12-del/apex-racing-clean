@@ -226,7 +226,7 @@ button {
   }
 
   .full-card-table-wrap table {
-    table-layout: fixed;
+    min-width: 600px;
   }
 
   /* Hero metrics: 2-col then stack on tiny */
