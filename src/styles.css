@@ -4754,10 +4754,13 @@ body::after {
 
 @media (max-width: 640px) {
   .pa-band-table .col-hide-mobile { display: none !important; }
+  .history-table .col-hide-mobile { display: none !important; }
+  .settled-table .col-hide-mobile { display: none !important; }
   .cal-header-stats { grid-template-columns: repeat(2, 1fr); }
   .calibration-dashboard { padding: 12px; }
   .cal-value-grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
   .cal-engines-grid { grid-template-columns: 1fr !important; }
-  .history-table .col-hide-mobile { display: none !important; }
+  .bestbet-grid { grid-template-columns: 1fr !important; gap: 0.5rem !important; }
+  .sm-date { display: none !important; }
 }
 

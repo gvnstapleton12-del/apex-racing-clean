@@ -743,10 +743,10 @@ function SandboxTab() {
           <h3 className='text-sm font-bold text-amber-400 mb-3'>Pending ({pending.length})</h3>
           <div className='space-y-1'>
             {pending.slice(0, 10).map((r: any) => (
-              <div key={r.id} className='flex items-center justify-between text-xs py-1 border-b border-white/5'>
+              <div key={r.id} className='flex items-center gap-2 flex-wrap text-xs py-1 border-b border-white/5'>
                 <a href={slHorseUrl(r.horse_name, r.horse_id)} target='_blank' rel='noopener noreferrer' className='text-white font-medium hover:text-amber-400 underline underline-offset-2 decoration-white/20 hover:decoration-amber-400/50 transition-colors'>{r.horse_name}</a>
                 <span className='text-zinc-400'>{r.course}</span>
-                <span className='text-zinc-500'>{r.race_date}</span>
+                <span className='text-zinc-500 sm-date'>{r.race_date}</span>
                 <span className='text-zinc-300'>{r.market_odds}</span>
                 <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${r.bet_quality === 'SPECULATIVE' ? 'bg-amber-500/15 text-amber-400' : 'bg-zinc-500/15 text-zinc-400'}`}>{r.bet_quality}</span>
               </div>
@@ -759,14 +759,14 @@ function SandboxTab() {
         <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
           <h3 className='text-sm font-bold text-zinc-300 mb-3'>Settled ({settled.length})</h3>
           <div className='overflow-x-auto'>
-            <table className='w-full text-xs'>
+            <table className='w-full text-xs settled-table'>
               <thead>
                 <tr className='text-zinc-500 border-b border-white/5'>
                   <th className='text-left py-2 pr-2'>Horse</th>
                   <th className='text-left py-2 pr-2'>Course</th>
-                  <th className='text-left py-2 pr-2'>Date</th>
+                  <th className='text-left py-2 pr-2 col-hide-mobile'>Date</th>
                   <th className='text-right py-2 pr-2'>Odds</th>
-                  <th className='text-right py-2 pr-2'>WP%</th>
+                  <th className='text-right py-2 pr-2 col-hide-mobile'>WP%</th>
                   <th className='text-center py-2 pr-2'>Type</th>
                   <th className='text-right py-2 pr-2'>Pos</th>
                   <th className='text-right py-2'>P&L</th>
@@ -777,9 +777,9 @@ function SandboxTab() {
                   <tr key={r.id} className='border-b border-white/5'>
                     <td className='py-1.5 pr-2'><a href={slHorseUrl(r.horse_name, r.horse_id)} target='_blank' rel='noopener noreferrer' className='text-white font-medium hover:text-amber-400 underline underline-offset-2 decoration-white/20 hover:decoration-amber-400/50 transition-colors'>{r.horse_name}</a></td>
                     <td className='py-1.5 pr-2 text-zinc-400'>{r.course}</td>
-                    <td className='py-1.5 pr-2 text-zinc-500'>{r.race_date}</td>
+                    <td className='py-1.5 pr-2 text-zinc-500 col-hide-mobile'>{r.race_date}</td>
                     <td className='py-1.5 pr-2 text-right text-zinc-300'>{r.market_odds}</td>
-                    <td className='py-1.5 pr-2 text-right text-zinc-300'>{r.model_wp ? (r.model_wp).toFixed(1) : '-'}</td>
+                    <td className='py-1.5 pr-2 text-right text-zinc-300 col-hide-mobile'>{r.model_wp ? (r.model_wp).toFixed(1) : '-'}</td>
                     <td className='py-1.5 pr-2 text-center'>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${r.bet_quality === 'SPECULATIVE' ? 'bg-amber-500/15 text-amber-400' : 'bg-zinc-500/15 text-zinc-400'}`}>{r.bet_quality}</span>
                     </td>

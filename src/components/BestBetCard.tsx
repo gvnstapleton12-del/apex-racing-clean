@@ -58,7 +58,7 @@ export default function BestBetCard({ races }: BestBetCardProps) {
           </h3>
         </div>
 
-        <div className='grid grid-cols-3 gap-4 pt-4'>
+        <div className='grid grid-cols-3 gap-4 pt-4 bestbet-grid'>
           <div className='rounded-xl border p-4'>
             <p className='text-sm text-muted-foreground'>Score</p>
             <p className='text-3xl font-bold text-amber-400'>
