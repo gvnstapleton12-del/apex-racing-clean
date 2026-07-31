@@ -391,7 +391,7 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
             )}
 
             {runner.horseProfile && (
-              <div className='mt-2 grid grid-cols-4 gap-1.5 text-[10px]'>
+              <div className='mt-2 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px]'>
                 <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
                   <div className='text-zinc-500'>Course</div>
                   {runner.horseProfile.course ? (

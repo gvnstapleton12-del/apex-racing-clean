@@ -159,7 +159,7 @@ function HistoryTab() {
       {stats.winnerOddsDistribution && (
         <div>
           <h3 className='text-sm font-bold text-zinc-400 mb-3 uppercase tracking-wider'>Winner Odds Distribution</h3>
-          <div className='grid grid-cols-5 gap-3'>
+          <div className='grid grid-cols-2 sm:grid-cols-5 gap-3'>
             <div className='bg-[#0f1720]/80 border border-white/5 rounded-xl p-4 text-center'>
               <span className='text-zinc-500 text-xs block mb-1'>Mean</span>
               <span className='text-xl font-black'>{stats.winnerOddsDistribution.mean}x</span>
@@ -716,7 +716,7 @@ function SandboxTab() {
           {summary.speculative && summary.speculative.total > 0 && (
             <div className='bg-[#0f1720]/80 border border-amber-500/10 rounded-xl p-4'>
               <h3 className='text-sm font-bold text-amber-400 mb-2'>SPECULATIVE</h3>
-              <div className='grid grid-cols-4 gap-2 text-center text-xs'>
+              <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs'>
                 <div><span className='text-zinc-500 block'>N</span><span className='text-white font-bold'>{summary.speculative.total}</span></div>
                 <div><span className='text-zinc-500 block'>Wins</span><span className='text-green-400 font-bold'>{summary.speculative.wins}</span></div>
                 <div><span className='text-zinc-500 block'>WR</span><span className='text-blue-400 font-bold'>{summary.speculative.winRate}%</span></div>
@@ -727,7 +727,7 @@ function SandboxTab() {
           {summary.borderline && summary.borderline.total > 0 && (
             <div className='bg-[#0f1720]/80 border border-zinc-500/10 rounded-xl p-4'>
               <h3 className='text-sm font-bold text-zinc-400 mb-2'>BORDERLINE</h3>
-              <div className='grid grid-cols-4 gap-2 text-center text-xs'>
+              <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs'>
                 <div><span className='text-zinc-500 block'>N</span><span className='text-white font-bold'>{summary.borderline.total}</span></div>
                 <div><span className='text-zinc-500 block'>Wins</span><span className='text-green-400 font-bold'>{summary.borderline.wins}</span></div>
                 <div><span className='text-zinc-500 block'>WR</span><span className='text-blue-400 font-bold'>{summary.borderline.winRate}%</span></div>
@@ -929,7 +929,7 @@ function BacktestTab() {
           {/* Odds Band Breakdown */}
           <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
             <h3 className='text-sm font-bold text-zinc-300 mb-3'>Performance by Odds Band</h3>
-            <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
+            <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3'>
               {summary.byOdds?.map((b: any) => (
                 <div key={b.band} className='bg-white/[0.02] rounded-lg p-3 border border-white/5'>
                   <div className='text-[10px] text-zinc-500 uppercase tracking-wider mb-1'>{b.band}</div>
@@ -1018,7 +1018,7 @@ export default function Proof() {
               )}
 
               {/* ── Gate Classification ── */}
-              <div className='grid grid-cols-3 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
                 <div className='bg-green-500/5 rounded-xl p-4 border border-green-500/10'>
                   <span className='text-green-400 text-xs font-medium uppercase tracking-wider'>Engine Selected</span>
                   <p className='text-zinc-600 text-[10px] mt-0.5'>PA &gt; 0 AND betQuality != NO BET</p>
@@ -1057,7 +1057,7 @@ export default function Proof() {
               </div>
               </>
             ) : (
-              <div className='grid grid-cols-3 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
                 {['Engine Selected', 'PA Killed', 'No PA Data'].map(label => (
                   <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse'>
                     <span className='text-zinc-600 text-xs font-medium uppercase tracking-wider'>{label}</span>
@@ -1288,8 +1288,8 @@ export default function Proof() {
                 const bins = counterfactual.paBinBreakdown ?? {}
                 return (
               <div className='space-y-4'>
-                <div className='grid grid-cols-4 gap-4'>
-                  <div className='col-span-2 bg-[#0f1720]/80 rounded-xl p-4 border border-amber-500/10'>
+                <div className='grid grid-cols-1 sm:grid-cols-4 gap-4'>
+                  <div className='sm:col-span-2 bg-[#0f1720]/80 rounded-xl p-4 border border-amber-500/10'>
                     <span className='text-amber-400 text-xs font-medium uppercase tracking-wider'>Below +0.3 (suspected inert)</span>
                     <div className='mt-2 grid grid-cols-2 gap-y-1 text-sm'>
                       <span className='text-zinc-400'>Total</span><span className='font-bold'>{below?.total ?? 0}</span>
@@ -1327,9 +1327,9 @@ export default function Proof() {
                 )
               })()
             ) : (
-              <div className='grid grid-cols-4 gap-4'>
+              <div className='grid grid-cols-1 sm:grid-cols-4 gap-4'>
                 {['Below +0.3', 'Above +0.3'].map(label => (
-                  <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse col-span-2'>
+                  <div key={label} className='bg-white/[0.02] rounded-xl p-4 border border-white/5 animate-pulse sm:col-span-2'>
                     <span className='text-zinc-600 text-xs font-medium uppercase tracking-wider'>{label}</span>
                     <div className='mt-2 space-y-2'>
                       <div className='flex justify-between'><span className='text-zinc-700 text-sm'>Total</span><span className='bg-zinc-700/50 rounded h-4 w-8' /></div>
@@ -1346,7 +1346,7 @@ export default function Proof() {
           <div className='bg-[#0f1720]/80 border border-sky-500/10 rounded-2xl p-6'>
             <h2 className='text-lg font-bold mb-4'>PA by Finish Position</h2>
             <p className='text-zinc-500 text-sm mb-4'>PA distribution among selections that passed the score gate, grouped by finish position. {paByPosition.totalSelections} selections.</p>
-            <div className='grid grid-cols-4 gap-4 mb-6'>
+            <div className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6'>
               {['winner','placed','top4','unplaced'].map(key => {
                 const b = paByPosition.buckets?.[key]
                 if (!b) return null

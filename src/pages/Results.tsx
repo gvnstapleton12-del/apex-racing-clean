@@ -418,7 +418,7 @@ export default function UploadResults(props: UploadResultsProps) {
 
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
-      <section className='empty-state upload-panel bg-[#0f1720] border border-green-500/10 rounded-2xl p-12 text-center'>
+      <section className='empty-state upload-panel bg-[#0f1720] border border-green-500/10 rounded-2xl p-6 sm:p-12 text-center'>
         <span className='text-zinc-500 text-sm font-medium uppercase tracking-wider'>Upload</span>
         <h2 className='text-3xl font-black tracking-tight mt-2'>Upload official results</h2>
         <p className='text-zinc-400 mt-3 mb-8'>Choose your Racing API results JSON file.</p>
