@@ -1134,7 +1134,7 @@ export default function Proof() {
                 <h3 className='text-md font-bold mb-1'>PA Band Performance (All-Time)</h3>
                 <p className='text-zinc-500 text-xs mb-4'>isBettable() predictions with PA &gt; 0, grouped by PA strength. ROI = (returns - stakes) / stakes. Odds = pre-race decimal. <span className='text-zinc-600'>{'\u{1F7E2}'} n&ge;100 reliable | {'\u{1F7E1}'} n&ge;30 moderate | {'\u{1F534}'} n&lt;30 insufficient</span></p>
                 <div className='overflow-x-auto'>
-                  <table className='w-full text-sm'>
+                  <table className='w-full text-sm pa-band-table'>
                     <thead>
                       <tr className='text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-700/50'>
                         <th className='text-left py-2 pr-4'>PA Band</th>
@@ -1142,8 +1142,8 @@ export default function Proof() {
                         <th className='text-right py-2 pr-4'>Wins</th>
                         <th className='text-right py-2 pr-4'>WR</th>
                         <th className='text-right py-2 pr-4'>ROI</th>
-                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Odds</th>
-                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Edge</th>
+                        <th className='text-right py-2 pr-4 col-hide-mobile'>Avg Odds</th>
+                        <th className='text-right py-2 pr-4 col-hide-mobile'>Avg Edge</th>
                         <th className='text-right py-2 pr-2'>Sample</th>
                       </tr>
                     </thead>
@@ -1166,8 +1166,8 @@ export default function Proof() {
                                 <span title="Insufficient sample">{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
                               )}
                             </td>
-                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgOdds}</td>
-                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgEdge}%</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 col-hide-mobile'>{b.avgOdds}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 col-hide-mobile'>{b.avgEdge}%</td>
                             <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}{b.reliable ? '' : ` (\u00B1${b.ci95}pp)`}</td>
                           </tr>
                         )
@@ -1187,7 +1187,7 @@ export default function Proof() {
                   <p className='text-zinc-500 text-sm py-4'>No completed bettable races in the last 3 days.</p>
                 ) : (
                 <div className='overflow-x-auto'>
-                  <table className='w-full text-sm'>
+                  <table className='w-full text-sm pa-band-table'>
                     <thead>
                       <tr className='text-zinc-500 text-xs uppercase tracking-wider border-b border-zinc-700/50'>
                         <th className='text-left py-2 pr-4'>PA Band</th>
@@ -1195,8 +1195,8 @@ export default function Proof() {
                         <th className='text-right py-2 pr-4'>Wins</th>
                         <th className='text-right py-2 pr-4'>WR</th>
                         <th className='text-right py-2 pr-4'>ROI</th>
-                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Odds</th>
-                        <th className='text-right py-2 pr-4 hidden sm:table-cell'>Avg Edge</th>
+                        <th className='text-right py-2 pr-4 col-hide-mobile'>Avg Odds</th>
+                        <th className='text-right py-2 pr-4 col-hide-mobile'>Avg Edge</th>
                         <th className='text-right py-2 pr-2'>Sample</th>
                       </tr>
                     </thead>
@@ -1219,8 +1219,8 @@ export default function Proof() {
                                 <span title="Insufficient sample">{b.roi >= 0 ? '+' : ''}{b.roi}%</span>
                               )}
                             </td>
-                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgOdds}</td>
-                            <td className='text-right py-2 pr-4 text-zinc-400 hidden sm:table-cell'>{b.avgEdge}%</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 col-hide-mobile'>{b.avgOdds}</td>
+                            <td className='text-right py-2 pr-4 text-zinc-400 col-hide-mobile'>{b.avgEdge}%</td>
                             <td className='text-right py-2 pr-2'>{sampleIcon} {b.count}{b.reliable ? '' : ` (\u00B1${b.ci95}pp)`}</td>
                           </tr>
                         )

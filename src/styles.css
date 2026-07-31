@@ -4749,3 +4749,7 @@ body::after {
 .flex-col { flex-direction: column; }
 .bg-\[\#0a1a14\] { background-color: #0a1a14; }
 
+@media (max-width: 640px) {
+  .pa-band-table .col-hide-mobile { display: none !important; }
+}
+
