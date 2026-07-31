@@ -1220,7 +1220,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
           {homeWidgets && (
             <div className='grid grid-cols-1 md:grid-cols-3 gap-3 bg-black/40 border border-white/10 rounded-xl p-3 mb-4'>
               {/* PA COVERAGE */}
-              <div className='border-r border-white/10 pr-3'>
+              <div className='px-3 md:border-r md:border-white/10 md:pr-3'>
                 <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>PA Coverage</div>
                 {homeWidgets.paCoverage.total > 0 ? (
                   <>
@@ -1236,18 +1236,18 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                 )}
               </div>
               {/* PA SIGNAL */}
-              <div className='border-r border-white/10 px-3'>
+              <div className='px-3 md:border-r md:border-white/10'>
                 <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>PA Signal</div>
                 {homeWidgets.paCoverage.withPA > 0 ? (
-                  <div className='mt-1.5 grid grid-cols-2 gap-1 text-[11px]'>
+                  <div className='mt-1.5 grid grid-cols-2 sm:grid-cols-4 gap-1 text-[11px]'>
                     {homeWidgets.paSignal.map((band: any) => (
-                      <div key={band.label} className='flex items-center gap-1 bg-white/[0.03] rounded px-1.5 py-0.5'>
+                      <div key={band.label} className='flex items-center gap-1 bg-white/[0.03] rounded px-1.5 py-0.5 min-w-0'>
                         <span className={
                           band.label.includes('Strong') ? 'text-emerald-400' :
                           band.label.includes('Positive') ? 'text-green-400' :
                           band.label.includes('Weak') ? 'text-yellow-400' : 'text-red-400'
                         }>{band.label.split('(')[0].trim()}</span>
-                        <span className='text-zinc-500 text-[10px] ml-auto'>{band.wr}%</span>
+                        <span className='text-zinc-500 text-[10px] ml-auto shrink-0'>{band.wr}%</span>
                       </div>
                     ))}
                   </div>
@@ -1256,17 +1256,17 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                 )}
               </div>
               {/* CALIBRATION */}
-              <div className='pl-3'>
+              <div className='pl-3 md:border-l md:border-white/10'>
                 <div className='text-[10px] text-zinc-400 uppercase tracking-wider'>Calibration (90d)</div>
-                <div className='mt-1.5 grid grid-cols-2 gap-1 text-[11px]'>
+                <div className='mt-1.5 grid grid-cols-2 sm:grid-cols-4 gap-1 text-[11px]'>
                   {homeWidgets.cal90.filter((band: any) => band.n > 0).map((band: any) => {
                     const err = Number(band.error)
                     return (
-                      <div key={band.label} className='flex items-center gap-1 bg-white/[0.03] rounded px-1.5 py-0.5'>
-                        <span className='text-zinc-300'>{band.label}</span>
+                      <div key={band.label} className='flex items-center gap-1 bg-white/[0.03] rounded px-1.5 py-0.5 min-w-0'>
+                        <span className='text-zinc-300 truncate'>{band.label}</span>
                         <span className={
-                          Math.abs(err) < 3 ? 'text-emerald-400 ml-auto' :
-                          Math.abs(err) < 6 ? 'text-yellow-400 ml-auto' : 'text-red-400 ml-auto'
+                          Math.abs(err) < 3 ? 'text-emerald-400 ml-auto shrink-0' :
+                          Math.abs(err) < 6 ? 'text-yellow-400 ml-auto shrink-0' : 'text-red-400 ml-auto shrink-0'
                         }>{err}pp</span>
                       </div>
                     )
