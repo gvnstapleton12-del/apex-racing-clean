@@ -124,6 +124,14 @@ button {
   display: none;
 }
 
+.mobile-nav-backdrop {
+  display: none;
+}
+
+.mobile-nav-overlay {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .sidebar { display: none !important; }
   .sidebar::after { display: none; }
