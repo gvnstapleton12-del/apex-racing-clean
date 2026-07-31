@@ -1,0 +1,13 @@
+services:
+  apex:
+    build: .
+    container_name: apex-racing
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    mem_limit: 1g
