@@ -120,7 +120,10 @@ button {
   display: none;
 }
 
-/* === MOBILE (≤768px) === */
+.mobile-header {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .sidebar { display: none !important; }
   .sidebar::after { display: none; }
@@ -271,9 +274,6 @@ button {
   .race-card-header { flex-direction: column; gap: 12px; }
 }
 
-.mobile-header {
-  display: none;
-}
 
 .sidebar::after {
   content: "";
