@@ -202,7 +202,7 @@ button {
     display: block;
   }
   .main {
-    padding: 60px 12px 24px;
+    padding: 52px 12px 24px;
     width: 100%;
     max-width: 100%;
   }
@@ -453,7 +453,7 @@ button {
   min-height: 120px;
 }
 @media (max-width: 768px) {
-  .dashboard-hero { border: none; }
+  .dashboard-hero { border: none; border-radius: 0; }
 }
 
 .dashboard-hero-img {
