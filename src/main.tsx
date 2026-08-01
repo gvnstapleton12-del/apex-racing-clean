@@ -376,6 +376,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   const [expandedRaces, setExpandedRaces] = useState<Set<string>>(new Set())
   const [selectedMeeting, setSelectedMeeting] = useState<string | null>(null)
   const eventPicksRef = useRef<HTMLDivElement>(null)
+  const frozenNapRef = useRef<any>(null)
   const [abandoned, setAbandoned] = useState<any[]>([])
   const [livePicksStats, setLivePicksStats] = useState<{ stats: { won: number; placed: number; lost: number; nr: number; pending: number }; roi: number; mainBets: { won: number; placed: number; lost: number; nr: number; total: number; roi: number } } | null>(null)
   const [homeWidgets, setHomeWidgets] = useState<any>(null)
@@ -715,7 +716,9 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   }, [yesterdaySaved])
 
   const displayPicks = pickView === 'yesterday' ? yesterdaySelections : picksLive
-  const liveBestBet = serverLockedNap || picksLive[0] || null
+  const liveBestBetRaw = serverLockedNap || picksLive[0] || null
+  if (serverLockedNap && !frozenNapRef.current) frozenNapRef.current = serverLockedNap
+  const liveBestBet = frozenNapRef.current || liveBestBetRaw
   const displayBestBet = pickView === 'yesterday' ? (yesterdaySelections[0] || null) : liveBestBet
 
   // Next race off
@@ -1175,8 +1178,8 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
           )}
           {(() => {
             const showBets = livePicksStats?.mainBets
-            const yesterdayStats = yesterdaySaved?.stats
-            if (!showBets && !yesterdayStats) return null
+            const ys = yesterdaySaved?.stats
+            const yesterdayStats = ys || { won: 0, placed: 0, lost: 0 }
             return (
               <div className='flex flex-wrap items-center gap-2 sm:gap-6 mb-4 px-3 sm:px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
                 {showBets && (() => {
@@ -1201,16 +1204,14 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                     </div>
                   )
                 })()}
-                {yesterdayStats && (
-                  <div className='flex items-center gap-1.5 flex-wrap'>
-                    <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20'>Yesterday</span>
-                    <span className='text-xs sm:text-sm font-bold text-green-400'>{yesterdayStats.won}W</span>
-                    <span className='text-zinc-600'>/</span>
-                    <span className='text-xs sm:text-sm font-bold text-amber-400'>{yesterdayStats.placed}P</span>
-                    <span className='text-zinc-600'>/</span>
-                    <span className='text-xs sm:text-sm font-bold text-red-400'>{yesterdayStats.lost}L</span>
-                  </div>
-                )}
+                <div className='flex items-center gap-1.5 flex-wrap'>
+                  <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20'>Yesterday</span>
+                  <span className='text-xs sm:text-sm font-bold text-green-400'>{yesterdayStats.won}W</span>
+                  <span className='text-zinc-600'>/</span>
+                  <span className='text-xs sm:text-sm font-bold text-amber-400'>{yesterdayStats.placed}P</span>
+                  <span className='text-zinc-600'>/</span>
+                  <span className='text-xs sm:text-sm font-bold text-red-400'>{yesterdayStats.lost}L</span>
+                </div>
               </div>
             )
           })()}

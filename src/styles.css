@@ -452,6 +452,9 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 120px;
 }
+@media (max-width: 768px) {
+  .dashboard-hero { border: none; }
+}
 
 .dashboard-hero-img {
   position: absolute;
