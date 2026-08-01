@@ -148,7 +148,7 @@ button {
     background: rgba(5, 7, 10, 0.95);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--line);
+    border-bottom: none;
   }
 
   .mobile-header .mobile-nav-toggle {

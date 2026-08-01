@@ -1022,12 +1022,12 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
     <div className='dashboard-page max-w-7xl mx-auto w-full max-w-full'>
       <section className='dashboard-hero px-4 py-6 sm:px-8 sm:py-8'>
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6'>
-          <div className='min-w-0'>
+          <div className='min-w-0 text-center sm:text-left'>
             <span className='text-amber-400 text-xs font-bold uppercase tracking-[0.3em]'>APEX Live</span>
             <h1 className='text-2xl sm:text-4xl font-black tracking-tight mt-2 break-words'>Today&apos;s Picks</h1>
           </div>
           
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full sm:w-auto'>
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full sm:w-auto justify-items-center'>
             <div className='text-center min-w-0'>
               <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{ukIreRaces.length}</div>
               <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
@@ -1174,21 +1174,11 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
             </div>
           )}
           {(() => {
-            const activeStats = pickView === 'yesterday' ? yesterdaySaved?.stats : null
-            const showBets = pickView !== 'yesterday' && livePicksStats?.mainBets
-            if (!activeStats && !showBets) return null
+            const showBets = livePicksStats?.mainBets
+            const yesterdayStats = yesterdaySaved?.stats
+            if (!showBets && !yesterdayStats) return null
             return (
               <div className='flex flex-wrap items-center gap-2 sm:gap-6 mb-4 px-3 sm:px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5'>
-                {activeStats && (
-                  <div className='flex items-center gap-2'>
-                    <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20'>Yesterday</span>
-                    <span className='text-sm font-bold text-green-400'>{activeStats.won}W</span>
-                    <span className='text-zinc-600'>/</span>
-                    <span className='text-sm font-bold text-amber-400'>{activeStats.placed}P</span>
-                    <span className='text-zinc-600'>/</span>
-                    <span className='text-sm font-bold text-red-400'>{activeStats.lost}L</span>
-                  </div>
-                )}
                 {showBets && (() => {
                   const mb = livePicksStats.mainBets
                   const pending = mb.total - mb.won - mb.placed - mb.lost - (mb.nr || 0)
@@ -1211,6 +1201,16 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                     </div>
                   )
                 })()}
+                {yesterdayStats && (
+                  <div className='flex items-center gap-1.5 flex-wrap'>
+                    <span className='text-[10px] text-zinc-500 uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20'>Yesterday</span>
+                    <span className='text-xs sm:text-sm font-bold text-green-400'>{yesterdayStats.won}W</span>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-xs sm:text-sm font-bold text-amber-400'>{yesterdayStats.placed}P</span>
+                    <span className='text-zinc-600'>/</span>
+                    <span className='text-xs sm:text-sm font-bold text-red-400'>{yesterdayStats.lost}L</span>
+                  </div>
+                )}
               </div>
             )
           })()}

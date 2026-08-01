@@ -567,7 +567,7 @@ function HistoryTab() {
         </div>
       )}
 
-      <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-6'>
+      <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-3 sm:p-6 overflow-hidden'>
         <div className='flex items-center justify-between mb-4'>
           <h2 className='text-lg font-bold'>Recent Runners</h2>
           <div className='flex gap-3 items-center'>
@@ -756,7 +756,7 @@ function SandboxTab() {
       )}
 
       {settled.length > 0 && (
-        <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-4'>
+        <div className='bg-[#0f1720]/80 border border-white/5 rounded-2xl p-2 sm:p-4 overflow-hidden'>
           <h3 className='text-sm font-bold text-zinc-300 mb-3'>Settled ({settled.length})</h3>
           <div className='overflow-x-auto'>
             <table className='w-full text-xs settled-table'>
@@ -967,7 +967,7 @@ export default function Proof() {
 
 
   return (
-    <div className='p-6 max-w-6xl mx-auto space-y-6'>
+    <div className='px-2 sm:px-6 py-4 sm:py-6 max-w-6xl mx-auto space-y-6'>
       <div>
         <h1 className='text-4xl font-black tracking-tight'>Evidence</h1>
         <p className='text-zinc-400 mt-2'>Real prediction data, accuracy metrics, and explainable race analysis.</p>
