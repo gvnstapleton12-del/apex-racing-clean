@@ -6,15 +6,14 @@
 
 import { readFileSync, writeFileSync, existsSync, readdirSync } from 'fs'
 import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 
-function toFileUrl(p) { return new URL(`file:///${p.replace(/\\/g, '/')}`).href }
-const { runApexEngine } = await import(toFileUrl(join(ROOT, 'src', 'lib', 'apexEngine.js')))
-const { initHorseDb, createTables, closeHorseDb } = await import(toFileUrl(join(ROOT, 'src', 'lib', 'horseMemoryDb.js')))
-const { loadStaticDatabases, buildPointInTimeContext, attachHorseMemory, buildRPDataMock } = await import(toFileUrl(join(ROOT, 'src', 'lib', 'backtestContextBuilder.js')))
+const { runApexEngine } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'apexEngine.js')).href)
+const { initHorseDb, createTables, closeHorseDb } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'horseMemoryDb.js')).href)
+const { loadStaticDatabases, buildPointInTimeContext, attachHorseMemory, buildRPDataMock } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'backtestContextBuilder.js')).href)
 
 const CACHE_DIR = join(ROOT, 'data', 'backtest-cache')
 const MIN_RUNNERS = 5
