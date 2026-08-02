@@ -457,12 +457,12 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
                   Going: { val: runner.personalAffinity.breakdown.going?.adjustment, conf: runner.personalAffinity.breakdown.going?.confidence },
                   'Draw/Style': { val: runner.personalAffinity.breakdown.drawStyle?.adjustment, conf: runner.personalAffinity.breakdown.drawStyle?.confidence },
                 }).filter(([_, v]) => v && (v.conf ?? 0) > 0.1).map(([label, { val }]) => {
-                  const num = typeof val === 'number' ? Math.round(val * 10) / 10 : 0
-                  const isPos = num > 0.1
-                  const isNeg = num < -0.1
+                  const num = typeof val === 'number' ? Math.round(val * 100) / 100 : 0
+                  const isPos = num > 0.005
+                  const isNeg = num < -0.005
                   return (
                     <span key={label} className={`px-1.5 py-0.5 rounded font-bold ${isPos ? 'bg-green-500/10 text-green-400' : isNeg ? 'bg-red-500/10 text-red-400' : 'bg-white/[0.04] text-zinc-500'}`}>
-                      {label} {num > 0 ? '+' : ''}{num.toFixed(1)}
+                      {label} {num > 0 ? '+' : ''}{num.toFixed(2)}
                     </span>
                   )
                 })}
