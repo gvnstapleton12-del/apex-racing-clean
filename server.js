@@ -1156,6 +1156,18 @@ async function fetchLiveMeetings() {
                 raceChanged = true
               }
 
+              // Add RPR from Racing Post if SL didn't provide one
+              if (rp.rpr && (!runner.rpr || runner.rpr === 0)) {
+                updates.rpr = rp.rpr
+                raceChanged = true
+              }
+
+              // Add form from RP if SL didn't provide one
+              if (rp.form && (!runner.form || runner.form === '')) {
+                updates.form = rp.form
+                raceChanged = true
+              }
+
               // Merge RP stats into runner for engine access
               if (rp.courseRuns > 0 || rp.distRuns > 0 || rp.goingRuns > 0) {
                 updates.rpStats = {
