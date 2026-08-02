@@ -171,7 +171,9 @@ async function main() {
 
     let context
     try {
+      const ctxStart = Date.now()
       context = await buildPointInTimeContext(db, nextDateStr, staticDbs)
+      process.stdout.write(`  context: ${Date.now() - ctxStart}ms`)
     } catch (err) {
       console.log(`  Context build failed: ${err.message}`)
       continue

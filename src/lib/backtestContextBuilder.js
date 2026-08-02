@@ -47,14 +47,18 @@ export async function buildPointInTimeContext(db, targetDate, staticDbs) {
   fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14)
   const sinceDate = fourteenDaysAgo.toISOString().slice(0, 10)
 
+  const oneYearAgo = new Date(targetDate)
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+  const orSinceDate = oneYearAgo.toISOString().slice(0, 10)
+
   // 1. Trainer form from horse_runs (14-day window before target)
   const trainerForm = await buildTrainerForm(db, sinceDate, targetDate)
 
   // 2. Jockey form from jockey_runs (14-day window before target)
   const jockeyForm = await buildJockeyForm(db, sinceDate, targetDate)
 
-  // 3. OR history from horse_runs (all data before target)
-  const orHistory = await buildORHistoryBefore(db, targetDate)
+  // 3. OR history from horse_runs (1 year window before target)
+  const orHistory = await buildORHistoryBefore(db, orSinceDate, targetDate)
 
   // 4. Filter PA store to only include predictions made before targetDate
   const paStore = filterPAStore(staticDbs.paStore, targetDate)
@@ -286,14 +290,14 @@ async function buildJockeyForm(db, sinceDate, beforeDate) {
   } catch { return {} }
 }
 
-// Build OR history from horse_runs before targetDate
-async function buildORHistoryBefore(db, beforeDate) {
+// Build OR history from horse_runs in date range
+async function buildORHistoryBefore(db, sinceDate, beforeDate) {
   if (!db) return {}
   try {
     const rows = await db.all(
       `SELECT horse_name, or_rating, finish_position FROM horse_runs
-       WHERE race_date < ? AND or_rating > 0`,
-      [beforeDate]
+       WHERE race_date >= ? AND race_date < ? AND or_rating > 0`,
+      [sinceDate, beforeDate]
     )
     const OR_BANDS = [
       { key: 'novice', min: 0, max: 100 },
