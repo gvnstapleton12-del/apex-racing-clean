@@ -33,9 +33,16 @@ function loadStore() {
   if (_store) return _store
   try {
     if (existsSync(STORE_PATH)) {
-      _store = JSON.parse(readFileSync(STORE_PATH, 'utf8').replace(/^\uFEFF/, ''))
+      const raw = readFileSync(STORE_PATH, 'utf8').replace(/^\uFEFF/, '')
+      _store = JSON.parse(raw)
+      console.log(`[PA] Loaded store from file: ${Object.keys(_store?.horses || {}).length} horses, ${(raw.length / 1024 / 1024).toFixed(1)}MB`)
+    } else {
+      console.log(`[PA] No store file at ${STORE_PATH}`)
     }
-  } catch { _store = null }
+  } catch (e) {
+    console.error(`[PA] Failed to load store from ${STORE_PATH}: ${e.message}`)
+    _store = null
+  }
   if (!_store) _store = { horses: {} }
   if (!_store.horses) _store.horses = {}
   return _store
@@ -417,6 +424,9 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
   const calState = persisted?.calibrationState || null
 
   if (recentHistory.length === 0 && !persisted) {
+    if (Math.random() < 0.05) {
+      console.log(`[PA] ${horseName}: No data — raw results: ${Array.isArray(history) ? history.length : 0}, persisted: false`)
+    }
     return {
       factor: 1.0,
       confidence: 0,

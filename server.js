@@ -974,6 +974,26 @@ async function processRace(race) {
       }
     })
 
+    // Diagnostic: log PA data for first runner of first race only
+    if (scoredRunners.length > 0 && !global.__paDiagLogged) {
+      const sr = scoredRunners[0]
+      const rawRunner = (race.runners || [])[0] || {}
+      const pa = sr.personalAffinity || {}
+      const bd = pa.breakdown || {}
+      const rawPR = rawRunner.previous_results || []
+      console.log(`[PA-DIAG] ${sr.horse}: raw_prev=${rawPR.length}, factor=${pa.factor}, conf=${pa.confidence}, adj=${pa.adjustment}`)
+      if (rawPR.length > 0) {
+        console.log(`[PA-DIAG]   sample: ${JSON.stringify(rawPR[0]).slice(0, 200)}`)
+      }
+      console.log(`[PA-DIAG]   track: adj=${bd.track?.adjustment}, conf=${bd.track?.confidence}, wr=${bd.track?.winRate}`)
+      console.log(`[PA-DIAG]   dir: adj=${bd.direction?.adjustment}, conf=${bd.direction?.confidence}, runs=${bd.direction?.runs}`)
+      console.log(`[PA-DIAG]   dist: adj=${bd.distance?.adjustment}, conf=${bd.distance?.confidence}, runs=${bd.distance?.runs}`)
+      console.log(`[PA-DIAG]   going: adj=${bd.going?.adjustment}, conf=${bd.going?.confidence}, runs=${bd.going?.runs}`)
+      console.log(`[PA-DIAG]   ds: adj=${bd.drawStyle?.adjustment}, conf=${bd.drawStyle?.confidence}`)
+      console.log(`[PA-DIAG]   note: ${pa.note}`)
+      global.__paDiagLogged = true
+    }
+
     for (const sr of scoredRunners) {
       try {
         recordAffinityPrediction(sr.horse, race, sr)
@@ -4369,9 +4389,11 @@ server.listen(PORT, async () => {
 
   // Initialize Postgres store and load persistent data
   try {
+    // Always load PA store from file (no Postgres required)
+    await initAffinityStore()
+
     const pgReady = await initPgStore()
     if (pgReady) {
-      await initAffinityStore()
 
       const pgPicks = await pgLoad('daily-picks')
       if (pgPicks && typeof pgPicks === 'object' && Object.keys(pgPicks).length > 0) {
