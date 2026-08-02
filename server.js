@@ -917,6 +917,12 @@ async function processRace(race) {
         last_run: runner.last_run,
         form: runner.form,
         odds: runner.odds,
+        fairOdds: runner.fairOdds || runner.selectionQuality?.fairOdds || 0,
+        valueEdge: (() => {
+          const fairOdds = runner.fairOdds || runner.selectionQuality?.fairOdds || 0
+          const oddsVal = Number(runner.odds || 0)
+          return fairOdds > 0 && oddsVal > 0 ? (fairOdds - oddsVal) / oddsVal : 0
+        })(),
         runningStyle: runner.runningStyle,
         earlyPaceScore: runner.earlyPaceScore || null,
         finalScore: runner.finalScore,
