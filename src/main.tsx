@@ -376,7 +376,6 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   const [expandedRaces, setExpandedRaces] = useState<Set<string>>(new Set())
   const [selectedMeeting, setSelectedMeeting] = useState<string | null>(null)
   const eventPicksRef = useRef<HTMLDivElement>(null)
-  const frozenNapRef = useRef<any>(null)
   const [abandoned, setAbandoned] = useState<any[]>([])
   const [livePicksStats, setLivePicksStats] = useState<{ stats: { won: number; placed: number; lost: number; nr: number; pending: number }; roi: number; mainBets: { won: number; placed: number; lost: number; nr: number; total: number; roi: number } } | null>(null)
   const [homeWidgets, setHomeWidgets] = useState<any>(null)
@@ -716,9 +715,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
   }, [yesterdaySaved])
 
   const displayPicks = pickView === 'yesterday' ? yesterdaySelections : picksLive
-  const liveBestBetRaw = serverLockedNap || picksLive[0] || null
-  if (serverLockedNap && !frozenNapRef.current) frozenNapRef.current = serverLockedNap
-  const liveBestBet = frozenNapRef.current || liveBestBetRaw
+  const liveBestBet = serverLockedNap || picksLive[0] || null
   const displayBestBet = pickView === 'yesterday' ? (yesterdaySelections[0] || null) : liveBestBet
 
   // Next race off
