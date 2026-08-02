@@ -122,11 +122,8 @@ async function main() {
   console.log(`  Horse profiles: ${Object.keys(staticDbs.horseProfileDb).length} profiles`)
   console.log(`  Learning records: ${(staticDbs.learningData.records || []).length}`)
 
-  // 1b. Pre-load PA store (512MB) so first engine call doesn't block
-  console.log('Pre-loading personal affinity store...')
-  const paStart = Date.now()
+  // 1b. Pre-load PA store so first engine call doesn't block on 512MB JSON parse
   await initAffinityStore()
-  console.log(`  PA store loaded in ${Date.now() - paStart}ms`)
 
   // 2. Open SQLite
   console.log('\nOpening horse memory database...')
@@ -178,9 +175,7 @@ async function main() {
 
     let context
     try {
-      const ctxStart = Date.now()
       context = await buildPointInTimeContext(db, nextDateStr, staticDbs)
-      process.stdout.write(`  context: ${Date.now() - ctxStart}ms`)
     } catch (err) {
       console.log(`  Context build failed: ${err.message}`)
       continue
@@ -189,8 +184,6 @@ async function main() {
     let dayRaces = 0
     let daySelections = 0
     const dayStart = Date.now()
-
-    process.stdout.write(`  races: ${races.length} `)
 
     for (const race of races) {
       const runners = race.runners || []
@@ -252,7 +245,6 @@ async function main() {
 
       // Run engine with full point-in-time context
       let engineResult
-      const raceStart = Date.now()
       try {
         engineResult = runApexEngine(engineRunners, raceData, {
           ...context,
@@ -265,7 +257,6 @@ async function main() {
         console.warn(`  [ERR] ${race.course}: ${err.message}`)
         continue
       }
-      if (dayRaces <= 2) process.stdout.write(`engine:${Date.now() - raceStart}ms(${runners.length}r) `)
 
       const predictions = engineResult.racecards || []
       const resultMap = {}
