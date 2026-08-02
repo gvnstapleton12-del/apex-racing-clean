@@ -38,7 +38,7 @@ for (let i = 0; i < args.length; i++) {
   if (args[i] === '--label' && args[i + 1]) { label = args[++i] }
   if (args[i] === '--course-mult' && args[i + 1]) { courseMultiplier = parseFloat(args[++i]); label = `${label}-cm${courseMultiplier}` }
   if (args[i] === '--disable-going') { disableGoing = true; label = `${label}-dg` }
-  if (args[i] === '--fast') { numSimulations = 5; label = `${label}-fast` }
+  if (args[i] === '--fast') { numSimulations = 1; label = `${label}-fast` }
   if (args[i] === '--sims' && args[i + 1]) { numSimulations = parseInt(args[++i]); label = `${label}-s${numSimulations}` }
   if (args[i] === '--skip-memory') { label = `${label}-nomem` }
 }
