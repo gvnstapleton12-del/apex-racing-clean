@@ -981,16 +981,15 @@ async function processRace(race) {
       const pa = sr.personalAffinity || {}
       const bd = pa.breakdown || {}
       const rawPR = rawRunner.previous_results || []
-      console.log(`[PA-DIAG] ${sr.horse}: raw_prev=${rawPR.length}, factor=${pa.factor}, conf=${pa.confidence}, adj=${pa.adjustment}`)
-      if (rawPR.length > 0) {
-        console.log(`[PA-DIAG]   sample: ${JSON.stringify(rawPR[0]).slice(0, 200)}`)
-      }
-      console.log(`[PA-DIAG]   track: adj=${bd.track?.adjustment}, conf=${bd.track?.confidence}, wr=${bd.track?.winRate}`)
-      console.log(`[PA-DIAG]   dir: adj=${bd.direction?.adjustment}, conf=${bd.direction?.confidence}, runs=${bd.direction?.runs}`)
-      console.log(`[PA-DIAG]   dist: adj=${bd.distance?.adjustment}, conf=${bd.distance?.confidence}, runs=${bd.distance?.runs}`)
-      console.log(`[PA-DIAG]   going: adj=${bd.going?.adjustment}, conf=${bd.going?.confidence}, runs=${bd.going?.runs}`)
-      console.log(`[PA-DIAG]   ds: adj=${bd.drawStyle?.adjustment}, conf=${bd.drawStyle?.confidence}`)
-      console.log(`[PA-DIAG]   note: ${pa.note}`)
+      const fmt = (v, d = 3) => v != null ? Number(v).toFixed(d) : '—'
+      console.log(`[PA-DIAG] ┌─ ${sr.horse} (${rawRunner.course_name || race.course} ${race.date})`)
+      console.log(`[PA-DIAG] │  runs: ${rawPR.length}  factor: ${fmt(pa.factor)}  conf: ${fmt(pa.confidence, 0)}%  adj: ${fmt(pa.adjustment)}`)
+      console.log(`[PA-DIAG] │  track:  wr=${fmt(bd.track?.winRate, 0)}%  conf=${fmt(bd.track?.confidence, 0)}%  adj=${fmt(bd.track?.adjustment)}`)
+      console.log(`[PA-DIAG] │  dir:    runs=${bd.direction?.runs ?? '—'}  conf=${fmt(bd.direction?.confidence, 0)}%  adj=${fmt(bd.direction?.adjustment)}`)
+      console.log(`[PA-DIAG] │  dist:   runs=${bd.distance?.runs ?? '—'}  conf=${fmt(bd.distance?.confidence, 0)}%  adj=${fmt(bd.distance?.adjustment)}`)
+      console.log(`[PA-DIAG] │  going:  runs=${bd.going?.runs ?? '—'}  conf=${fmt(bd.going?.confidence, 0)}%  adj=${fmt(bd.going?.adjustment)}`)
+      console.log(`[PA-DIAG] │  draw:   adj=${fmt(bd.drawStyle?.adjustment)}  conf=${fmt(bd.drawStyle?.confidence, 0)}%`)
+      console.log(`[PA-DIAG] └─ note: ${pa.note}`)
       global.__paDiagLogged = true
     }
 
