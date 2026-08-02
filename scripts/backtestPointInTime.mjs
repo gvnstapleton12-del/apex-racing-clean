@@ -14,6 +14,7 @@ const ROOT = join(__dirname, '..')
 const { runApexEngine } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'apexEngine.js')).href)
 const { initHorseDb, createTables, closeHorseDb } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'horseMemoryDb.js')).href)
 const { loadStaticDatabases, buildPointInTimeContext, attachHorseMemory, buildRPDataMock } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'backtestContextBuilder.js')).href)
+const { initAffinityStore } = await import(pathToFileURL(join(ROOT, 'src', 'lib', 'personalAffinity.js')).href)
 
 const CACHE_DIR = join(ROOT, 'data', 'backtest-cache')
 const MIN_RUNNERS = 5
@@ -120,6 +121,12 @@ async function main() {
   console.log(`  Track profiles: ${Object.keys(staticDbs.trackProfiles).length} tracks`)
   console.log(`  Horse profiles: ${Object.keys(staticDbs.horseProfileDb).length} profiles`)
   console.log(`  Learning records: ${(staticDbs.learningData.records || []).length}`)
+
+  // 1b. Pre-load PA store (512MB) so first engine call doesn't block
+  console.log('Pre-loading personal affinity store...')
+  const paStart = Date.now()
+  await initAffinityStore()
+  console.log(`  PA store loaded in ${Date.now() - paStart}ms`)
 
   // 2. Open SQLite
   console.log('\nOpening horse memory database...')
