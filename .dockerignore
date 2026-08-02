@@ -1,3 +1,11 @@
 node_modules
-.git
+dist
 data
+.git
+*.db
+backtest-*.json
+calibration-audit.json
+calibration-comparison.json
+platt-calibration-results.json
+pa-confidence-grid.json
+value-pick-audit.json
