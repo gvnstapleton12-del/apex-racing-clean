@@ -183,6 +183,8 @@ async function main() {
     let daySelections = 0
     const dayStart = Date.now()
 
+    process.stdout.write(`  races: ${races.length} `)
+
     for (const race of races) {
       const runners = race.runners || []
       if (runners.length < MIN_RUNNERS) { skippedSmallField++; continue }
@@ -243,6 +245,7 @@ async function main() {
 
       // Run engine with full point-in-time context
       let engineResult
+      const raceStart = Date.now()
       try {
         engineResult = runApexEngine(engineRunners, raceData, {
           ...context,
@@ -255,6 +258,7 @@ async function main() {
         console.warn(`  [ERR] ${race.course}: ${err.message}`)
         continue
       }
+      if (dayRaces <= 2) process.stdout.write(`engine:${Date.now() - raceStart}ms(${runners.length}r) `)
 
       const predictions = engineResult.racecards || []
       const resultMap = {}
