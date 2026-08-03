@@ -967,7 +967,7 @@ export default function Proof() {
 
 
   return (
-    <div className='px-2 sm:px-6 py-4 sm:py-6 max-w-6xl mx-auto space-y-6'>
+    <div className='px-2 sm:px-6 py-4 sm:py-6 max-w-6xl mx-auto space-y-6 overflow-x-hidden'>
       <div>
         <h1 className='text-4xl font-black tracking-tight'>Evidence</h1>
         <p className='text-zinc-400 mt-2'>Real prediction data, accuracy metrics, and explainable race analysis.</p>

@@ -241,7 +241,7 @@ export default function CalibrationDashboard() {
             <h3 style={{ color: '#e2e8f0', fontSize: '1.125rem', fontWeight: 600, margin: 0 }}>Value Picks Performance</h3>
             <p style={{ color: '#94a3b8', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>Gate: P ≥ 10% + 15% margin + APEX ≥ 40</p>
           </div>
-          <div className='cal-value-grid-4' style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem' }}>
+          <div className='cal-value-grid-4' style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
             <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
               <span style={{ color: '#94a3b8', fontSize: '0.875rem', display: 'block' }}>Bets</span>
               <strong style={{ color: '#e2e8f0', fontSize: '1.5rem', fontWeight: 700 }}>{pricedPicks.length}{missingOddsCount > 0 && <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 400 }}> priced ({missingOddsCount} no odds)</span>}</strong>
@@ -260,10 +260,10 @@ export default function CalibrationDashboard() {
             </div>
           </div>
           {(densePicks.length > 0 || sparsePicks.length > 0) && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginTop: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', marginTop: '1rem' }}>
               <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
                 <span style={{ color: '#94a3b8', fontSize: '0.75rem', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Dense Data (5+ runs)</span>
-                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'baseline' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'baseline', flexWrap: 'wrap' }}>
                   <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}><strong>{densePicks.length}</strong> bets</span>
                   <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}><strong style={{ color: Number(denseWR) >= 10 ? '#22c55e' : '#eab308' }}>{denseWR}%</strong> WR</span>
                   <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}><strong style={{ color: Number(denseROI) >= 0 ? '#22c55e' : '#ef4444' }}>{Number(denseROI) >= 0 ? '+' : ''}{denseROI}%</strong> ROI</span>
@@ -271,7 +271,7 @@ export default function CalibrationDashboard() {
               </div>
               <div className='bg-white/[0.03] backdrop-blur-xl rounded-xl p-4 border border-white/5'>
                 <span style={{ color: '#94a3b8', fontSize: '0.75rem', display: 'block', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Sparse Data (&lt;5 runs)</span>
-                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'baseline' }}>
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'baseline', flexWrap: 'wrap' }}>
                   <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}><strong>{sparsePicks.length}</strong> bets</span>
                   <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}><strong style={{ color: Number(sparseWR) >= 10 ? '#22c55e' : '#eab308' }}>{sparseWR}%</strong> WR</span>
                   <span style={{ color: '#e2e8f0', fontSize: '0.9rem' }}><strong style={{ color: Number(sparseROI) >= 0 ? '#22c55e' : '#ef4444' }}>{Number(sparseROI) >= 0 ? '+' : ''}{sparseROI}%</strong> ROI</span>
