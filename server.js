@@ -1417,7 +1417,7 @@ async function matchResultsToCalibration(races) {
       }
 
       if (rec && !rec.resulted) {
-        const spOdds = resolveOdds(runner)
+        const spOdds = resolveOdds(runner) || rec.odds || 0
         rec.actual_position = position
         rec.actual_won = position === 1
         rec.actual_placed = position >= 1 && position <= placedPositions(rec.field_size || 0)
@@ -1488,7 +1488,7 @@ async function matchResultsToCalibration(races) {
             existingCal.actualPosition = position
             existingCal.actualWon = position === 1
             existingCal.actualPlaced = position >= 1 && position <= placedPositions(existingCal.fieldSize || 0)
-            existingCal.actualOdds = resolveOdds(runner)
+            existingCal.actualOdds = resolveOdds(runner) || rec?.odds || 0
             if (!existingCal.going) existingCal.going = normalizeGoingString(prediction.going || race.going || '')
           }
           return
@@ -1522,7 +1522,7 @@ async function matchResultsToCalibration(races) {
           last_run: runner.last_run || 0,
           position,
           won: position === 1,
-          spOdds: resolveOdds(runner),
+          spOdds: resolveOdds(runner) || rec?.odds || 0,
           aiConfidence: Number(prediction.confidence || prediction.finalScore || 75),
           signal: prediction.signal || 'AUTO_MATCH',
           marketMovement: prediction.marketMovement || 'UNKNOWN',
@@ -1842,7 +1842,13 @@ async function fetchResultsForDate(dateStr) {
             (r.horse || '').toLowerCase().trim() === (resultRunner.horse || '').toLowerCase().trim()
           )
           if (existingRunner) {
-            return { ...resultRunner, or: existingRunner.or, rpr: existingRunner.rpr, performanceRating: existingRunner.performanceRating }
+            const merged = { ...resultRunner, or: existingRunner.or, rpr: existingRunner.rpr, performanceRating: existingRunner.performanceRating }
+            // Carry over pre-race odds from racecard when SL results didn't provide SP
+            if (!merged.sp || merged.sp === 0) {
+              const preRaceOdds = existingRunner.odds || existingRunner.sp || existingRunner.starting_price || existingRunner.sp_odds || 0
+              if (preRaceOdds > 1) merged.sp = preRaceOdds
+            }
+            return merged
           }
           return resultRunner
         })
@@ -3021,9 +3027,9 @@ app.post('/api/upload-results', (req, res) => {
           rec.actual_position = position
           rec.actual_won = position === 1
           rec.actual_placed = position >= 1 && position <= placedPositions(rec.field_size || 0)
-          rec.actual_odds = resolveOdds(runner)
-          rec.spOdds = runner.sp || runner.spOdds || null
-          rec.closingOdds = resolveOdds(runner)
+          rec.actual_odds = resolveOdds(runner) || rec.odds || 0
+          rec.spOdds = runner.sp || runner.spOdds || rec.odds || null
+          rec.closingOdds = resolveOdds(runner) || rec.odds || 0
           if (rec.takenOdds > 0 && rec.closingOdds > 0) {
             rec.clv = ((rec.takenOdds - rec.closingOdds) / rec.closingOdds)
           }
@@ -3041,7 +3047,7 @@ app.post('/api/upload-results', (req, res) => {
             raceType: race.race_type || race.raceType || '',
           }, {
             position,
-            spOdds: resolveOdds(runner),
+          spOdds: resolveOdds(runner) || rec?.odds || 0,
           })
 
           CALIBRATION_DATABASE.records.push(calRecord)
