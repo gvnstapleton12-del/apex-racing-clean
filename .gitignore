@@ -8,4 +8,4 @@ dist/
 *.json.bak
 .idea/
 *.timestamp-*
-backtest*
+/backtest*

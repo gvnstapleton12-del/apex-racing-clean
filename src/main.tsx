@@ -239,7 +239,7 @@ function PickCard({ selection, rank, result, position, isNap = false, isBomb = f
             )}
             <span className='ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20'>
               <strong className='text-lg font-black text-amber-400 leading-none'>{selection.score}</strong>
-              <span className='text-[10px] text-amber-400/70 uppercase tracking-wider'>APEX</span>
+              <span className='text-[10px] text-amber-400/70 uppercase tracking-wider whitespace-nowrap'>APEX</span>
             </span>
           </div>
 
@@ -1027,7 +1027,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
             <h1 className='text-2xl sm:text-4xl font-black tracking-tight mt-2 break-words'>Today&apos;s Picks</h1>
           </div>
           
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6 w-full sm:w-auto justify-items-center'>
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-6 w-full sm:w-auto justify-items-center'>
             <div className='text-center min-w-0'>
               <div className='text-2xl sm:text-3xl font-bold text-amber-400'>{ukIreRaces.length}</div>
               <div className='text-[10px] sm:text-xs text-zinc-400 uppercase tracking-wider'>Races</div>
@@ -1101,7 +1101,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                 <span className='text-zinc-500 truncate max-w-[400px]'>{displayBestBet.raceName}</span>
               </div>
             </div>
-            <div className='flex items-center gap-6'>
+            <div className='flex items-center gap-6 flex-shrink-0'>
               <div className='text-center'>
                 <div className='relative w-24 h-24 flex items-center justify-center'>
                   <svg className='absolute inset-0 w-full h-full -rotate-90' viewBox='0 0 100 100'>
@@ -1112,7 +1112,7 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
                   </svg>
                   <div className='text-center'>
                     <div className='text-3xl font-black text-amber-400'>{displayBestBet.score}</div>
-                    <div className='text-[10px] text-zinc-500 uppercase tracking-wider'>APEX</div>
+                    <div className='text-[10px] text-zinc-500 uppercase tracking-wider whitespace-nowrap'>APEX</div>
                   </div>
                 </div>
               </div>

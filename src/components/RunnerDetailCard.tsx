@@ -503,7 +503,7 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
           </div>
 
           <div className={`flex-shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center ${isFirst ? 'bg-amber-500/10 border-2 border-amber-500/30' : 'bg-green-500/10 border border-green-500/20'}`}>
-            <span className='text-zinc-500 text-[10px] font-medium uppercase tracking-wider'>APEX</span>
+            <span className='text-zinc-500 text-[10px] font-medium uppercase tracking-wider whitespace-nowrap'>APEX</span>
             <strong className={`text-2xl font-black ${isFirst ? 'text-amber-400' : 'text-green-400'}`}>{score > 0 ? score : '—'}</strong>
           </div>
         </div>

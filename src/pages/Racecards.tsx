@@ -127,10 +127,10 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
                 {topOpportunity.race.course} · {formatOffTime(topOpportunity.race)} · {topOpportunity.race.race_name}
               </div>
             </div>
-            <div className='flex items-center gap-6'>
+            <div className='flex items-center gap-6 flex-shrink-0'>
               <div className='text-center'>
                 <div className='text-4xl font-black text-amber-400'>{getScore(topOpportunity) > 0 ? getScore(topOpportunity) : '—'}</div>
-                <div className='text-[10px] text-zinc-400 uppercase tracking-wider mt-1'>APEX</div>
+                <div className='text-[10px] text-zinc-400 uppercase tracking-wider mt-1 whitespace-nowrap'>APEX</div>
               </div>
             </div>
           </div>
