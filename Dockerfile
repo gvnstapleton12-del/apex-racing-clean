@@ -1,9 +1,12 @@
 FROM node:22-bookworm-slim
 
+RUN apt-get update && apt-get install -y python3 build-essential && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev || npm install --omit=dev
+RUN npm ci --omit=dev --ignore-scripts
+RUN npm rebuild sqlite3
 
 COPY . .
 RUN npm run build
