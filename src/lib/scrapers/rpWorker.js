@@ -15,15 +15,14 @@
  */
 
 import { execFile } from 'child_process'
-import { readFileSync, writeFileSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { resolve, dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
-const RPSCRAPE_DIR = resolve(__dirname, '../../../../rpscrape')
-const RACECARDS_SCRIPT = join(RPSCRAPE_DIR, 'scripts', 'racecards.py')
+const RP_DIRECT_SCRIPT = join(__dirname, '../../../scripts/rpDirect.js')
 
 function normalizeName(name) {
   return (name || '')
@@ -34,7 +33,7 @@ function normalizeName(name) {
 }
 
 function parseRacecardsOutput(dateStr) {
-  const outputPath = join(RPSCRAPE_DIR, 'racecards', `${dateStr}.json`)
+  const outputPath = join(__dirname, '../../../data/rp-cache', `${dateStr}.json`)
 
   if (!existsSync(outputPath)) {
     console.log(`[RP Worker] No racecards file found at ${outputPath}`)
@@ -42,58 +41,42 @@ function parseRacecardsOutput(dateStr) {
   }
 
   const raw = JSON.parse(readFileSync(outputPath, 'utf8'))
+
+  if (!raw || typeof raw !== 'object') return {}
+
   const dataMap = {}
 
-  for (const [region, courses] of Object.entries(raw)) {
-    for (const [course, times] of Object.entries(courses)) {
-      for (const [offTime, racecard] of Object.entries(times)) {
-        const runners = racecard.runners || []
-        for (const runner of runners) {
-          const name = runner.name || ''
-          const key = normalizeName(name)
+  for (const [key, runner] of Object.entries(raw)) {
+    const form = runner.form || ''
+    const formChars = form.split('')
+    const wins = formChars.filter(c => c === '1').length
+    const runs = formChars.length
 
-          const form = runner.form || ''
-          const rpr = runner.rpr || null
-          const ts = runner.ts || null
+    const speedTrend = formChars.slice(0, 5).reverse().map(c => {
+      if (c === '1') return 100
+      if (c === '2') return 90
+      if (c === '3') return 80
+      if (c === '4') return 70
+      if (c === '5') return 60
+      if (c >= '6' && c <= '9') return 50 - (parseInt(c) - 6) * 5
+      return 0
+    }).filter(v => v > 0)
 
-          const stats = runner.stats || {}
-          const horseStats = stats.horse || {}
-          const courseStats = horseStats.course || {}
-          const distStats = horseStats.distance || {}
-          const goingStats = horseStats.going || {}
-
-          const formChars = form.split('')
-          const wins = formChars.filter(c => c === '1').length
-          const runs = formChars.length
-
-          const speedTrend = formChars.slice(0, 5).reverse().map(c => {
-            if (c === '1') return 100
-            if (c === '2') return 90
-            if (c === '3') return 80
-            if (c === '4') return 70
-            if (c === '5') return 60
-            if (c >= '6' && c <= '9') return 50 - (parseInt(c) - 6) * 5
-            return 0
-          }).filter(v => v > 0)
-
-          dataMap[key] = {
-            horseName: name,
-            rpr,
-            ts,
-            form,
-            trainer: runner.trainer || null,
-            courseWinRate: courseStats.wins ? parseInt(courseStats.wins) : 0,
-            courseRuns: courseStats.runs ? parseInt(courseStats.runs) : 0,
-            distWinRate: distStats.wins ? parseInt(distStats.wins) : 0,
-            distRuns: distStats.runs ? parseInt(distStats.runs) : 0,
-            goingWinRate: goingStats.wins ? parseInt(goingStats.wins) : 0,
-            goingRuns: goingStats.runs ? parseInt(goingStats.runs) : 0,
-            speedTrend,
-            formWins: wins,
-            formRuns: runs,
-          }
-        }
-      }
+    dataMap[key] = {
+      horseName: runner.name || '',
+      rpr: runner.rpr || null,
+      ts: runner.ts || null,
+      form,
+      trainer: runner.trainer || null,
+      courseWinRate: 0,
+      courseRuns: 0,
+      distWinRate: 0,
+      distRuns: 0,
+      goingWinRate: 0,
+      goingRuns: 0,
+      speedTrend,
+      formWins: wins,
+      formRuns: runs,
     }
   }
 
@@ -102,39 +85,46 @@ function parseRacecardsOutput(dateStr) {
 
 function runRacecardsScraper(dateStr) {
   return new Promise((resolve, reject) => {
-    console.log(`[RP Worker] Running: python "${RACECARDS_SCRIPT}" --day 1 --region gb`)
+    const cacheDir = join(__dirname, '../../../data/rp-cache')
+    const outputFile = join(cacheDir, `${dateStr}.json`)
 
-    const pythonProcess = execFile('/usr/bin/python3', [
-      RACECARDS_SCRIPT,
-      '--day', '1',
-      '--region', 'gb'
+    if (!existsSync(cacheDir)) {
+      mkdirSync(cacheDir, { recursive: true })
+    }
+
+    console.log(`[RP Worker] Running: node "${RP_DIRECT_SCRIPT}" ${dateStr} ${outputFile}`)
+
+    const nodeProcess = execFile(process.execPath, [
+      RP_DIRECT_SCRIPT,
+      dateStr,
+      outputFile
     ], {
-      cwd: join(RPSCRAPE_DIR, 'scripts'),
+      cwd: dirname(RP_DIRECT_SCRIPT),
       maxBuffer: 10 * 1024 * 1024
     })
 
     let stdout = ''
     let stderr = ''
 
-    pythonProcess.stdout?.on('data', d => {
+    nodeProcess.stdout?.on('data', d => {
       stdout += d
-      process.stdout.write(`[RP Python] ${d}`)
+      process.stdout.write(`[RP Direct] ${d}`)
     })
 
-    pythonProcess.stderr?.on('data', d => {
+    nodeProcess.stderr?.on('data', d => {
       stderr += d
-      process.stderr.write(`[RP Python] ${d}`)
+      process.stderr.write(`[RP Direct] ${d}`)
     })
 
     const timeout = setTimeout(() => {
-      pythonProcess.kill('SIGTERM')
-      reject(new Error('rpscrape timeout (5min)'))
+      nodeProcess.kill('SIGTERM')
+      reject(new Error('rpDirect timeout (5min)'))
     }, 5 * 60 * 1000)
 
-    pythonProcess.on('close', (code) => {
+    nodeProcess.on('close', (code) => {
       clearTimeout(timeout)
       if (code !== 0) {
-        console.error(`[RP Worker] rpscrape exited with code ${code}`)
+        console.error(`[RP Worker] rpDirect exited with code ${code}`)
         console.error(`[RP Worker] stderr: ${stderr.slice(-500)}`)
         resolve({})
         return
@@ -142,7 +132,7 @@ function runRacecardsScraper(dateStr) {
 
       try {
         const dataMap = parseRacecardsOutput(dateStr)
-        console.log(`[RP Worker] Parsed ${Object.keys(dataMap).length} horses from racecards`)
+        console.log(`[RP Worker] Parsed ${Object.keys(dataMap).length} horses from RP Direct`)
         resolve(dataMap)
       } catch (err) {
         console.error(`[RP Worker] Parse error: ${err.message}`)
@@ -150,7 +140,7 @@ function runRacecardsScraper(dateStr) {
       }
     })
 
-    pythonProcess.on('error', (err) => {
+    nodeProcess.on('error', (err) => {
       clearTimeout(timeout)
       console.error(`[RP Worker] Spawn error: ${err.message}`)
       resolve({})
