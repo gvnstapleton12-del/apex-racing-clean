@@ -319,7 +319,12 @@ export default function RunnerDetailCard({ runner, race, rank = 1, compact = fal
         <div className='flex items-start justify-between gap-4'>
           <div className='flex-1 min-w-0'>
             <div className='flex items-center gap-2 mb-1.5'>
-              {isFirst && <span className='px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-amber-400 text-black'>Top Pick</span>}
+              {runner.position > 0 && (
+                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${runner.position === 1 ? 'bg-green-500 text-white' : runner.position === 2 ? 'bg-zinc-300 text-black' : runner.position === 3 ? 'bg-amber-700 text-white' : 'bg-white/5 text-zinc-500'}`}>
+                  {runner.position === 1 ? '1st' : runner.position === 2 ? '2nd' : runner.position === 3 ? '3rd' : `${runner.position}th`}
+                </span>
+              )}
+              {isFirst && !runner.position && <span className='px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-amber-400 text-black'>Top Pick</span>}
               <span className={`text-xs font-bold px-2 py-0.5 rounded ${isFirst ? 'bg-amber-500/15 text-amber-400' : 'bg-white/5 text-zinc-500'}`}>#{rank}</span>
               {runner.confidenceTier && (
                 <Badge className={runner.confidenceTier.tier === 'S' || runner.confidenceTier.tier === 'A' ? 'bg-amber-500/10 text-amber-400' : ''}>

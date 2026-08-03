@@ -83,8 +83,7 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
   }
 
   const ukIreRaces = sortByOffTime(filterGBIRE(races))
-  const unfinishedRaces = filterUnfinished(ukIreRaces)
-  const todayRaces = filterToday(unfinishedRaces)
+  const todayRaces = filterToday(ukIreRaces)
   const totalRunners = countRunners(todayRaces)
   const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const nextRace = todayRaces.find(r => r.off_time && r.off_time >= ukNow) || todayRaces[0]
