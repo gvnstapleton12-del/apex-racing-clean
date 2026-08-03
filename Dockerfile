@@ -5,11 +5,11 @@ RUN apt-get update && apt-get install -y python3 build-essential && rm -rf /var/
 WORKDIR /app
 
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev --ignore-scripts
+RUN npm ci --ignore-scripts
 RUN npm rebuild sqlite3
 
 COPY . .
-RUN npm run build
+RUN npx vite build
 
 EXPOSE 3000
 
