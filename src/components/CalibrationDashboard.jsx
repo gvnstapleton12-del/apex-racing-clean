@@ -99,6 +99,7 @@ export default function CalibrationDashboard() {
   const [calibration, setCalibration] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('probability')
+  const [dateRange, setDateRange] = useState('all')
 
   useEffect(() => {
     const fetchData = () => {
@@ -135,7 +136,15 @@ export default function CalibrationDashboard() {
     byBetQuality = { qualities: [] },
   } = calibration.analytics || {}
 
-  const records = calibration.records || []
+  const allRecords = calibration.records || []
+  const filteredRecords = dateRange === 'all' ? allRecords : allRecords.filter(r => {
+    if (!r.date) return false
+    const d = new Date(r.date)
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - dateRange)
+    return d >= cutoff
+  })
+  const records = filteredRecords
   const wins = records.filter(r => r.actualWon).length
   const places = records.filter(r => !r.actualWon && r.actualPlaced).length
   const losses = records.filter(r => !r.actualWon && !r.actualPlaced).length
@@ -197,9 +206,34 @@ export default function CalibrationDashboard() {
     <div className='calibration-dashboard'>
       <div className='cal-header'>
         <h2>Calibration Tracking</h2>
+        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+          {[['all', 'All Time'], [30, '30 Days'], [7, '7 Days']].map(([val, label]) => (
+            <button
+              key={val}
+              type='button'
+              onClick={() => setDateRange(val)}
+              style={{
+                padding: '0.25rem 0.75rem',
+                borderRadius: '0.5rem',
+                fontSize: '0.75rem',
+                fontWeight: 500,
+                border: dateRange === val ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                background: dateRange === val ? 'rgba(34,197,94,0.1)' : 'transparent',
+                color: dateRange === val ? '#22c55e' : '#94a3b8',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              {label}
+            </button>
+          ))}
+          <span style={{ color: '#64748b', fontSize: '0.75rem', alignSelf: 'center', marginLeft: '0.5rem' }}>
+            {allRecords.length} total / {records.length} shown
+          </span>
+        </div>
         <div className='cal-header-stats'>
           <div className='cal-stat'>
-            <span className='cal-stat-value'>{byProbability.totalRecords}</span>
+            <span className='cal-stat-value'>{records.length}</span>
             <span className='cal-stat-label'>Predictions</span>
           </div>
           <div className='cal-stat' style={{ color: '#22c55e' }}>
@@ -215,7 +249,7 @@ export default function CalibrationDashboard() {
             <span className='cal-stat-label'>Losses</span>
           </div>
           <div className='cal-stat'>
-            <span className='cal-stat-value'>{byProbability.overallAccuracy}%</span>
+            <span className='cal-stat-value'>{records.length ? ((wins / records.length) * 100).toFixed(1) : '0.0'}%</span>
             <span className='cal-stat-label'>Win Rate</span>
           </div>
           <div className='cal-stat'>
