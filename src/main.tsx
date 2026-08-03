@@ -1085,8 +1085,8 @@ function Home({ externalMeeting, onMeetingChange }: { externalMeeting?: string |
         const napResult = todayResults.find((r: any) => r.horse === displayBestBet.horse && r.course === displayBestBet.course)
         const napHasRaced = napResult && (napResult.result === 'won' || napResult.result === 'placed' || napResult.result === 'lost')
         return (
-        <section className='relative overflow-hidden bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/20 rounded-2xl p-4 sm:p-8 mb-6'>
-          <div className='absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2' />
+        <section className='relative bg-gradient-to-r from-[#1a1f2e] to-[#0f1720] border border-amber-500/20 rounded-2xl p-4 sm:p-8 mb-6'>
+          <div className='absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 overflow-hidden' />
           <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 relative z-10'>
             <div className='flex-1 min-w-0'>
               <div className='flex items-center gap-3 mb-3'>
