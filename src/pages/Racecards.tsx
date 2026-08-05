@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, Fragment } from 'react'
+import { useEffect, useRef, useState, Fragment, useMemo } from 'react'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import type { Race, Runner } from '../lib/types'
 import { fetchLiveState } from '../lib/racingApi'
@@ -12,9 +12,16 @@ import RacePressureGraph from '../components/RacePressureGraph'
 import ScoreRing from '../components/ScoreRing'
 import MetricCard from '../components/MetricCard'
 
+async function fetchRacecardArchive(date: string): Promise<{ races: Race[] }> {
+  const res = await fetch(`/api/racecard-archive/${date}`)
+  if (!res.ok) throw new Error('Failed to fetch archive')
+  return res.json()
+}
+
 export default function Racecards({ selectHorse }: { selectHorse?: { horse: string; course: string; offTime: string } | null }) {
   const [selectedRace, setSelectedRace] = useState<Race | null>(null)
   const [search, setSearch] = useState('')
+  const [view, setView] = useState<'live' | 'yesterday'>('live')
   const scrollTarget = useRef<HTMLDivElement>(null)
 
   const { data: liveState, isLoading } = useQuery<LiveState>({
@@ -26,7 +33,17 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
     retryDelay: 5000,
   })
   useSocketLiveUpdate(['racecards', 'home-racecards'])
+
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+  const { data: archiveData, isLoading: archiveLoading } = useQuery({
+    queryKey: ['racecard-archive', yesterday],
+    queryFn: () => fetchRacecardArchive(yesterday),
+    enabled: view === 'yesterday',
+    retry: 1,
+  })
+
   const races = liveState?.racecards || []
+  const archiveRaces = archiveData?.races || []
   const processingComplete = liveState?.processingComplete ?? false
 
   useEffect(() => {
@@ -60,7 +77,7 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
     }
   }, [selectHorse, races])
 
-  if (isLoading || (!processingComplete && races.length === 0)) {
+  if (view === 'live' && (isLoading || (!processingComplete && races.length === 0))) {
     return (
       <div className='dashboard-page max-w-7xl mx-auto'>
         <div className='loading-card bg-white/[0.02] rounded-2xl border border-white/5 p-12 flex items-center gap-4'>
@@ -71,7 +88,7 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
     )
   }
 
-  if (!processingComplete) {
+  if (view === 'live' && !processingComplete) {
     return (
       <div className='dashboard-page max-w-7xl mx-auto'>
         <div className='loading-card bg-white/[0.02] rounded-2xl border border-amber-500/10 p-12 flex items-center gap-4'>
@@ -87,11 +104,13 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
   const totalRunners = countRunners(todayRaces)
   const ukNow = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', hour12: false })
   const nextRace = todayRaces.find(r => r.off_time && r.off_time >= ukNow) || todayRaces[0]
+
+  const displayRaces = view === 'yesterday' ? archiveRaces : todayRaces
   const filtered = search
-    ? todayRaces.filter((r) =>
+    ? displayRaces.filter((r) =>
         `${r.course} ${r.race_name}`.toLowerCase().includes(search.toLowerCase())
       )
-    : todayRaces
+    : displayRaces
 
   if (selectedRace) {
     return (
@@ -102,7 +121,7 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
   }
 
   // Find top opportunity across all races
-  const allRunners = todayRaces.flatMap(race => 
+  const allRunners = displayRaces.flatMap(race => 
     (race.runners || []).map(runner => ({ ...runner, race }))
   )
   const topOpportunity = allRunners.length > 0 
@@ -115,12 +134,40 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
   return (
     <div className='dashboard-page max-w-7xl mx-auto'>
 
+      {/* View Toggle */}
+      <div className='flex items-center gap-2 mb-6'>
+        <button
+          type='button'
+          onClick={() => setView('live')}
+          className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+            view === 'live' 
+              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+              : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'
+          }`}
+        >
+          Today
+        </button>
+        <button
+          type='button'
+          onClick={() => setView('yesterday')}
+          className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+            view === 'yesterday' 
+              ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' 
+              : 'bg-white/[0.03] text-zinc-500 border border-white/5 hover:text-zinc-300'
+          }`}
+        >
+          Yesterday
+        </button>
+      </div>
+
       {/* Top Opportunity Hero */}
       {topOpportunity && (
         <section className='apex-card top-pick-hero p-5 mb-6'>
           <div className='flex items-center justify-between relative z-10'>
             <div>
-              <div className='text-[10px] text-zinc-500 uppercase tracking-[0.3em] mb-1'>Today's Best Opportunity</div>
+              <div className='text-[10px] text-zinc-500 uppercase tracking-[0.3em] mb-1'>
+                {view === 'yesterday' ? "Yesterday's Best" : "Today's Best Opportunity"}
+              </div>
               <h2 className='text-2xl xl:text-3xl font-black text-white leading-tight max-w-5xl'>{topOpportunity.horse}</h2>
               <div className='text-sm text-zinc-300 font-medium mt-1'>
                 {topOpportunity.race.course} · {formatOffTime(topOpportunity.race)} · {topOpportunity.race.race_name}
@@ -136,10 +183,16 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
         </section>
       )}
 
-      {!todayRaces.length && (
+      {!displayRaces.length && (
         <div className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-12'>
-          <h2 className='text-2xl font-bold'>No more races today</h2>
-          <p className='text-zinc-400 mt-2'>All of today's races have finished. Check the Results tab for completed races.</p>
+          <h2 className='text-2xl font-bold'>
+            {view === 'yesterday' ? 'No archive for yesterday' : 'No more races today'}
+          </h2>
+          <p className='text-zinc-400 mt-2'>
+            {view === 'yesterday' 
+              ? "Yesterday's racecards haven't been archived yet." 
+              : 'All of today\'s races have finished. Check the Results tab for completed races.'}
+          </p>
         </div>
       )}
 
@@ -164,12 +217,12 @@ export default function Racecards({ selectHorse }: { selectHorse?: { horse: stri
         </div>
 
         {search && filtered.length > 0 && (
-          <p className='text-zinc-500 text-sm'>{filtered.length} of {todayRaces.length} races</p>
+          <p className='text-zinc-500 text-sm'>{filtered.length} of {displayRaces.length} races</p>
         )}
 
         {!filtered.length && (
           <div className='empty-state bg-white/[0.02] rounded-2xl border border-white/5 p-8 text-center'>
-            <p className='text-zinc-400'>{search ? `No races match "${search}"` : 'No races today'}</p>
+            <p className='text-zinc-400'>{search ? `No races match "${search}"` : (view === 'yesterday' ? 'No archived races' : 'No races today')}</p>
           </div>
         )}
 

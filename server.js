@@ -3114,6 +3114,38 @@ app.get('/api/historical', (req, res) => {
   res.json({ records, total, offset: Number(offset), limit: Number(limit) })
 })
 
+// Fetch archived racecards by date
+app.get('/api/racecard-archive/:date', (req, res) => {
+  const { date } = req.params
+  const archivePath = path.join(process.cwd(), 'data', 'racecard-archive', `${date}.json`)
+
+  try {
+    if (!fs.existsSync(archivePath)) {
+      return res.json({ error: 'No archive found for this date', races: [] })
+    }
+    const data = JSON.parse(fs.readFileSync(archivePath, 'utf8'))
+    res.json(data)
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to load archive' })
+  }
+})
+
+// List available archive dates
+app.get('/api/racecard-archive', (_req, res) => {
+  const archiveDir = path.join(process.cwd(), 'data', 'racecard-archive')
+
+  try {
+    if (!fs.existsSync(archiveDir)) {
+      return res.json({ dates: [] })
+    }
+    const files = fs.readdirSync(archiveDir).filter(f => f.endsWith('.json'))
+    const dates = files.map(f => f.replace('.json', '')).sort().reverse()
+    res.json({ dates })
+  } catch (e) {
+    res.json({ dates: [] })
+  }
+})
+
 // Decision audit endpoint - traces full decision pipeline for a sample race
 app.get('/api/decision-audit', (_req, res) => {
   try {
@@ -4647,6 +4679,52 @@ server.listen(PORT, async () => {
         isProcessing = false
       }
     }, 2 * 60 * 1000)
+
+    // Auto-archive racecards after last race finishes + 30 min buffer
+    let racecardArchiveScheduled = false
+    setInterval(() => {
+      if (racecardArchiveScheduled) return
+      if (!LIVE_STATE.racecards?.length || !LIVE_STATE.processingComplete) return
+
+      // Find last off-time across all races
+      const lastOffTime = LIVE_STATE.racecards.reduce((latest, race) => {
+        if (!race.off_time || !race.race_date) return latest
+        const raceTime = new Date(`${race.race_date}T${race.off_time}:00`)
+        return raceTime > latest ? raceTime : latest
+      }, new Date(0))
+
+      if (lastOffTime.getTime() === 0) return
+
+      // Archive 30 minutes after last race
+      const archiveTime = new Date(lastOffTime.getTime() + 30 * 60 * 1000)
+      const now = new Date()
+
+      if (now >= archiveTime) {
+        racecardArchiveScheduled = true
+        const today = new Date().toISOString().split('T')[0]
+        const archivePath = path.join(process.cwd(), 'data', 'racecard-archive', `${today}.json`)
+
+        // Save to archive
+        try {
+          const dir = path.dirname(archivePath)
+          if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
+          fs.writeFileSync(archivePath, JSON.stringify({
+            date: today,
+            savedAt: new Date().toISOString(),
+            races: LIVE_STATE.racecards
+          }, null, 2))
+          console.log(`[Scheduler] Archived ${LIVE_STATE.racecards.length} racecards to ${archivePath}`)
+        } catch (e) {
+          console.error('[Scheduler] Failed to archive racecards:', e.message)
+        }
+
+        // Clear live state
+        LIVE_STATE.racecards = []
+        LIVE_STATE.processingComplete = false
+        API_CACHE.delete('racecards:sl')
+        console.log('[Scheduler] Cleared finished racecards from live state')
+      }
+    }, 60 * 1000) // Check every minute
   }
 })
 
