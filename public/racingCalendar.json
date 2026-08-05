@@ -1,0 +1,158 @@
+{
+  "year": 2026,
+  "meetings": [
+    {
+      "name": "Cheltenham Festival",
+      "course": "Cheltenham",
+      "start": "2026-03-10",
+      "end": "2026-03-13",
+      "type": "jump",
+      "tier": 1,
+      "icon": "🏆"
+    },
+    {
+      "name": "Grand National Festival",
+      "course": "Aintree",
+      "start": "2026-04-09",
+      "end": "2026-04-11",
+      "type": "jump",
+      "tier": 1,
+      "icon": "🔴"
+    },
+    {
+      "name": "Chester May Festival",
+      "course": "Chester",
+      "start": "2026-05-06",
+      "end": "2026-05-08",
+      "type": "flat",
+      "tier": 2,
+      "icon": "flat"
+    },
+    {
+      "name": "Guineas Festival",
+      "course": "Newmarket",
+      "start": "2026-05-01",
+      "end": "2026-05-03",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "Dante Festival",
+      "course": "York",
+      "start": "2026-05-13",
+      "end": "2026-05-15",
+      "type": "flat",
+      "tier": 2,
+      "icon": "flat"
+    },
+    {
+      "name": "Lockinge Day",
+      "course": "Newbury",
+      "start": "2026-05-16",
+      "end": "2026-05-16",
+      "type": "flat",
+      "tier": 2,
+      "icon": "flat"
+    },
+    {
+      "name": "Epsom Derby Festival",
+      "course": "Epsom Downs",
+      "start": "2026-06-05",
+      "end": "2026-06-06",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "Royal Ascot",
+      "course": "Ascot",
+      "start": "2026-06-16",
+      "end": "2026-06-20",
+      "type": "flat",
+      "tier": 1,
+      "icon": "👑"
+    },
+    {
+      "name": "Coral-Eclipse",
+      "course": "Sandown",
+      "start": "2026-07-04",
+      "end": "2026-07-04",
+      "type": "flat",
+      "tier": 2,
+      "icon": "flat"
+    },
+    {
+      "name": "July Festival",
+      "course": "Newmarket",
+      "start": "2026-07-09",
+      "end": "2026-07-11",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "King George Weekend",
+      "course": "Ascot",
+      "start": "2026-07-24",
+      "end": "2026-07-25",
+      "type": "flat",
+      "tier": 2,
+      "icon": "flat"
+    },
+    {
+      "name": "Glorious Goodwood",
+      "course": "Goodwood",
+      "start": "2026-07-28",
+      "end": "2026-08-01",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "York Ebor Festival",
+      "course": "York",
+      "start": "2026-08-19",
+      "end": "2026-08-22",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "Sprint Cup Day",
+      "course": "Haydock",
+      "start": "2026-09-05",
+      "end": "2026-09-05",
+      "type": "flat",
+      "tier": 2,
+      "icon": "flat"
+    },
+    {
+      "name": "St Leger Festival",
+      "course": "Doncaster",
+      "start": "2026-09-10",
+      "end": "2026-09-13",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "British Champions Day",
+      "course": "Ascot",
+      "start": "2026-10-21",
+      "end": "2026-10-21",
+      "type": "flat",
+      "tier": 1,
+      "icon": " flat"
+    },
+    {
+      "name": "Winter Festival",
+      "course": "Kempton",
+      "start": "2026-12-26",
+      "end": "2026-12-27",
+      "type": "jump",
+      "tier": 2,
+      "icon": "jump"
+    }
+  ]
+}

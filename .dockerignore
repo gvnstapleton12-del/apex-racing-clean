@@ -1,0 +1,13 @@
+node_modules
+dist
+.git
+backtest*
+*.log
+*.txt
+analysis/
+tools/
+migrations/
+*.bat
+*.db-journal
+*.db-wal
+*.db-shm

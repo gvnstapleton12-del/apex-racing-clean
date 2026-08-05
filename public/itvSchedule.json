@@ -1,0 +1,46 @@
+{
+  "lastUpdated": "2026-07-10T08:00:00Z",
+  "note": "Seed data — update manually or via itvScraper when built",
+  "broadcasts": [
+    {
+      "date": "2026-07-09",
+      "channel": "ITV1",
+      "courses": ["Newmarket (July Course)"],
+      "races": [
+        { "course": "Newmarket (July Course)", "offTime": "13:50", "raceName": "Rossdales British EBF Maiden Stakes" },
+        { "course": "Newmarket (July Course)", "offTime": "14:25", "raceName": "HKJC Worldpool Fillies' Handicap" },
+        { "course": "Newmarket (July Course)", "offTime": "15:00", "raceName": "Bahrain Trophy Stakes (Group 3)" },
+        { "course": "Newmarket (July Course)", "offTime": "15:35", "raceName": "Duchess Of Cambridge Stakes (Group 2)" },
+        { "course": "Newmarket (July Course)", "offTime": "16:10", "raceName": "Weatherbys Banking Group British EBF Maiden Fillies' Stakes" },
+        { "course": "Newmarket (July Course)", "offTime": "16:45", "raceName": "Debenhams Handicap" }
+      ]
+    },
+    {
+      "date": "2026-07-10",
+      "channel": "ITV4",
+      "courses": ["Newmarket (July Course)", "York", "Ascot"],
+      "races": [
+        { "course": "Newmarket (July Course)", "offTime": "13:50", "raceName": "Oddschecker Handicap (Heritage Handicap)" },
+        { "course": "Newmarket (July Course)", "offTime": "14:25", "raceName": "Duchess Of Cambridge Stakes (Group 2)" },
+        { "course": "Newmarket (July Course)", "offTime": "15:35", "raceName": "Falmouth Stakes (Group 1)" },
+        { "course": "York", "offTime": "14:45", "raceName": "Summer Stakes (Group 3)" },
+        { "course": "Ascot", "offTime": "14:27", "raceName": "Juddmonte Summer Mile Stakes (Group 2)" },
+        { "course": "Newmarket (July Course)", "offTime": "16:35", "raceName": "July Cup Stakes (Group 1)" },
+        { "course": "York", "offTime": "15:45", "raceName": "John Smith's Cup (Heritage Handicap)" },
+        { "course": "Ascot", "offTime": "13:55", "raceName": "Club 26 Heritage Handicap" }
+      ]
+    },
+    {
+      "date": "2026-07-11",
+      "channel": "ITV1",
+      "courses": ["Newmarket (July Course)"],
+      "races": [
+        { "course": "Newmarket (July Course)", "offTime": "13:50", "raceName": "Superlative Stakes (Group 2)" },
+        { "course": "Newmarket (July Course)", "offTime": "14:25", "raceName": "July Cup Stakes (Group 1)" },
+        { "course": "Newmarket (July Course)", "offTime": "15:35", "raceName": "Heritage Handicap" },
+        { "course": "Newmarket (July Course)", "offTime": "16:10", "raceName": "Maiden Stakes" },
+        { "course": "Newmarket (July Course)", "offTime": "16:45", "raceName": "Handicap" }
+      ]
+    }
+  ]
+}

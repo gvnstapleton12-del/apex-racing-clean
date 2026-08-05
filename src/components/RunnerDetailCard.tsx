@@ -1,0 +1,531 @@
+import { useState, useEffect } from 'react'
+import type { Race, Runner } from '../lib/types'
+import { getScore, getScoreColor } from '../lib/engine'
+import { getAtTheRacesHorseUrl } from '../lib/horseLinks'
+
+
+function Badge({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <span className={`px-2 py-0.5 rounded text-xs font-bold ${className || 'bg-white/5 text-zinc-400'}`}>{children}</span>
+}
+
+function StatCard({ label, value, color }: { label: string; value: React.ReactNode; color?: string }) {
+  return (
+    <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+      <span className='text-zinc-500 text-xs block mb-1'>{label}</span>
+      <span className={`text-lg font-bold ${color || 'text-white'}`}>{value}</span>
+    </div>
+  )
+}
+
+function SectionHeader({ title, badge, badgeClass }: { title: string; badge?: string; badgeClass?: string }) {
+  return (
+    <div className='flex items-center gap-3 mb-4 pb-3 border-b border-white/5'>
+      <h3 className='text-sm font-bold text-zinc-200 uppercase tracking-wider'>{title}</h3>
+      {badge && <Badge className={badgeClass}>{badge}</Badge>}
+    </div>
+  )
+}
+
+function Section({ children }: { children: React.ReactNode }) {
+  return <div className='mt-5 pt-5 border-t border-white/5'>{children}</div>
+}
+
+function HorseQualitySection({ hq }: { hq: NonNullable<Runner['horseQuality']> }) {
+  return (
+    <Section>
+      <SectionHeader title='Horse Quality' badge={hq.label} badgeClass={hq.label === 'Elite' ? 'bg-amber-500/10 text-amber-400' : ''} />
+      <div className='grid grid-cols-2 sm:grid-cols-5 gap-3'>
+        {[
+          { label: 'Power', value: hq.power },
+          { label: 'Suitability', value: hq.suitability },
+          { label: 'Consistency', value: hq.consistency },
+          { label: 'Pace Compat', value: hq.paceCompat },
+          { label: 'Volatility', value: hq.volatility },
+        ].map((item) => (
+          <div key={item.label} className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+            <div className='w-full h-1.5 bg-white/5 rounded-full mb-3 overflow-hidden'>
+              <div className='h-full rounded-full' style={{ width: `${item.value}%`, background: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }} />
+            </div>
+            <span className='text-zinc-500 text-xs block'>{item.label}</span>
+            <span className={`text-lg font-bold ${getScoreColor(item.value)}`}>{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+function PlaceTraitsSection({ traits }: { traits: NonNullable<Runner['placeTraits']> }) {
+  const items = [
+    { label: 'Consistency', value: traits.consistency },
+    { label: 'Reliability', value: traits.reliability },
+    { label: 'Honesty', value: traits.honesty },
+    { label: 'Kick', value: traits.finishingKick },
+    { label: 'Explosive', value: traits.explosiveAbility },
+    { label: 'Market', value: traits.marketConfidence },
+  ]
+  return (
+    <Section>
+      <SectionHeader title='Place Traits' />
+      <div className='grid grid-cols-2 sm:grid-cols-3 gap-3'>
+        {items.map((item) => (
+          <div key={item.label} className='bg-white/[0.03] border border-white/5 rounded-xl p-4 flex items-center gap-3'>
+            <div className='w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold shrink-0'
+              style={{ background: item.value >= 65 ? 'rgba(16,185,129,0.15)' : item.value >= 50 ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)', color: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }}>
+              {item.value}
+            </div>
+            <div>
+              <span className='text-zinc-400 text-xs block'>{item.label}</span>
+              <div className='w-16 h-1.5 bg-white/5 rounded-full mt-1 overflow-hidden'>
+                <div className='h-full rounded-full' style={{ width: `${item.value}%`, background: item.value >= 65 ? '#10b981' : item.value >= 50 ? '#f59e0b' : '#ef4444' }} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+function ComponentsSection({ components }: { components: NonNullable<Runner['components']> }) {
+  const items = [
+    { label: 'Ability', value: components.ability, icon: '💪' },
+    { label: 'Form', value: components.form, icon: '📈' },
+    { label: 'Suitability', value: components.suitability, icon: '🎯' },
+    { label: 'Pace', value: components.pace, icon: '⚡' },
+    { label: 'Replay', value: components.replay, icon: '🎬' },
+    { label: 'Trainer/Jockey', value: components.trainerJockey, icon: '👤' },
+  ]
+  return (
+    <Section>
+      <SectionHeader title='Component Scores' badge={`${components.finalScore}`} badgeClass='bg-amber-500/10 text-amber-400' />
+      <div className='space-y-2'>
+        {items.map((item) => (
+          <div key={item.label} className='flex items-center gap-3'>
+            <span className='text-zinc-500 text-xs w-24 shrink-0'>{item.label}</span>
+            <div className='flex-1 h-2 bg-white/5 rounded-full overflow-hidden'>
+              <div className='h-full rounded-full transition-all duration-500' style={{ width: `${item.value}%`, background: item.value >= 65 ? 'linear-gradient(90deg, #10b981, #34d399)' : item.value >= 50 ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' : 'linear-gradient(90deg, #ef4444, #f87171)' }} />
+            </div>
+            <span className={`text-sm font-bold w-8 text-right ${item.value >= 65 ? 'text-green-400' : item.value >= 50 ? 'text-amber-400' : 'text-red-400'}`}>{item.value}</span>
+          </div>
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+function SelectionQualitySection({ sq, winProb, placeProb }: { sq: NonNullable<Runner['selectionQuality']>; winProb?: number; placeProb?: number }) {
+  return (
+    <Section>
+      <SectionHeader title='Selection Quality' badge={sq.grade} badgeClass={sq.grade === 'A+' || sq.grade === 'A' ? 'bg-green-500/10 text-green-400' : ''} />
+      <div className='grid grid-cols-2 sm:grid-cols-3 gap-3'>
+        <div className='bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Win Probability</span>
+          <strong className='text-2xl font-bold text-green-400'>{winProb?.toFixed(1)}%</strong>
+        </div>
+        <div className='bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Place Probability</span>
+          <strong className='text-2xl font-bold text-blue-400'>{placeProb?.toFixed(1) || '-'}%</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Fair Odds</span>
+          <strong className='text-2xl font-bold text-white'>{sq.fairOdds}</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Market Odds</span>
+          <strong className='text-2xl font-bold text-white'>{sq.marketOdds}</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${sq.edge > 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Edge</span>
+          <strong className={`text-2xl font-bold ${sq.edge > 0 ? 'text-green-400' : 'text-red-400'}`}>{sq.edge > 0 ? '+' : ''}{(sq.edge * 100).toFixed(1)}%</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${sq.value > 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Value Rating</span>
+          <strong className={`text-2xl font-bold ${sq.value > 0 ? 'text-green-400' : 'text-red-400'}`}>{sq.value > 0 ? '+' : ''}{sq.value}%</strong>
+        </div>
+      </div>
+    </Section>
+  )
+}
+
+function SimulationSection({ sim }: { sim: NonNullable<Runner['simulation']> }) {
+  return (
+    <Section>
+      <SectionHeader title='Race Simulation' badge={sim.raceShape} badgeClass={sim.raceShape === 'HONEST' ? 'bg-green-500/10 text-green-400' : sim.raceShape === 'SLOW' ? 'bg-blue-500/10 text-blue-400' : 'bg-red-500/10 text-red-400'} />
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+        <div className='bg-green-500/5 border border-green-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Win Rate</span>
+          <strong className='text-2xl font-bold text-green-400'>{sim.winRate}%</strong>
+        </div>
+        <div className='bg-blue-500/5 border border-blue-500/10 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Place Rate</span>
+          <strong className='text-2xl font-bold text-blue-400'>{sim.placeRate}%</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Avg Position</span>
+          <strong className='text-2xl font-bold text-white'>{sim.avgPosition}</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${sim.collapseRate > 20 ? 'bg-red-500/5 border border-red-500/10' : 'bg-white/[0.03] border border-white/5'}`}>
+          <span className='text-zinc-500 text-xs block'>Collapse Risk</span>
+          <strong className={`text-2xl font-bold ${sim.collapseRate > 20 ? 'text-red-400' : sim.collapseRate > 10 ? 'text-amber-400' : 'text-green-400'}`}>{sim.collapseRate}%</strong>
+        </div>
+      </div>
+    </Section>
+  )
+}
+
+function ValueEngineSection({ ve }: { ve: NonNullable<Runner['valueEngine']> }) {
+  return (
+    <Section>
+      <SectionHeader title='Value Engine' badge={ve.valueGrade} badgeClass={ve.valueGrade === 'A+' || ve.valueGrade === 'A' ? 'bg-green-500/10 text-green-400' : ''} />
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+        <div className={`rounded-xl p-4 text-center ${ve.edge >= 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Edge</span>
+          <strong className={`text-2xl font-bold ${ve.edge >= 0 ? 'text-green-400' : 'text-red-400'}`}>{ve.edge >= 0 ? '+' : ''}{ve.edge}%</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${ve.expectedValue >= 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Expected Value</span>
+          <strong className={`text-2xl font-bold ${ve.expectedValue >= 0 ? 'text-green-400' : 'text-red-400'}`}>{ve.expectedValue >= 0 ? '+' : ''}{ve.expectedValue}</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${ve.roi >= 0 ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>ROI</span>
+          <strong className={`text-2xl font-bold ${ve.roi >= 0 ? 'text-green-400' : 'text-red-400'}`}>{ve.roi >= 0 ? '+' : ''}{ve.roi}%</strong>
+        </div>
+        <div className={`rounded-xl p-4 text-center ${ve.bettable ? 'bg-green-500/5 border border-green-500/10' : 'bg-red-500/5 border border-red-500/10'}`}>
+          <span className='text-zinc-500 text-xs block'>Bettable</span>
+          <strong className={`text-2xl font-bold ${ve.bettable ? 'text-green-400' : 'text-red-400'}`}>{ve.bettable ? 'YES' : 'NO'}</strong>
+        </div>
+      </div>
+    </Section>
+  )
+}
+
+function BankrollEngineSection({ be }: { be: NonNullable<Runner['bankrollEngine']> }) {
+  return (
+    <Section>
+      <SectionHeader title='Bankroll Engine' badge={be.label} badgeClass={
+        be.label === 'STRONG BET' || be.label === 'BET' ? 'bg-green-500/10 text-green-400' :
+        be.label === 'MICRO BET' || be.label === 'CONSIDER' ? 'bg-amber-500/10 text-amber-400' :
+        be.label === 'AVOID' ? 'bg-red-500/10 text-red-400' : ''
+      } />
+      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Stake</span>
+          <strong className='text-2xl font-bold text-white'>{be.stake || 0}</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Units</span>
+          <strong className='text-2xl font-bold text-white'>{be.units || 0}</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Kelly</span>
+          <strong className='text-2xl font-bold text-white'>{be.adjustedKelly || 0}%</strong>
+        </div>
+        <div className='bg-white/[0.03] border border-white/5 rounded-xl p-4 text-center'>
+          <span className='text-zinc-500 text-xs block'>Reason</span>
+          <strong className='text-sm font-bold text-zinc-300'>{be.reason || '-'}</strong>
+        </div>
+      </div>
+    </Section>
+  )
+}
+
+function getGapBadgeClass(gap: number | string | null | undefined): string {
+  if (gap == null || gap === '—') return 'bg-gray-700 text-gray-400'
+  const numGap = typeof gap === 'string' ? parseInt(gap, 10) : gap
+  if (numGap >= 10) return 'bg-emerald-950 text-emerald-400 border border-emerald-500 font-bold'
+  if (numGap >= 5) return 'bg-teal-950 text-teal-400'
+  if (numGap < 0) return 'bg-rose-950 text-rose-400'
+  return 'bg-gray-800 text-gray-300'
+}
+
+function AffinitySection({ horseName }: { horseName: string }) {
+  const [affinity, setAffinity] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let mounted = true
+    fetch(`/api/horse-affinity/${encodeURIComponent(horseName)}`)
+      .then(r => r.json())
+      .then(data => { if (mounted) { setAffinity(data); setLoading(false) } })
+      .catch(() => { if (mounted) setLoading(false) })
+    return () => { mounted = false }
+  }, [horseName])
+
+  if (loading) return null
+
+  return (
+    <Section>
+      <SectionHeader title='Personal Affinity' />
+      {!affinity?.hasDenseData ? (
+        <div className='flex items-center gap-3 py-2'>
+          <div className='flex-1 h-2 bg-white/5 rounded-full overflow-hidden'>
+            <div className='h-full rounded-full bg-amber-400/60' style={{ width: `${(affinity?.confidenceScore || 0.3) * 100}%` }} />
+          </div>
+          <span className='text-xs text-zinc-400 font-mono shrink-0'>{((affinity?.confidenceScore || 0.3) * 100).toFixed(0)}%</span>
+        </div>
+      ) : (
+        <div className='space-y-3'>
+          <div className='flex items-center gap-2'>
+            <span className='text-xs text-zinc-500'>Archetype:</span>
+            <span className='text-xs text-amber-400 font-mono font-bold'>{affinity.archetype}</span>
+          </div>
+          <div className='grid grid-cols-2 gap-3 text-xs font-mono'>
+            <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center'>
+              <span className='text-zinc-500 block text-[10px] uppercase mb-1'>Track Factor</span>
+              <span className='text-white text-sm font-bold'>{Object.values(affinity.metrics.track)[0]?.toFixed(3) || '1.000'}</span>
+            </div>
+            <div className='bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center'>
+              <span className='text-zinc-500 block text-[10px] uppercase mb-1'>Going Bias</span>
+              <span className='text-white text-sm font-bold'>{Object.values(affinity.metrics.going)[0]?.toFixed(3) || '1.000'}</span>
+            </div>
+          </div>
+          <div className='flex flex-wrap gap-1.5 pt-1'>
+            {affinity.badges?.railLock && (
+              <span className='bg-blue-950 text-blue-400 text-[10px] px-2 py-0.5 rounded-md border border-blue-800 uppercase font-bold tracking-wider'>
+                Rail Lock Asset
+              </span>
+            )}
+            {affinity.badges?.staminaValid && (
+              <span className='bg-purple-950 text-purple-400 text-[10px] px-2 py-0.5 rounded-md border border-purple-800 uppercase font-bold tracking-wider'>
+                Distance Extension
+              </span>
+            )}
+            <div className='ml-auto flex items-center gap-1.5 bg-white/[0.04] px-2 py-0.5 rounded border border-white/5'>
+              <span className='text-[10px] text-zinc-500 uppercase font-mono'>Conf:</span>
+              <span className='text-xs font-bold text-amber-500 font-mono'>{(affinity.confidenceScore * 100).toFixed(0)}%</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </Section>
+  )
+}
+
+interface RunnerDetailCardProps {
+  runner: Runner
+  race: Race
+  rank?: number
+  compact?: boolean
+}
+
+export default function RunnerDetailCard({ runner, race, rank = 1, compact = false }: RunnerDetailCardProps) {
+  const score = getScore(runner)
+  const isFirst = rank === 1
+
+  return (
+    <div className={`rounded-xl border overflow-hidden ${isFirst ? 'border-amber-400/40 shadow-[0_0_40px_rgba(245,158,11,.12)] bg-gradient-to-br from-amber-500/8 to-transparent' : 'border-white/5 bg-white/[0.03]'}`}>
+      <div className='p-5'>
+        <div className='flex items-start justify-between gap-4'>
+          <div className='flex-1 min-w-0'>
+            <div className='flex items-center gap-2 mb-1.5'>
+              {runner.position > 0 && (
+                <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${runner.position === 1 ? 'bg-green-500 text-white' : runner.position === 2 ? 'bg-zinc-300 text-black' : runner.position === 3 ? 'bg-amber-700 text-white' : 'bg-white/5 text-zinc-500'}`}>
+                  {runner.position === 1 ? '1st' : runner.position === 2 ? '2nd' : runner.position === 3 ? '3rd' : `${runner.position}th`}
+                </span>
+              )}
+              {isFirst && !runner.position && <span className='px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest bg-amber-400 text-black'>Top Pick</span>}
+              <span className={`text-xs font-bold px-2 py-0.5 rounded ${isFirst ? 'bg-amber-500/15 text-amber-400' : 'bg-white/5 text-zinc-500'}`}>#{rank}</span>
+              {runner.confidenceTier && (
+                <Badge className={runner.confidenceTier.tier === 'S' || runner.confidenceTier.tier === 'A' ? 'bg-amber-500/10 text-amber-400' : ''}>
+                  T{runner.confidenceTier.tier}
+                </Badge>
+              )}
+              {runner.runningStyle && (
+                <Badge className={runner.runningStyle === 'Front Runner' ? 'bg-red-500/10 text-red-400' : runner.runningStyle === 'Prominent' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400'}>
+                  {runner.runningStyle}
+                </Badge>
+              )}
+            </div>
+
+            <a
+              href={getAtTheRacesHorseUrl(runner, race)}
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-2xl font-bold hover:text-amber-300 transition'
+            >
+              {runner.horse}
+            </a>
+
+            <div className='flex gap-2 mt-0.5 flex-wrap'>
+              <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.or != null && runner.or > 0 ? 'bg-zinc-800 text-zinc-100 border-zinc-600' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>OR {runner.or != null && runner.or > 0 ? runner.or : '—'}</span>
+              <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.rpr != null && runner.rpr > 0 ? 'bg-violet-900/40 text-violet-200 border-violet-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>RPR {runner.rpr != null && runner.rpr > 0 ? runner.rpr : '—'}</span>
+              <span className={`px-2 py-0.5 rounded text-xs font-bold border ${runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? 'bg-cyan-900/40 text-cyan-200 border-cyan-500/40' : 'bg-zinc-900/50 text-zinc-600 border-zinc-800'}`}>PR {runner.performanceRating?.pr != null && runner.performanceRating.pr > 0 ? Math.round(runner.performanceRating.pr) : '—'}</span>
+              {runner.classModel?.rprORGap != null && (
+                <span className={`px-2.5 py-1 rounded-md text-sm font-bold border ${getGapBadgeClass(runner.classModel.rprORGap)}`}>
+                  GAP: {runner.classModel.rprORGap > 0 ? '+' : ''}{runner.classModel.rprORGap}
+                </span>
+              )}
+              {runner.classModel?.rprORSource && runner.classModel.rprORSource !== 'none' && (
+                <span className={`px-2 py-0.5 rounded text-xs font-medium ${runner.classModel.rprORAdj > 0 ? 'bg-green-500/10 text-green-400' : runner.classModel.rprORAdj < 0 ? 'bg-red-500/10 text-red-400' : 'bg-white/5 text-zinc-500'}`}>
+                  {runner.classModel.rprORLabel} ({runner.classModel.rprORGap > 0 ? '+' : ''}{runner.classModel.rprORGap})
+                </span>
+              )}
+              {runner.awTransfer?.isAWSpecialist && (
+                <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>AW specialist</span>
+              )}
+              {runner.awTransfer?.surfaceSwitch && !runner.awTransfer?.isAWSpecialist && (
+                <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>AW to turf</span>
+              )}
+              {runner.awTransfer?.provenBothSurfaces && (
+                <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>Proven both surfaces</span>
+              )}
+              {runner.codeMatch && runner.codeMatch.matchedRuns === 0 && (
+                <span className='px-2 py-0.5 bg-red-500/10 text-red-400 rounded text-xs font-bold'>Code switch</span>
+              )}
+              {runner.codeMatch && runner.codeMatch.matchedRuns > 0 && runner.codeMatch.matchedRuns < 3 && (
+                <span className='px-2 py-0.5 bg-amber-500/10 text-amber-400 rounded text-xs font-bold'>Limited code form</span>
+              )}
+            </div>
+
+            <p className='text-zinc-400 text-xs mt-0.5'>
+              {runner.jockey}{runner.jockey && runner.trainer && ' · '}{runner.trainer}
+            </p>
+
+            {runner.form && (
+              <div className='flex items-center gap-1.5 mt-1'>
+                <span className='text-[10px] text-zinc-500 font-medium'>Form:</span>
+                <span className='flex gap-0.5'>
+                  {runner.form.split(/[-–]/).filter(Boolean).map((pos: string, i: number) => {
+                    const n = parseInt(pos)
+                    const bg = isNaN(n) ? 'bg-zinc-700 text-zinc-400' : n === 1 ? 'bg-green-500/20 text-green-400 border border-green-500/30' : n <= 3 ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' : 'bg-white/[0.04] text-zinc-400 border border-white/5'
+                    return <span key={i} className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${bg}`}>{pos}</span>
+                  })}
+                </span>
+              </div>
+            )}
+
+            {runner.horseProfile && (
+              <div className='mt-2 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-[10px]'>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>Course</div>
+                  {runner.horseProfile.course ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.course.runs}/{runner.horseProfile.course.wins} ({Math.round(runner.horseProfile.course.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.course.delta > 0.02 ? 'text-green-400' : runner.horseProfile.course.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.course.delta > 0 ? '▲' : runner.horseProfile.course.delta < 0 ? '▼' : '▸'} {runner.horseProfile.course.delta >= 0 ? '+' : ''}{(runner.horseProfile.course.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>Distance</div>
+                  {runner.horseProfile.distance ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.distance.runs}/{runner.horseProfile.distance.wins} ({Math.round(runner.horseProfile.distance.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.distance.delta > 0.02 ? 'text-green-400' : runner.horseProfile.distance.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.distance.delta > 0 ? '▲' : runner.horseProfile.distance.delta < 0 ? '▼' : '▸'} {runner.horseProfile.distance.delta >= 0 ? '+' : ''}{(runner.horseProfile.distance.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>Going</div>
+                  {runner.horseProfile.going ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.going.runs}/{runner.horseProfile.going.wins} ({Math.round(runner.horseProfile.going.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.going.delta > 0.02 ? 'text-green-400' : runner.horseProfile.going.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.going.delta > 0 ? '▲' : runner.horseProfile.going.delta < 0 ? '▼' : '▸'} {runner.horseProfile.going.delta >= 0 ? '+' : ''}{(runner.horseProfile.going.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+                <div className='bg-white/[0.03] rounded p-1.5 border border-white/5'>
+                  <div className='text-zinc-500'>C&D</div>
+                  {runner.horseProfile.courseDistance ? (
+                    <>
+                      <div className='text-white font-bold'>{runner.horseProfile.courseDistance.runs}/{runner.horseProfile.courseDistance.wins} ({Math.round(runner.horseProfile.courseDistance.winRate * 100)}%)</div>
+                      <div className={`font-bold ${runner.horseProfile.courseDistance.delta > 0.02 ? 'text-green-400' : runner.horseProfile.courseDistance.delta < -0.02 ? 'text-red-400' : 'text-zinc-500'}`}>
+                        {runner.horseProfile.courseDistance.delta > 0 ? '▲' : runner.horseProfile.courseDistance.delta < 0 ? '▼' : '▸'} {runner.horseProfile.courseDistance.delta >= 0 ? '+' : ''}{(runner.horseProfile.courseDistance.delta * 100).toFixed(0)}%
+                      </div>
+                    </>
+                  ) : (
+                    <div className='text-zinc-600'>—</div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {runner.personalAffinity?.breakdown && (
+              <div className='mt-2 flex gap-2 text-[10px] flex-wrap'>
+                <span className='text-zinc-500 font-medium uppercase tracking-wider'>PA:</span>
+                {Object.entries({
+                  Track: { val: runner.personalAffinity.breakdown.track?.adjustment, conf: runner.personalAffinity.breakdown.track?.confidence },
+                  Direction: { val: runner.personalAffinity.breakdown.direction?.adjustment, conf: runner.personalAffinity.breakdown.direction?.confidence },
+                  Distance: { val: runner.personalAffinity.breakdown.distance?.adjustment, conf: runner.personalAffinity.breakdown.distance?.confidence },
+                  Going: { val: runner.personalAffinity.breakdown.going?.adjustment, conf: runner.personalAffinity.breakdown.going?.confidence },
+                  'Draw/Style': { val: runner.personalAffinity.breakdown.drawStyle?.adjustment, conf: runner.personalAffinity.breakdown.drawStyle?.confidence },
+                }).filter(([_, v]) => v && (v.conf ?? 0) > 0.1).map(([label, { val }]) => {
+                  const num = typeof val === 'number' ? Math.round(val * 100) / 100 : 0
+                  const isPos = num > 0.005
+                  const isNeg = num < -0.005
+                  return (
+                    <span key={label} className={`px-1.5 py-0.5 rounded font-bold ${isPos ? 'bg-green-500/10 text-green-400' : isNeg ? 'bg-red-500/10 text-red-400' : 'bg-white/[0.04] text-zinc-500'}`}>
+                      {label} {num > 0 ? '+' : ''}{num.toFixed(2)}
+                    </span>
+                  )
+                })}
+              </div>
+            )}
+            {runner.personalAffinity?.adjustment !== undefined && (
+              <div className='mt-2'>
+                {/* Source: /api/pa-gate-monitor All-Time. Audit quarterly. */}
+                {(runner.personalAffinity.adjustment ?? 0) >= 5 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 outline-none'>
+                    🔥 PA Max Elite (+302% ROI • 50.6% Win Rate)
+                  </span>
+                )}
+                {(runner.personalAffinity.adjustment ?? 0) >= 2 && (runner.personalAffinity.adjustment ?? 0) < 5 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20 outline-none'>
+                    🎯 PA Target Value (+198% ROI • 28.6% Win Rate)
+                  </span>
+                )}
+                {(runner.personalAffinity.adjustment ?? 0) > 0 && (runner.personalAffinity.adjustment ?? 0) < 2 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 outline-none'>
+                    📊 PA Spec Edge (+63% ROI • 15.3% Win Rate)
+                  </span>
+                )}
+                {(runner.personalAffinity.adjustment ?? 0) <= 0 && (
+                  <span className='inline-block px-2 py-0.5 rounded text-xs font-medium bg-red-500/10 text-red-400 opacity-50 outline-none'>
+                    ✕ PA Negative Filter Active
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div className='flex gap-2 mt-2 flex-wrap'>
+              {runner.odds && <span className='px-2 py-0.5 bg-white/[0.06] text-white rounded text-xs font-bold'>{runner.odds}</span>}
+              {runner.draw && <span className='px-2 py-0.5 bg-white/[0.04] text-zinc-400 rounded text-xs'>Draw {runner.draw}</span>}
+              {runner.winProb && <span className='px-2 py-0.5 bg-green-500/10 text-green-400 rounded text-xs font-bold'>W:{runner.winProb.toFixed(1)}%</span>}
+              {runner.placeProb && <span className='px-2 py-0.5 bg-blue-500/10 text-blue-400 rounded text-xs font-bold'>P:{runner.placeProb.toFixed(1)}%</span>}
+            </div>
+          </div>
+
+          <div className={`flex-shrink-0 w-20 h-20 rounded-xl flex flex-col items-center justify-center ${isFirst ? 'bg-amber-500/10 border-2 border-amber-500/30' : 'bg-green-500/10 border border-green-500/20'}`}>
+            <span className='text-zinc-500 text-[10px] font-medium uppercase tracking-wider whitespace-nowrap'>APEX</span>
+            <strong className={`text-2xl font-black ${isFirst ? 'text-amber-400' : 'text-green-400'}`}>{score > 0 ? score : '—'}</strong>
+          </div>
+        </div>
+
+        {!compact && (
+          <>
+            {runner.selectionQuality && <SelectionQualitySection sq={runner.selectionQuality} winProb={runner.winProb} placeProb={runner.placeProb} />}
+            {runner.horseQuality && <HorseQualitySection hq={runner.horseQuality} />}
+            {runner.placeTraits && <PlaceTraitsSection traits={runner.placeTraits} />}
+            {runner.components && <ComponentsSection components={runner.components} />}
+            {runner.simulation && runner.simulation.winRate > 0 && <SimulationSection sim={runner.simulation} />}
+            {runner.valueEngine && runner.valueEngine.edgeLabel && <ValueEngineSection ve={runner.valueEngine} />}
+            {runner.bankrollEngine && runner.bankrollEngine.label && <BankrollEngineSection be={runner.bankrollEngine} />}
+            {runner.horse && <AffinitySection horseName={runner.horse} />}
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
