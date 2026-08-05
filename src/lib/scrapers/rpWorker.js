@@ -94,7 +94,9 @@ function runRacecardsScraper(dateStr) {
 
     console.log(`[RP Worker] Running: node "${RP_DIRECT_SCRIPT}" ${dateStr} ${outputFile}`)
 
-    const nodeProcess = execFile(process.execPath, [
+    // Use 'node' from PATH instead of process.execPath (which may be wrong in pm2)
+    const nodePath = process.env.NODE_PATH || 'node'
+    const nodeProcess = execFile(nodePath, [
       RP_DIRECT_SCRIPT,
       dateStr,
       outputFile
