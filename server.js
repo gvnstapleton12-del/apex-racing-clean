@@ -1146,6 +1146,67 @@ async function fetchLiveMeetings() {
       }
     }
 
+    // Server-side daily picks save — ensures picks are saved even without browser visit
+    try {
+      const todayDate = today
+      if (!DAILY_PICKS_DATABASE[todayDate] || !DAILY_PICKS_DATABASE[todayDate].picks || DAILY_PICKS_DATABASE[todayDate].picks.length === 0) {
+        const serverPicks = []
+        const seenRaces = new Set()
+        const allRunners = processed
+          .filter(r => !r.excluded && (r.runners?.length || 0) >= 5)
+          .flatMap(r => (r.runners || []).map(runner => ({ ...runner, course: r.course, off_time: r.off_time, race_id: r.race_id, race_name: r.race_name, going: r.going, distance_f: r.distance_f, race_class: r.race_class })))
+        const pickable = allRunners
+          .filter(r => r.betQuality !== 'NO BET' && (r.score || 0) > 0 && r.odds > 0)
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
+        for (const runner of pickable) {
+          const raceKey = runner.race_id || `${runner.course}|${runner.off_time}`
+          if (seenRaces.has(raceKey)) continue
+          seenRaces.add(raceKey)
+          serverPicks.push({
+            race_id: runner.race_id || null,
+            horse: runner.horse,
+            course: runner.course,
+            offTime: runner.off_time,
+            raceName: runner.race_name || '',
+            score: runner.score || 0,
+            grade: runner.selectionQuality?.grade || '',
+            odds: runner.odds || 0,
+            winProb: runner.winProb ?? null,
+            finalScore: runner.finalScore ?? null,
+            plattProb: runner.plattProb ?? null,
+            fairOdds: runner.fairOdds || runner.selectionQuality?.fairOdds || null,
+            probConfidence: runner.confidenceScore ?? null,
+            form: runner.form || '',
+            draw: runner.draw || 0,
+            going: runner.going || '',
+            fieldSize: (runner.field_size || processed.find(r => r.course === runner.course)?.runners?.length || 0),
+            valueEdge: runner.valueEdge || 0,
+            kellyStake: runner.kelly?.stake || 0,
+            betType: runner.betType || 'SPEC',
+            or: runner.or || 0,
+            rpr: runner.rpr || 0,
+            personalAffinity: runner.personalAffinity?.adjustment ?? null,
+            betQuality: runner.betQuality || null,
+            marketMovement: runner.marketMovement || null,
+          })
+          if (serverPicks.length >= 15) break
+        }
+        if (serverPicks.length > 0) {
+          DAILY_PICKS_DATABASE[todayDate] = {
+            date: todayDate,
+            picks: serverPicks,
+            stats: { won: 0, placed: 0, lost: 0, nr: 0, pending: serverPicks.length },
+            savedAt: new Date().toISOString(),
+            source: 'server',
+          }
+          saveDatabase(DAILY_PICKS_PATH, DAILY_PICKS_DATABASE)
+          console.log(`[DailyPicks] Server saved ${serverPicks.length} picks for ${todayDate}`)
+        }
+      }
+    } catch (e) {
+      console.error('[DailyPicks] Server-side save failed:', e.message)
+    }
+
     // Phase 2: ATR ratings — DISABLED (source returns 404, Chromium crashes on 1.5Gi RAM)
     LIVE_STATE.atrLoading = false
 
