@@ -2480,10 +2480,7 @@ app.post('/api/daily-picks', (req, res) => {
 })
 
 app.get('/api/daily-picks', (_req, res) => {
-  // Re-match against any new results before serving
-  const allResultRaces = (LEARNING_DATABASE.races || []).filter(r => r.off_time)
-  matchDailyPicksWithResults(allResultRaces)
-  matchCounterfactualWithResults(allResultRaces)
+  // Return cached data instantly — matching runs on POST/backfill/periodic refresh
   res.json(DAILY_PICKS_DATABASE)
 })
 
