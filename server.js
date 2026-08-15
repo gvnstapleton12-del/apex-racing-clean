@@ -207,14 +207,14 @@ function applyEngineRouting(runner, engine, odds) {
 
   if (isCore) {
     if (odds <= 4.0) {
-      winProb *= 0.78
-      placeProb *= 0.78
+      winProb *= 0.92
+      placeProb *= 0.92
     } else if (odds <= 7.0) {
-      winProb *= 0.22
-      placeProb *= 0.22
+      winProb *= 0.88
+      placeProb *= 0.88
     } else if (odds <= 9.0) {
-      winProb *= 0.29
-      placeProb *= 0.29
+      winProb *= 0.82
+      placeProb *= 0.82
     }
     stakeType = 'kelly'
     maxStake = 0.05

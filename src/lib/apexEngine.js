@@ -532,9 +532,11 @@ export function runApexEngine(runners, race, options = {}) {
 
     // Confidence-weighted scoring: discount finalScore when PA signal is weak
     // sqrt creates steep penalty for ultra-low confidence but flattens quickly
+    // Floor at 0.65 so low-data horses aren't penalised more than 35%
     const paConfidence = (Number.isFinite(personalAffinity.confidence) && personalAffinity.confidence >= 0)
       ? personalAffinity.confidence : 1.0
-    const scoreWithConfidence = Math.round(rescaledScore * Math.sqrt(paConfidence))
+    const confidenceMultiplier = Math.max(0.65, Math.sqrt(paConfidence))
+    const scoreWithConfidence = Math.round(rescaledScore * confidenceMultiplier)
 
     // Chaos detection: widen probability distributions for high-volatility races
     // This allows outsiders more realistic chances in chaotic races

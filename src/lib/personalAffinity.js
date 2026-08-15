@@ -485,9 +485,14 @@ export function calculatePersonalAffinityBonus(history, target, options = {}) {
   const rawBonus = rawTrack + rawDist + rawGoing + rawDS + rawDir
   const factor = Math.max(0.85, Math.min(1.20, 1.0 + rawBonus))
 
-  const confidences = [trackAff.confidence, dirAff.confidence, distAff.confidence, goingAff.confidence, dsAff.confidence]
-  const validConfidences = confidences.filter(c => Number.isFinite(c))
-  const avgConfidence = validConfidences.length ? validConfidences.reduce((a, b) => a + b, 0) / validConfidences.length : 0
+  // Only average dimensions with actual signal — gated/zero-confidence dims excluded
+  const signalConfs = []
+  if (trackAff.confidence > 0) signalConfs.push(trackAff.confidence)
+  if (dirAff.confidence > 0.1) signalConfs.push(dirAff.confidence)
+  if (!distGated && distAff.confidence > 0) signalConfs.push(distAff.confidence)
+  if (!goingGated && goingAff.confidence > 0) signalConfs.push(goingAff.confidence)
+  if (dsAff.confidence > 0) signalConfs.push(dsAff.confidence)
+  const avgConfidence = signalConfs.length ? signalConfs.reduce((a, b) => a + b, 0) / signalConfs.length : 0
 
   const persistedNote = persisted ? ' + verified store' : ''
 
