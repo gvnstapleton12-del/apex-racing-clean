@@ -1154,7 +1154,7 @@ async function fetchLiveMeetings() {
         const seenRaces = new Set()
         const allRunners = processed
           .filter(r => !r.excluded && (r.runners?.length || 0) >= 5)
-          .flatMap(r => (r.runners || []).map(runner => ({ ...runner, course: r.course, off_time: r.off_time, race_id: r.race_id, race_name: r.race_name, going: r.going, distance_f: r.distance_f, race_class: r.race_class })))
+          .flatMap(r => (r.runners || []).map(runner => ({ ...runner, course: r.course, off_time: r.off_time, race_id: r.race_id, race_name: r.race_name, going: r.going, distance_f: r.distance_f, race_class: r.race_class, field_size: r.runners?.length || 0 })))
         const pickable = allRunners
           .filter(r => r.betQuality !== 'NO BET' && (r.score || 0) > 0 && r.odds > 0)
           .sort((a, b) => (b.score || 0) - (a.score || 0))
@@ -1179,7 +1179,7 @@ async function fetchLiveMeetings() {
             form: runner.form || '',
             draw: runner.draw || 0,
             going: runner.going || '',
-            fieldSize: (runner.field_size || processed.find(r => r.course === runner.course)?.runners?.length || 0),
+            fieldSize: runner.field_size || processed.find(r => r.race_id === runner.race_id)?.runners?.length || 0,
             valueEdge: runner.valueEdge || 0,
             kellyStake: runner.kelly?.stake || 0,
             betType: runner.betType || 'SPEC',
